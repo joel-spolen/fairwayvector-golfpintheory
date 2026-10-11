@@ -16,8 +16,13 @@ enum RoundFairway: String, Codable, CaseIterable, Identifiable {
     case unknown = "Not recorded"
     case hit = "Yes"
     case missed = "No"
+    case left = "Left"
+    case right = "Right"
+    case long = "Long"
+    case short = "Short"
     case notApplicable = "N/A"
     var id: String { rawValue }
+    var label: String { self == .hit ? "Fairway" : rawValue }
 }
 
 struct RoundPlayer: Codable, Identifiable, Equatable {
@@ -161,7 +166,7 @@ enum PlayedRoundCalculator {
                     if score.strokes - putts <= par - 2 { result.estimatedGIR += 1 }
                 }
             }
-            if hole.par.map({ $0 > 3 }) == true, [.hit, .missed].contains(score.fairway) {
+            if hole.par.map({ $0 > 3 }) == true, [.hit, .missed, .left, .right, .long, .short].contains(score.fairway) {
                 result.fairwaysAnswered += 1
                 if score.fairway == .hit { result.fairwaysHit += 1 }
             }

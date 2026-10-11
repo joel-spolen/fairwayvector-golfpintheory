@@ -13,7 +13,6 @@ struct RoundSetupView: View {
     @State private var game: RoundGame = .strokePlay
     @State private var detailMode: RoundDetailMode = .detailed
     @State private var players = [RoundPlayer(name: "You", isOwner: true, handicapIndex: nil)]
-    @State private var allowance = 100
     @State private var error: String?
     @State private var initialized = false
 
@@ -22,64 +21,105 @@ struct RoundSetupView: View {
     }
     private var candidate: PlayedRound {
         PlayedRound(reference: selectedCourseReference, course: course, holes: holes,
-            players: players, game: game, detailMode: detailMode, allowance: allowance)
+            players: players, game: game, detailMode: detailMode, allowance: 100)
+    }
+
+    private var defaultOwnerHandicapIndex: Double {
+        let entries = WHSCalculator.scoringEntries(from: hcpRounds, lowHandicapIndex: profiles.first?.lowHandicapIndex)
+        let computed = WHSCalculator.handicapIndex(from: entries, lowHandicapIndex: profiles.first?.lowHandicapIndex)
+        let shared = trajectoryModel.playerProfileStore.profile
+        let index = computed ?? (shared.isSetupComplete ? shared.exactHandicap : nil)
+        return index.flatMap { $0.isFinite && (-10...54).contains($0) ? $0 : nil } ?? 0
     }
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Selected course & tee") {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("SELECTED COURSE & TEE")
+                        .font(.caption.weight(.semibold)).tracking(1.2)
+                        .foregroundStyle(PureLineStyle.muted)
                     Text(selectedCourseReference.courseName).font(.headline)
                     Text("\(selectedCourseReference.teeName) · \(selectedCourseReference.teeSex.capitalized) · \(holes.count) holes")
+                        .font(.subheadline).foregroundStyle(PureLineStyle.muted)
                     LabeledContent("Rating / slope", value: String(format: "%.1f / %d", selectedCourseReference.courseRating, selectedCourseReference.slopeRating))
                     Text("Uses this course's loaded holes and selected tee. To change tees, return to Choose Course.")
-                        .font(.footnote).foregroundStyle(FairwayVectorColors.slate)
+                        .font(.caption).foregroundStyle(PureLineStyle.muted)
                     if candidate.tee == nil || candidate.strokeRanks == nil {
                         Label("Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data.", systemImage: "info.circle")
-                            .font(.footnote)
+                            .font(.caption).foregroundStyle(PureLineStyle.muted)
                     }
                 }
-                Section("Your round") {
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .pureLineCard()
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Your round").font(.headline)
+                    Text("Game").font(.subheadline.weight(.medium))
                     Picker("Game", selection: $game) {
                         ForEach(RoundGame.allCases) { Text($0.rawValue).tag($0) }
                     }.pickerStyle(.segmented)
+                    Text("Scorecard").font(.subheadline.weight(.medium))
                     Picker("Scorecard", selection: $detailMode) {
                         ForEach(RoundDetailMode.allCases) { Text($0.rawValue).tag($0) }
                     }.pickerStyle(.segmented)
-                    Text("Detailed adds optional putts, fairways, bunker shots and penalties for every player. Strokes only leaves those statistics unknown.")
-                        .font(.footnote).foregroundStyle(FairwayVectorColors.slate)
-                    Stepper("Playing allowance: \(allowance)%", value: $allowance, in: 0...100, step: 5)
-                    Text("Default 100% for individual casual play, not a competition policy. Playing allowance affects net/points only; WHS adjustment uses full Course Handicap.")
-                        .font(.footnote).foregroundStyle(FairwayVectorColors.slate)
+                    Text("Detailed records putts, fairway hits, bunker shots and penalties for every player, starting at zero. Strokes only leaves those statistics unknown.")
+                        .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
+                .pureLineCard()
                 ForEach($players) { $player in
-                    Section(player.isOwner ? "You · personal statistics" : "Additional player") {
-                        if player.isOwner { Text("You").font(.headline) }
-                        else { TextField("Player name", text: $player.name) }
+                    VStack(alignment: .leading, spacing: 14) {
+                        Label(player.isOwner ? "You · personal statistics" : "Additional player", systemImage: "person")
+                            .font(.headline)
+                        if !player.isOwner {
+                            TextField("Player name", text: $player.name)
+                                .padding(12)
+                                .background(PureLineStyle.canvas, in: RoundedRectangle(cornerRadius: 12))
+                                .accessibilityLabel("Player name")
+                        }
                         Toggle("Use Handicap Index", isOn: Binding(
                             get: { player.handicapIndex != nil },
-                            set: { player.handicapIndex = $0 ? 0 : nil }))
+                            set: { enabled in
+                                player.handicapIndex = enabled ? (player.isOwner ? defaultOwnerHandicapIndex : 0) : nil
+                            }))
+                            .font(.subheadline)
                         if player.handicapIndex != nil {
-                            TextField("Handicap Index", value: Binding(
-                                get: { player.handicapIndex ?? 0 }, set: { player.handicapIndex = $0 }), format: .number)
-                                .keyboardType(.numbersAndPunctuation)
+                            LabeledContent("Handicap Index") {
+                                TextField("Handicap Index", value: Binding(
+                                    get: { player.handicapIndex ?? 0 }, set: { player.handicapIndex = $0 }), format: .number)
+                                    .keyboardType(.numbersAndPunctuation)
+                                    .multilineTextAlignment(.trailing)
+                                    .frame(width: 90)
+                                    .padding(10)
+                                    .background(PureLineStyle.canvas, in: RoundedRectangle(cornerRadius: 12))
+                                    .accessibilityLabel("Handicap Index")
+                            }
+                            .font(.subheadline)
                             Text("Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown.")
-                                .font(.footnote).foregroundStyle(FairwayVectorColors.slate)
+                                .font(.caption).foregroundStyle(PureLineStyle.muted)
                         } else {
                             Text("Gross only. Net score and Stableford points unavailable until an index is supplied.")
-                                .font(.footnote).foregroundStyle(FairwayVectorColors.slate)
+                                .font(.caption).foregroundStyle(PureLineStyle.muted)
                         }
                         if !player.isOwner {
                             Button("Remove player", role: .destructive) { players.removeAll { $0.id == player.id } }
+                                .font(.subheadline).foregroundStyle(.red)
                         }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .pureLineCard()
                 }
-                Section {
                     Button("Add player", systemImage: "person.badge.plus") {
                         players.append(RoundPlayer(name: "Player \(players.count + 1)", isOwner: false, handicapIndex: nil))
-                    }.disabled(players.count >= 8)
+                    }
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity, minHeight: 48)
+                    .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 14))
+                    .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(PureLineStyle.line, lineWidth: 1) }
+                    .disabled(players.count >= 8)
                     if game == .stableford, players.contains(where: { $0.handicapIndex == nil }) {
-                        Text("Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate.").font(.footnote)
+                        Text("Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate.")
+                            .font(.caption).foregroundStyle(PureLineStyle.muted)
                     }
                     if let error { Text(error).foregroundStyle(.red) }
                     Button("Start round", systemImage: "flag.checkered") {
@@ -88,23 +128,26 @@ struct RoundSetupView: View {
                             onStarted(); dismiss()
                         } catch { self.error = error.localizedDescription }
                     }
+                    .buttonStyle(PureLinePrimaryButtonStyle())
                     .disabled(!PlayedRoundStore.validStructure(candidate) || store.active != nil)
                     .accessibilityIdentifier("start-scored-round")
                 }
+                .padding(18)
             }
-            .roundFormStyle()
+            .scrollDismissesKeyboard(.interactively)
+            .background(PureLineStyle.canvas)
+            .foregroundStyle(PureLineStyle.ink)
             .navigationTitle("Round setup")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
             .onAppear {
                 guard !initialized else { return }
                 initialized = true
-                let entries = WHSCalculator.scoringEntries(from: hcpRounds, lowHandicapIndex: profiles.first?.lowHandicapIndex)
-                let computed = WHSCalculator.handicapIndex(from: entries, lowHandicapIndex: profiles.first?.lowHandicapIndex)
-                let shared = trajectoryModel.playerProfileStore.profile
-                let index = computed ?? (shared.isSetupComplete ? shared.exactHandicap : nil)
-                players[0].handicapIndex = index.flatMap { $0.isFinite && (-10...54).contains($0) ? $0 : nil }
+                players[0].handicapIndex = defaultOwnerHandicapIndex
             }
-        }.tint(FairwayVectorColors.navy)
+        }.tint(PureLineStyle.accent)
     }
 }
 
@@ -125,70 +168,140 @@ struct RoundHoleEntryView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("HOLE \(holeNumber)")
+                        .font(.caption.weight(.semibold)).tracking(1.2)
+                        .foregroundStyle(PureLineStyle.muted)
                     Text("Par \(hole?.par.map(String.init) ?? "—") · HCP \(hole?.strokeIndex.map(String.init) ?? "—")")
+                        .font(.title2.weight(.semibold))
                     Text("Strokes are the TOTAL including putts and penalties. Detail counts are included, never added again.")
-                        .font(.footnote).foregroundStyle(FairwayVectorColors.slate)
+                        .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .pureLineCard()
                 ForEach(round.players) { player in
-                    Section(player.isOwner ? "You" : player.name) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Label(player.isOwner ? "You" : player.name, systemImage: "person")
+                            .font(.headline)
                         let score = binding(player.id)
-                        Stepper("Total strokes: \(score.wrappedValue.strokes)", value: score.strokes, in: 1...30)
+                        Stepper(value: score.strokes, in: 1...30) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Total strokes")
+                                    .font(.caption).foregroundStyle(PureLineStyle.muted)
+                                Text("\(score.wrappedValue.strokes)")
+                                    .font(.largeTitle.weight(.semibold)).monospacedDigit()
+                                    .foregroundStyle(PureLineStyle.accent)
+                            }
+                        }
                         if round.detailMode == .detailed {
-                            optionalCount("Putts", value: score.putts, maximum: score.wrappedValue.strokes)
+                            Divider().overlay(PureLineStyle.line)
+                            detailCount("Putts", value: score.putts, maximum: score.wrappedValue.strokes)
                             if hole?.par == 3 {
                                 LabeledContent("Fairway", value: "N/A · par 3")
                             } else {
-                                Picker("Fairway hit", selection: score.fairway) {
-                                    ForEach(RoundFairway.allCases) { Text($0.rawValue).tag($0) }
-                                }
+                                fairwaySelector(score.fairway)
                             }
-                            optionalCount("Bunker shots", value: score.bunkerShots, maximum: score.wrappedValue.strokes)
-                            optionalCount("Penalty strokes", value: score.penalties, maximum: score.wrappedValue.strokes)
+                            detailCount("Bunker shots", value: score.bunkerShots, maximum: score.wrappedValue.strokes)
+                            detailCount("Penalty strokes", value: score.penalties, maximum: score.wrappedValue.strokes)
                             if let putts = score.wrappedValue.putts, let par = hole?.par {
-                                LabeledContent("Estimated GIR", value: score.wrappedValue.strokes - putts <= par - 2 ? "Yes" : "No")
+                                LabeledContent("Green hit", value: score.wrappedValue.strokes - putts <= par - 2 ? "Yes" : "No")
                             }
                         }
                         if !score.wrappedValue.isValid {
                             Text("Counts must be between 0 and total strokes; putts plus penalties cannot exceed total strokes.").foregroundStyle(.red).font(.footnote)
                         }
                     }
+                    .font(.subheadline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .pureLineCard()
                 }
-                Section {
                     if let error { Text(error).foregroundStyle(.red) }
                     Button(buttonTitle) {
                         guard valid else { return }
                         do { try onSave(entries); dismiss() }
                         catch { self.error = "Score remains in this form / active draft. Storage failed: \(error.localizedDescription)" }
-                    }.disabled(!valid)
-                } footer: {
-                    Text("Estimated GIR = total strokes − putts ≤ par − 2. It is not measured green arrival; penalties, recovery strokes and unusual play can affect this estimate. Optional details stay unknown until recorded.")
+                    }
+                    .buttonStyle(PureLinePrimaryButtonStyle())
+                    .disabled(!valid)
+                    Text("Green hit is inferred from total strokes − putts ≤ par − 2, not measured green arrival. Penalties, recovery strokes and unusual play can affect this estimate. Detailed counts start at zero; strokes-only statistics stay unknown.")
+                        .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
+                .padding(18)
             }
-            .roundFormStyle()
+            .background(PureLineStyle.canvas)
+            .foregroundStyle(PureLineStyle.ink)
             .navigationTitle("Hole \(holeNumber) scorecard")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
             .onAppear {
                 guard entries.isEmpty else { return }
                 for player in round.players {
                     var score = round.score(player: player.id, hole: holeNumber) ?? PlayedHoleScore(strokes: hole?.par ?? 4)
+                    if round.detailMode == .detailed {
+                        score.putts = score.putts ?? 0
+                        score.bunkerShots = score.bunkerShots ?? 0
+                        score.penalties = score.penalties ?? 0
+                        if score.fairway == .unknown { score.fairway = .missed }
+                    }
                     if hole?.par == 3 { score.fairway = .notApplicable }
                     entries[player.id] = score
                 }
             }
-        }.tint(FairwayVectorColors.navy)
+        }.tint(PureLineStyle.accent)
     }
 
-    private func optionalCount(_ title: String, value: Binding<Int?>, maximum: Int) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Toggle("Record \(title.lowercased())", isOn: Binding(get: { value.wrappedValue != nil },
-                set: { value.wrappedValue = $0 ? 0 : nil }))
-            if value.wrappedValue != nil {
-                Stepper("\(title): \(value.wrappedValue ?? 0)", value: Binding(
-                    get: { value.wrappedValue ?? 0 }, set: { value.wrappedValue = $0 }), in: 0...maximum)
+    private func detailCount(_ title: String, value: Binding<Int?>, maximum: Int) -> some View {
+        Stepper("\(title): \(value.wrappedValue ?? 0)", value: Binding(
+            get: { value.wrappedValue ?? 0 }, set: { value.wrappedValue = $0 }), in: 0...maximum)
+    }
+
+    private func fairwaySelector(_ selection: Binding<RoundFairway>) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Fairway").font(.subheadline.weight(.semibold))
+            Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+                GridRow {
+                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
+                    fairwayButton(.long, icon: "arrow.up", selection: selection)
+                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
+                }
+                GridRow {
+                    fairwayButton(.left, icon: "arrow.left", selection: selection)
+                    fairwayButton(.hit, icon: "checkmark", selection: selection)
+                    fairwayButton(.right, icon: "arrow.right", selection: selection)
+                }
+                GridRow {
+                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
+                    fairwayButton(.short, icon: "arrow.down", selection: selection)
+                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
+                }
+            }
+            if selection.wrappedValue == .missed {
+                Text("Missed · choose a direction to add detail")
+                    .font(.caption).foregroundStyle(PureLineStyle.muted)
             }
         }
+    }
+
+    private func fairwayButton(_ outcome: RoundFairway, icon: String, selection: Binding<RoundFairway>) -> some View {
+        let selected = selection.wrappedValue == outcome
+        return Button { selection.wrappedValue = outcome } label: {
+            VStack(spacing: 4) {
+                Image(systemName: icon).font(.body.weight(.semibold))
+                Text(outcome.label).font(.caption.weight(.semibold))
+            }
+            .frame(maxWidth: .infinity, minHeight: 56)
+            .foregroundStyle(selected ? Color.white : PureLineStyle.accent)
+            .background(selected ? PureLineStyle.accent : PureLineStyle.canvas,
+                        in: RoundedRectangle(cornerRadius: 12))
+            .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(PureLineStyle.line, lineWidth: selected ? 0 : 1) }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(outcome == .hit ? "Fairway hit" : "Fairway miss: \(outcome.label)")
+        .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
 
@@ -243,7 +356,7 @@ struct RoundReviewView: View {
                                     Text(score.map { "\($0.strokes)" } ?? "—").bold().monospacedDigit()
                                 }
                                 if let score, round.detailMode == .detailed {
-                                    Text("Putts \(score.putts.map(String.init) ?? "—") · Fairway \(score.fairway.rawValue) · Bunker shots \(score.bunkerShots.map(String.init) ?? "—") · Penalties \(score.penalties.map(String.init) ?? "—")")
+                                    Text("Putts \(score.putts.map(String.init) ?? "—") · Fairway \(score.fairway.label) · Bunker shots \(score.bunkerShots.map(String.init) ?? "—") · Penalties \(score.penalties.map(String.init) ?? "—")")
                                         .font(.caption).foregroundStyle(FairwayVectorColors.slate)
                                 }
                                     if let score, let rank = round.strokeRanks?[hole.number],
@@ -321,10 +434,10 @@ struct RoundReviewView: View {
             LabeledContent("Stableford", value: t.stableford.map { "\($0) points" } ?? "Unavailable")
             if t.puttHoles > 0 { LabeledContent("Putts", value: "\(t.putts) / \(t.puttHoles) recorded holes") }
             LabeledContent("Fairways", value: "\(t.fairwaysHit) / \(t.fairwaysAnswered) answered eligible holes")
-            LabeledContent("Estimated GIR", value: "\(t.estimatedGIR) / \(t.girHoles) holes with putts & par")
+            LabeledContent("Green hit", value: "\(t.estimatedGIR) / \(t.girHoles) holes with putts & par")
             if t.bunkerAnswered > 0 { LabeledContent("Bunkers", value: "\(t.bunkerShots) shots · \(t.bunkerHoles) / \(t.bunkerAnswered) recorded holes") }
             if t.penaltyHoles > 0 { LabeledContent("Penalties (already included)", value: "\(t.penalties) / \(t.penaltyHoles) recorded holes") }
-            Text("Estimated GIR is inferred from strokes − putts ≤ par − 2, not measured arrival; penalties and recovery play affect it.").font(.footnote)
+            Text("Green hit is inferred from strokes − putts ≤ par − 2, not measured arrival; penalties and recovery play affect it.").font(.footnote)
         }
         Section("HCP score · distinct from net score") {
             LabeledContent("Handicap Index at play", value: player.handicapIndex.map { WHSCalculator.formatHCPScore($0) } ?? "Unknown")
@@ -412,7 +525,7 @@ struct RoundStatisticsView: View {
             metric("Net strokes / hole", s.net, s.netHoles)
             metric("Putts / recorded hole", s.putts, s.puttHoles)
             metric("Fairways hit %", s.fairwaysHit, s.fairwaysAnswered, scale: 100)
-            metric("Estimated GIR %", s.gir, s.girHoles, scale: 100)
+            metric("Green hit %", s.gir, s.girHoles, scale: 100)
             metric("Bunker holes %", s.bunkerHoles, s.bunkerAnswered, scale: 100)
             metric("Penalties / 18 recorded holes", s.penalties, s.penaltyHoles, scale: 18)
             Text("Fairways exclude par 3 and N/A/unanswered. GIR requires putts and actual par. Unknown details are excluded, not zero. GIR is inferred, not measured; total strokes include penalties.").font(.footnote)
