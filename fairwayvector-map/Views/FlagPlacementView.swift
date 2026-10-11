@@ -9,6 +9,7 @@ struct FlagPlacementView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var flag: GeoPoint
     @State private var cameraPosition: MapCameraPosition = .automatic
+    @State private var isDraggingFlag = false
 
     init(hole: Hole, initialFlag: GeoPoint, onSave: @escaping (GeoPoint) -> Void) {
         self.hole = hole
@@ -20,9 +21,11 @@ struct FlagPlacementView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
-                Text("Tap the green or drag the flag to move it.")
+                Text(hole.green.count >= 3
+                     ? "Tap the green or drag the flag to move it."
+                     : "Tap near the mapped green center or drag the flag to move it.")
                     .font(.subheadline)
-                    .foregroundStyle(FairwayVectorColors.slate)
+                    .foregroundStyle(PureLineStyle.muted)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
 
@@ -30,16 +33,16 @@ struct FlagPlacementView: View {
                     Map(position: $cameraPosition, interactionModes: []) {
                         if hole.green.count >= 3 {
                             MapPolygon(coordinates: hole.green.map(\.coordinate))
-                                .foregroundStyle(FairwayVectorColors.gold.opacity(0.3))
-                                .stroke(FairwayVectorColors.gold, lineWidth: 2)
+                                .foregroundStyle(PureLineStyle.accent.opacity(0.22))
+                                .stroke(PureLineStyle.accent, lineWidth: 2)
                         }
 
                         Annotation("Flag", coordinate: flag.coordinate, anchor: .bottom) {
                             Image(systemName: "flag.fill")
-                                .font(.title2)
-                                .foregroundStyle(FairwayVectorColors.orange)
-                                .shadow(color: .black.opacity(0.3), radius: 2)
-                                .frame(width: 44, height: 52)
+                                .font(.system(size: 48, weight: .semibold))
+                                .foregroundStyle(PureLineStyle.accent)
+                                .shadow(color: .black.opacity(0.35), radius: 4, y: 2)
+                                .frame(width: 72, height: 84)
                                 .contentShape(Rectangle())
                         }
                         .annotationTitles(.hidden)
@@ -51,19 +54,23 @@ struct FlagPlacementView: View {
                     .simultaneousGesture(
                         DragGesture(minimumDistance: 8, coordinateSpace: .local)
                             .onChanged { value in
-                                guard let markerPoint = proxy.convert(flag.coordinate, to: .local) else { return }
-                                let dx = value.startLocation.x - markerPoint.x
-                                let dy = value.startLocation.y - markerPoint.y
-                                guard hypot(dx, dy) <= 44 else { return }
+                                if !isDraggingFlag {
+                                    guard let markerPoint = proxy.convert(flag.coordinate, to: .local) else { return }
+                                    let dx = value.startLocation.x - markerPoint.x
+                                    let dy = value.startLocation.y - markerPoint.y
+                                    guard hypot(dx, dy) <= 60 else { return }
+                                    isDraggingFlag = true
+                                }
                                 moveFlag(to: value.location, using: proxy)
                             }
+                            .onEnded { _ in isDraggingFlag = false }
                     )
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal)
                 .padding(.bottom)
             }
-            .background(FairwayVectorColors.background)
+            .background(PureLineStyle.canvas)
             .navigationTitle("Move Flag · Hole \(hole.number)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -89,7 +96,12 @@ struct FlagPlacementView: View {
     private func moveFlag(to screenPoint: CGPoint, using proxy: MapProxy) {
         guard let coordinate = proxy.convert(screenPoint, from: .local) else { return }
         let candidate = GeoPoint(coordinate)
-        guard hole.green.count >= 3, GolfGeometry.contains(candidate, in: hole.green) else { return }
+        if hole.green.count >= 3 {
+            guard GolfGeometry.contains(candidate, in: hole.green) else { return }
+        } else {
+            guard let center = hole.greenCenter,
+                  GolfGeometry.distance(candidate, center) <= 25 else { return }
+        }
         flag = candidate
     }
 }

@@ -181,7 +181,7 @@ struct CourseMapView: View {
                         saveFlagPosition(movedFlag, for: hole)
                         isShowingFlagEditor = false
                     }
-                    .presentationDetents([.medium, .large])
+                    .presentationDetents([.large])
                 }
             }
         }
@@ -257,7 +257,7 @@ struct CourseMapView: View {
                     origin: origin?.point,
                     usesGPS: origin?.usesGPS == true,
                     tapPoint: $tapPoint,
-                    onDoubleTapGreen: { isShowingFlagEditor = true },
+                    onDoubleTapGreen: { point in saveFlagPosition(point, for: hole) },
                     onHeadingChange: { mapHeading = $0 },
                     terrainInspectionPoint: terrainInspectionPoint,
                     onTargetInteractionBegan: { terrainStore.beginTargetInteraction() },
@@ -276,6 +276,27 @@ struct CourseMapView: View {
                                               mapHeading: mapHeading, compact: true)
                         }
                         terrainPanel
+                        Button {
+                            isShowingFlagEditor = true
+                        } label: {
+                            VStack(spacing: 3) {
+                                Image(systemName: "flag")
+                                    .font(.body.weight(.medium))
+                                    .foregroundStyle(PureLineStyle.accent)
+                                Text("Pin position")
+                                    .font(.caption2.weight(.medium))
+                                    .multilineTextAlignment(.center)
+                                    .foregroundStyle(PureLineStyle.ink)
+                            }
+                            .padding(6)
+                            .frame(width: 78)
+                            .frame(minHeight: 64)
+                            .contentShape(RoundedRectangle(cornerRadius: 14))
+                        }
+                        .buttonStyle(.plain)
+                        .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
+                        .disabled(hole.greenCenter == nil)
+                        .accessibilityHint("Opens an enlarged green where you can tap to place the flag")
                         CourseShotRecommendationView(terrainStore: terrainStore, weatherStore: weatherStore,
                             weatherLocation: courseWeatherLocation, selectedTarget: tapPoint,
                             unit: unit, model: trajectoryModel, compact: true)

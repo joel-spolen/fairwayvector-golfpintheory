@@ -7,7 +7,7 @@ struct HoleMapView: View {
     let origin: GeoPoint?
     let usesGPS: Bool
     @Binding var tapPoint: GeoPoint?
-    let onDoubleTapGreen: () -> Void
+    let onDoubleTapGreen: (GeoPoint) -> Void
     var onHeadingChange: (Double) -> Void = { _ in }
     var terrainInspectionPoint: GeoPoint? = nil
     var onTargetInteractionBegan: () -> Void = {}
@@ -90,6 +90,8 @@ struct HoleMapView: View {
                             .font(.title3)
                             .foregroundStyle(PureLineStyle.accent)
                             .shadow(radius: 2)
+                            .accessibilityLabel("Flag")
+                            .accessibilityHint("Double-tap a point on the green to move the flag there")
                     }
                     .annotationTitles(.hidden)
                 }
@@ -176,7 +178,7 @@ struct HoleMapView: View {
                         case .first(let tap):
                             guard let coordinate = proxy.convert(tap.location, from: .local),
                                   GolfGeometry.contains(GeoPoint(coordinate), in: hole.green) else { return }
-                            onDoubleTapGreen()
+                            onDoubleTapGreen(GeoPoint(coordinate))
                         case .second(let tap):
                             guard !isDraggingTarget, let coordinate = proxy.convert(tap.location, from: .local) else { return }
                             let point = GeoPoint(coordinate)
