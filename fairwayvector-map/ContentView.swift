@@ -165,9 +165,7 @@ struct CourseMapView: View {
                 HoleElevationProfileView(
                     store: terrainStore, holeNumber: hole.number, unit: unit,
                     usesGPS: terrainStore.usesGPS,
-                    inspectionPoint: $terrainInspectionPoint,
-                    retryMessage: terrainRetryMessage(for: hole),
-                    onRetry: { retryTerrain(for: hole) }
+                    inspectionPoint: $terrainInspectionPoint
                 )
                 .presentationDetents([.medium, .large])
                 .presentationBackgroundInteraction(.enabled(upThrough: .medium))
@@ -527,24 +525,6 @@ struct CourseMapView: View {
             return "Tee → flag · \(terrainDeltaText(delta))"
         }
         return terrainStore.isHoleLoading ? "Loading terrain…" : "Terrain unavailable"
-    }
-
-    private func retryTerrain(for hole: Hole) {
-        terrainInspectionPoint = nil
-        let origin = distanceOrigin(for: hole)
-        if origin?.isSimulated == true {
-            commitSelectedShot(for: hole, target: tapPoint)
-        } else {
-            terrainStore.retryFailedRequests(terrainRequest(for: hole, origin: origin, target: tapPoint))
-        }
-    }
-
-    private func terrainRetryMessage(for hole: Hole) -> String {
-        distanceOrigin(for: hole)?.isSimulated == true && DevelopmentAPIConfiguration.current.gpxz == .live
-            ? "Simulated golfer: reload saved terrain only. No live requests, failure-lock changes or paid reservations. Missing heights remain unavailable."
-            : DevelopmentAPIConfiguration.current.gpxz == .mock
-            ? "Retry terrain using the data available for this course."
-            : "Correct the reported cause first. Saved terrain is reused, but uncovered paths may spend additional calls. This clears failed-request locks only; used calls are not reset or refunded, and provider backoff still applies."
     }
 
     private func terrainDeltaText(_ meters: Double) -> String {

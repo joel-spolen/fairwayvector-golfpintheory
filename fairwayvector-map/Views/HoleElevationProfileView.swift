@@ -8,12 +8,9 @@ struct HoleElevationProfileView: View {
     let unit: DistanceUnit
     let usesGPS: Bool
     @Binding var inspectionPoint: GeoPoint?
-    var retryMessage: String = "Saved terrain is reused. Uncovered paths may spend calls; reservations and provider backoff are retained."
-    var onRetry: (() -> Void)? = nil
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedDistance: Double?
-    @State private var isConfirmingRetry = false
 
     private var mode: TerrainProfileMode { store.mode }
 
@@ -30,7 +27,7 @@ struct HoleElevationProfileView: View {
     }
 
     private var startLabel: String {
-        mode == .hole ? "Tee" : (store.committedRequest?.originLabel ?? "Captured position")
+        mode == .hole ? "Tee" : "Position"
     }
 
     private var endLabel: String {
@@ -51,10 +48,6 @@ struct HoleElevationProfileView: View {
 
                     if let profile, !validRuns(profile).isEmpty {
                         profileContent(profile)
-                        if store.isLoading { ProgressView("Loading uncovered terrain…") }
-                        if let message = store.statusMessage {
-                            Label(message, systemImage: "info.circle").font(.footnote).foregroundStyle(PureLineStyle.muted)
-                        }
                     } else if store.isLoading {
                         VStack(alignment: .leading, spacing: 8) {
                             ProgressView("Loading terrain profile…")
@@ -70,24 +63,6 @@ struct HoleElevationProfileView: View {
                         }
                     }
 
-                    if store.shotPending { Text("Target is being moved. Release to commit its terrain.").font(.footnote) }
-                    // Show both pipelines' errors even when inspecting the other chart.
-                    if let message = store.holeMessage { Label("Hole: \(message)", systemImage: "info.circle").font(.footnote) }
-                    if let message = store.shotMessage { Label("Shot: \(message)", systemImage: "info.circle").font(.footnote) }
-                    if DevelopmentAPIConfiguration.current.gpxz == .live, let quota = store.quota {
-                        Text("GPXZ local budget: \(quota.used)/100 used · \(quota.remaining) remaining · \(store.plannedCalls) uncovered spans planned · \(quota.month) UTC.").font(.footnote)
-                    }
-                    if onRetry != nil {
-                        Button("Retry / refresh terrain", systemImage: "arrow.clockwise") { isConfirmingRetry = true }
-                            .disabled(store.isHoleLoading || store.isShotLoading || store.shotPending)
-                            .accessibilityHint("Asks for confirmation; never resets used calls or provider backoff")
-                    }
-                    sourceDetails(store.metadata, sourceProfile: profile,
-                                  title: mode == .hole ? "Hole terrain source" : "Origin → target terrain source")
-                    if mode == .shot, let nextProfile = store.snapshot.targetToFlagProfile {
-                        sourceDetails(nextProfile.metadata, sourceProfile: nextProfile,
-                                      title: "Target → flag terrain source")
-                    }
                 }
                 .padding()
             }
@@ -106,10 +81,6 @@ struct HoleElevationProfileView: View {
             }
         }
         .tint(PureLineStyle.accent)
-        .confirmationDialog("Retry terrain requests?", isPresented: $isConfirmingRetry, titleVisibility: .visible) {
-            Button("Retry terrain") { onRetry?() }
-            Button("Cancel", role: .cancel) {}
-        } message: { Text(retryMessage) }
         .onChange(of: selectedDistance) { _, _ in
             inspectionPoint = inspectedSample?.point
         }
@@ -160,27 +131,6 @@ struct HoleElevationProfileView: View {
                 .accessibilityElement(children: .combine)
             }
             .font(.subheadline)
-
-            if mode == .shot && store.committedRequest?.isSimulatedOrigin == true {
-                Text("This profile begins at a simulated position rather than device GPS.")
-                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
-            } else if mode == .shot && !usesGPS {
-                Text("The committed shot starts at the captured tee fallback, not your live GPS position. Its endpoint is the selected target.")
-                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
-            } else if mode == .shot {
-                Text("The committed shot runs from your captured GPS position to the selected target, not necessarily the flag. Incoming GPS fixes do not update this origin.")
-                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
-            }
-            if profile.isStraightLine {
-                Text("Straight-line terrain cross-section; this does not represent a mapped dogleg or the ball’s flight.")
-                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
-            }
-            if profile.samples.contains(where: { validElevation($0) == nil }) {
-                Text("Gaps indicate unavailable terrain. Missing heights are not interpolated or connected.")
-                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
-            }
-            Text("Vertical scale is fitted independently of horizontal distance. Terrain relief may be vertically exaggerated; this is not a true-scale slope diagram.")
-                .font(.footnote).foregroundStyle(PureLineStyle.muted)
         }
     }
 
@@ -191,42 +141,6 @@ struct HoleElevationProfileView: View {
             Text(heightText(sample?.elevationMeters)).monospacedDigit()
         }
         .accessibilityElement(children: .combine)
-    }
-
-    private func sourceDetails(_ records: [TerrainProvenance], sourceProfile: TerrainProfile?, title: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title).font(.headline)
-            if !records.contains(where: \.isSynthetic) && DevelopmentAPIConfiguration.current.gpxz == .live {
-                Link("Elevation profiles by GPXZ", destination: URL(string: "https://www.gpxz.io/")!)
-                LabeledContent("Coordinates / heights", value: "WGS84 / EGM2008")
-                if let profile = sourceProfile {
-                    LabeledContent("Displayed maximum sample interval", value: "\(profile.maximumSpacingMeters.formatted(.number.precision(.fractionLength(2)))) m")
-                    if profile.samples.contains(where: \.locallyInterpolated) {
-                        Text("Subpath boundaries and bends may be interpolated locally along the original provider path. Bracketing source provenance is retained.")
-                    }
-                }
-                if let low = records.map(\.resolutionMeters).min(), let high = records.map(\.resolutionMeters).max() {
-                    LabeledContent("Actual source resolution", value: "\(low.formatted())–\(high.formatted()) m")
-                }
-                ForEach(Array(records.enumerated()), id: \.offset) { _, record in
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Returned source: \(record.dataSource)").fontWeight(.semibold)
-                        Link("GPXZ catalogue — look up this source’s credits and licence", destination: URL(string: "https://api.gpxz.io/v1/elevation/sources")!)
-                        Text("Captured: \(record.captureDateMin ?? "not supplied") – \(record.captureDateMax ?? "not supplied")")
-                        Text("Dataset: \(record.datasetVersion ?? "not supplied") · Saved \(record.fetchedAt.formatted())")
-                        Text("Provider interpolation: \(record.interpolation) · Resolution \(record.resolutionMeters.formatted()) m")
-                        Text("Original provider sample interval: \(record.providerSampleIntervalMeters.formatted(.number.precision(.fractionLength(2)))) m (separate from source resolution)")
-                    }
-                }
-                Text("Only source identifiers and sampling provenance are stored here. Source-specific attribution records and full licence texts have not been downloaded or bundled. These links open GPXZ’s public catalogue; review the matching entry before redistributing data.")
-                if let quota = store.quota { Text("Local budget: \(quota.used)/100 used; \(quota.remaining) remaining for \(quota.month) UTC. This is not cross-device account authority.") }
-                Text("Sampling spacing is not source resolution or guaranteed accuracy. Profiles may use coarser source data. GPS error and capture dates affect the result; these are terrain heights, not phone altitude, green-reading data, or plays-like advice.")
-                Text("A committed profile may send its path coordinates, including your captured GPS origin, to GPXZ. Saved profiles have no expiry or automatic retry. Refresh is cache-first.")
-                    .foregroundStyle(PureLineStyle.muted)
-            }
-        }
-        .font(.footnote)
-        .fixedSize(horizontal: false, vertical: true)
     }
 
     /// Keep the actual sample distance as a Double; DistanceUnit.value rounds to Int.

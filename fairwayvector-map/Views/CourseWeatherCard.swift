@@ -133,17 +133,6 @@ private struct CourseWeatherDetail: View {
                         Text("Weather unavailable. Refresh manually to try again.")
                     }
                 }
-                Section("Source & snapshot") {
-                    Text("Open-Meteo · course-level forecast conditions, not measurements at the ball.")
-                    if let weather = store.weather(for: location) {
-                        LabeledContent("Observed at", value: weather.observedAt)
-                        LabeledContent("Timezone", value: weather.timezone ?? "Provider local time")
-                        if let fetchedAt = store.fetchedAt { LabeledContent("Fetched / cached", value: fetchedAt.formatted()) }
-                        Text(store.isStale ? "Cached snapshot is over 30 minutes old." : "Snapshot is within the 30-minute cache window.")
-                    }
-                    Text(String(format: "Course location: %.5f, %.5f", location.lat, location.lon))
-                    Text("The map arrow points where wind blows TO, rotated with map heading. Recommendations use surface pressure directly; weather elevation is not terrain height, and gusts are not used.")
-                }
                 Section("Loading & refresh") {
                     if store.isLoading { ProgressView("Loading current conditions…") }
                     if let error = store.errorMessage {
