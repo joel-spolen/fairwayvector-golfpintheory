@@ -63,7 +63,7 @@ struct RoundSetupView: View {
                     Picker("Scorecard", selection: $detailMode) {
                         ForEach(RoundDetailMode.allCases) { Text($0.rawValue).tag($0) }
                     }.pickerStyle(.segmented)
-                    Text("Detailed records putts, fairway hits, bunker shots and penalties for every player, starting at zero. Strokes only leaves those statistics unknown.")
+                    Text("Detailed records putts, fairway hits, bunker shots and penalties for every player. Putts default to two; bunker shots and penalties start at zero. Strokes only leaves those statistics unknown.")
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
                 .pureLineCard()
@@ -159,6 +159,7 @@ struct RoundHoleEntryView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var entries: [UUID: PlayedHoleScore] = [:]
     @State private var error: String?
+    @State private var showingGIRInfo = false
     private var hole: PlayedHole? { round.holes.first { $0.number == holeNumber } }
 
     private func binding(_ player: UUID) -> Binding<PlayedHoleScore> {
@@ -176,16 +177,34 @@ struct RoundHoleEntryView: View {
                         .foregroundStyle(PureLineStyle.muted)
                     Text("Par \(hole?.par.map(String.init) ?? "—") · HCP \(hole?.strokeIndex.map(String.init) ?? "—")")
                         .font(.title2.weight(.semibold))
-                    Text("Strokes are the TOTAL including putts and penalties. Detail counts are included, never added again.")
-                        .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .pureLineCard()
                 ForEach(round.players) { player in
                     VStack(alignment: .leading, spacing: 16) {
-                        Label(player.isOwner ? "You" : player.name, systemImage: "person")
-                            .font(.headline)
                         let score = binding(player.id)
+                        HStack(alignment: .top, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 5) {
+                                if let par = hole?.par {
+                                    Text("Gross · \(scoreName(strokes: score.wrappedValue.strokes, par: par))")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(PureLineStyle.accent)
+                                    if player.handicapIndex != nil {
+                                        if let received = handicapStrokes(for: player) {
+                                            Text("HCP · \(scoreName(strokes: score.wrappedValue.strokes - received, par: par))")
+                                                .font(.caption.weight(.semibold))
+                                                .foregroundStyle(PureLineStyle.muted)
+                                        } else {
+                                            Text("HCP · unavailable")
+                                                .font(.caption).foregroundStyle(PureLineStyle.muted)
+                                        }
+                                    }
+                                }
+                            }
+                            Spacer(minLength: 0)
+                            Label(player.isOwner ? "You" : player.name, systemImage: "person")
+                                .font(.headline)
+                        }
                         Stepper(value: score.strokes, in: 1...30) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Total strokes")
@@ -206,7 +225,20 @@ struct RoundHoleEntryView: View {
                             detailCount("Bunker shots", value: score.bunkerShots, maximum: score.wrappedValue.strokes)
                             detailCount("Penalty strokes", value: score.penalties, maximum: score.wrappedValue.strokes)
                             if let putts = score.wrappedValue.putts, let par = hole?.par {
-                                LabeledContent("Green hit", value: score.wrappedValue.strokes - putts <= par - 2 ? "Yes" : "No")
+                                HStack {
+                                    Text("GIR")
+                                    Button { showingGIRInfo.toggle() } label: {
+                                        Image(systemName: "info.circle")
+                                            .font(.subheadline)
+                                            .frame(width: 32, height: 44)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .foregroundStyle(PureLineStyle.accent)
+                                    .accessibilityLabel("About GIR and its calculation")
+                                    Spacer()
+                                    Text(score.wrappedValue.strokes - putts <= par - 2 ? "Yes" : "No")
+                                        .foregroundStyle(PureLineStyle.muted)
+                                }
                             }
                         }
                         if !score.wrappedValue.isValid {
@@ -225,8 +257,6 @@ struct RoundHoleEntryView: View {
                     }
                     .buttonStyle(PureLinePrimaryButtonStyle())
                     .disabled(!valid)
-                    Text("Green hit is inferred from total strokes − putts ≤ par − 2, not measured green arrival. Penalties, recovery strokes and unusual play can affect this estimate. Detailed counts start at zero; strokes-only statistics stay unknown.")
-                        .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
                 .padding(18)
             }
@@ -237,12 +267,33 @@ struct RoundHoleEntryView: View {
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+            .sheet(isPresented: $showingGIRInfo) {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack {
+                        Text("Green in regulation").font(.headline)
+                        Spacer()
+                        Button("Done") { showingGIRInfo = false }
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    Text("GIR means reaching the green in no more than par minus two strokes: 1 on a par 3, 2 on a par 4, or 3 on a par 5.")
+                    Text("The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result.")
+                        .foregroundStyle(PureLineStyle.muted)
+                }
+                .font(.subheadline)
+                .padding(24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .background(PureLineStyle.canvas)
+                .foregroundStyle(PureLineStyle.ink)
+                .tint(PureLineStyle.accent)
+                .presentationDetents([.height(300)])
+                .presentationDragIndicator(.visible)
+            }
             .onAppear {
                 guard entries.isEmpty else { return }
                 for player in round.players {
                     var score = round.score(player: player.id, hole: holeNumber) ?? PlayedHoleScore(strokes: hole?.par ?? 4)
                     if round.detailMode == .detailed {
-                        score.putts = score.putts ?? 0
+                        score.putts = score.putts ?? min(2, max(0, score.strokes - (score.penalties ?? 0)))
                         score.bunkerShots = score.bunkerShots ?? 0
                         score.penalties = score.penalties ?? 0
                         if score.fairway == .unknown { score.fairway = .missed }
@@ -254,6 +305,30 @@ struct RoundHoleEntryView: View {
         }.tint(PureLineStyle.accent)
     }
 
+    private func handicapStrokes(for player: RoundPlayer) -> Int? {
+        guard player.handicapIndex != nil,
+              let rank = round.strokeRanks?[holeNumber],
+              let courseHandicap = PlayedRoundCalculator.courseHandicap(round: round, player: player) else { return nil }
+        let playingHandicap = Int(floor(Double(courseHandicap) * Double(round.allowance) / 100 + 0.5))
+        return PlayedRoundCalculator.strokes(handicap: playingHandicap, rank: rank, holeCount: round.holes.count)
+    }
+
+    private func scoreName(strokes: Int, par: Int) -> String {
+        switch strokes - par {
+        case -4: "Condor"
+        case -3: "Albatross"
+        case -2: "Eagle"
+        case -1: "Birdie"
+        case 0: "Par"
+        case 1: "Bogey"
+        case 2: "Double bogey"
+        case 3: "Triple bogey"
+        case 4: "Quadruple bogey"
+        case let difference where difference < 0: "\(-difference) under par"
+        case let difference: "\(difference) over par"
+        }
+    }
+
     private func detailCount(_ title: String, value: Binding<Int?>, maximum: Int) -> some View {
         Stepper("\(title): \(value.wrappedValue ?? 0)", value: Binding(
             get: { value.wrappedValue ?? 0 }, set: { value.wrappedValue = $0 }), in: 0...maximum)
@@ -262,22 +337,12 @@ struct RoundHoleEntryView: View {
     private func fairwaySelector(_ selection: Binding<RoundFairway>) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Fairway").font(.subheadline.weight(.semibold))
-            Grid(horizontalSpacing: 8, verticalSpacing: 8) {
-                GridRow {
-                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
-                    fairwayButton(.long, icon: "arrow.up", selection: selection)
-                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
-                }
-                GridRow {
-                    fairwayButton(.left, icon: "arrow.left", selection: selection)
-                    fairwayButton(.hit, icon: "checkmark", selection: selection)
-                    fairwayButton(.right, icon: "arrow.right", selection: selection)
-                }
-                GridRow {
-                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
-                    fairwayButton(.short, icon: "arrow.down", selection: selection)
-                    Color.clear.gridCellUnsizedAxes([.horizontal, .vertical])
-                }
+            HStack(spacing: 6) {
+                fairwayButton(.hit, icon: "checkmark", selection: selection)
+                fairwayButton(.left, icon: "arrow.left", selection: selection)
+                fairwayButton(.right, icon: "arrow.right", selection: selection)
+                fairwayButton(.long, icon: "arrow.up", selection: selection)
+                fairwayButton(.short, icon: "arrow.down", selection: selection)
             }
             if selection.wrappedValue == .missed {
                 Text("Missed · choose a direction to add detail")
@@ -292,6 +357,8 @@ struct RoundHoleEntryView: View {
             VStack(spacing: 4) {
                 Image(systemName: icon).font(.body.weight(.semibold))
                 Text(outcome.label).font(.caption.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
             .frame(maxWidth: .infinity, minHeight: 56)
             .foregroundStyle(selected ? Color.white : PureLineStyle.accent)
@@ -434,10 +501,10 @@ struct RoundReviewView: View {
             LabeledContent("Stableford", value: t.stableford.map { "\($0) points" } ?? "Unavailable")
             if t.puttHoles > 0 { LabeledContent("Putts", value: "\(t.putts) / \(t.puttHoles) recorded holes") }
             LabeledContent("Fairways", value: "\(t.fairwaysHit) / \(t.fairwaysAnswered) answered eligible holes")
-            LabeledContent("Green hit", value: "\(t.estimatedGIR) / \(t.girHoles) holes with putts & par")
+            LabeledContent("GIR", value: "\(t.estimatedGIR) / \(t.girHoles) holes with putts & par")
             if t.bunkerAnswered > 0 { LabeledContent("Bunkers", value: "\(t.bunkerShots) shots · \(t.bunkerHoles) / \(t.bunkerAnswered) recorded holes") }
             if t.penaltyHoles > 0 { LabeledContent("Penalties (already included)", value: "\(t.penalties) / \(t.penaltyHoles) recorded holes") }
-            Text("Green hit is inferred from strokes − putts ≤ par − 2, not measured arrival; penalties and recovery play affect it.").font(.footnote)
+            Text("GIR is inferred from strokes − putts ≤ par − 2, not measured arrival; penalties and recovery play affect it.").font(.footnote)
         }
         Section("HCP score · distinct from net score") {
             LabeledContent("Handicap Index at play", value: player.handicapIndex.map { WHSCalculator.formatHCPScore($0) } ?? "Unknown")
@@ -525,7 +592,7 @@ struct RoundStatisticsView: View {
             metric("Net strokes / hole", s.net, s.netHoles)
             metric("Putts / recorded hole", s.putts, s.puttHoles)
             metric("Fairways hit %", s.fairwaysHit, s.fairwaysAnswered, scale: 100)
-            metric("Green hit %", s.gir, s.girHoles, scale: 100)
+            metric("GIR %", s.gir, s.girHoles, scale: 100)
             metric("Bunker holes %", s.bunkerHoles, s.bunkerAnswered, scale: 100)
             metric("Penalties / 18 recorded holes", s.penalties, s.penaltyHoles, scale: 18)
             Text("Fairways exclude par 3 and N/A/unanswered. GIR requires putts and actual par. Unknown details are excluded, not zero. GIR is inferred, not measured; total strokes include penalties.").font(.footnote)

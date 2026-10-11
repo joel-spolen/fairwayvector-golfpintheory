@@ -26,7 +26,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             PureLineHomeView(
-                onOpenCourseMap: { destination = .course },
+                onOpenCourseMap: { requestStartRound = false; destination = .course },
                 onStartRound: { requestStartRound = true; destination = .course },
                 onOpenHandicap: { destination = .handicap },
                 onOpenBag: { destination = .bag },
@@ -127,8 +127,9 @@ private struct CourseMapFlowView: View {
                 resumedRound = nil
             }
         } else {
-            CourseSelectionView(onStartRound: { reference in
-                requestStartRound = true; selection = reference
+            CourseSelectionView(showsRoundInProgress: requestStartRound, onStartRound: { reference in
+                requestStartRound = true
+                if roundStore.active == nil { selection = reference }
             }, onResumeRound: { round in
                 requestStartRound = false; resumedRound = round; selection = round.reference
             }, onStartCourse: { selection = $0 })

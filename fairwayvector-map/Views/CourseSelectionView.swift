@@ -4,12 +4,15 @@ struct CourseSelectionView: View {
     let onStartCourse: (CourseReference) -> Void
     let onStartRound: ((CourseReference) -> Void)?
     let onResumeRound: ((PlayedRound) -> Void)?
+    let showsRoundInProgress: Bool
     @Environment(PlayedRoundStore.self) private var roundStore
     @State private var confirmDiscardRound = false
 
-    init(onStartRound: ((CourseReference) -> Void)? = nil,
+    init(showsRoundInProgress: Bool = false,
+         onStartRound: ((CourseReference) -> Void)? = nil,
          onResumeRound: ((PlayedRound) -> Void)? = nil,
          onStartCourse: @escaping (CourseReference) -> Void) {
+        self.showsRoundInProgress = showsRoundInProgress
         self.onStartRound = onStartRound
         self.onResumeRound = onResumeRound
         self.onStartCourse = onStartCourse
@@ -30,13 +33,15 @@ struct CourseSelectionView: View {
                         Text("Find your course. Choose your tee.")
                             .font(.subheadline).foregroundStyle(PureLineStyle.muted)
                     }
-                    if let round = roundStore.active {
+                    if showsRoundInProgress, let round = roundStore.active {
                         VStack(alignment: .leading, spacing: 14) {
                             Label("Round in progress", systemImage: "flag.checkered").font(.headline)
                             Text("\(round.reference.courseName) · \(round.reference.teeName) · hole \(round.holes[round.currentHole].number)")
+                                .font(.subheadline).foregroundStyle(PureLineStyle.muted)
                             Button("Resume scorecard & map") { onResumeRound?(round) }
                                 .buttonStyle(PureLinePrimaryButtonStyle())
                             Button("Discard unsaved round", role: .destructive) { confirmDiscardRound = true }
+                                .font(.subheadline)
                         }
                         .pureLineCard()
                     }
@@ -88,7 +93,7 @@ struct CourseSelectionView: View {
                         .accessibilityIdentifier("view-course-button")
                         if let onStartRound {
                             Button("Start round", systemImage: "flag.checkered") { onStartRound(selection.reference) }
-                                .buttonStyle(PureLinePrimaryButtonStyle()).disabled(roundStore.active != nil)
+                                .buttonStyle(PureLinePrimaryButtonStyle())
                         }
                     }
 
@@ -108,7 +113,9 @@ struct CourseSelectionView: View {
             Button("Discard round", role: .destructive) {
                 do { try roundStore.discardDraft() } catch { roundStore.errorMessage = error.localizedDescription }
             }
-        } message: { Text("All unsaved player scores will be removed. Saved Statistics and Handicap history remain.") }
+        } message: {
+            Text("All unsaved player scores will be removed. Saved Statistics and Handicap history remain.")
+        }
     }
 
     private var recentCourse: CourseReference? {
