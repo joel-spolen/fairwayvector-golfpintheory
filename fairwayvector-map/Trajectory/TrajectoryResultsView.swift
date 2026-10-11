@@ -4,6 +4,7 @@ import SwiftUI
 struct TrajectoryResultsView: View {
     let prediction: HybridPrediction
     let unitPreferences: UnitPreferences
+    var showsEstimationInfo = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -31,13 +32,15 @@ struct TrajectoryResultsView: View {
                 ResultCard(title: "Landing Speed", value: Units.formattedSpeed(mps: prediction.hybrid["landing_speed_mps"] ?? 0, system: unitPreferences.unitSystem(for: .landingSpeed)), prominence: .compact)
             }
 
-            Label(
-                "Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary.",
-                systemImage: "info.circle"
-            )
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .fixedSize(horizontal: false, vertical: true)
+            if showsEstimationInfo {
+                Label(
+                    "Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary.",
+                    systemImage: "info.circle"
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .pureLineCard()
         .accessibilityIdentifier("trajectory-results-card")

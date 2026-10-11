@@ -16,8 +16,6 @@ struct CourseShotRecommendationView: View {
     @State private var failedInput: CourseShotRecommendationInput?
     @State private var errorMessage: String?
     @State private var isShowingDetails = false
-    @State private var isShowingProfile = false
-    @State private var isShowingWedges = false
 
     private var wedges: [Wedge] {
         guard let data = storedWedges.data(using: .utf8),
@@ -122,7 +120,7 @@ struct CourseShotRecommendationView: View {
         .padding(.bottom, compact ? 0 : 16)
         .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         .accessibilityIdentifier("course-club-recommendation")
-        .accessibilityHint("Opens trajectory, captured conditions, alternatives, errors and club calibration, even before advice is available")
+        .accessibilityHint("Opens the suggested club and modeled flight details")
         .task(id: input) {
             result = nil
             failedInput = nil
@@ -175,8 +173,6 @@ struct CourseShotRecommendationView: View {
         }
         .sheet(isPresented: $isShowingDetails) {
             recommendationDetails
-                .sheet(isPresented: $isShowingWedges) { wedgeSetup }
-                .sheet(isPresented: $isShowingProfile) { profileSetup }
         }
     }
 
@@ -213,60 +209,39 @@ struct CourseShotRecommendationView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Your next shot")
         .accessibilityValue(compactAccessibilityValue)
-        .accessibilityHint("Opens the full shot recommendation, conditions and flight details")
+        .accessibilityHint("Opens the suggested club and flight details")
     }
 
     @ViewBuilder private var recommendationDetails: some View {
             if let currentResult {
                 CourseShotRecommendationDetail(result: currentResult, unit: unit,
-                    unitPreferences: model.unitPreferences,
-                    onConfigureWedges: { isShowingWedges = true }, onConfigureProfile: { isShowingProfile = true })
+                    unitPreferences: model.unitPreferences)
             } else {
                 NavigationStack {
-                    Form {
-                        Section("Recommendation status") {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Label("Recommendation status", systemImage: "scope")
+                                    .font(.headline)
+                                    .foregroundStyle(PureLineStyle.ink)
                             Text(status)
-                            if let message = errorMessage { Text(message) }
-                            if let message = terrainStore.shotMessage { Text(message) }
-                            if let message = weatherStore.errorMessage { Text("Weather: \(message)") }
-                            Text("Advice requires a selected target, complete course-associated weather and matching committed terrain endpoints. Unconfigured or incomplete profiles use Simple club defaults; the map never assumes calm wind or flat ground. Tap weather or terrain on the map for full provider status and manual retry.")
+                                .font(.subheadline)
+                                .foregroundStyle(PureLineStyle.muted)
+                                if let message = errorMessage { Text(message).font(.footnote).foregroundStyle(.red) }
+                                if let message = terrainStore.shotMessage { Text(message).font(.footnote).foregroundStyle(PureLineStyle.muted) }
+                                if let message = weatherStore.errorMessage { Text("Weather: \(message)").font(.footnote).foregroundStyle(PureLineStyle.muted) }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .pureLineCard()
                         }
-                        Section("Clubs & calibration") {
-                            calibrationButtons
-                            if !scoringPlan.guidance.isEmpty { Text(scoringPlan.guidance) }
-                        }
+                        .padding(18)
                     }
-                        .navigationTitle("Shot recommendation")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { isShowingDetails = false } } }
-                }
-            }
-    }
-
-    private var calibrationButtons: some View {
-        Group {
-            Button("Wedge calibration & matrix") { isShowingWedges = true }
-            Button("Configure Practice / Profile") { isShowingProfile = true }
-        }
-    }
-
-    private var wedgeSetup: some View {
-            NavigationStack {
-                WedgeMatrixView()
-                    .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { isShowingWedges = false } } }
-            }
-    }
-
-    @ViewBuilder private var profileSetup: some View {
-            if model.playerProfileStore.needsSetup {
-                TrajectoryProfileSetupWizardView(profileStore: model.playerProfileStore,
-                    unitPreferences: model.unitPreferences, onClose: { isShowingProfile = false })
-            } else {
-                NavigationStack {
-                    TrajectoryProfileSettingsView(profileStore: model.playerProfileStore, unitPreferences: model.unitPreferences,
-                                                  settingsViewModel: model)
-                        .navigationTitle("Clubs & launch profile")
-                        .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { isShowingProfile = false } } }
+                    .background(PureLineStyle.canvas)
+                    .navigationTitle("Shot recommendation")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+                    .toolbarBackground(.visible, for: .navigationBar)
+                    .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { isShowingDetails = false } } }
                 }
             }
     }
@@ -306,161 +281,79 @@ private struct CourseShotRecommendationDetail: View {
     let result: CourseShotRecommendationResult
     let unit: DistanceUnit
     @ObservedObject var unitPreferences: UnitPreferences
-    let onConfigureWedges: () -> Void
-    let onConfigureProfile: () -> Void
     @Environment(\.dismiss) private var dismiss
-    @State private var selectedID: String?
 
     private var input: CourseShotRecommendationInput { result.input }
-    private var selected: CourseClubRecommendation? {
-        result.recommendations.first { $0.id == selectedID } ?? result.recommendations.first
-    }
+    private var suggested: CourseClubRecommendation? { result.recommendations.first }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Button("Wedge calibration & matrix", action: onConfigureWedges)
-                        Spacer(minLength: 0)
-                        Button("Practice / Profile", action: onConfigureProfile)
-                    }
-                    .font(.subheadline)
-                    Text("\(unit.format(input.distanceM)) horizontal target · \(input.request.originLabel)")
-                        .font(.headline)
-                    Text("Advice uses the committed origin, not your live GPS position. Release a map target or confirm Refresh terrain to capture a new origin.")
-                        .font(.caption).foregroundStyle(.secondary)
-                    if input.isScoring, let range = input.scoringPlan.maxFullCarryM {
-                        Label("Scoring mode · ≤ \(unit.format(range)) personal full wedge range", systemImage: "scope").font(.headline)
-                        Text("Inclusive horizontal-distance threshold, unchanged by weather. \(input.request.isSimulatedOrigin ? "Simulated origin, not device GPS or a claim of golfer proximity." : input.request.usesGPS ? "Captured GPS origin." : "Tee-fallback preview allowed for testing, not a claim of golfer proximity.")")
-                            .font(.caption)
-                    }
-                    if !input.scoringPlan.guidance.isEmpty { Text(input.scoringPlan.guidance).font(.caption) }
-                    Text(input.isScoring
-                        ? "Ranked by absolute corrected carry error: nine Low/Mid/High × 50/75/100% shots per calibrated wedge, using Physics V1.1 + HGB with captured weather and elevation. Full means 100% stock full carry, not maximum effort. 50/75% are swing-length labels, not carry or ball-speed percentages."
-                        : "Ranked by absolute corrected carry error, using the same full-swing club profiles and Physics V1.1 + HGB residual models as Practice. Not roll, a guaranteed hit, or obstacle clearance.")
-                        .font(.caption).foregroundStyle(.secondary)
-                    Text("Corrected carry is horizontal landing distance (including lateral drift), not downrange alone. A closest-carry ranking can still miss the point sideways.")
-                        .font(.caption).foregroundStyle(.secondary)
-                    if input.profile.detailLevel == .easy {
-                        Text("Simple profile: launch values are handicap-based defaults, not measured club calibration.")
-                            .font(.caption).foregroundStyle(.secondary)
-                    } else {
-                        Text("Profile: \(input.profile.detailLevel.label). Unentered fields use Practice’s existing calibrated/interpolated defaults.")
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                    Text("All ranked combinations (\(result.recommendations.count))").font(.headline)
-                    if !result.unavailableScoringShots.isEmpty {
-                        Text("\(result.unavailableScoringShots.count) of \(input.scoringPlan.shots.count) combinations are unavailable; each reason is listed below. They are not silently replaced by stock yardages or full-bag clubs.")
-                            .font(.caption).foregroundStyle(.secondary)
-                    }
-                    LazyVStack(spacing: 8) {
-                    ForEach(Array(result.recommendations.enumerated()), id: \.element.id) { index, choice in
+                    if let choice = suggested {
                         let recommendation = choice.recommendation
-                        Button { selectedID = choice.id } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("\(index + 1). \(choice.title)").bold()
-                                    Text("\(unit.format(recommendation.estimatedCarryM)) carry · \(Self.errorText(recommendation, target: input.distanceM, unit: unit))")
-                                }
-                                Spacer(minLength: 0)
-                                Image(systemName: selected?.id == choice.id ? "checkmark.circle.fill" : "circle")
-                            }
-                            .font(.subheadline).padding(12)
-                            .background(FairwayVectorColors.surface, in: RoundedRectangle(cornerRadius: 12))
+                        suggestionCard(choice)
+                        if input.isScoring, let range = input.scoringPlan.maxFullCarryM {
+                            Label("Scoring range · ≤ \(unit.format(range))", systemImage: "scope")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(PureLineStyle.accent)
                         }
-                        .buttonStyle(.plain)
-                    }
-                    }
-                    if !result.unavailableScoringShots.isEmpty {
-                        DisclosureGroup("Unavailable combinations (\(result.unavailableScoringShots.count))") {
-                            LazyVStack(alignment: .leading, spacing: 10) {
-                                ForEach(result.unavailableScoringShots) { unavailable in
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(unavailable.spec.title).bold()
-                                        Text(unavailable.reason)
-                                    }
-                                    .font(.caption)
-                                }
-                            }
-                        }
-                    }
-                    if let choice = selected {
-                        let selected = choice.recommendation
-                        Text(choice.title).font(.title2.bold())
                         if let spec = choice.scoringShot, let shot = choice.calibratedLaunch {
-                            Text(spec.source).font(.caption).foregroundStyle(.secondary)
-                            Text("Reference carry \(unit.format(spec.nominalCarryM)); speed inversely fitted to calm/level 20°C, 1013.25 hPa, 50% RH hybrid carry (≤0.5 m numerical fit, NOT real-world accuracy). Launch shape/spin assumptions are not validated partial-shot measurements; HGB training coverage is not guaranteed.")
-                                .font(.caption).foregroundStyle(.secondary)
-                            Text(String(format: "Fitted speed %.1f m/s · assumed launch %.1f° · retained spin %.0f rpm", shot.ballSpeedMps, shot.launchAngleDeg, shot.spinRateRpm))
-                                .font(.caption)
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Shot estimate")
+                                    .font(.headline)
+                                    .foregroundStyle(PureLineStyle.ink)
+                                Text("\(spec.title) · reference carry \(unit.format(spec.nominalCarryM))")
+                                    .font(.subheadline)
+                                    .foregroundStyle(PureLineStyle.muted)
+                                Text(String(format: "Fitted speed %.1f m/s · assumed launch %.1f°", shot.ballSpeedMps, shot.launchAngleDeg))
+                                    .font(.caption)
+                                    .foregroundStyle(PureLineStyle.muted)
+                            }
+                            .pureLineCard()
                         }
-                        outcome(selected)
-                        TrajectoryResultsView(prediction: selected.prediction, unitPreferences: unitPreferences)
-                        let launch = ClubProfileDefaults.effectiveProfile(for: selected.club, playerProfile: input.profile)
-                        Text(String(format: "Modeled spin axis: %+.1f° (+ curves right, − curves left). Wind and spin both contribute to the path.", choice.calibratedLaunch?.spinAxisDeg ?? launch.spinAxisDeg.value))
-                            .font(.caption).foregroundStyle(.secondary)
-                        TrajectoryChartView(trajectory: selected.trajectory, unitPreferences: unitPreferences,
+                        TrajectoryResultsView(prediction: recommendation.prediction, unitPreferences: unitPreferences,
+                                              showsEstimationInfo: false)
+                        TrajectoryChartView(trajectory: recommendation.trajectory, unitPreferences: unitPreferences,
                                             targetDistanceM: input.distanceM, targetElevationM: input.conditions.elevationDeltaM,
                                             capturedWind: (tail: input.conditions.tailwindMps, right: input.conditions.crosswindMps),
                                             shotBearingDeg: input.bearingDeg)
+                    } else {
+                        ContentUnavailableView("No recommendation", systemImage: "figure.golf",
+                                               description: Text(input.scoringPlan.guidance.isEmpty ? "No club recommendation is available for this shot." : input.scoringPlan.guidance))
+                            .foregroundStyle(PureLineStyle.muted)
                     }
-                    conditions
                 }
-                .padding()
+                .padding(18)
             }
-            .background(FairwayVectorColors.background)
-            .foregroundStyle(FairwayVectorColors.navy)
+            .background(PureLineStyle.canvas)
+            .foregroundStyle(PureLineStyle.ink)
             .navigationTitle("Shot recommendation")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
-        .tint(FairwayVectorColors.navy)
+        .tint(PureLineStyle.accent)
     }
 
-    private func outcome(_ recommendation: ClubRecommendation) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            let downrange = recommendation.trajectory.xM.last ?? 0
-            let lateral = recommendation.trajectory.yM.last ?? 0
-            Text("Physics landing: \(unit.format(downrange)) downrange; \(unit.format(abs(lateral))) \(lateral >= 0 ? "right" : "left") of target line.")
-            if let height = recommendation.heightAtTargetDistanceM {
-                Text("Physics height at target distance: \(height.formatted(.number.precision(.fractionLength(1)))) m above origin (target: \(input.conditions.elevationDeltaM.formatted(.number.precision(.fractionLength(1)))) m).")
-            } else {
-                Label("Physics flight ends before the target distance, even if corrected carry is closer.", systemImage: "exclamationmark.triangle")
-            }
-            if recommendation.estimatedCarryM < input.distanceM {
-                Text("This club’s corrected carry estimate is short of the target.")
-            }
-            Text("The model lands on a horizontal plane at the target elevation; intermediate terrain, trees, hazards and roll are not simulated. Crosswind/spin drift is shown, not compensated by an optimized aim.")
-        }
-        .font(.caption).foregroundStyle(.secondary)
-    }
-
-    private var conditions: some View {
+    private func suggestionCard(_ choice: CourseClubRecommendation) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Captured conditions & sources").font(.headline)
-            LabeledContent("Shot bearing (true)", value: String(format: "%.1f°", input.bearingDeg))
-            LabeledContent("Temperature / humidity", value: String(format: "%.1f °C / %.0f%%", input.conditions.temperatureC, input.conditions.humidityPct))
-            LabeledContent("Surface pressure", value: String(format: "%.1f hPa", input.conditions.pressureHpa))
-            LabeledContent("Wind (meteorological FROM)", value: String(format: "%.1f m/s (%.1f km/h) from %.0f°", input.weather.windSpeedMps!, input.weather.windSpeedMps! * 3.6, input.weather.windDirectionDegrees!))
-            LabeledContent(input.conditions.tailwindMps >= 0 ? "Tailwind" : "Headwind", value: String(format: "%.1f m/s", abs(input.conditions.tailwindMps)))
-            LabeledContent("Crosswind toward \(input.conditions.crosswindMps >= 0 ? "right" : "left")", value: String(format: "%.1f m/s", abs(input.conditions.crosswindMps)))
-            LabeledContent("Terrain origin / target", value: String(format: "%.1f / %.1f m", input.originSample.elevationMeters!, input.targetSample.elevationMeters!))
-            LabeledContent("Target minus origin", value: String(format: "%+.1f m", input.conditions.elevationDeltaM))
-            Text("Open-Meteo course weather snapshot: \(input.weather.observedAt) (\(input.weather.timezone ?? "provider local time")). This may be cached; course-level surface pressure and 10 m wind are used unchanged, not measured at the ball. Absolute terrain height is provenance only: pressure is supplied directly, not altitude-compensated again. Gusts are not used.")
-            Text(String(format: "Weather location: %.5f, %.5f · origin: %.5f, %.5f · target: %.5f, %.5f", input.weatherLocation.lat, input.weatherLocation.lon, input.originSample.point.lat, input.originSample.point.lon, input.targetSample.point.lat, input.targetSample.point.lon))
-            ForEach(Array(Set(input.originSample.provenance + input.targetSample.provenance)).sorted { $0.dataSource < $1.dataSource }, id: \.self) { record in
-                if !record.isSynthetic {
-                    Text("GPXZ · \(record.dataSource) · source resolution \(record.resolutionMeters.formatted()) m · captured \(record.captureDateMin ?? "unknown")–\(record.captureDateMax ?? "unknown") · dataset \(record.datasetVersion ?? "unknown") · saved \(record.fetchedAt.formatted())")
-                }
-            }
-            if input.originSample.locallyInterpolated || input.targetSample.locallyInterpolated {
-                Text("Endpoint heights include local interpolation along saved provider coverage.")
-            }
-            Text("Terrain source spacing is not accuracy. GPS error, forecast age, source resolution and your launch-profile quality affect these estimates. Practice inputs and selected club have not been changed.")
+            Text("Suggested club")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(PureLineStyle.muted)
+            Text(choice.title)
+                .font(.largeTitle.weight(.semibold))
+                .foregroundStyle(PureLineStyle.ink)
+            Text("\(unit.format(choice.recommendation.estimatedCarryM)) carry · \(Self.errorText(choice.recommendation, target: input.distanceM, unit: unit))")
+                .font(.headline)
+                .foregroundStyle(PureLineStyle.accent)
+            Text("Target: \(unit.format(input.distanceM)) · \(input.request.originLabel)")
+                .font(.caption)
+                .foregroundStyle(PureLineStyle.muted)
         }
-        .font(.caption).padding()
-        .background(FairwayVectorColors.conditionsSurface, in: RoundedRectangle(cornerRadius: 12))
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .pureLineCard()
     }
 
     static func errorText(_ recommendation: ClubRecommendation, target: Double, unit: DistanceUnit) -> String {

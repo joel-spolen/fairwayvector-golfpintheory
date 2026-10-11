@@ -35,7 +35,7 @@ struct TrajectoryChartView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Modeled Physics Flight Path")
                     .font(.headline)
-                Text("The chart shows the modeled path. Headline values above include calibration corrections.")
+                Text("The chart shows the modeled path. Values above include calibration corrections.")
                     .font(.caption)
                     .foregroundStyle(PureLineStyle.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -72,14 +72,6 @@ struct TrajectoryChartView: View {
     private var topDownSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Top-Down View (Curvature)").font(.subheadline.bold())
-            Text("Viewed from golfer toward target · forward ↑ · right →")
-                .font(.caption).foregroundStyle(PureLineStyle.muted)
-            if let shotBearingDeg {
-                Text("↑ \(bearingLabel(shotBearingDeg)) · → \(bearingLabel(shotBearingDeg + 90)) (true)")
-                    .font(.caption)
-                Text("Shot-relative view; the course map follows its camera heading (initially tee-to-green), not necessarily this shot.")
-                    .font(.caption).foregroundStyle(PureLineStyle.muted)
-            }
             if let capturedWind {
                 let speed = hypot(capturedWind.tail, capturedWind.right)
                 HStack(spacing: 10) {
@@ -130,7 +122,7 @@ struct TrajectoryChartView: View {
             .frame(height: 240)
             .accessibilityLabel("Top-down view, forward up and golfer's right to the right")
             .accessibilityValue(topDownSummary)
-            Text("Curvature includes wind and launch spin; it need not follow the wind arrow.")
+            Text("Curvature includes wind and launch spin.")
                 .font(.caption).foregroundStyle(PureLineStyle.muted)
         }
     }

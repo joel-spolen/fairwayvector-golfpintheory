@@ -88,7 +88,7 @@ private struct HCPNineHoleNotice: View {
 }
 
 struct HCPProjectionRootView: View {
-    private enum Tab: String, CaseIterable {
+    private enum Tab: String, CaseIterable { 
         case home
         case predict
         case round
