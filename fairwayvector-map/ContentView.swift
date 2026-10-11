@@ -269,40 +269,27 @@ struct CourseMapView: View {
                     simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
                 )
                 .ignoresSafeArea()
-                .safeAreaInset(edge: .top, spacing: 0) {
-                    VStack(spacing: 0) {
-                        topDistanceMenu(hole: hole, origin: origin, flag: flagPosition(for: hole))
-                        HStack(spacing: 8) {
-                            if let location = courseWeatherLocation {
-                                CourseWeatherCard(location: location, store: weatherStore, mapHeading: mapHeading)
-                            }
-                            terrainPanel
+                .overlay(alignment: .trailing) {
+                    VStack(spacing: 8) {
+                        if let location = courseWeatherLocation {
+                            CourseWeatherCard(location: location, store: weatherStore,
+                                              mapHeading: mapHeading, compact: true)
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.top, 10)
+                        terrainPanel
+                        CourseShotRecommendationView(terrainStore: terrainStore, weatherStore: weatherStore,
+                            weatherLocation: courseWeatherLocation, selectedTarget: tapPoint,
+                            unit: unit, model: trajectoryModel, compact: true)
                     }
-                    .padding(.bottom, 8)
+                    .padding(.trailing, 10)
+                    .padding(.top, 100)
+                    .padding(.bottom, 150)
+                    .frame(maxHeight: .infinity, alignment: .center)
+                }
+                .safeAreaInset(edge: .top, spacing: 0) {
+                    topDistanceMenu(hole: hole, origin: origin, flag: flagPosition(for: hole))
                 }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
-                    // Normal text uses ~180 pt. Large accessibility text scrolls rather
-                    // than clipping cards or pushing the top/bottom stacks together.
                     VStack(spacing: 0) {
-                        ScrollView {
-                            VStack(spacing: 0) {
-                                CourseShotRecommendationView(terrainStore: terrainStore, weatherStore: weatherStore,
-                                    weatherLocation: courseWeatherLocation, selectedTarget: tapPoint,
-                                    unit: unit, model: trajectoryModel)
-                            }
-                            .background {
-                                GeometryReader { content in
-                                    Color.clear.preference(key: MapAdviceHeightKey.self, value: content.size.height)
-                                }
-                            }
-                        }
-                        .scrollBounceBehavior(.basedOnSize)
-                        .frame(height: min(adviceContentHeight, max(100, min(210, geometry.size.height * 0.32))))
-                        .onPreferenceChange(MapAdviceHeightKey.self) { adviceContentHeight = $0 }
-                        Divider().overlay(PureLineStyle.line).padding(.horizontal, 20)
                         bottomHoleMenu(hole: hole, holeCount: holes.count)
                     }
                     .background {
@@ -474,23 +461,27 @@ struct CourseMapView: View {
 
     private var terrainPanel: some View {
         Button { isShowingTerrainProfile = true } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "mountain.2").foregroundStyle(PureLineStyle.accent)
+            VStack(spacing: 3) {
+                Image(systemName: "mountain.2")
+                    .font(.body.weight(.medium))
+                    .foregroundStyle(PureLineStyle.accent)
                 Text(terrainSummary
                     .replacingOccurrences(of: "To target · ", with: "")
                     .replacingOccurrences(of: "Tee → flag · ", with: ""))
-                    .font(.caption.weight(.medium))
-                Spacer(minLength: 0)
+                    .font(.caption2.weight(.medium))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(PureLineStyle.ink)
                 if terrainStore.isShotLoading || terrainStore.isHoleLoading { ProgressView().controlSize(.mini) }
-                Image(systemName: "chevron.right").font(.caption2)
             }
-            .padding(.horizontal, 10)
-            .frame(minHeight: 44)
-            .contentShape(Rectangle())
+            .padding(6)
+            .frame(width: 78)
+            .frame(minHeight: 64)
+            .contentShape(RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)
         .foregroundStyle(PureLineStyle.ink)
-        .background(PureLineStyle.canvas.opacity(0.96), in: RoundedRectangle(cornerRadius: 14))
+        .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         .accessibilityIdentifier("terrain-profile-button")
         .accessibilityLabel("Terrain details, \(terrainSummary)")
         .accessibilityHint("Opens the full chart, source, budget, errors and confirmed retry")
@@ -610,7 +601,7 @@ struct CourseMapView: View {
     }
 
     private func topDistanceMenu(hole: Hole, origin: DistanceOrigin?, flag: GeoPoint?) -> some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 2) {
             DistanceCard(hole: hole, origin: origin, unit: unit,
                 middleTitle: tapPoint != nil ? "Target" : flag != nil ? "To flag" : "Center",
                 middlePoint: tapPoint ?? flag)
@@ -627,7 +618,7 @@ struct CourseMapView: View {
             }
         }
         .padding(.horizontal, 24)
-        .padding(.vertical, 14)
+        .padding(.vertical, 2)
         .frame(maxWidth: .infinity)
         .background {
             Rectangle()

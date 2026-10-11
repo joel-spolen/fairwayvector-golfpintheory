@@ -8,6 +8,7 @@ struct CourseShotRecommendationView: View {
     let selectedTarget: GeoPoint?
     let unit: DistanceUnit
     @ObservedObject var model: TrajectoryCalculatorViewModel
+    var compact = false
     @State private var engine = ClubRecommendationEngine()
     @State private var scoringEngine = ScoringRecommendationEngine()
     @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
@@ -45,9 +46,18 @@ struct CourseShotRecommendationView: View {
         return result
     }
 
+    private var compactAccessibilityValue: String {
+        guard let choice = currentResult?.recommendations.first else { return compactStatus }
+        return "\(choice.title), \(unit.format(choice.recommendation.estimatedCarryM)) carry"
+    }
+
     var body: some View {
         Button { isShowingDetails = true } label: {
-            VStack(alignment: .leading, spacing: 12) {
+            Group {
+                if compact {
+                    compactSummary
+                } else {
+                    VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 6) {
                     Text("YOUR NEXT SHOT")
                         .font(.caption2.weight(.semibold))
@@ -99,16 +109,18 @@ struct CourseShotRecommendationView: View {
                             .font(.caption).foregroundStyle(PureLineStyle.accent)
                     }
                 }
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
             }
-            .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(PureLineStyle.ink)
-        .padding(.horizontal, 24)
-        .padding(.top, 20)
-        .padding(.bottom, 16)
-        .background(PureLineStyle.canvas)
+        .padding(.horizontal, compact ? 0 : 24)
+        .padding(.top, compact ? 0 : 20)
+        .padding(.bottom, compact ? 0 : 16)
+        .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         .accessibilityIdentifier("course-club-recommendation")
         .accessibilityHint("Opens trajectory, captured conditions, alternatives, errors and club calibration, even before advice is available")
         .task(id: input) {
@@ -149,7 +161,7 @@ struct CourseShotRecommendationView: View {
                     failedInput = captured
                     errorMessage = captured.isScoring
                         ? "No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range."
-                        : "No club prediction is available. Configure Clubs & launch profile."
+                        : "No club prediction is available. Default club profiles are used until your bag is configured."
                 }
                 result = CourseShotRecommendationResult(input: captured, recommendations: recommendations,
                     unavailableScoringShots: unavailable)
@@ -168,6 +180,42 @@ struct CourseShotRecommendationView: View {
         }
     }
 
+    private var compactSummary: some View {
+        VStack(spacing: 3) {
+            Image(systemName: "scope")
+                .font(.body.weight(.medium))
+                .foregroundStyle(PureLineStyle.accent)
+            if let currentResult, let best = currentResult.recommendations.first {
+                Text(best.title)
+                    .font(.caption2.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .foregroundStyle(PureLineStyle.ink)
+                Text(unit.format(best.recommendation.estimatedCarryM))
+                    .font(.caption2.monospacedDigit())
+                    .foregroundStyle(PureLineStyle.muted)
+            } else {
+                Text(compactStatus)
+                    .font(.caption2.weight(.medium))
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(PureLineStyle.ink)
+                if input != nil, failedInput != input {
+                    ProgressView().controlSize(.mini)
+                }
+            }
+        }
+        .padding(6)
+        .frame(width: 78)
+        .frame(minHeight: 64)
+        .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
+        .contentShape(RoundedRectangle(cornerRadius: 14))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Your next shot")
+        .accessibilityValue(compactAccessibilityValue)
+        .accessibilityHint("Opens the full shot recommendation, conditions and flight details")
+    }
+
     @ViewBuilder private var recommendationDetails: some View {
             if let currentResult {
                 CourseShotRecommendationDetail(result: currentResult, unit: unit,
@@ -181,12 +229,11 @@ struct CourseShotRecommendationView: View {
                             if let message = errorMessage { Text(message) }
                             if let message = terrainStore.shotMessage { Text(message) }
                             if let message = weatherStore.errorMessage { Text("Weather: \(message)") }
-                            Text("Advice requires a selected target, complete course-associated weather, matching committed terrain endpoints and an eligible profile. No calm/flat-ground or stock scoring-range fallback is used. Tap weather or terrain on the map for full provider status and manual retry.")
+                            Text("Advice requires a selected target, complete course-associated weather and matching committed terrain endpoints. Unconfigured or incomplete profiles use Simple club defaults; the map never assumes calm wind or flat ground. Tap weather or terrain on the map for full provider status and manual retry.")
                         }
                         Section("Clubs & calibration") {
                             calibrationButtons
                             if !scoringPlan.guidance.isEmpty { Text(scoringPlan.guidance) }
-                            if let issue = CourseShotRecommendationInput.profileIssue(model.playerProfileStore.profile) { Text(issue) }
                         }
                     }
                         .navigationTitle("Shot recommendation")
@@ -225,7 +272,6 @@ struct CourseShotRecommendationView: View {
     }
 
     private var compactStatus: String {
-        if CourseShotRecommendationInput.profileIssue(model.playerProfileStore.profile) != nil && input == nil { return "Set up clubs" }
         if selectedTarget == nil { return "Tap map to select target" }
         if terrainStore.shotPending { return "Release target to calculate" }
         if capturedWeather.map({ CourseShotRecommendationInput.valid($0) }) != true { return "Weather unavailable · tap for details" }
@@ -237,7 +283,6 @@ struct CourseShotRecommendationView: View {
     private var status: String {
         if selectedTarget == nil { return "Release a point on the map to choose a shot target." }
         if terrainStore.shotPending { return "Target moving · release to calculate." }
-        if input == nil, let issue = CourseShotRecommendationInput.profileIssue(model.playerProfileStore.profile) { return issue }
         if capturedWeather.map({ CourseShotRecommendationInput.valid($0) }) != true {
             return "Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback."
         }

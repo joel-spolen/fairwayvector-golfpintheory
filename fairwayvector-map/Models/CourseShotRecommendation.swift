@@ -36,7 +36,8 @@ struct CourseShotRecommendationInput: Equatable {
     static func capture(request: TerrainRequest?, selectedTarget: GeoPoint?, liveOrigin _: GeoPoint? = nil,
                         usesGPS _: Bool = false, weather: CourseWeather?, weatherLocation: GeoPoint?,
                         shotProfile: TerrainProfile?, profile: TrajectoryPlayerProfile, wedges: [Wedge] = []) -> Self? {
-        let scoringPlan = ScoringShotPlan.make(profile: profile, wedges: wedges)
+        let adviceProfile = profileForCourseAdvice(profile)
+        let scoringPlan = ScoringShotPlan.make(profile: adviceProfile, wedges: wedges)
         guard let request, let selectedTarget, let origin = request.origin,
               request.target == selectedTarget,
               let weatherLocation, let weather, valid(weather),
@@ -45,13 +46,25 @@ struct CourseShotRecommendationInput: Equatable {
               TerrainGeometry.length(last.point, selectedTarget) <= TerrainGeometry.tolerance,
               let originHeight = first.elevationMeters, originHeight.isFinite,
               let targetHeight = last.elevationMeters, targetHeight.isFinite,
-              profile.isSetupComplete else { return nil }
+              adviceProfile.isSetupComplete else { return nil }
         let distance = GolfGeometry.distance(origin, selectedTarget)
         guard distance.isFinite, distance > 0.1 else { return nil }
-          guard profileIssue(profile) == nil || scoringPlan.isScoring(distanceM: distance) else { return nil }
+        guard profileIssue(adviceProfile) == nil || scoringPlan.isScoring(distanceM: distance) else { return nil }
         return Self(request: request, weather: weather, weatherLocation: weatherLocation,
-                    originSample: first, targetSample: last, profile: profile, distanceM: distance,
+                    originSample: first, targetSample: last, profile: adviceProfile, distanceM: distance,
                   bearingDeg: GolfGeometry.bearing(from: origin, to: selectedTarget), scoringPlan: scoringPlan)
+    }
+
+    /// Course advice remains available before the golfer has configured a profile.
+    /// Incomplete/empty profiles use the same explicit simple defaults as Practice,
+    /// without writing setup state back to the user's saved profile.
+    private static func profileForCourseAdvice(_ profile: TrajectoryPlayerProfile) -> TrajectoryPlayerProfile {
+        guard profileIssue(profile) != nil else { return profile }
+        var defaults = profile
+        defaults.isSetupComplete = true
+        defaults.detailLevel = .easy
+        defaults.availableClubs = TrajectoryGolfClub.standardBag
+        return defaults
     }
 
     static func valid(_ weather: CourseWeather) -> Bool {

@@ -4,35 +4,22 @@ struct CourseWeatherCard: View {
     let location: GeoPoint
     let store: CourseWeatherStore
     var mapHeading: Double = 0
+    var compact = false
     @State private var isShowingDetails = false
 
     var body: some View {
         Button { isShowingDetails = true } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "cloud.sun").foregroundStyle(PureLineStyle.accent)
-                if let weather = store.weather(for: location) {
-                    Text(weather.temperatureC.map { String(format: "%.0f°C", $0) } ?? "–°C").fontWeight(.semibold)
-                    Spacer(minLength: 0)
-                    CourseWindIndicator(weather: weather, mapHeading: mapHeading)
-                    if store.errorMessage != nil || store.isStale {
-                        Image(systemName: "clock.badge.exclamationmark")
-                            .accessibilityLabel("Cached weather; see details")
-                    }
-                } else {
-                    Text(store.isLoading ? "Loading weather…" : "Weather unavailable · tap to retry")
-                    Spacer(minLength: 0)
-                }
-                if store.isLoading { ProgressView().controlSize(.mini) }
-                Image(systemName: "chevron.right").font(.caption2)
-            }
+            labelContent
             .font(.caption)
-            .padding(.horizontal, 10)
-            .frame(minHeight: 44)
+            .padding(compact ? 6 : 10)
+            .frame(maxWidth: compact ? nil : .infinity)
+            .frame(width: compact ? 78 : nil)
+            .frame(minHeight: compact ? 64 : 44)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(PureLineStyle.ink)
-        .background(PureLineStyle.canvas.opacity(0.96), in: RoundedRectangle(cornerRadius: 14))
+        .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         // This is the sole automatic load. The detail sheet has no task/onAppear fetch.
         .task(id: locationKey) {
             await store.load(for: location)
@@ -46,8 +33,68 @@ struct CourseWeatherCard: View {
         }
     }
 
+    @ViewBuilder
+    private var labelContent: some View {
+        if compact {
+            compactLabel
+        } else {
+            expandedLabel
+        }
+    }
+
+    private var compactLabel: some View {
+        VStack(spacing: 3) {
+            Image(systemName: "cloud.sun")
+                .font(.body.weight(.medium))
+                .foregroundStyle(PureLineStyle.accent)
+            if let weather = store.weather(for: location) {
+                Text(compactTemperature(weather))
+                    .font(.caption.weight(.semibold).monospacedDigit())
+                    .foregroundStyle(PureLineStyle.ink)
+                Text(compactWindSpeed(weather))
+                    .font(.caption2)
+                    .foregroundStyle(PureLineStyle.muted)
+            } else {
+                Text(store.isLoading ? "Loading" : "Weather")
+                    .font(.caption2.weight(.medium))
+                    .foregroundStyle(PureLineStyle.ink)
+            }
+            if store.isLoading { ProgressView().controlSize(.mini) }
+        }
+    }
+
+    private var expandedLabel: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "cloud.sun").foregroundStyle(PureLineStyle.accent)
+            if let weather = store.weather(for: location) {
+                Text(weather.temperatureC.map { String(format: "%.0f°C", $0) } ?? "–°C").fontWeight(.semibold)
+                Spacer(minLength: 0)
+                CourseWindIndicator(weather: weather, mapHeading: mapHeading)
+                if store.errorMessage != nil || store.isStale {
+                    Image(systemName: "clock.badge.exclamationmark")
+                        .accessibilityLabel("Cached weather; see details")
+                }
+            } else {
+                Text(store.isLoading ? "Loading weather…" : "Weather unavailable · tap to retry")
+                Spacer(minLength: 0)
+            }
+            if store.isLoading { ProgressView().controlSize(.mini) }
+            Image(systemName: "chevron.right").font(.caption2)
+        }
+    }
+
     private var locationKey: String {
         String(format: "%.3f,%.3f", location.lat, location.lon)
+    }
+
+    private func compactTemperature(_ weather: CourseWeather) -> String {
+        guard let temperature = weather.temperatureC else { return "–°" }
+        return String(format: "%.0f°", temperature)
+    }
+
+    private func compactWindSpeed(_ weather: CourseWeather) -> String {
+        guard let speed = weather.windSpeedMps else { return "Wind" }
+        return String(format: "%.0f m/s", speed)
     }
 
     private var accessibilitySummary: String {
