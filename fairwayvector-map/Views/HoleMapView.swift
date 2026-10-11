@@ -107,32 +107,6 @@ struct HoleMapView: View {
                     .annotationTitles(.hidden)
                 }
 
-                if let tapPoint {
-                    if let origin {
-                        MapPolyline(coordinates: [origin.coordinate, tapPoint.coordinate])
-                            .stroke(PureLineStyle.accent, lineWidth: 3)
-                    }
-                    if let flag {
-                        MapPolyline(coordinates: [tapPoint.coordinate, flag.coordinate])
-                            .stroke(PureLineStyle.accent, lineWidth: 3)
-                    }
-                    Annotation("Target", coordinate: tapPoint.coordinate) {
-                        ZStack {
-                            Circle()
-                                .fill(PureLineStyle.accent.opacity(0.18))
-                                .frame(width: 96, height: 96)
-                            Circle()
-                                .fill(PureLineStyle.canvas)
-                                .stroke(PureLineStyle.accent, lineWidth: 3)
-                                .frame(width: 44, height: 44)
-                            Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundStyle(PureLineStyle.accent)
-                        }
-                        .contentShape(Circle())
-                    }
-                    .annotationTitles(.hidden)
-                }
             }
             .mapStyle(.imagery(elevation: .flat))
             .onMapCameraChange(frequency: .continuous) { context in
@@ -210,6 +184,48 @@ struct HoleMapView: View {
                 }
                 .id(cameraRevision)
                 .allowsHitTesting(false)
+            }
+            .overlay {
+                // Screen-space paths update with the drag, without MapKit replacing
+                // geographic overlays (and animating their endpoints) on every move.
+                Canvas { context, _ in
+                    guard let tapPoint,
+                          let target = proxy.convert(tapPoint.coordinate, to: .local) else { return }
+                    var path = Path()
+                    if let origin, let start = proxy.convert(origin.coordinate, to: .local) {
+                        path.move(to: start)
+                        path.addLine(to: target)
+                    }
+                    if let flag, let end = proxy.convert(flag.coordinate, to: .local) {
+                        path.move(to: target)
+                        path.addLine(to: end)
+                    }
+                    context.stroke(path, with: .color(PureLineStyle.accent),
+                                   style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                }
+                .transaction { $0.animation = nil }
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+            }
+            .overlay {
+                if let tapPoint, let target = proxy.convert(tapPoint.coordinate, to: .local) {
+                    ZStack {
+                        Circle()
+                            .fill(PureLineStyle.accent.opacity(0.18))
+                            .frame(width: 96, height: 96)
+                        Circle()
+                            .fill(PureLineStyle.canvas)
+                            .stroke(PureLineStyle.accent, lineWidth: 3)
+                            .frame(width: 44, height: 44)
+                        Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(PureLineStyle.accent)
+                    }
+                    .position(target)
+                    .transaction { $0.animation = nil }
+                    .allowsHitTesting(false)
+                    .accessibilityLabel("Target")
+                }
             }
         }
         .onAppear(perform: frameHole)
