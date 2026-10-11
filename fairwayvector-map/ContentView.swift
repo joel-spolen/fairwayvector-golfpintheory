@@ -266,7 +266,8 @@ struct CourseMapView: View {
                     },
                     simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
                 )
-                .ignoresSafeArea()
+                // Respect the control insets so MapKit's attribution stays visible
+                // and tappable above the bottom hole menu.
                 .overlay(alignment: .trailing) {
                     VStack(spacing: 8) {
                         if let location = courseWeatherLocation {

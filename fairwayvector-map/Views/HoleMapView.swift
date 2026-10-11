@@ -111,6 +111,7 @@ struct HoleMapView: View {
 
             }
             .mapStyle(.imagery(elevation: .flat))
+            .mapControls { }
             .onMapCameraChange(frequency: .continuous) { context in
                 onHeadingChange(context.camera.heading)
                 cameraRevision &+= 1
@@ -314,7 +315,7 @@ struct HoleMapView: View {
 
     private var initialCameraCenter: GeoPoint {
         guard let tee = hole.tee, let target = hole.greenCenter else { return hole.tee ?? GeoPoint(lat: 0, lon: 0) }
-        return GolfGeometry.interpolate(tee, target, fraction: 0.65)
+        return GolfGeometry.interpolate(tee, target, fraction: 0.5)
     }
 
     private var initialCamera: MapCamera {
@@ -328,7 +329,7 @@ struct HoleMapView: View {
 
     private var initialCameraDistance: Double {
         guard let tee = hole.tee, let target = hole.greenCenter else { return 500 }
-        return max(GolfGeometry.distance(tee, target) * 3.8, 500)
+        return max(GolfGeometry.distance(tee, target) * 3.0, 400)
     }
 
     /// Keeps the hole framed while preventing the camera from escaping the active hole bounds.
