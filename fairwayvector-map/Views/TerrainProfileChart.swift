@@ -32,22 +32,22 @@ struct TerrainProfileChart: View {
                         AreaMark(x: .value("Distance", value(sample.distanceMeters)),
                                  yStart: .value("Baseline", domain.lowerBound),
                                  yEnd: .value("Elevation", value(elevation)), series: .value("Run", index))
-                            .foregroundStyle(FairwayVectorColors.gold.opacity(0.2))
+                            .foregroundStyle(PureLineStyle.accent.opacity(0.12))
                             .interpolationMethod(.linear)
                         LineMark(x: .value("Distance", value(sample.distanceMeters)),
                                  y: .value("Elevation", value(elevation)), series: .value("Run", index))
-                            .foregroundStyle(FairwayVectorColors.navy)
+                            .foregroundStyle(PureLineStyle.accent)
                             .interpolationMethod(.linear)
                         if run.count == 1 {
                             PointMark(x: .value("Distance", value(sample.distanceMeters)), y: .value("Elevation", value(elevation)))
-                                .foregroundStyle(FairwayVectorColors.navy)
+                                .foregroundStyle(PureLineStyle.accent)
                         }
                     }
                 }
             }
             if let selectedDistance {
                 RuleMark(x: .value("Inspection", selectedDistance))
-                    .foregroundStyle(FairwayVectorColors.orange)
+                    .foregroundStyle(PureLineStyle.ink)
             }
         }
         .chartXScale(domain: 0...max(value(profile.distanceMeters), value(1)))

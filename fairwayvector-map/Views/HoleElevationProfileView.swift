@@ -47,18 +47,19 @@ struct HoleElevationProfileView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(PureLineStyle.accent)
 
                     if let profile, !validRuns(profile).isEmpty {
                         profileContent(profile)
                         if store.isLoading { ProgressView("Loading uncovered terrain…") }
                         if let message = store.statusMessage {
-                            Label(message, systemImage: "info.circle").font(.footnote).foregroundStyle(.secondary)
+                            Label(message, systemImage: "info.circle").font(.footnote).foregroundStyle(PureLineStyle.muted)
                         }
                     } else if store.isLoading {
                         VStack(alignment: .leading, spacing: 8) {
                             ProgressView("Loading terrain profile…")
                             if let message = store.statusMessage {
-                                Text(message).font(.subheadline).foregroundStyle(.secondary)
+                                Text(message).font(.subheadline).foregroundStyle(PureLineStyle.muted)
                             }
                         }
                     } else {
@@ -90,9 +91,11 @@ struct HoleElevationProfileView: View {
                 }
                 .padding()
             }
-            .background(FairwayVectorColors.surface)
+            .background(PureLineStyle.canvas)
             .navigationTitle("Hole \(holeNumber) elevation")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
@@ -102,7 +105,7 @@ struct HoleElevationProfileView: View {
                 }
             }
         }
-        .tint(FairwayVectorColors.navy)
+        .tint(PureLineStyle.accent)
         .confirmationDialog("Retry terrain requests?", isPresented: $isConfirmingRetry, titleVisibility: .visible) {
             Button("Retry terrain") { onRetry?() }
             Button("Cancel", role: .cancel) {}
@@ -127,7 +130,7 @@ struct HoleElevationProfileView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(startLabel) → \(endLabel)").font(.headline)
                 Text("\(unit.format(profile.distanceMeters)) horizontal distance")
-                    .font(.subheadline).foregroundStyle(.secondary)
+                    .font(.subheadline).foregroundStyle(PureLineStyle.muted)
             }
 
             TerrainProfileChart(profile: profile, unit: unit, selectedDistance: $selectedDistance)
@@ -141,7 +144,7 @@ struct HoleElevationProfileView: View {
                 .accessibilityElement(children: .combine)
             } else {
                 Text("Touch and drag the chart to inspect terrain and show its position on the map.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
             }
 
             VStack(alignment: .leading, spacing: 8) {
@@ -160,24 +163,24 @@ struct HoleElevationProfileView: View {
 
             if mode == .shot && store.committedRequest?.isSimulatedOrigin == true {
                 Text("This profile begins at a simulated position rather than device GPS.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
             } else if mode == .shot && !usesGPS {
                 Text("The committed shot starts at the captured tee fallback, not your live GPS position. Its endpoint is the selected target.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
             } else if mode == .shot {
                 Text("The committed shot runs from your captured GPS position to the selected target, not necessarily the flag. Incoming GPS fixes do not update this origin.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
             }
             if profile.isStraightLine {
                 Text("Straight-line terrain cross-section; this does not represent a mapped dogleg or the ball’s flight.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
             }
             if profile.samples.contains(where: { validElevation($0) == nil }) {
                 Text("Gaps indicate unavailable terrain. Missing heights are not interpolated or connected.")
-                    .font(.footnote).foregroundStyle(.secondary)
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
             }
             Text("Vertical scale is fitted independently of horizontal distance. Terrain relief may be vertically exaggerated; this is not a true-scale slope diagram.")
-                .font(.footnote).foregroundStyle(.secondary)
+                .font(.footnote).foregroundStyle(PureLineStyle.muted)
         }
     }
 
@@ -219,7 +222,7 @@ struct HoleElevationProfileView: View {
                 if let quota = store.quota { Text("Local budget: \(quota.used)/100 used; \(quota.remaining) remaining for \(quota.month) UTC. This is not cross-device account authority.") }
                 Text("Sampling spacing is not source resolution or guaranteed accuracy. Profiles may use coarser source data. GPS error and capture dates affect the result; these are terrain heights, not phone altitude, green-reading data, or plays-like advice.")
                 Text("A committed profile may send its path coordinates, including your captured GPS origin, to GPXZ. Saved profiles have no expiry or automatic retry. Refresh is cache-first.")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(PureLineStyle.muted)
             }
         }
         .font(.footnote)
