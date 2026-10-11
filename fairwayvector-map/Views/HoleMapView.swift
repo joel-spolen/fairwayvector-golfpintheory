@@ -20,12 +20,14 @@ struct HoleMapView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var cameraRevision = 0
     @State private var isDraggingTarget = false
+    @State private var targetDragOffset = CGSize.zero
     @GestureState private var targetGestureActive = false
     @State private var isZoomedIn = false
 
     var body: some View {
         MapReader { proxy in
-            Map(position: $position, bounds: cameraBounds, interactionModes: isZoomedIn ? [.pan, .zoom] : [.zoom]) {
+            Map(position: $position, bounds: cameraBounds,
+                interactionModes: isDraggingTarget ? [] : isZoomedIn ? [.pan, .zoom] : [.zoom]) {
                 if usesGPS && simulatedUserLocation == nil {
                     UserAnnotation()
                 }
@@ -119,32 +121,6 @@ struct HoleMapView: View {
                 }
             }
             .simultaneousGesture(
-                DragGesture(minimumDistance: 8, coordinateSpace: .local)
-                    .updating($targetGestureActive) { _, active, _ in active = true }
-                    .onChanged { value in
-                        guard let currentTarget = tapPoint else { return }
-                        if !isDraggingTarget {
-                            guard let markerPoint = proxy.convert(currentTarget.coordinate, to: .local) else { return }
-                            let dx = value.startLocation.x - markerPoint.x
-                            let dy = value.startLocation.y - markerPoint.y
-                            guard hypot(dx, dy) <= 40 else { return }
-                            isDraggingTarget = true
-                            onTargetInteractionBegan()
-                        }
-                        if let coordinate = proxy.convert(value.location, from: .local) {
-                            tapPoint = GeoPoint(coordinate)
-                        }
-                    }
-                    .onEnded { value in
-                        let genuineTargetDrag = isDraggingTarget
-                        isDraggingTarget = false
-                        if genuineTargetDrag {
-                            if let coordinate = proxy.convert(value.location, from: .local) { tapPoint = GeoPoint(coordinate) }
-                            if let tapPoint { onTargetCommitted(tapPoint) }
-                        }
-                    }
-            )
-            .simultaneousGesture(
                 SpatialTapGesture(count: 2, coordinateSpace: .local)
                     .exclusively(before: SpatialTapGesture(count: 1, coordinateSpace: .local))
                     .onEnded { value in
@@ -221,12 +197,41 @@ struct HoleMapView: View {
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(PureLineStyle.accent)
                     }
+                    .contentShape(Circle())
+                    // Capture touches on the marker before the map can start panning.
+                    // Preserve the grab offset so a press does not shift the target.
+                    .gesture(
+                        DragGesture(minimumDistance: 0, coordinateSpace: .named("holeMap"))
+                            .updating($targetGestureActive) { _, active, _ in active = true }
+                            .onChanged { value in
+                                if !isDraggingTarget {
+                                    targetDragOffset = CGSize(width: target.x - value.startLocation.x,
+                                                              height: target.y - value.startLocation.y)
+                                    isDraggingTarget = true
+                                    onTargetInteractionBegan()
+                                }
+                                let location = CGPoint(x: value.location.x + targetDragOffset.width,
+                                                       y: value.location.y + targetDragOffset.height)
+                                if let coordinate = proxy.convert(location, from: .local) {
+                                    self.tapPoint = GeoPoint(coordinate)
+                                }
+                            }
+                            .onEnded { value in
+                                let location = CGPoint(x: value.location.x + targetDragOffset.width,
+                                                       y: value.location.y + targetDragOffset.height)
+                                if let coordinate = proxy.convert(location, from: .local) {
+                                    self.tapPoint = GeoPoint(coordinate)
+                                }
+                                isDraggingTarget = false
+                                if let point = self.tapPoint { onTargetCommitted(point) }
+                            }
+                    )
                     .position(target)
                     .transaction { $0.animation = nil }
-                    .allowsHitTesting(false)
                     .accessibilityLabel("Target")
                 }
             }
+            .coordinateSpace(name: "holeMap")
         }
         .onAppear(perform: frameHole)
         .onChange(of: hole.number) { frameHole() }
