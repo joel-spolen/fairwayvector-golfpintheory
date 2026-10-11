@@ -51,9 +51,12 @@ struct CourseWeatherCard: View {
                 Text(compactTemperature(weather))
                     .font(.caption.weight(.semibold).monospacedDigit())
                     .foregroundStyle(PureLineStyle.ink)
-                Text(compactWindSpeed(weather))
-                    .font(.caption2)
-                    .foregroundStyle(PureLineStyle.muted)
+                HStack(spacing: 2) {
+                    CourseWindIndicator(weather: weather, mapHeading: mapHeading, compact: true)
+                    Text(compactWindSpeed(weather))
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(PureLineStyle.muted)
+                }
             } else {
                 Text(store.isLoading ? "Loading" : "Weather")
                     .font(.caption2.weight(.medium))

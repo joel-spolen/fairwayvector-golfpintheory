@@ -4,6 +4,7 @@ import SwiftUI
 struct CourseWindIndicator: View {
     let weather: CourseWeather
     let mapHeading: Double
+    var compact = false
 
     private var isCalm: Bool {
         weather.windSpeedMps.map { $0 < 0.5 } ?? false
@@ -43,9 +44,12 @@ struct CourseWindIndicator: View {
                 }
             }
             .frame(width: 26, height: 26)
-            Text(isCalm ? "Calm" : "\(speedText) → \(destination)")
-                .font(.caption.monospacedDigit())
+            if !compact {
+                Text(isCalm ? "Calm" : "\(speedText) → \(destination)")
+                    .font(.caption.monospacedDigit())
+            }
         }
+        .frame(minWidth: compact ? 26 : nil, minHeight: compact ? 26 : nil)
         .foregroundStyle(PureLineStyle.ink)
         .allowsHitTesting(false)
         .accessibilityElement(children: .ignore)

@@ -84,14 +84,6 @@ struct HoleMapView: View {
                         .stroke(PureLineStyle.accent, lineWidth: 2)
                 }
 
-                if hole.usesPointOnlyGeometry {
-                    pointMarker(hole.greenFront, title: "Front", symbol: "F", color: PureLineStyle.accent)
-                    pointMarker(hole.greenCenterPoint, title: "Green center", symbol: "C", color: PureLineStyle.accent)
-                    pointMarker(hole.greenBack, title: "Back", symbol: "B", color: PureLineStyle.accent)
-                    pointMarker(hole.teeFront, title: "Front tee", symbol: "T", color: PureLineStyle.accent)
-                    pointMarker(hole.teeBack, title: "Back tee", symbol: "T", color: PureLineStyle.accent)
-                }
-
                 if let flag {
                     Annotation("Flag", coordinate: flag.coordinate, anchor: .bottomLeading) {
                         Image(systemName: "flag.fill")
@@ -126,13 +118,13 @@ struct HoleMapView: View {
                         ZStack {
                             Circle()
                                 .fill(PureLineStyle.accent.opacity(0.18))
-                                .frame(width: 48, height: 48)
+                                .frame(width: 96, height: 96)
                             Circle()
                                 .fill(PureLineStyle.canvas)
                                 .stroke(PureLineStyle.accent, lineWidth: 3)
-                                .frame(width: 22, height: 22)
+                                .frame(width: 44, height: 44)
                             Image(systemName: "arrow.up.and.down.and.arrow.left.and.right")
-                                .font(.system(size: 9, weight: .bold))
+                                .font(.system(size: 18, weight: .bold))
                                 .foregroundStyle(PureLineStyle.accent)
                         }
                         .contentShape(Circle())
@@ -324,19 +316,4 @@ struct HoleMapView: View {
         position = .camera(initialCamera)
     }
 
-    @MapContentBuilder
-    private func pointMarker(_ point: GeoPoint?, title: String, symbol: String, color: Color) -> some MapContent {
-        if let point {
-            Annotation(title, coordinate: point.coordinate) {
-                Text(symbol)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(PureLineStyle.canvas)
-                    .frame(width: 20, height: 20)
-                    .background(color, in: Circle())
-                    .overlay(Circle().stroke(PureLineStyle.canvas, lineWidth: 1.5))
-                    .shadow(color: .black.opacity(0.3), radius: 2)
-            }
-            .annotationTitles(.hidden)
-        }
-    }
 }

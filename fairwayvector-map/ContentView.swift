@@ -469,7 +469,8 @@ struct CourseMapView: View {
                     .replacingOccurrences(of: "To target · ", with: "")
                     .replacingOccurrences(of: "Tee → flag · ", with: ""))
                     .font(.caption2.weight(.medium))
-                    .lineLimit(2)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(PureLineStyle.ink)
                 if terrainStore.isShotLoading || terrainStore.isHoleLoading { ProgressView().controlSize(.mini) }
@@ -527,8 +528,7 @@ struct CourseMapView: View {
 
     private func terrainDeltaText(_ meters: Double) -> String {
         let value = unit == .meters ? meters : meters / 0.9144
-        let amount = String(format: "%+.1f %@", value, unit.symbol)
-        return "\(amount) \(meters > 0.1 ? "uphill" : meters < -0.1 ? "downhill" : "level")"
+        return String(format: "%+.1f %@", value, unit.symbol)
     }
 
     private func bottomHoleMenu(hole: Hole, holeCount: Int) -> some View {
