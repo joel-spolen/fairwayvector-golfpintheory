@@ -30,6 +30,8 @@ struct RoundPlayer: Codable, Identifiable, Equatable {
     var name: String
     var isOwner: Bool
     var handicapIndex: Double?
+    // Optional to decode older round archives; nil inherits the round-level setting.
+    var keepsDetailedScore: Bool? = nil
 }
 
 struct PlayedHole: Codable, Identifiable, Equatable {
@@ -69,6 +71,9 @@ struct PlayedRound: Codable, Identifiable {
     var scores: [String: PlayedHoleScore] = [:]
 
     var owner: RoundPlayer? { players.first(where: \.isOwner) }
+    func recordsDetailedScore(for player: RoundPlayer) -> Bool {
+        player.keepsDetailedScore ?? (detailMode == .detailed)
+    }
     var isComplete: Bool {
         !holes.isEmpty && players.allSatisfy { player in
             holes.allSatisfy { score(player: player.id, hole: $0.number)?.isValid == true }
@@ -159,22 +164,24 @@ enum PlayedRoundCalculator {
                 let whsStrokes = strokes(handicap: ch, rank: rank, holeCount: round.holes.count)
                 result.adjustedGross? += min(score.strokes, max(1, par + 2 + whsStrokes))
             }
-            if let putts = score.putts {
-                result.putts += putts; result.puttHoles += 1
-                if let par = hole.par {
-                    result.girHoles += 1
-                    if score.strokes - putts <= par - 2 { result.estimatedGIR += 1 }
+            if round.recordsDetailedScore(for: player) {
+                if let putts = score.putts {
+                    result.putts += putts; result.puttHoles += 1
+                    if let par = hole.par {
+                        result.girHoles += 1
+                        if score.strokes - putts <= par - 2 { result.estimatedGIR += 1 }
+                    }
                 }
+                if hole.par.map({ $0 > 3 }) == true, [.hit, .missed, .left, .right, .long, .short].contains(score.fairway) {
+                    result.fairwaysAnswered += 1
+                    if score.fairway == .hit { result.fairwaysHit += 1 }
+                }
+                if let bunkerShots = score.bunkerShots {
+                    result.bunkerAnswered += 1; result.bunkerShots += bunkerShots
+                    if bunkerShots > 0 { result.bunkerHoles += 1 }
+                }
+                if let penalties = score.penalties { result.penalties += penalties; result.penaltyHoles += 1 }
             }
-            if hole.par.map({ $0 > 3 }) == true, [.hit, .missed, .left, .right, .long, .short].contains(score.fairway) {
-                result.fairwaysAnswered += 1
-                if score.fairway == .hit { result.fairwaysHit += 1 }
-            }
-            if let bunkerShots = score.bunkerShots {
-                result.bunkerAnswered += 1; result.bunkerShots += bunkerShots
-                if bunkerShots > 0 { result.bunkerHoles += 1 }
-            }
-            if let penalties = score.penalties { result.penalties += penalties; result.penaltyHoles += 1 }
         }
         if result.scoredHoles == round.holes.count,
            let adjusted = result.adjustedGross, let tee = round.tee {

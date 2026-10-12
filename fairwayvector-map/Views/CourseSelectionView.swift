@@ -5,14 +5,16 @@ struct CourseSelectionView: View {
     let onStartRound: ((CourseReference) -> Void)?
     let onResumeRound: ((PlayedRound) -> Void)?
     let showsRoundInProgress: Bool
+    let isStartRoundFlow: Bool
     @Environment(PlayedRoundStore.self) private var roundStore
     @State private var confirmDiscardRound = false
 
-    init(showsRoundInProgress: Bool = false,
+    init(showsRoundInProgress: Bool = false, isStartRoundFlow: Bool = false,
          onStartRound: ((CourseReference) -> Void)? = nil,
          onResumeRound: ((PlayedRound) -> Void)? = nil,
          onStartCourse: @escaping (CourseReference) -> Void) {
         self.showsRoundInProgress = showsRoundInProgress
+        self.isStartRoundFlow = isStartRoundFlow
         self.onStartRound = onStartRound
         self.onResumeRound = onResumeRound
         self.onStartCourse = onStartCourse
@@ -28,9 +30,9 @@ struct CourseSelectionView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Where to?")
+                        Text(isStartRoundFlow ? "Start a round" : "Where to?")
                             .font(.largeTitle.weight(.semibold)).tracking(-1)
-                        Text("Find your course. Choose your tee.")
+                        Text(isStartRoundFlow ? "Choose your course and tee." : "Find your course. Choose your tee.")
                             .font(.subheadline).foregroundStyle(PureLineStyle.muted)
                     }
                     if showsRoundInProgress, let round = roundStore.active {
@@ -146,13 +148,19 @@ struct CourseSelectionView: View {
                 .foregroundStyle(PureLineStyle.muted)
 
             Button {
-                startCourse(reference)
+                if isStartRoundFlow, let onStartRound {
+                    onStartRound(reference)
+                } else {
+                    startCourse(reference)
+                }
             } label: {
                 CourseRecentCard(reference: reference, status: nil)
             }
             .buttonStyle(.plain)
             .accessibilityIdentifier("recent-course-button")
-            .accessibilityHint("Opens this course with your previously selected tee set")
+            .accessibilityHint(isStartRoundFlow
+                ? "Continues to round setup for this course and tee"
+                : "Opens this course with your previously selected tee set")
         }
     }
 }

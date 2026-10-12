@@ -117,22 +117,96 @@ struct ContentView: View {
 private struct CourseMapFlowView: View {
     @State private var selection: CourseReference?
     @State private var resumedRound: PlayedRound?
+    @State private var isStartingRoundFlow = false
+    @State private var setupReference: CourseReference?
+    @State private var setupCourse: Course?
+    @State private var isLoadingSetupCourse = false
+    @State private var setupCourseError: String?
     @Binding var requestStartRound: Bool
     @Environment(PlayedRoundStore.self) private var roundStore
+    @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
 
     var body: some View {
-        if let selection {
+        if let setupReference, let setupCourse {
+            RoundSetupView(selectedCourseReference: setupReference, course: setupCourse,
+                dismissOnCompletion: false,
+                onStarted: {
+                    resumedRound = roundStore.active
+                    selection = setupReference
+                    self.setupCourse = nil
+                    self.setupReference = nil
+                    isStartingRoundFlow = false
+                    requestStartRound = false
+                },
+                onCancel: {
+                    self.setupCourse = nil
+                    self.setupReference = nil
+                    isStartingRoundFlow = true
+                })
+            .environmentObject(trajectoryModel)
+        } else if isLoadingSetupCourse {
+            VStack(spacing: 14) {
+                ProgressView()
+                Text("Preparing round")
+                    .font(.headline)
+                    .foregroundStyle(PureLineStyle.ink)
+                Text("Loading the selected course and tee…")
+                    .font(.subheadline)
+                    .foregroundStyle(PureLineStyle.muted)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(PureLineStyle.canvas)
+        } else if let setupCourseError {
+            ContentUnavailableView {
+                Label("Course unavailable", systemImage: "map")
+            } description: {
+                Text(setupCourseError)
+            } actions: {
+                Button("Try again") {
+                    if let setupReference { prepareRoundSetup(for: setupReference) }
+                }
+                Button("Back to course selection") {
+                    self.setupReference = nil
+                    self.setupCourseError = nil
+                    isStartingRoundFlow = true
+                }
+            }
+        } else if let selection {
             CourseMapView(reference: selection, requestStartRound: $requestStartRound, resumedRound: resumedRound) {
                 self.selection = nil
                 resumedRound = nil
             }
         } else {
-            CourseSelectionView(showsRoundInProgress: requestStartRound, onStartRound: { reference in
+            CourseSelectionView(showsRoundInProgress: isStartingRoundFlow || requestStartRound,
+                isStartRoundFlow: isStartingRoundFlow || requestStartRound, onStartRound: { reference in
+                isStartingRoundFlow = true
                 requestStartRound = true
-                if roundStore.active == nil { selection = reference }
+                if roundStore.active == nil { prepareRoundSetup(for: reference) }
             }, onResumeRound: { round in
-                requestStartRound = false; resumedRound = round; selection = round.reference
-            }, onStartCourse: { selection = $0 })
+                isStartingRoundFlow = false
+                requestStartRound = false
+                resumedRound = round
+                selection = round.reference
+            }, onStartCourse: {
+                isStartingRoundFlow = false
+                selection = $0
+            })
+        }
+    }
+
+    private func prepareRoundSetup(for reference: CourseReference) {
+        setupReference = reference
+        setupCourseError = nil
+        isLoadingSetupCourse = true
+        Task { @MainActor in
+            let courseStore = CourseStore(reference: reference)
+            await courseStore.load()
+            isLoadingSetupCourse = false
+            if let course = courseStore.course {
+                setupCourse = course
+            } else {
+                setupCourseError = courseStore.errorMessage ?? "The selected course could not be loaded."
+            }
         }
     }
 }

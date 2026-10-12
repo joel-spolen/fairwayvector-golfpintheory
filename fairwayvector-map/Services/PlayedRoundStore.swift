@@ -73,7 +73,7 @@ final class PlayedRoundStore {
     }
 
     func start(_ round: PlayedRound) throws {
-        guard active == nil, Self.validStructure(round) else { throw RoundStorageError.activeDraft }
+        guard active == nil, round.players.count <= 4, Self.validStructure(round) else { throw RoundStorageError.activeDraft }
         try persist(saved: saved, draft: round)
         active = round
         draftNeedsRetry = false; errorMessage = nil

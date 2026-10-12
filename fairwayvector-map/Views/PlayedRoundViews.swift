@@ -4,24 +4,51 @@ import SwiftUI
 struct RoundSetupView: View {
     let selectedCourseReference: CourseReference
     let course: Course
+    let dismissOnCompletion: Bool
     let onStarted: () -> Void
+    let onCancel: () -> Void
     @Environment(PlayedRoundStore.self) private var store
     @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
     @Environment(\.dismiss) private var dismiss
     @Query private var profiles: [PlayerProfile]
     @Query(sort: \GolfRound.date, order: .reverse) private var hcpRounds: [GolfRound]
     @State private var game: RoundGame = .strokePlay
-    @State private var detailMode: RoundDetailMode = .detailed
-    @State private var players = [RoundPlayer(name: "You", isOwner: true, handicapIndex: nil)]
+    @State private var players = [RoundPlayer(name: "You", isOwner: true, handicapIndex: nil, keepsDetailedScore: true)]
     @State private var error: String?
     @State private var initialized = false
+
+    init(selectedCourseReference: CourseReference, course: Course, dismissOnCompletion: Bool = true,
+         onStarted: @escaping () -> Void, onCancel: @escaping () -> Void) {
+        self.selectedCourseReference = selectedCourseReference
+        self.course = course
+        self.dismissOnCompletion = dismissOnCompletion
+        self.onStarted = onStarted
+        self.onCancel = onCancel
+    }
 
     private var holes: [PlayedHole] {
         course.holes.map { PlayedHole(number: $0.number, par: $0.par, strokeIndex: $0.handicapIndex) }
     }
     private var candidate: PlayedRound {
         PlayedRound(reference: selectedCourseReference, course: course, holes: holes,
-            players: players, game: game, detailMode: detailMode, allowance: 100)
+            players: players, game: game, detailMode: .detailed, allowance: 100)
+    }
+
+    private func binding(for playerID: UUID) -> Binding<RoundPlayer> {
+        Binding(
+            get: { players.first(where: { $0.id == playerID }) ?? RoundPlayer(name: "Player", isOwner: false, handicapIndex: nil) },
+            set: { updated in
+                guard let index = players.firstIndex(where: { $0.id == playerID }) else { return }
+                players[index] = updated
+            }
+        )
+    }
+
+    private func removePlayer(_ playerID: UUID) {
+        guard players.count > 1 else { return }
+        withAnimation(.easeInOut(duration: 0.2)) {
+            players = players.filter { $0.id != playerID }
+        }
     }
 
     private var defaultOwnerHandicapIndex: Double {
@@ -59,34 +86,37 @@ struct RoundSetupView: View {
                     Picker("Game", selection: $game) {
                         ForEach(RoundGame.allCases) { Text($0.rawValue).tag($0) }
                     }.pickerStyle(.segmented)
-                    Text("Scorecard").font(.subheadline.weight(.medium))
-                    Picker("Scorecard", selection: $detailMode) {
-                        ForEach(RoundDetailMode.allCases) { Text($0.rawValue).tag($0) }
-                    }.pickerStyle(.segmented)
-                    Text("Detailed records putts, fairway hits, bunker shots and penalties for every player. Putts default to two; bunker shots and penalties start at zero. Strokes only leaves those statistics unknown.")
+                    Text("Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties.")
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
                 .pureLineCard()
-                ForEach($players) { $player in
+                ForEach(players) { player in
+                    let playerBinding = binding(for: player.id)
                     VStack(alignment: .leading, spacing: 14) {
                         Label(player.isOwner ? "You · personal statistics" : "Additional player", systemImage: "person")
                             .font(.headline)
                         if !player.isOwner {
-                            TextField("Player name", text: $player.name)
+                            TextField("Player name", text: playerBinding.name)
                                 .padding(12)
                                 .background(PureLineStyle.canvas, in: RoundedRectangle(cornerRadius: 12))
                                 .accessibilityLabel("Player name")
                         }
+                        Toggle("Keep detailed score", isOn: Binding(
+                            get: { playerBinding.wrappedValue.keepsDetailedScore ?? true },
+                            set: { playerBinding.wrappedValue.keepsDetailedScore = $0 }))
+                            .font(.subheadline)
                         Toggle("Use Handicap Index", isOn: Binding(
-                            get: { player.handicapIndex != nil },
+                            get: { playerBinding.wrappedValue.handicapIndex != nil },
                             set: { enabled in
-                                player.handicapIndex = enabled ? (player.isOwner ? defaultOwnerHandicapIndex : 0) : nil
+                                playerBinding.wrappedValue.handicapIndex = enabled
+                                    ? (player.isOwner ? defaultOwnerHandicapIndex : 0) : nil
                             }))
                             .font(.subheadline)
-                        if player.handicapIndex != nil {
+                        if playerBinding.wrappedValue.handicapIndex != nil {
                             LabeledContent("Handicap Index") {
                                 TextField("Handicap Index", value: Binding(
-                                    get: { player.handicapIndex ?? 0 }, set: { player.handicapIndex = $0 }), format: .number)
+                                    get: { playerBinding.wrappedValue.handicapIndex ?? 0 },
+                                    set: { playerBinding.wrappedValue.handicapIndex = $0 }), format: .number)
                                     .keyboardType(.numbersAndPunctuation)
                                     .multilineTextAlignment(.trailing)
                                     .frame(width: 90)
@@ -102,21 +132,22 @@ struct RoundSetupView: View {
                                 .font(.caption).foregroundStyle(PureLineStyle.muted)
                         }
                         if !player.isOwner {
-                            Button("Remove player", role: .destructive) { players.removeAll { $0.id == player.id } }
+                            Button("Remove player", role: .destructive) { removePlayer(player.id) }
                                 .font(.subheadline).foregroundStyle(.red)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .pureLineCard()
                 }
-                    Button("Add player", systemImage: "person.badge.plus") {
-                        players.append(RoundPlayer(name: "Player \(players.count + 1)", isOwner: false, handicapIndex: nil))
+                    Button("Add player · \(players.count)/4", systemImage: "person.badge.plus") {
+                        players.append(RoundPlayer(name: "Player \(players.count + 1)", isOwner: false,
+                                                   handicapIndex: nil, keepsDetailedScore: true))
                     }
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity, minHeight: 48)
                     .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 14))
                     .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(PureLineStyle.line, lineWidth: 1) }
-                    .disabled(players.count >= 8)
+                    .disabled(players.count >= 4)
                     if game == .stableford, players.contains(where: { $0.handicapIndex == nil }) {
                         Text("Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate.")
                             .font(.caption).foregroundStyle(PureLineStyle.muted)
@@ -125,7 +156,8 @@ struct RoundSetupView: View {
                     Button("Start round", systemImage: "flag.checkered") {
                         do {
                             try store.start(candidate)
-                            onStarted(); dismiss()
+                            onStarted()
+                            if dismissOnCompletion { dismiss() }
                         } catch { self.error = error.localizedDescription }
                     }
                     .buttonStyle(PureLinePrimaryButtonStyle())
@@ -141,7 +173,14 @@ struct RoundSetupView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        onCancel()
+                        if dismissOnCompletion { dismiss() }
+                    }
+                }
+            }
             .onAppear {
                 guard !initialized else { return }
                 initialized = true
@@ -154,9 +193,8 @@ struct RoundSetupView: View {
 struct RoundHoleEntryView: View {
     let round: PlayedRound
     let holeNumber: Int
-    let buttonTitle: String
-    let onSave: ([UUID: PlayedHoleScore]) throws -> Void
-    @Environment(\.dismiss) private var dismiss
+    let onSave: (Int, [UUID: PlayedHoleScore]) throws -> Void
+    let onNavigateHole: (Int) -> Void
     @State private var entries: [UUID: PlayedHoleScore] = [:]
     @State private var error: String?
     @State private var showingGIRInfo = false
@@ -166,6 +204,40 @@ struct RoundHoleEntryView: View {
         Binding(get: { entries[player] ?? PlayedHoleScore(strokes: 4) }, set: { entries[player] = $0 })
     }
     private var valid: Bool { round.players.allSatisfy { entries[$0.id]?.isValid == true } }
+    private var holePosition: Int { round.holes.firstIndex(where: { $0.number == holeNumber }) ?? 0 }
+
+    private func saveCurrentHole() throws {
+        guard valid else { throw RoundStorageError.incomplete }
+        try onSave(holeNumber, entries)
+        error = nil
+    }
+
+    private func moveHole(by offset: Int) {
+        let destination = holePosition + offset
+        guard round.holes.indices.contains(destination) else { return }
+        do {
+            try saveCurrentHole()
+            onNavigateHole(round.holes[destination].number)
+        } catch {
+            self.error = "Save this hole before moving on: \(error.localizedDescription)"
+        }
+    }
+
+    private func loadEntries(for number: Int) {
+        entries = [:]
+        for player in round.players {
+            var score = round.score(player: player.id, hole: number)
+                ?? PlayedHoleScore(strokes: round.holes.first(where: { $0.number == number })?.par ?? 4)
+            if round.recordsDetailedScore(for: player) {
+                score.putts = score.putts ?? min(2, max(0, score.strokes - (score.penalties ?? 0)))
+                score.bunkerShots = score.bunkerShots ?? 0
+                score.penalties = score.penalties ?? 0
+                if score.fairway == .unknown { score.fairway = .missed }
+            }
+            if round.holes.first(where: { $0.number == number })?.par == 3 { score.fairway = .notApplicable }
+            entries[player.id] = score
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -214,7 +286,7 @@ struct RoundHoleEntryView: View {
                                     .foregroundStyle(PureLineStyle.accent)
                             }
                         }
-                        if round.detailMode == .detailed {
+                        if round.recordsDetailedScore(for: player) {
                             Divider().overlay(PureLineStyle.line)
                             detailCount("Putts", value: score.putts, maximum: score.wrappedValue.strokes)
                             if hole?.par == 3 {
@@ -250,15 +322,47 @@ struct RoundHoleEntryView: View {
                     .pureLineCard()
                 }
                     if let error { Text(error).foregroundStyle(.red) }
-                    Button(buttonTitle) {
-                        guard valid else { return }
-                        do { try onSave(entries); dismiss() }
-                        catch { self.error = "Score remains in this form / active draft. Storage failed: \(error.localizedDescription)" }
+                }
+                .padding(18)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                HStack(spacing: 12) {
+                    Button { moveHole(by: -1) } label: {
+                        Image(systemName: "chevron.left")
+                            .frame(width: 48, height: 48)
+                            .background(PureLineStyle.surface, in: Circle())
+                    }
+                    .disabled(holePosition == 0)
+                    .accessibilityLabel("Previous hole")
+
+                    Button {
+                        do {
+                            try saveCurrentHole()
+                            onNavigateHole(holeNumber)
+                        }
+                        catch { self.error = "Score could not be saved: \(error.localizedDescription)" }
+                    } label: {
+                        Label("Save hole", systemImage: "checkmark")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity, minHeight: 48)
                     }
                     .buttonStyle(PureLinePrimaryButtonStyle())
                     .disabled(!valid)
+                    .accessibilityIdentifier("save-hole-score")
+
+                    Button { moveHole(by: 1) } label: {
+                        Image(systemName: "chevron.right")
+                            .frame(width: 48, height: 48)
+                            .background(PureLineStyle.surface, in: Circle())
+                    }
+                    .disabled(holePosition >= round.holes.count - 1)
+                    .accessibilityLabel("Next hole")
                 }
-                .padding(18)
+                .buttonStyle(.plain)
+                .foregroundStyle(PureLineStyle.accent)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 10)
+                .background(PureLineStyle.canvas)
             }
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
@@ -266,7 +370,6 @@ struct RoundHoleEntryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } } }
             .sheet(isPresented: $showingGIRInfo) {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack {
@@ -288,20 +391,7 @@ struct RoundHoleEntryView: View {
                 .presentationDetents([.height(300)])
                 .presentationDragIndicator(.visible)
             }
-            .onAppear {
-                guard entries.isEmpty else { return }
-                for player in round.players {
-                    var score = round.score(player: player.id, hole: holeNumber) ?? PlayedHoleScore(strokes: hole?.par ?? 4)
-                    if round.detailMode == .detailed {
-                        score.putts = score.putts ?? min(2, max(0, score.strokes - (score.penalties ?? 0)))
-                        score.bunkerShots = score.bunkerShots ?? 0
-                        score.penalties = score.penalties ?? 0
-                        if score.fairway == .unknown { score.fairway = .missed }
-                    }
-                    if hole?.par == 3 { score.fairway = .notApplicable }
-                    entries[player.id] = score
-                }
-            }
+            .onAppear { loadEntries(for: holeNumber) }
         }.tint(PureLineStyle.accent)
     }
 
@@ -422,7 +512,7 @@ struct RoundReviewView: View {
                                     Spacer()
                                     Text(score.map { "\($0.strokes)" } ?? "—").bold().monospacedDigit()
                                 }
-                                if let score, round.detailMode == .detailed {
+                                if let score, round.recordsDetailedScore(for: player) {
                                     Text("Putts \(score.putts.map(String.init) ?? "—") · Fairway \(score.fairway.label) · Bunker shots \(score.bunkerShots.map(String.init) ?? "—") · Penalties \(score.penalties.map(String.init) ?? "—")")
                                         .font(.caption).foregroundStyle(FairwayVectorColors.slate)
                                 }
