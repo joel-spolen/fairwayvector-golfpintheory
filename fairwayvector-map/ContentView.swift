@@ -96,9 +96,7 @@ struct CourseMapView: View {
                 .background(PureLineStyle.canvas)
                 .navigationTitle(isShowingScoreEntry ? "Hole \(scoringHole ?? 1) scorecard" : store.reference.courseName)
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbarBackground(Color.white, for: .navigationBar)
-                .toolbarBackground(.visible, for: .navigationBar)
-                .toolbarColorScheme(.light, for: .navigationBar)
+                .toolbar(.hidden, for: .navigationBar)
                 .toolbar(.hidden, for: .tabBar)
                 .toolbar {
                     if !isShowingScoreEntry {
@@ -381,9 +379,6 @@ struct CourseMapView: View {
                     .padding(.bottom, 150)
                     .frame(maxHeight: .infinity, alignment: .center)
                 }
-                .safeAreaInset(edge: .top, spacing: 0) {
-                    topDistanceMenu(hole: hole, origin: origin, flag: flagPosition(for: hole))
-                }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     VStack(spacing: 0) {
                         bottomHoleMenu(hole: hole, holeCount: holes.count, pageHoleIndex: pageHoleIndex)
@@ -395,6 +390,9 @@ struct CourseMapView: View {
                             .shadow(color: .black.opacity(0.06), radius: 16, y: -4)
                     }
                 }
+            }
+            .safeAreaInset(edge: .top, spacing: 0) {
+                topDistanceMenu(hole: hole, origin: origin, flag: flagPosition(for: hole))
             }
             .task(id: holeRequest) {
                 // Opening geometry/tee/hole/saved flag reads terrain cache ONLY.
@@ -630,7 +628,7 @@ struct CourseMapView: View {
         .frame(maxWidth: .infinity)
         .background {
             Rectangle()
-                .fill(Color.white)
+                .fill(PureLineStyle.canvas)
                 .ignoresSafeArea(edges: .bottom)
         }
     }
@@ -697,10 +695,13 @@ struct CourseMapView: View {
                 .foregroundStyle(PureLineStyle.muted)
             }
         }
+        // Preserve the former navigation-bar clearance beneath the app-level Home bar.
+        .padding(.top, 44)
         .padding(.horizontal, 24)
         .padding(.vertical, 2)
         .frame(maxWidth: .infinity)
-        .background(Color.white, ignoresSafeAreaEdges: .top)
+        .background(PureLineStyle.canvas)
+        .zIndex(2)
     }
 
     private func flagDistanceText(flag: GeoPoint?, origin: DistanceOrigin?) -> String {
