@@ -7,22 +7,21 @@ struct DistanceCard: View {
     let unit: DistanceUnit
     var middleTitle = "Center"
     var middlePoint: GeoPoint? = nil
-    @ScaledMetric(relativeTo: .largeTitle) private var featuredDistanceSize: CGFloat = 42
-    @ScaledMetric(relativeTo: .title2) private var distanceSize: CGFloat = 27
+    @ScaledMetric(relativeTo: .largeTitle) private var featuredDistanceSize: CGFloat = 36
+    @ScaledMetric(relativeTo: .title2) private var distanceSize: CGFloat = 23
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 3) {
             if let origin, let center = hole.greenCenter {
                 let front = hole.greenFront.map { GolfGeometry.distance(origin.point, $0) }
                     ?? GolfGeometry.frontBack(from: origin.point, green: hole.green)?.front
                 let back = hole.greenBack.map { GolfGeometry.distance(origin.point, $0) }
                     ?? GolfGeometry.frontBack(from: origin.point, green: hole.green)?.back
-                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
                     metric("Front", front, color: PureLineStyle.ink)
-                    Spacer(minLength: 4)
                     metric(middleTitle, GolfGeometry.distance(origin.point, middlePoint ?? center), color: PureLineStyle.accent, prominent: true)
-                    Spacer(minLength: 4)
                     metric("Back", back, color: PureLineStyle.ink)
+                    Spacer(minLength: 0)
                 }
 
             } else {
@@ -35,21 +34,22 @@ struct DistanceCard: View {
     }
 
     private func metric(_ title: String, _ meters: Double?, color: Color, prominent: Bool = false) -> some View {
-        VStack(alignment: .leading, spacing: 1) {
+        HStack(alignment: .firstTextBaseline, spacing: 3) {
             Text(title.uppercased())
                 .font(.caption2.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
                 .foregroundStyle(PureLineStyle.muted)
-            HStack(alignment: .firstTextBaseline, spacing: 3) {
-                Text(meters.map { "\(unit.value($0))" } ?? "–")
-                    .font((prominent ? Font.system(size: featuredDistanceSize, weight: .semibold) : Font.system(size: distanceSize, weight: .medium)).monospacedDigit())
-                    .foregroundStyle(color)
-                    .minimumScaleFactor(0.7)
-                    .lineLimit(1)
-                Text(unit.symbol)
-                    .font(.caption2)
-                    .foregroundStyle(PureLineStyle.muted)
-            }
+            Text(meters.map { "\(unit.value($0))" } ?? "–")
+                .font((prominent ? Font.system(size: featuredDistanceSize, weight: .semibold) : Font.system(size: distanceSize, weight: .medium)).monospacedDigit())
+                .foregroundStyle(color)
+                .minimumScaleFactor(0.6)
+                .lineLimit(1)
+            Text(unit.symbol)
+                .font(.caption2)
+                .foregroundStyle(PureLineStyle.muted)
         }
+        .fixedSize(horizontal: true, vertical: false)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(title): \(meters.map(unit.format) ?? "unavailable")")
     }

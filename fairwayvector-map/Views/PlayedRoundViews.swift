@@ -443,10 +443,6 @@ struct RoundHoleEntryView: View {
                 fairwayButton(.long, icon: "arrow.up", selection: selection)
                 fairwayButton(.short, icon: "arrow.down", selection: selection)
             }
-            if selection.wrappedValue == .missed {
-                Text("Missed · choose a direction to add detail")
-                    .font(.caption).foregroundStyle(PureLineStyle.muted)
-            }
         }
     }
 

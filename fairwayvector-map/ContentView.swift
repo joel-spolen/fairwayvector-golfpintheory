@@ -683,20 +683,21 @@ struct CourseMapView: View {
             DistanceCard(hole: hole, origin: origin, unit: unit,
                 middleTitle: tapPoint != nil ? "Target" : flag != nil ? "To flag" : "Center",
                 middlePoint: tapPoint ?? flag)
-            if tapPoint != nil {
-                HStack(spacing: 16) {
-                    if let origin, let center = hole.greenCenter {
-                        Text("Center \(unit.format(GolfGeometry.distance(origin.point, center)))")
-                    }
-                    Spacer(minLength: 0)
-                    Text("Target → flag \(flagDistanceText(flag: flag, origin: origin))")
+            HStack(spacing: 16) {
+                if let origin, let center = hole.greenCenter {
+                    Text("Center \(unit.format(GolfGeometry.distance(origin.point, center)))")
                 }
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(PureLineStyle.muted)
+                Spacer(minLength: 0)
+                Text("Target → flag \(flagDistanceText(flag: flag, origin: origin))")
             }
+            .font(.caption.monospacedDigit())
+            .foregroundStyle(PureLineStyle.muted)
+            .opacity(tapPoint == nil ? 0 : 1)
+            .accessibilityHidden(tapPoint == nil)
+            .offset(y: -4)
         }
-        // Preserve the former navigation-bar clearance beneath the app-level Home bar.
-        .padding(.top, 44)
+        // Preserve navigation-bar clearance while reducing the overall bar height by the shifted row amount.
+        .padding(.top, 30)
         .padding(.horizontal, 24)
         .padding(.vertical, 2)
         .frame(maxWidth: .infinity)
