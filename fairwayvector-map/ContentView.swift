@@ -11,10 +11,11 @@ struct CourseMapView: View {
     @State private var showingRoundSetup = false
     @State private var showingRoundReview = false
     @State private var scoringHole: Int?
-    @State private var isShowingScoreEntry = false
-    @State private var courseTransitionEdge: Edge = .leading
-    @State private var scoreTransitionEdge: Edge = .trailing
+    @State private var roundPageIndex: Int
+    @State private var pageDirection = 1
     @State private var roundError: String?
+    @State private var transitionTargetPage: Int?
+    @State private var pageProgress = 0.0
     @State private var reviewingRound: PlayedRound?
     @State private var pendingReviewHole: Int?
 
@@ -48,6 +49,7 @@ struct CourseMapView: View {
         resumesSnapshot = resumedRound != nil
         _roundModeEnabled = State(initialValue: resumedRound != nil)
         _holeIndex = State(initialValue: resumedRound?.currentHole ?? 0)
+        _roundPageIndex = State(initialValue: (resumedRound?.currentHole ?? 0) * 2)
         _store = State(initialValue: CourseStore(reference: reference, initialCourse: resumedRound?.course))
     }
 
@@ -55,27 +57,49 @@ struct CourseMapView: View {
         guard roundModeEnabled, let round = roundStore.active, round.reference == reference else { return nil }
         return round
     }
+    private var isShowingScoreEntry: Bool { activeRound != nil && roundPageIndex.isMultiple(of: 2) == false }
+
+    private func horizontalPageOffset(width: CGFloat) -> CGFloat {
+        guard transitionTargetPage != nil else { return 0 }
+        if pageDirection > 0 { return -width * pageProgress }
+        return -width * (1 - pageProgress)
+    }
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                if isShowingScoreEntry {
-                    scoreEntryPage
-                        .transition(.move(edge: scoreTransitionEdge))
-                        .zIndex(1)
-                } else {
-                    content
-                        .transition(.move(edge: courseTransitionEdge))
+            GeometryReader { geometry in
+                let width = geometry.size.width
+                HStack(spacing: 0) {
+                    if let targetPage = transitionTargetPage, pageDirection < 0 {
+                        roundPage(targetPage)
+                            .frame(width: width, height: geometry.size.height)
+                            .allowsHitTesting(pageProgress > 0.5)
+                        roundPage(roundPageIndex)
+                            .frame(width: width, height: geometry.size.height)
+                            .allowsHitTesting(pageProgress <= 0.5)
+                    } else {
+                        roundPage(roundPageIndex)
+                            .frame(width: width, height: geometry.size.height)
+                            .allowsHitTesting(pageProgress <= 0.5)
+                        if let targetPage = transitionTargetPage {
+                            roundPage(targetPage)
+                                .frame(width: width, height: geometry.size.height)
+                                .allowsHitTesting(pageProgress > 0.5)
+                        }
+                    }
                 }
+                .offset(x: horizontalPageOffset(width: width))
+                .frame(width: width, height: geometry.size.height, alignment: .leading)
+                .clipped()
+                .allowsHitTesting(transitionTargetPage == nil)
             }
-            .animation(.easeInOut(duration: 0.28), value: isShowingScoreEntry)
                 .background(PureLineStyle.canvas)
-                .navigationTitle(isShowingScoreEntry ? "" : store.reference.courseName)
+                .navigationTitle(isShowingScoreEntry ? "Hole \(scoringHole ?? 1) scorecard" : store.reference.courseName)
                 .navigationBarTitleDisplayMode(.inline)
-                .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+                .toolbarBackground(Color.white, for: .navigationBar)
                 .toolbarBackground(.visible, for: .navigationBar)
+                .toolbarColorScheme(.light, for: .navigationBar)
                 .toolbar(.hidden, for: .tabBar)
-                .toolbar(isShowingScoreEntry ? .hidden : .visible, for: .navigationBar)
                 .toolbar {
                     if !isShowingScoreEntry {
                         ToolbarItem(placement: .topBarLeading) {
@@ -125,6 +149,7 @@ struct CourseMapView: View {
                     onStarted: {
                         roundModeEnabled = true
                         holeIndex = 0
+                        roundPageIndex = 0
                     },
                     onCancel: { onChangeCourse() })
             }
@@ -134,15 +159,15 @@ struct CourseMapView: View {
             if let number = pendingReviewHole, activeRound != nil {
                 pendingReviewHole = nil
                 scoringHole = number
-                if let index = store.course?.holes.firstIndex(where: { $0.number == number }) { holeIndex = index }
-                isShowingScoreEntry = true
+                if let index = activeRound?.holes.firstIndex(where: { $0.number == number }) {
+                    navigateRoundPage(to: index * 2 + 1)
+                }
             }
         }) {
             // Keep presentation stable when Save moves the draft to saved history.
             if let round = reviewingRound {
                 RoundReviewView(initialRound: round, onEditHole: { number in
                     // Switch the map after review dismisses; do not stack scoring sheets.
-                    scoreTransitionEdge = .trailing
                     pendingReviewHole = number
                 })
             }
@@ -207,26 +232,50 @@ struct CourseMapView: View {
     }
 
     private func showScoreEntry(for number: Int) {
+        guard let index = activeRound?.holes.firstIndex(where: { $0.number == number }) else { return }
         scoringHole = number
-        scoreTransitionEdge = .trailing
-        courseTransitionEdge = .leading
-        isShowingScoreEntry = true
+        navigateRoundPage(to: index * 2 + 1)
     }
 
     private func showCourseHole(_ number: Int) {
-        let currentNumber = scoringHole ?? number
-        courseTransitionEdge = number >= currentNumber ? .trailing : .leading
-        scoreTransitionEdge = number >= currentNumber ? .leading : .trailing
-        scoringHole = number
-        if let index = store.course?.holes.firstIndex(where: { $0.number == number }) {
-            holeIndex = index
+        guard let index = activeRound?.holes.firstIndex(where: { $0.number == number }) else { return }
+        scoringHole = nil
+        navigateRoundPage(to: index * 2)
+    }
+
+    private func navigateRoundPage(to requestedIndex: Int) {
+        guard let round = activeRound else { return }
+        guard transitionTargetPage == nil else { return }
+        let lastPage = max(0, round.holes.count * 2 - 1)
+        let destination = min(max(requestedIndex, 0), lastPage)
+        guard destination != roundPageIndex else { return }
+        pageDirection = destination > roundPageIndex ? 1 : -1
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction) {
+            transitionTargetPage = destination
+            pageProgress = 0
         }
-        isShowingScoreEntry = false
+        withAnimation(.easeInOut(duration: 0.32), completionCriteria: .removed) {
+            pageProgress = 1
+        } completion: {
+            var completion = Transaction()
+            completion.disablesAnimations = true
+            withTransaction(completion) {
+                roundPageIndex = destination
+                holeIndex = destination / 2
+                scoringHole = destination.isMultiple(of: 2) ? nil : round.holes[destination / 2].number
+                transitionTargetPage = nil
+                pageProgress = 0
+            }
+        }
     }
 
     @ViewBuilder
-    private var scoreEntryPage: some View {
-        if let round = activeRound, let number = scoringHole {
+    private func roundPage(_ pageIndex: Int) -> some View {
+        if let round = activeRound, pageIndex.isMultiple(of: 2) == false,
+           round.holes.indices.contains(pageIndex / 2) {
+            let number = round.holes[pageIndex / 2].number
             RoundHoleEntryView(round: round, holeNumber: number, onSave: { savedHoleNumber, entries in
                 guard var updated = activeRound else { throw RoundStorageError.incomplete }
                 for (playerID, score) in entries {
@@ -235,8 +284,7 @@ struct CourseMapView: View {
                 try roundStore.updateDraft(updated)
             }, onNavigateHole: showCourseHole)
         } else {
-            ContentUnavailableView("Round unavailable", systemImage: "flag.checkered",
-                                   description: Text("Start or resume a round to enter hole scores."))
+            content(for: activeRound == nil ? holeIndex : pageIndex / 2)
         }
     }
 
@@ -270,9 +318,10 @@ struct CourseMapView: View {
     }
 
     @ViewBuilder
-    private var content: some View {
+    private func content(for requestedHoleIndex: Int) -> some View {
         if let holes = store.course?.holes, !holes.isEmpty {
-            let hole = holes[min(holeIndex, holes.count - 1)]
+            let pageHoleIndex = min(max(requestedHoleIndex, 0), holes.count - 1)
+            let hole = holes[pageHoleIndex]
             let origin = distanceOrigin(for: hole)
             let holeRequest = terrainRequest(for: hole, origin: nil, target: nil)
             GeometryReader { geometry in
@@ -337,7 +386,7 @@ struct CourseMapView: View {
                 }
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     VStack(spacing: 0) {
-                        bottomHoleMenu(hole: hole, holeCount: holes.count)
+                        bottomHoleMenu(hole: hole, holeCount: holes.count, pageHoleIndex: pageHoleIndex)
                     }
                     .background {
                         UnevenRoundedRectangle(topLeadingRadius: 24, topTrailingRadius: 24)
@@ -560,10 +609,10 @@ struct CourseMapView: View {
         return String(format: "%+.1f %@", value, unit.symbol)
     }
 
-    private func bottomHoleMenu(hole: Hole, holeCount: Int) -> some View {
+    private func bottomHoleMenu(hole: Hole, holeCount: Int, pageHoleIndex: Int) -> some View {
         VStack(spacing: 4) {
         HStack(alignment: .center, spacing: 10) {
-            holeNavigationButton(isPrevious: true, count: holeCount)
+            holeNavigationButton(isPrevious: true, count: holeCount, pageHoleIndex: pageHoleIndex)
             Button { isShowingCourseInfo = true } label: {
                 Text("Hole \(hole.number) · Par \(hole.par.map(String.init) ?? "–") · HCP \(hole.handicapIndex.map(String.init) ?? "–") · \(hole.length > 0 ? unit.format(hole.length) : "–")")
                     .font(.caption.weight(.semibold))
@@ -573,19 +622,7 @@ struct CourseMapView: View {
             .buttonStyle(.plain)
             .accessibilityHint("Opens course, tee and hole information")
             .frame(maxWidth: .infinity)
-            holeNavigationButton(isPrevious: false, count: holeCount)
-        }
-        if let round = activeRound {
-            let entered = round.players.contains { round.score(player: $0.id, hole: hole.number) != nil }
-            let complete = round.players.allSatisfy { round.score(player: $0.id, hole: hole.number)?.isValid == true }
-            HStack(spacing: 12) {
-                Label(entered && roundStore.draftNeedsRetry ? "Save pending" : complete ? "Score saved" : entered ? "Partly scored" : "No score yet",
-                      systemImage: entered && roundStore.draftNeedsRetry ? "exclamationmark.circle" : complete ? "checkmark.circle.fill" : "circle")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(complete && !roundStore.draftNeedsRetry ? PureLineStyle.accent : PureLineStyle.muted)
-                    .accessibilityIdentifier("course-hole-score-status")
-                Spacer(minLength: 0)
-            }
+            holeNavigationButton(isPrevious: false, count: holeCount, pageHoleIndex: pageHoleIndex)
         }
         }
         .padding(.horizontal, 16)
@@ -593,7 +630,7 @@ struct CourseMapView: View {
         .frame(maxWidth: .infinity)
         .background {
             Rectangle()
-                .fill(PureLineStyle.canvas)
+                .fill(Color.white)
                 .ignoresSafeArea(edges: .bottom)
         }
     }
@@ -663,11 +700,7 @@ struct CourseMapView: View {
         .padding(.horizontal, 24)
         .padding(.vertical, 2)
         .frame(maxWidth: .infinity)
-        .background {
-            Rectangle()
-                .fill(PureLineStyle.canvas)
-                .ignoresSafeArea(edges: .top)
-        }
+        .background(Color.white, ignoresSafeAreaEdges: .top)
     }
 
     private func flagDistanceText(flag: GeoPoint?, origin: DistanceOrigin?) -> String {
@@ -723,13 +756,19 @@ struct CourseMapView: View {
         }
     }
 
-    private func holeNavigationButton(isPrevious: Bool, count: Int) -> some View {
-        let unavailable = isPrevious ? holeIndex == 0 : (activeRound == nil && holeIndex >= count - 1)
+    private func holeNavigationButton(isPrevious: Bool, count: Int, pageHoleIndex: Int? = nil) -> some View {
+        let currentHoleIndex = pageHoleIndex ?? holeIndex
+        let unavailable: Bool
+        if activeRound != nil {
+            unavailable = isPrevious ? roundPageIndex == 0 : roundPageIndex >= count * 2 - 1
+        } else {
+            unavailable = isPrevious ? currentHoleIndex == 0 : currentHoleIndex >= count - 1
+        }
         return Button {
-            if !isPrevious, let round = activeRound {
-                showScoreEntry(for: round.holes[holeIndex].number)
+            if activeRound != nil {
+                navigateRoundPage(to: roundPageIndex + (isPrevious ? -1 : 1))
             } else {
-                holeIndex += isPrevious ? -1 : 1
+                holeIndex = currentHoleIndex + (isPrevious ? -1 : 1)
             }
         } label: {
             Image(systemName: isPrevious ? "chevron.left" : "chevron.right")

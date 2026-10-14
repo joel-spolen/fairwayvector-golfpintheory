@@ -139,7 +139,7 @@ struct RoundSetupView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .pureLineCard()
                 }
-                    Button("Add player · \(players.count)/4", systemImage: "person.badge.plus") {
+                    Button("Add player · \(players.count - 1)/3", systemImage: "person.badge.plus") {
                         players.append(RoundPlayer(name: "Player \(players.count + 1)", isOwner: false,
                                                    handicapIndex: nil, keepsDetailedScore: true))
                     }
@@ -195,6 +195,7 @@ struct RoundHoleEntryView: View {
     let holeNumber: Int
     let onSave: (Int, [UUID: PlayedHoleScore]) throws -> Void
     let onNavigateHole: (Int) -> Void
+    @Environment(PlayedRoundStore.self) private var roundStore
     @State private var entries: [UUID: PlayedHoleScore] = [:]
     @State private var error: String?
     @State private var showingGIRInfo = false
@@ -205,6 +206,10 @@ struct RoundHoleEntryView: View {
     }
     private var valid: Bool { round.players.allSatisfy { entries[$0.id]?.isValid == true } }
     private var holePosition: Int { round.holes.firstIndex(where: { $0.number == holeNumber }) ?? 0 }
+    private var hasSavedScore: Bool { round.players.contains { round.score(player: $0.id, hole: holeNumber) != nil } }
+    private var allPlayersScored: Bool {
+        round.players.allSatisfy { round.score(player: $0.id, hole: holeNumber)?.isValid == true }
+    }
 
     private func saveCurrentHole() throws {
         guard valid else { throw RoundStorageError.incomplete }
@@ -213,11 +218,13 @@ struct RoundHoleEntryView: View {
     }
 
     private func moveHole(by offset: Int) {
-        let destination = holePosition + offset
-        guard round.holes.indices.contains(destination) else { return }
+        let pageIndex = holePosition * 2 + 1
+        let destinationPage = pageIndex + offset
+        let lastPage = round.holes.count * 2 - 1
+        guard (0...lastPage).contains(destinationPage) else { return }
         do {
             try saveCurrentHole()
-            onNavigateHole(round.holes[destination].number)
+            onNavigateHole(round.holes[destinationPage / 2].number)
         } catch {
             self.error = "Save this hole before moving on: \(error.localizedDescription)"
         }
@@ -240,8 +247,7 @@ struct RoundHoleEntryView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
+        ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("HOLE \(holeNumber)")
@@ -249,6 +255,13 @@ struct RoundHoleEntryView: View {
                         .foregroundStyle(PureLineStyle.muted)
                     Text("Par \(hole?.par.map(String.init) ?? "—") · HCP \(hole?.strokeIndex.map(String.init) ?? "—")")
                         .font(.title2.weight(.semibold))
+                    Label(
+                        roundStore.draftNeedsRetry ? "Save pending" : allPlayersScored ? "Score saved" : hasSavedScore ? "Partly scored" : "No score yet",
+                        systemImage: roundStore.draftNeedsRetry ? "exclamationmark.circle" : allPlayersScored ? "checkmark.circle.fill" : "circle"
+                    )
+                    .font(.caption.weight(.medium))
+                    .foregroundStyle(allPlayersScored && !roundStore.draftNeedsRetry ? PureLineStyle.accent : PureLineStyle.muted)
+                    .accessibilityIdentifier("scorecard-hole-score-status")
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .pureLineCard()
@@ -332,13 +345,13 @@ struct RoundHoleEntryView: View {
                             .frame(width: 48, height: 48)
                             .background(PureLineStyle.surface, in: Circle())
                     }
-                    .disabled(holePosition == 0)
-                    .accessibilityLabel("Previous hole")
+                    .accessibilityLabel("Previous page")
 
                     Button {
                         do {
                             try saveCurrentHole()
-                            onNavigateHole(holeNumber)
+                            let nextHoleIndex = min(holePosition + 1, round.holes.count - 1)
+                            onNavigateHole(round.holes[nextHoleIndex].number)
                         }
                         catch { self.error = "Score could not be saved: \(error.localizedDescription)" }
                     } label: {
@@ -356,7 +369,7 @@ struct RoundHoleEntryView: View {
                             .background(PureLineStyle.surface, in: Circle())
                     }
                     .disabled(holePosition >= round.holes.count - 1)
-                    .accessibilityLabel("Next hole")
+                    .accessibilityLabel("Next page")
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(PureLineStyle.accent)
@@ -366,10 +379,6 @@ struct RoundHoleEntryView: View {
             }
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
-            .navigationTitle("Hole \(holeNumber) scorecard")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
             .sheet(isPresented: $showingGIRInfo) {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack {
@@ -392,7 +401,7 @@ struct RoundHoleEntryView: View {
                 .presentationDragIndicator(.visible)
             }
             .onAppear { loadEntries(for: holeNumber) }
-        }.tint(PureLineStyle.accent)
+        .tint(PureLineStyle.accent)
     }
 
     private func handicapStrokes(for player: RoundPlayer) -> Int? {
