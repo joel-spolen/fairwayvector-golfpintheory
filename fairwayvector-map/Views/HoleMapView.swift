@@ -315,7 +315,18 @@ struct HoleMapView: View {
 
     private var initialCameraCenter: GeoPoint {
         guard let tee = hole.tee, let target = hole.greenCenter else { return hole.tee ?? GeoPoint(lat: 0, lon: 0) }
-        return GolfGeometry.interpolate(tee, target, fraction: 0.5)
+        let center = GolfGeometry.interpolate(tee, target, fraction: 0.5)
+        // Shift the camera slightly left of the hole's line so the course appears
+        // right of center, leaving breathing room for the floating control cards.
+        let leftBearing = GolfGeometry.bearing(from: tee, to: target) - 90
+        let radians = leftBearing * .pi / 180
+        let metersPerLatitudeDegree = 111_320.0
+        let metersPerLongitudeDegree = metersPerLatitudeDegree * max(cos(center.lat * .pi / 180), 0.01)
+        let offsetMeters = 24.0
+        return GeoPoint(
+            lat: center.lat + offsetMeters * cos(radians) / metersPerLatitudeDegree,
+            lon: center.lon + offsetMeters * sin(radians) / metersPerLongitudeDegree
+        )
     }
 
     private var initialCamera: MapCamera {

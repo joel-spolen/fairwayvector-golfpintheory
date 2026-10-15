@@ -64,20 +64,22 @@ struct ContentView: View {
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
             feature(screen)
                 .safeAreaInset(edge: .top, spacing: 0) {
-                    HStack {
-                        Button {
-                            destination = nil
-                        } label: {
-                            Label("Home", systemImage: "chevron.left")
-                                .font(.subheadline.weight(.medium))
-                                .frame(minHeight: 44)
+                    if screen != .course {
+                        HStack {
+                            Button {
+                                destination = nil
+                            } label: {
+                                Label("Home", systemImage: "chevron.left")
+                                    .font(.subheadline.weight(.medium))
+                                    .frame(minHeight: 44)
+                            }
+                            .accessibilityIdentifier("return-home-button")
+                            Spacer()
                         }
-                        .accessibilityIdentifier("return-home-button")
-                        Spacer()
+                        .padding(.horizontal, 20)
+                        .foregroundStyle(PureLineStyle.accent)
+                        .background(PureLineStyle.canvas)
                     }
-                    .padding(.horizontal, 20)
-                    .foregroundStyle(PureLineStyle.accent)
-                    .background(PureLineStyle.canvas)
                 }
                 .environmentObject(trajectoryModel)
                 .environment(roundStore)
@@ -101,7 +103,7 @@ struct ContentView: View {
     @ViewBuilder private func feature(_ screen: Destination) -> some View {
         switch screen {
         case .course:
-            CourseMapFlowView(requestStartRound: $requestStartRound)
+            CourseMapFlowView(onHome: { destination = nil }, requestStartRound: $requestStartRound)
         case .handicap:
             HCPProjectionEntryView()
         case .practice:
@@ -115,6 +117,7 @@ struct ContentView: View {
 }
 
 private struct CourseMapFlowView: View {
+    let onHome: () -> Void
     @State private var selection: CourseReference?
     @State private var resumedRound: PlayedRound?
     @State private var isStartingRoundFlow = false
@@ -172,10 +175,11 @@ private struct CourseMapFlowView: View {
                 }
             }
         } else if let selection {
-            CourseMapView(reference: selection, requestStartRound: $requestStartRound, resumedRound: resumedRound) {
-                self.selection = nil
-                resumedRound = nil
-            }
+            CourseMapView(reference: selection, requestStartRound: $requestStartRound,
+                          resumedRound: resumedRound, onHome: onHome) {
+                    self.selection = nil
+                    resumedRound = nil
+                }
         } else {
             CourseSelectionView(showsRoundInProgress: isStartingRoundFlow || requestStartRound,
                 isStartRoundFlow: isStartingRoundFlow || requestStartRound, onStartRound: { reference in
@@ -191,7 +195,25 @@ private struct CourseMapFlowView: View {
                 isStartingRoundFlow = false
                 selection = $0
             })
+            .safeAreaInset(edge: .top, spacing: 0) {
+                courseSelectionHomeButton
+            }
         }
+    }
+
+    private var courseSelectionHomeButton: some View {
+        HStack {
+            Button(action: onHome) {
+                Label("Home", systemImage: "chevron.left")
+                    .font(.subheadline.weight(.medium))
+                    .frame(minHeight: 44)
+            }
+            .accessibilityIdentifier("return-home-button")
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .foregroundStyle(PureLineStyle.accent)
+        .background(PureLineStyle.canvas)
     }
 
     private func prepareRoundSetup(for reference: CourseReference) {

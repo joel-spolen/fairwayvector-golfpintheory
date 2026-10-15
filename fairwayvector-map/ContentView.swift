@@ -3,6 +3,7 @@ import SwiftUI
 struct CourseMapView: View {
     let reference: CourseReference
     let onChangeCourse: () -> Void
+    let onHome: () -> Void
     @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
     @Environment(PlayedRoundStore.self) private var roundStore
     @Binding private var requestStartRound: Bool
@@ -14,6 +15,7 @@ struct CourseMapView: View {
     @State private var roundPageIndex: Int
     @State private var pageDirection = 1
     @State private var roundError: String?
+    @State private var isConfirmingRoundCancel = false
     @State private var transitionTargetPage: Int?
     @State private var pageProgress = 0.0
     @State private var reviewingRound: PlayedRound?
@@ -42,9 +44,11 @@ struct CourseMapView: View {
     @AppStorage("customFlagPositions") private var customFlagPositions = ""
 
     init(reference: CourseReference, requestStartRound: Binding<Bool> = .constant(false),
-         resumedRound: PlayedRound? = nil, onChangeCourse: @escaping () -> Void = {}) {
+         resumedRound: PlayedRound? = nil, onHome: @escaping () -> Void = {},
+         onChangeCourse: @escaping () -> Void = {}) {
         self.reference = reference
         self.onChangeCourse = onChangeCourse
+        self.onHome = onHome
         _requestStartRound = requestStartRound
         resumesSnapshot = resumedRound != nil
         _roundModeEnabled = State(initialValue: resumedRound != nil)
@@ -176,6 +180,19 @@ struct CourseMapView: View {
             }
             Button("Keep draft", role: .cancel) { roundError = nil }
         } message: { Text(roundError ?? "") }
+        .confirmationDialog("Cancel this round?", isPresented: $isConfirmingRoundCancel, titleVisibility: .visible) {
+            Button("Cancel round", role: .destructive) {
+                do {
+                    try roundStore.discardDraft()
+                    roundModeEnabled = false
+                    onChangeCourse()
+                } catch {
+                    roundError = error.localizedDescription
+                }
+            }
+        } message: {
+            Text("This discards the unsaved round and its scores. Saved scorecards are not affected.")
+        }
         .sheet(isPresented: $isShowingTerrainProfile, onDismiss: { terrainInspectionPoint = nil }) {
             if let holes = store.course?.holes, !holes.isEmpty {
                 let hole = holes[min(holeIndex, holes.count - 1)]
@@ -340,59 +357,64 @@ struct CourseMapView: View {
                     },
                     simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
                 )
-                // Respect the control insets so MapKit's attribution stays visible
-                // and tappable above the bottom hole menu.
-                .overlay(alignment: .trailing) {
-                    VStack(spacing: 8) {
-                        if let location = courseWeatherLocation {
-                            CourseWeatherCard(location: location, store: weatherStore,
-                                              mapHeading: mapHeading, compact: true)
-                        }
-                        terrainPanel
-                        Button {
-                            isShowingFlagEditor = true
-                        } label: {
-                            VStack(spacing: 3) {
-                                Image(systemName: "flag")
-                                    .font(.body.weight(.medium))
-                                    .foregroundStyle(PureLineStyle.accent)
-                                Text("Pin position")
-                                    .font(.caption2.weight(.medium))
-                                    .multilineTextAlignment(.center)
-                                    .foregroundStyle(PureLineStyle.ink)
-                            }
-                            .padding(6)
-                            .frame(width: 78)
-                            .frame(minHeight: 64)
-                            .contentShape(RoundedRectangle(cornerRadius: 14))
-                        }
-                        .buttonStyle(.plain)
-                        .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
-                        .disabled(hole.greenCenter == nil)
-                        .accessibilityHint("Opens an enlarged green where you can tap to place the flag")
-                        CourseShotRecommendationView(terrainStore: terrainStore, weatherStore: weatherStore,
-                            weatherLocation: courseWeatherLocation, selectedTarget: tapPoint,
-                            unit: unit, model: trajectoryModel, compact: true)
-                    }
-                    .padding(.trailing, 10)
-                    .padding(.top, 100)
-                    .padding(.bottom, 150)
-                    .frame(maxHeight: .infinity, alignment: .center)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .overlay(alignment: .topTrailing) {
+                    roundActionsMenu
+                        .padding(.top, 12)
+                        .padding(.trailing, 12)
                 }
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    VStack(spacing: 0) {
-                        bottomHoleMenu(hole: hole, holeCount: holes.count, pageHoleIndex: pageHoleIndex)
+                .overlay(alignment: .leading) {
+                    ScrollView(.vertical) {
+                        VStack(spacing: 9) {
+                            Button {
+                                isShowingFlagEditor = true
+                            } label: {
+                                VStack(spacing: 3) {
+                                    Image(systemName: "flag")
+                                        .font(.body.weight(.medium))
+                                        .foregroundStyle(.white)
+                                    Text("Pin position")
+                                        .font(.caption2.weight(.medium))
+                                        .multilineTextAlignment(.center)
+                                        .foregroundStyle(.white)
+                                }
+                                .padding(6)
+                                .frame(width: 78)
+                                .frame(minHeight: 64)
+                                .contentShape(RoundedRectangle(cornerRadius: 14))
+                            }
+                            .buttonStyle(.plain)
+                            .background(PureLineStyle.accent, in: RoundedRectangle(cornerRadius: 14))
+                            .disabled(hole.greenCenter == nil)
+                            .accessibilityHint("Opens an enlarged green where you can tap to place the flag")
+
+                            distanceSidebar(hole: hole, origin: origin, flag: flagPosition(for: hole))
+                            if let location = courseWeatherLocation {
+                                CourseWeatherCard(location: location, store: weatherStore,
+                                                  mapHeading: mapHeading, compact: true)
+                            }
+                            terrainPanel
+                            CourseShotRecommendationView(terrainStore: terrainStore, weatherStore: weatherStore,
+                                weatherLocation: courseWeatherLocation, selectedTarget: tapPoint,
+                                unit: unit, model: trajectoryModel, compact: true)
+                        }
+                        .padding(.vertical, 8)
+                        .padding(.horizontal, 6)
                     }
+                    .frame(width: 94, height: geometry.size.height)
+                    .scrollIndicators(.hidden)
+                    .padding(.leading, 6)
+                }
+                .frame(width: geometry.size.width, height: geometry.size.height)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                bottomHoleMenu(hole: hole, holeCount: holes.count, pageHoleIndex: pageHoleIndex)
                     .background {
                         UnevenRoundedRectangle(topLeadingRadius: 24, topTrailingRadius: 24)
                             .fill(PureLineStyle.canvas)
                             .ignoresSafeArea(edges: .bottom)
                             .shadow(color: .black.opacity(0.06), radius: 16, y: -4)
                     }
-                }
-            }
-            .safeAreaInset(edge: .top, spacing: 0) {
-                topDistanceMenu(hole: hole, origin: origin, flag: flagPosition(for: hole))
             }
             .task(id: holeRequest) {
                 // Opening geometry/tee/hole/saved flag reads terrain cache ONLY.
@@ -678,36 +700,78 @@ struct CourseMapView: View {
         .tint(FairwayVectorColors.navy)
     }
 
-    private func topDistanceMenu(hole: Hole, origin: DistanceOrigin?, flag: GeoPoint?) -> some View {
-        VStack(spacing: 2) {
-            DistanceCard(hole: hole, origin: origin, unit: unit,
-                middleTitle: tapPoint != nil ? "Target" : flag != nil ? "To flag" : "Center",
-                middlePoint: tapPoint ?? flag)
-            HStack(spacing: 16) {
-                if let origin, let center = hole.greenCenter {
-                    Text("Center \(unit.format(GolfGeometry.distance(origin.point, center)))")
+    private var roundActionsMenu: some View {
+        Menu {
+            Button("Home", systemImage: "house.fill", action: onHome)
+            if activeRound != nil {
+                Button("Scorecard", systemImage: "list.bullet.rectangle") { openRoundReview() }
+                Button("Cancel round", systemImage: "xmark.circle", role: .destructive) {
+                    isConfirmingRoundCancel = true
                 }
-                Spacer(minLength: 0)
-                Text("Target → flag \(flagDistanceText(flag: flag, origin: origin))")
+            } else {
+                Button("Start round", systemImage: "flag.checkered") { showingRoundSetup = true }
+                    .disabled(store.course == nil || store.isLoading || roundStore.active != nil)
             }
-            .font(.caption.monospacedDigit())
-            .foregroundStyle(PureLineStyle.muted)
-            .opacity(tapPoint == nil ? 0 : 1)
-            .accessibilityHidden(tapPoint == nil)
-            .offset(y: -4)
+        } label: {
+            Image(systemName: "gearshape")
+                .font(.body.weight(.medium))
+                .foregroundStyle(PureLineStyle.accent)
+                .frame(width: 44, height: 44)
+                .background(PureLineStyle.canvas.opacity(0.94), in: Circle())
+                .contentShape(Circle())
         }
-        // Preserve navigation-bar clearance while reducing the overall bar height by the shifted row amount.
-        .padding(.top, 30)
-        .padding(.horizontal, 24)
-        .padding(.vertical, 2)
-        .frame(maxWidth: .infinity)
-        .background(PureLineStyle.canvas)
-        .zIndex(2)
+        .buttonStyle(.plain)
+        .accessibilityLabel("Round actions")
+        .accessibilityIdentifier("course-round-actions-menu")
     }
 
-    private func flagDistanceText(flag: GeoPoint?, origin: DistanceOrigin?) -> String {
-        guard let origin, let flag else { return "–" }
-        return unit.format(GolfGeometry.distance(tapPoint ?? origin.point, flag))
+    private func distanceSidebar(hole: Hole, origin: DistanceOrigin?, flag: GeoPoint?) -> some View {
+        VStack(spacing: 7) {
+            sidebarDistance("FRONT", from: origin?.point, to: hole.greenFront ?? hole.greenCenter)
+            sidebarDistance("TARGET", from: origin?.point, to: tapPoint, highlighted: true)
+            sidebarDistance("BACK", from: origin?.point, to: hole.greenBack ?? hole.greenCenter)
+            sidebarDistance("CENTER", from: origin?.point, to: hole.greenCenter)
+            sidebarDistance("TARGET → FLAG", from: tapPoint, to: tapPoint == nil ? nil : flag)
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 5)
+        .frame(maxWidth: .infinity)
+        .background(PureLineStyle.canvas, in: RoundedRectangle(cornerRadius: 14))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Shot distances")
+    }
+
+    private func sidebarDistance(_ title: String, from start: GeoPoint?, to end: GeoPoint?, highlighted: Bool = false) -> some View {
+        VStack(spacing: 1) {
+            Text(title)
+                .font(.system(size: 8, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .foregroundStyle(PureLineStyle.muted)
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text(distanceValue(from: start, to: end))
+                    .font(.system(size: highlighted ? 17 : 14, weight: highlighted ? .semibold : .medium).monospacedDigit())
+                    .minimumScaleFactor(0.65)
+                    .lineLimit(1)
+                    .foregroundStyle(highlighted ? PureLineStyle.accent : PureLineStyle.ink)
+                Text(unit.symbol)
+                    .font(.system(size: 8))
+                    .foregroundStyle(PureLineStyle.muted)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title): \(distanceAccessibilityValue(from: start, to: end))")
+    }
+
+    private func distanceValue(from start: GeoPoint?, to end: GeoPoint?) -> String {
+        guard let start, let end else { return "N/A" }
+        return "\(unit.value(GolfGeometry.distance(start, end)))"
+    }
+
+    private func distanceAccessibilityValue(from start: GeoPoint?, to end: GeoPoint?) -> String {
+        guard let start, let end else { return "unavailable" }
+        return unit.format(GolfGeometry.distance(start, end))
     }
 
     private func flagPosition(for hole: Hole) -> GeoPoint? {
