@@ -188,7 +188,7 @@ struct CourseMapView: View {
                 do {
                     try roundStore.discardDraft()
                     roundModeEnabled = false
-                    onChangeCourse()
+                    onHome()
                 } catch {
                     roundError = error.localizedDescription
                 }
@@ -678,32 +678,6 @@ struct CourseMapView: View {
                     LabeledContent("Tee", value: "\(store.reference.teeName) · \(store.reference.teeSex.capitalized)")
                     LabeledContent("Holes / par", value: "\(store.reference.holeCount) / \(store.reference.totalPar)")
                     LabeledContent("Rating / slope", value: String(format: "%.1f / %d", store.reference.courseRating, store.reference.slopeRating))
-                }
-                if let holes = store.course?.holes, !holes.isEmpty {
-                    let hole = holes[min(holeIndex, holes.count - 1)]
-                    Section("Hole \(hole.number)") {
-                        holeSummary(hole)
-                        if hole.usesPointOnlyGeometry {
-                            Text("GPS tee and green points are available; detailed fairway and green outlines are not. Tee-set positions are not moved to match published lengths.")
-                        }
-                        if let origin = distanceOrigin(for: hole) {
-                            switch origin.source {
-                            case .gps(let accuracy): Text("Distances use device GPS · accuracy ±\(Int(accuracy.rounded())) m.")
-                            case .simulated: Text("Distances use a simulated position, not device GPS.")
-                            case .teeNoFix: Text("No usable GPS fix: distances preview from the tee.")
-                            case .teeFarAway: Text("GPS is outside the hole corridor: distances preview from the tee.")
-                            }
-                        }
-                        Text("Recommendations and terrain use the committed position, not incoming GPS fixes. Release a target or confirm Retry terrain to recapture it.")
-                    }
-                }
-                Section("Sources") {
-                    Text("Course data © \(store.reference.golfAPICourseID == nil ? "OpenStreetMap contributors" : "Golf API") · Imagery © Apple Maps · Weather © Open-Meteo.")
-                    if let error = store.errorMessage {
-                        Label(error, systemImage: "exclamationmark.triangle")
-                        Button("Retry course update") { Task { await store.refresh() } }.disabled(store.isLoading)
-                    }
-                    Text("Tap weather, terrain or club advice on the map for full conditions, sources, errors and setup controls. Opening details never acquires new data.")
                 }
             }
             .navigationTitle("Course information")
