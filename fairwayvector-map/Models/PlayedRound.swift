@@ -56,6 +56,16 @@ struct PlayedHoleScore: Codable, Equatable {
     }
 }
 
+struct RoundDisplayOptions: Codable, Equatable {
+    var showWind = true
+    var showElevation = true
+    var showClubSelection = true
+    var scoringMode = false
+
+    static let roundSetupDefault = RoundDisplayOptions()
+    static let courseViewDefault = RoundDisplayOptions(scoringMode: true)
+}
+
 struct PlayedRound: Codable, Identifiable {
     var id = UUID()
     var date = Date.now
@@ -69,6 +79,8 @@ struct PlayedRound: Codable, Identifiable {
     var allowance: Int = 100
     var currentHole: Int = 0
     var scores: [String: PlayedHoleScore] = [:]
+    /// Optional for decoding round archives created before per-round display settings.
+    var displayOptions: RoundDisplayOptions? = nil
 
     var owner: RoundPlayer? { players.first(where: \.isOwner) }
     func recordsDetailedScore(for player: RoundPlayer) -> Bool {

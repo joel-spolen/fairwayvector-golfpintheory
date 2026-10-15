@@ -20,10 +20,6 @@ struct CourseWeatherCard: View {
         .buttonStyle(.plain)
         .foregroundStyle(PureLineStyle.ink)
         .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
-        // This is the sole automatic load. The detail sheet has no task/onAppear fetch.
-        .task(id: locationKey) {
-            await store.load(for: location)
-        }
         .accessibilityLabel("Course weather details")
         .accessibilityValue(accessibilitySummary)
         .accessibilityHint("Opens all conditions, source time, cached status, provider errors and manual refresh")

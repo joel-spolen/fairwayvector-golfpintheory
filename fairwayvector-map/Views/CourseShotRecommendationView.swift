@@ -7,15 +7,24 @@ struct CourseShotRecommendationView: View {
     let weatherLocation: GeoPoint?
     let selectedTarget: GeoPoint?
     let unit: DistanceUnit
+    var usesWind = true
+    var usesElevation = true
     @ObservedObject var model: TrajectoryCalculatorViewModel
     var compact = false
+    var allowsScoringMode = true
     @State private var engine = ClubRecommendationEngine()
     @State private var scoringEngine = ScoringRecommendationEngine()
     @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
     @State private var result: CourseShotRecommendationResult?
+    @State private var resultUsesScoringMode = false
     @State private var failedInput: CourseShotRecommendationInput?
     @State private var errorMessage: String?
     @State private var isShowingDetails = false
+
+    private struct CalculationKey: Equatable {
+        let input: CourseShotRecommendationInput?
+        let allowsScoringMode: Bool
+    }
 
     private var wedges: [Wedge] {
         guard let data = storedWedges.data(using: .utf8),
@@ -36,12 +45,21 @@ struct CourseShotRecommendationView: View {
         guard !terrainStore.shotPending else { return nil }
         return .capture(request: terrainStore.committedRequest, selectedTarget: selectedTarget,
                         weather: capturedWeather, weatherLocation: weatherStore.weatherLocation,
-                        shotProfile: terrainStore.snapshot.shotProfile, profile: model.playerProfileStore.profile, wedges: wedges)
+                        shotProfile: terrainStore.snapshot.shotProfile, profile: model.playerProfileStore.profile,
+                        wedges: wedges, usesWind: usesWind, usesElevation: usesElevation)
+    }
+
+    private var calculationKey: CalculationKey {
+        CalculationKey(input: input, allowsScoringMode: allowsScoringMode)
     }
 
     private var currentResult: CourseShotRecommendationResult? {
-        guard let input, result?.input == input else { return nil }
+        guard let input, result?.input == input, resultUsesScoringMode == allowsScoringMode else { return nil }
         return result
+    }
+
+    private var isScoringMode: Bool {
+        allowsScoringMode && (currentResult?.input.isScoring ?? input?.isScoring ?? false)
     }
 
     private var compactAccessibilityValue: String {
@@ -62,7 +80,7 @@ struct CourseShotRecommendationView: View {
                         .tracking(1.5)
                         .foregroundStyle(PureLineStyle.muted)
                     Spacer(minLength: 0)
-                    if currentResult?.input.isScoring == true {
+                    if isScoringMode {
                         Text("Scoring")
                             .font(.caption2.weight(.medium))
                             .foregroundStyle(PureLineStyle.accent)
@@ -121,17 +139,19 @@ struct CourseShotRecommendationView: View {
         .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         .accessibilityIdentifier("course-club-recommendation")
         .accessibilityHint("Opens the suggested club and modeled flight details")
-        .task(id: input) {
+        .task(id: calculationKey) {
             result = nil
             failedInput = nil
             errorMessage = nil
-            guard let captured = input else { return }
+            let key = calculationKey
+            guard let captured = key.input else { return }
+            let useScoringRecommendations = key.allowsScoringMode && captured.isScoring
             do {
                 // Coalesce committed-target/weather/profile changes, never live GPS.
                 try await Task.sleep(for: .milliseconds(200))
                 let recommendations: [CourseClubRecommendation]
                 let unavailable: [UnavailableScoringShot]
-                if captured.isScoring {
+                if useScoringRecommendations {
                     // Weather shot supplies only captured conditions; its club launch
                     // is NOT reused as the scoring launch or written to Practice.
                     let conditions = ShotInputs(ballSpeedMps: 1, launchAngleDeg: 1,
@@ -154,15 +174,16 @@ struct CourseShotRecommendationView: View {
                     }
                 }
                 try Task.checkCancellation()
-                guard input == captured else { return }
+                guard calculationKey == key else { return }
                 if recommendations.isEmpty {
                     failedInput = captured
-                    errorMessage = captured.isScoring
+                    errorMessage = useScoringRecommendations
                         ? "No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range."
                         : "No club prediction is available. Default club profiles are used until your bag is configured."
                 }
                 result = CourseShotRecommendationResult(input: captured, recommendations: recommendations,
                     unavailableScoringShots: unavailable)
+                resultUsesScoringMode = key.allowsScoringMode
             } catch is CancellationError {
                 // A newer target or conditions own publication.
             } catch {
@@ -178,6 +199,20 @@ struct CourseShotRecommendationView: View {
 
     private var compactSummary: some View {
         VStack(spacing: 3) {
+            if isScoringMode {
+                Text("SCORING")
+                    .font(.system(size: 7, weight: .bold))
+                    .tracking(0.4)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(PureLineStyle.accent, in: Capsule())
+                Text("50 / 75 / 100%")
+                    .font(.system(size: 8, weight: .semibold).monospacedDigit())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                    .foregroundStyle(PureLineStyle.muted)
+            }
             Image(systemName: "scope")
                 .font(.body.weight(.medium))
                 .foregroundStyle(PureLineStyle.accent)
@@ -190,6 +225,11 @@ struct CourseShotRecommendationView: View {
                 Text(unit.format(best.recommendation.estimatedCarryM))
                     .font(.caption2.monospacedDigit())
                     .foregroundStyle(PureLineStyle.muted)
+                Text(aimAdvice(for: best.recommendation))
+                    .font(.caption2.weight(.medium))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .foregroundStyle(PureLineStyle.accent)
             } else {
                 Text(compactStatus)
                     .font(.caption2.weight(.medium))
@@ -204,7 +244,14 @@ struct CourseShotRecommendationView: View {
         .padding(6)
         .frame(width: 78)
         .frame(minHeight: 64)
-        .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
+        .background(isScoringMode ? PureLineStyle.accent.opacity(0.08) : PureLineStyle.canvas.opacity(0.97),
+                    in: RoundedRectangle(cornerRadius: 14))
+        .overlay {
+            if isScoringMode {
+                RoundedRectangle(cornerRadius: 14)
+                    .strokeBorder(PureLineStyle.accent.opacity(0.45), lineWidth: 1)
+            }
+        }
         .contentShape(RoundedRectangle(cornerRadius: 14))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Your next shot")
@@ -215,7 +262,7 @@ struct CourseShotRecommendationView: View {
     @ViewBuilder private var recommendationDetails: some View {
             if let currentResult {
                 CourseShotRecommendationDetail(result: currentResult, unit: unit,
-                    unitPreferences: model.unitPreferences)
+                    unitPreferences: model.unitPreferences, usesScoringMode: isScoringMode)
             } else {
                 NavigationStack {
                     ScrollView {
@@ -266,14 +313,22 @@ struct CourseShotRecommendationView: View {
                 : "Matching origin/target terrain unavailable. Release the target or confirm Retry terrain; no flat-ground assumption."
         }
         if failedInput == input { return errorMessage ?? "Club predictions unavailable." }
-        return input?.isScoring == true ? "Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…"
+        return isScoringMode ? "Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…"
             : "Calculating with your Practice bag, captured weather and terrain…"
     }
 
     private func recommendationRow(_ choice: CourseClubRecommendation, target: Double) -> some View {
         let recommendation = choice.recommendation
-        return Text("\(unit.format(recommendation.estimatedCarryM)) carry · \(CourseShotRecommendationDetail.errorText(recommendation, target: target, unit: unit))")
+        return Text("\(unit.format(recommendation.estimatedCarryM)) carry · \(CourseShotRecommendationDetail.errorText(recommendation, target: target, unit: unit)) · \(aimAdvice(for: recommendation))")
             .font(.caption).foregroundStyle(PureLineStyle.muted)
+    }
+
+    private func aimAdvice(for recommendation: ClubRecommendation) -> String {
+        guard let lateral = recommendation.lateralAtTargetDistanceM, abs(lateral) >= 0.5 else {
+            return "Aim at target"
+        }
+        let amount = unit.format(abs(lateral))
+        return "Aim ~\(amount) \(lateral > 0 ? "left" : "right")"
     }
 }
 
@@ -281,6 +336,7 @@ private struct CourseShotRecommendationDetail: View {
     let result: CourseShotRecommendationResult
     let unit: DistanceUnit
     @ObservedObject var unitPreferences: UnitPreferences
+    var usesScoringMode: Bool
     @Environment(\.dismiss) private var dismiss
 
     private var input: CourseShotRecommendationInput { result.input }
@@ -293,7 +349,7 @@ private struct CourseShotRecommendationDetail: View {
                     if let choice = suggested {
                         let recommendation = choice.recommendation
                         suggestionCard(choice)
-                        if input.isScoring, let range = input.scoringPlan.maxFullCarryM {
+                        if usesScoringMode, let range = input.scoringPlan.maxFullCarryM {
                             Label("Scoring range · ≤ \(unit.format(range))", systemImage: "scope")
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(PureLineStyle.accent)

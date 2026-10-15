@@ -14,6 +14,10 @@ struct RoundSetupView: View {
     @Query(sort: \GolfRound.date, order: .reverse) private var hcpRounds: [GolfRound]
     @State private var game: RoundGame = .strokePlay
     @State private var players = [RoundPlayer(name: "You", isOwner: true, handicapIndex: nil, keepsDetailedScore: true)]
+    @State private var showWind = RoundDisplayOptions.roundSetupDefault.showWind
+    @State private var showElevation = RoundDisplayOptions.roundSetupDefault.showElevation
+    @State private var showClubSelection = RoundDisplayOptions.roundSetupDefault.showClubSelection
+    @State private var scoringMode = RoundDisplayOptions.roundSetupDefault.scoringMode
     @State private var error: String?
     @State private var initialized = false
 
@@ -31,7 +35,10 @@ struct RoundSetupView: View {
     }
     private var candidate: PlayedRound {
         PlayedRound(reference: selectedCourseReference, course: course, holes: holes,
-            players: players, game: game, detailMode: .detailed, allowance: 100)
+            players: players, game: game, detailMode: .detailed, allowance: 100,
+            displayOptions: RoundDisplayOptions(showWind: showWind, showElevation: showElevation,
+                                                showClubSelection: showClubSelection,
+                                                scoringMode: showClubSelection && scoringMode))
     }
 
     private func binding(for playerID: UUID) -> Binding<RoundPlayer> {
@@ -89,6 +96,19 @@ struct RoundSetupView: View {
                     Text("Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties.")
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
+                .pureLineCard()
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Course view").font(.headline)
+                    Toggle("Wind", isOn: $showWind)
+                    Toggle("Elevation", isOn: $showElevation)
+                    Toggle("Club selection", isOn: $showClubSelection)
+                    Toggle("Scoring mode recommendations", isOn: $scoringMode)
+                        .disabled(!showClubSelection)
+                    Text("Scoring mode prioritizes calibrated wedge shots when the target is within your personal range.")
+                        .font(.caption).foregroundStyle(PureLineStyle.muted)
+                }
+                .font(.subheadline)
+                .tint(PureLineStyle.accent)
                 .pureLineCard()
                 ForEach(players) { player in
                     let playerBinding = binding(for: player.id)

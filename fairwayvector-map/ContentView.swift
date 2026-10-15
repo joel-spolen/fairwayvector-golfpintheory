@@ -61,6 +61,9 @@ struct CourseMapView: View {
         guard roundModeEnabled, let round = roundStore.active, round.reference == reference else { return nil }
         return round
     }
+    private var courseDisplayOptions: RoundDisplayOptions {
+        activeRound?.displayOptions ?? .courseViewDefault
+    }
     private var isShowingScoreEntry: Bool { activeRound != nil && roundPageIndex.isMultiple(of: 2) == false }
 
     private func horizontalPageOffset(width: CGFloat) -> CGFloat {
@@ -389,14 +392,20 @@ struct CourseMapView: View {
                             .accessibilityHint("Opens an enlarged green where you can tap to place the flag")
 
                             distanceSidebar(hole: hole, origin: origin, flag: flagPosition(for: hole))
-                            if let location = courseWeatherLocation {
+
+                            if courseDisplayOptions.showWind, let location = courseWeatherLocation {
                                 CourseWeatherCard(location: location, store: weatherStore,
                                                   mapHeading: mapHeading, compact: true)
                             }
-                            terrainPanel
-                            CourseShotRecommendationView(terrainStore: terrainStore, weatherStore: weatherStore,
-                                weatherLocation: courseWeatherLocation, selectedTarget: tapPoint,
-                                unit: unit, model: trajectoryModel, compact: true)
+                            if courseDisplayOptions.showElevation { terrainPanel }
+                            if courseDisplayOptions.showClubSelection {
+                                CourseShotRecommendationView(terrainStore: terrainStore, weatherStore: weatherStore,
+                                    weatherLocation: courseWeatherLocation, selectedTarget: tapPoint,
+                                    unit: unit, usesWind: courseDisplayOptions.showWind,
+                                    usesElevation: courseDisplayOptions.showElevation,
+                                    model: trajectoryModel, compact: true,
+                                    allowsScoringMode: courseDisplayOptions.scoringMode)
+                            }
                         }
                         .padding(.vertical, 8)
                         .padding(.horizontal, 6)
@@ -423,6 +432,10 @@ struct CourseMapView: View {
                 clearSimulation()
                 terrainStore.open(terrainRequest(for: hole,
                     origin: distanceOrigin(for: hole), target: nil))
+            }
+            .task(id: courseWeatherLocation) {
+                guard let location = courseWeatherLocation else { return }
+                await weatherStore.load(for: location)
             }
         } else if store.isLoading || store.errorMessage == nil {
             ProgressView("Loading course…")
