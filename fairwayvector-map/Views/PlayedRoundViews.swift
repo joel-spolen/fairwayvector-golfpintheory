@@ -254,13 +254,14 @@ struct RoundHoleEntryView: View {
     private func loadEntries(for number: Int) {
         entries = [:]
         for player in round.players {
-            var score = round.score(player: player.id, hole: number)
+            let savedScore = round.score(player: player.id, hole: number)
+            var score = savedScore
                 ?? PlayedHoleScore(strokes: round.holes.first(where: { $0.number == number })?.par ?? 4)
             if round.recordsDetailedScore(for: player) {
                 score.putts = score.putts ?? min(2, max(0, score.strokes - (score.penalties ?? 0)))
                 score.bunkerShots = score.bunkerShots ?? 0
                 score.penalties = score.penalties ?? 0
-                if score.fairway == .unknown { score.fairway = .missed }
+                if savedScore == nil { score.fairway = .hit }
             }
             if round.holes.first(where: { $0.number == number })?.par == 3 { score.fairway = .notApplicable }
             entries[player.id] = score
@@ -456,23 +457,43 @@ struct RoundHoleEntryView: View {
 
     private func fairwaySelector(_ selection: Binding<RoundFairway>) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Fairway").font(.subheadline.weight(.semibold))
+            Text("Fairway in regulation").font(.subheadline.weight(.semibold))
             HStack(spacing: 6) {
                 fairwayButton(.hit, icon: "checkmark", selection: selection)
-                fairwayButton(.left, icon: "arrow.left", selection: selection)
-                fairwayButton(.right, icon: "arrow.right", selection: selection)
-                fairwayButton(.long, icon: "arrow.up", selection: selection)
-                fairwayButton(.short, icon: "arrow.down", selection: selection)
+                fairwayButton(.missed, icon: "xmark", selection: selection)
+            }
+            if isFairwayMiss(selection.wrappedValue) {
+                Text("Miss direction (optional)")
+                    .font(.caption)
+                    .foregroundStyle(PureLineStyle.muted)
+                HStack(spacing: 6) {
+                    fairwayButton(.left, icon: "arrow.left", selection: selection)
+                    fairwayButton(.right, icon: "arrow.right", selection: selection)
+                    fairwayButton(.long, icon: "arrow.up", selection: selection)
+                    fairwayButton(.short, icon: "arrow.down", selection: selection)
+                }
             }
         }
     }
 
+    private func isFairwayMiss(_ outcome: RoundFairway) -> Bool {
+        [.missed, .left, .right, .long, .short].contains(outcome)
+    }
+
     private func fairwayButton(_ outcome: RoundFairway, icon: String, selection: Binding<RoundFairway>) -> some View {
-        let selected = selection.wrappedValue == outcome
-        return Button { selection.wrappedValue = outcome } label: {
+        let selected = outcome == .missed ? isFairwayMiss(selection.wrappedValue) : selection.wrappedValue == outcome
+        let title = outcome == .hit ? "FIR" : outcome == .missed ? "Missed FIR" : outcome.label
+        return Button {
+            // Tapping a selected direction clears only that optional detail.
+            if outcome != .hit && outcome != .missed && selection.wrappedValue == outcome {
+                selection.wrappedValue = .missed
+            } else if outcome != .missed || !isFairwayMiss(selection.wrappedValue) {
+                selection.wrappedValue = outcome
+            }
+        } label: {
             VStack(spacing: 4) {
                 Image(systemName: icon).font(.body.weight(.semibold))
-                Text(outcome.label).font(.caption.weight(.semibold))
+                Text(title).font(.caption.weight(.semibold))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
@@ -483,7 +504,7 @@ struct RoundHoleEntryView: View {
             .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(PureLineStyle.line, lineWidth: selected ? 0 : 1) }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(outcome == .hit ? "Fairway hit" : "Fairway miss: \(outcome.label)")
+        .accessibilityLabel(outcome == .hit ? "Fairway hit" : outcome == .missed ? "Fairway missed" : "Fairway miss: \(outcome.label)")
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
@@ -558,7 +579,7 @@ struct RoundScorecardView: View {
             ScrollView(.vertical) {
                 VStack(spacing: 0) {
                         row(label: "HOLE", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
-                            Text(column.hole.map { String($0.number) } ?? column.title ?? "—")
+                            Text(column.hole.map { String($0.number) } ?? (column.title == "TOTAL" ? "TOT" : column.title) ?? "—")
                                 .font(.system(size: 11, weight: .bold).monospacedDigit())
                         }
                         row(label: "PAR", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
@@ -583,14 +604,14 @@ struct RoundScorecardView: View {
                                 row(label: "Putts", columnWidth: columnWidth, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.putts))
                                 }
-                                row(label: "Sand", columnWidth: columnWidth, height: 25 * rowScale) { column in
-                                    scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.bunkerShots))
-                                }
                                 row(label: "FIR", columnWidth: columnWidth, height: 25 * rowScale) { column in
                                     fairwayCell(player: player, column: column)
                                 }
                                 row(label: "GIR", columnWidth: columnWidth, height: 25 * rowScale) { column in
                                     greenCell(player: player, column: column)
+                                }
+                                row(label: "Sand", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                    scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.bunkerShots))
                                 }
                                 row(label: "Penalties", columnWidth: columnWidth, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.penalties))
@@ -607,7 +628,9 @@ struct RoundScorecardView: View {
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
         }
-        .ignoresSafeArea()
+        // Size and rotate within the safe area so the camera and home indicator
+        // cannot cover the table; only the canvas extends to the screen edges.
+        .background(PureLineStyle.canvas.ignoresSafeArea())
         .statusBarHidden(true)
         .preferredColorScheme(.light)
     }
