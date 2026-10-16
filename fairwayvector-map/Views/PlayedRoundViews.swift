@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct RoundSetupView: View {
     let selectedCourseReference: CourseReference
@@ -487,6 +488,363 @@ struct RoundHoleEntryView: View {
     }
 }
 
+private enum RoundScorecardColumn: Identifiable {
+    case hole(PlayedHole)
+    case subtotal(title: String, holes: [PlayedHole], key: String)
+
+    var id: String {
+        switch self {
+        case .hole(let hole): "hole-\(hole.number)"
+        case .subtotal(_, _, let key): key
+        }
+    }
+
+    var holes: [PlayedHole] {
+        switch self {
+        case .hole(let hole): [hole]
+        case .subtotal(_, let holes, _): holes
+        }
+    }
+
+    var title: String? {
+        if case .subtotal(let title, _, _) = self { return title }
+        return nil
+    }
+
+    var hole: PlayedHole? {
+        if case .hole(let hole) = self { return hole }
+        return nil
+    }
+}
+
+/// Full-screen landscape-style scorecard rendered inside the portrait app shell.
+struct RoundScorecardView: View {
+    let round: PlayedRound
+    var onEditHole: ((Int) -> Void)? = nil
+    @Environment(PlayedRoundStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+
+    private let labelWidth: CGFloat = 72
+    private var isSaved: Bool { store.saved.contains { $0.id == round.id } }
+    private var columns: [RoundScorecardColumn] {
+        var result: [RoundScorecardColumn] = []
+        let orderedHoles = round.holes.sorted { $0.number < $1.number }
+        for (index, hole) in orderedHoles.enumerated() {
+            result.append(.hole(hole))
+            if round.holes.count == 18, index == 8 {
+                result.append(.subtotal(title: "OUT", holes: Array(orderedHoles[..<9]), key: "out"))
+            } else if round.holes.count == 18, index == 17 {
+                result.append(.subtotal(title: "IN", holes: Array(orderedHoles[9...]), key: "in"))
+            } else if round.holes.count == 9, index == 8 {
+                result.append(.subtotal(title: "TOTAL", holes: orderedHoles, key: "total"))
+            }
+        }
+        if round.holes.count == 18 {
+            result.append(.subtotal(title: "TOTAL", holes: orderedHoles, key: "total"))
+        }
+        return result
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            let portrait = geometry.size.height > geometry.size.width
+            let scorecardWidth = max(geometry.size.width, geometry.size.height)
+            let scorecardHeight = min(geometry.size.width, geometry.size.height)
+            let columnWidth = max(1, (scorecardWidth - labelWidth) / CGFloat(max(1, columns.count)))
+            let naturalHeight = 102 + round.players.reduce(0) {
+                $0 + 72 + (round.recordsDetailedScore(for: $1) ? 125 : 0)
+            }
+            let rowScale = max(1, scorecardHeight / CGFloat(naturalHeight))
+            ScrollView(.vertical) {
+                VStack(spacing: 0) {
+                        row(label: "HOLE", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
+                            Text(column.hole.map { String($0.number) } ?? column.title ?? "—")
+                                .font(.system(size: 11, weight: .bold).monospacedDigit())
+                        }
+                        row(label: "PAR", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
+                            scorecardText(parValue(for: column), emphasized: true)
+                        }
+                        row(label: "HCP", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
+                            scorecardText(column.hole?.strokeIndex.map(String.init) ?? "—")
+                        }
+
+                        ForEach(round.players) { player in
+                            row(label: player.isOwner ? "You" : player.name, columnWidth: columnWidth, isHeader: true, height: 30 * rowScale) { _ in
+                                Color.clear
+                            }
+                            row(label: "Score", columnWidth: columnWidth, isEditable: !isSaved, height: 42 * rowScale) { column in
+                                if let hole = column.hole {
+                                    scoreValue(round.score(player: player.id, hole: hole.number), hole: hole)
+                                } else {
+                                    scorecardText(aggregateScores(player: player, holes: column.holes), emphasized: true)
+                                }
+                            }
+                            if round.recordsDetailedScore(for: player) {
+                                row(label: "Putts", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                    scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.putts))
+                                }
+                                row(label: "Sand", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                    scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.bunkerShots))
+                                }
+                                row(label: "FIR", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                    fairwayCell(player: player, column: column)
+                                }
+                                row(label: "GIR", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                    greenCell(player: player, column: column)
+                                }
+                                row(label: "Penalties", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                    scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.penalties))
+                                }
+                            }
+                        }
+
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .frame(width: scorecardWidth, height: scorecardHeight)
+            .rotationEffect(.degrees(portrait ? 90 : 0))
+            .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            .background(PureLineStyle.canvas)
+            .foregroundStyle(PureLineStyle.ink)
+        }
+        .ignoresSafeArea()
+        .statusBarHidden(true)
+        .preferredColorScheme(.light)
+    }
+
+    private func row<Cell: View>(label: String, columnWidth: CGFloat, isHeader: Bool = false, isEditable: Bool = false,
+                                 height: CGFloat = 34,
+                                 @ViewBuilder cell: @escaping (RoundScorecardColumn) -> Cell) -> some View {
+        HStack(spacing: 0) {
+            HStack(spacing: 2) {
+                Text(label.uppercased())
+                if label == "HOLE" {
+                    Spacer(minLength: 0)
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .frame(width: 26, height: 30)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Close scorecard")
+                    .accessibilityIdentifier("close-round-scorecard")
+                }
+            }
+                .font(.system(size: 10, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .foregroundStyle(isHeader ? PureLineStyle.muted : PureLineStyle.ink)
+                .frame(width: labelWidth - 8, height: height, alignment: .leading)
+                .padding(.leading, 8)
+                .background(isHeader ? PureLineStyle.surface : PureLineStyle.canvas)
+                .overlay(alignment: .bottom) { Rectangle().fill(PureLineStyle.line).frame(height: 1) }
+
+            ForEach(columns) { column in
+                Group {
+                    if isEditable, !isSaved, let onEditHole, let hole = column.hole {
+                        Button { onEditHole(hole.number) } label: { cell(column) }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Edit \(label) score on hole \(hole.number)")
+                    } else {
+                        cell(column)
+                    }
+                }
+                .frame(width: columnWidth, height: height)
+                .background(isHeader ? PureLineStyle.surface : PureLineStyle.canvas)
+                .overlay {
+                    Rectangle().strokeBorder(PureLineStyle.line.opacity(0.65), lineWidth: 0.5)
+                }
+            }
+        }
+        .background(isHeader ? PureLineStyle.surface : PureLineStyle.canvas)
+    }
+
+    private func parValue(for column: RoundScorecardColumn) -> String {
+        if let hole = column.hole { return hole.par.map(String.init) ?? "—" }
+        let pars = column.holes.compactMap(\.par)
+        guard pars.count == column.holes.count else { return "—" }
+        return String(pars.reduce(0, +))
+    }
+
+    private func aggregateScores(player: RoundPlayer, holes: [PlayedHole]) -> String {
+        let scores = holes.compactMap { round.score(player: player.id, hole: $0.number) }
+        guard !scores.isEmpty else { return "—" }
+        return String(scores.reduce(0) { $0 + $1.strokes })
+    }
+
+    private func aggregateDetail(player: RoundPlayer, holes: [PlayedHole], value: (PlayedHoleScore) -> Int?) -> String {
+        let scores = holes.compactMap { round.score(player: player.id, hole: $0.number) }
+        let values = scores.compactMap(value)
+        guard !values.isEmpty else { return "—" }
+        return String(values.reduce(0, +))
+    }
+
+    private func aggregateFairways(player: RoundPlayer, holes: [PlayedHole]) -> String {
+        let eligible = holes.filter { $0.par.map { $0 > 3 } == true }
+        let answered = eligible.compactMap { hole -> Bool? in
+            guard let outcome = round.score(player: player.id, hole: hole.number)?.fairway,
+                  outcome != .unknown, outcome != .notApplicable else { return nil }
+            return outcome == .hit
+        }
+        return hitPercentage(answered)
+    }
+
+    private func aggregateGreens(player: RoundPlayer, holes: [PlayedHole]) -> String {
+        let answered = holes.compactMap { hole -> Bool? in
+            guard let par = hole.par,
+                  let score = round.score(player: player.id, hole: hole.number),
+                  let putts = score.putts else { return nil }
+            return score.strokes - putts <= par - 2
+        }
+        return hitPercentage(answered)
+    }
+
+    private func hitPercentage(_ results: [Bool]) -> String {
+        guard !results.isEmpty else { return "—" }
+        let percentage = (Double(results.filter { $0 }.count) / Double(results.count) * 100).rounded()
+        return "\(Int(percentage))%"
+    }
+
+    @ViewBuilder
+    private func scoreValue(_ score: PlayedHoleScore?, hole: PlayedHole) -> some View {
+        if let score {
+            GeometryReader { geometry in
+                let size = max(12, min(30, geometry.size.width - 6, geometry.size.height - 6))
+                Text(String(score.strokes))
+                    .font(.system(size: 13, weight: .bold).monospacedDigit())
+                    .foregroundStyle(scoreColor(score, par: hole.par))
+                    .frame(width: size, height: size)
+                    .overlay {
+                        if let par = hole.par {
+                            scoreOutline(difference: score.strokes - par, size: size)
+                                .foregroundStyle(scoreColor(score, par: par))
+                        }
+                    }
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            }
+            .accessibilityLabel("\(score.strokes) strokes")
+            .accessibilityValue(scoreDescription(score, par: hole.par))
+        } else {
+            Text("—")
+                .font(.system(size: 13).monospacedDigit())
+                .foregroundStyle(PureLineStyle.muted)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    @ViewBuilder
+    private func scoreOutline(difference: Int, size: CGFloat) -> some View {
+        if difference < 0 {
+            Circle().strokeBorder(lineWidth: 1)
+            if difference <= -2 {
+                Circle().strokeBorder(lineWidth: 1)
+                    .frame(width: size - 5, height: size - 5)
+            }
+        } else if difference > 0 {
+            Rectangle().strokeBorder(lineWidth: 1)
+            if difference >= 2 {
+                Rectangle().strokeBorder(lineWidth: 1)
+                    .frame(width: size - 5, height: size - 5)
+            }
+        }
+    }
+
+    private func scoreDescription(_ score: PlayedHoleScore, par: Int?) -> String {
+        guard let par else { return "" }
+        switch score.strokes - par {
+        case ...(-3): return "\(par - score.strokes) under par"
+        case -2: return "Eagle"
+        case -1: return "Birdie"
+        case 0: return "Par"
+        case 1: return "Bogey"
+        case 2: return "Double bogey"
+        default: return "\(score.strokes - par) over par"
+        }
+    }
+
+    private func scoreDetail(_ value: String) -> some View {
+        Text(value)
+            .font(.system(size: 10, weight: .medium).monospacedDigit())
+            .foregroundStyle(PureLineStyle.muted)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    @ViewBuilder
+    private func fairwayCell(player: RoundPlayer, column: RoundScorecardColumn) -> some View {
+        if let hole = column.hole {
+            let score = round.score(player: player.id, hole: hole.number)
+            if hole.par == 3 || !round.recordsDetailedScore(for: player) {
+                scoreDetail("—")
+            } else if let score, score.fairway != .unknown, score.fairway != .notApplicable {
+                coloredMark(score.fairway == .hit ? "✓" : "×", color: .red)
+            } else {
+                scoreDetail("—")
+            }
+        } else if column.title == "OUT" || column.title == "IN" || column.title == "TOTAL" {
+            let result = aggregateFairways(player: player, holes: column.holes)
+            if result == "—" { scoreDetail("—") }
+            else { coloredMark(result, color: .red) }
+        } else {
+            scoreDetail("—")
+        }
+    }
+
+    @ViewBuilder
+    private func greenCell(player: RoundPlayer, column: RoundScorecardColumn) -> some View {
+        if let hole = column.hole {
+            if let score = round.score(player: player.id, hole: hole.number),
+               round.recordsDetailedScore(for: player),
+               let putts = score.putts, let par = hole.par {
+                coloredMark(score.strokes - putts <= par - 2 ? "✓" : "×", color: .green)
+            } else {
+                scoreDetail("—")
+            }
+        } else if column.title == "OUT" || column.title == "IN" || column.title == "TOTAL" {
+            let result = aggregateGreens(player: player, holes: column.holes)
+            if result == "—" { scoreDetail("—") }
+            else { coloredMark(result, color: .green) }
+        } else {
+            scoreDetail("—")
+        }
+    }
+
+    private func coloredMark(_ value: String, color: Color) -> some View {
+        Text(value)
+            .font(.system(size: 9, weight: .bold).monospacedDigit())
+            .lineLimit(1)
+            .minimumScaleFactor(0.65)
+            .foregroundStyle(color)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(color.opacity(0.13), in: RoundedRectangle(cornerRadius: 5))
+            .padding(.horizontal, 3)
+            .padding(.vertical, 4)
+    }
+
+    private func fairwayResult(_ score: PlayedHoleScore?, hole: PlayedHole) -> String {
+        guard hole.par != 3, let fairway = score?.fairway, fairway != .unknown, fairway != .notApplicable else { return "—" }
+        return fairway == .hit ? "✓" : "×"
+    }
+
+    private func greenResult(_ score: PlayedHoleScore?, hole: PlayedHole) -> String {
+        guard let score, let putts = score.putts, let par = hole.par else { return "—" }
+        return score.strokes - putts <= par - 2 ? "✓" : "×"
+    }
+
+    private func scoreColor(_ score: PlayedHoleScore, par: Int?) -> Color {
+        guard let par else { return PureLineStyle.ink }
+        if score.strokes < par { return PureLineStyle.accent }
+        if score.strokes > par { return PureLineStyle.muted }
+        return PureLineStyle.ink
+    }
+
+    private func scorecardText(_ value: String, emphasized: Bool = false) -> some View {
+        Text(value)
+            .font(.system(size: 10, weight: emphasized ? .semibold : .regular).monospacedDigit())
+            .foregroundStyle(emphasized ? PureLineStyle.ink : PureLineStyle.muted)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+}
+
 struct RoundReviewView: View {
     let initialRound: PlayedRound
     var onEditHole: ((Int) -> Void)? = nil
@@ -528,34 +886,7 @@ struct RoundReviewView: View {
                 }
                 if let player {
                     totalsSection(player)
-                    Section("Hole-by-hole scorecard") {
-                        ForEach(round.holes) { hole in
-                            let score = round.score(player: player.id, hole: hole.number)
-                            VStack(alignment: .leading, spacing: 5) {
-                                HStack {
-                                    Text("Hole \(hole.number) · Par \(hole.par.map(String.init) ?? "—") · HCP \(hole.strokeIndex.map(String.init) ?? "—")")
-                                    Spacer()
-                                    Text(score.map { "\($0.strokes)" } ?? "—").bold().monospacedDigit()
-                                }
-                                if let score, round.recordsDetailedScore(for: player) {
-                                    Text("Putts \(score.putts.map(String.init) ?? "—") · Fairway \(score.fairway.label) · Bunker shots \(score.bunkerShots.map(String.init) ?? "—") · Penalties \(score.penalties.map(String.init) ?? "—")")
-                                        .font(.caption).foregroundStyle(FairwayVectorColors.slate)
-                                }
-                                    if let score, let rank = round.strokeRanks?[hole.number],
-                                       let ch = PlayedRoundCalculator.courseHandicap(round: round, player: player), let par = hole.par {
-                                        let ph = Int(floor(Double(ch) * Double(round.allowance) / 100 + 0.5))
-                                        let received = PlayedRoundCalculator.strokes(handicap: ph, rank: rank, holeCount: round.holes.count)
-                                        Text("Handicap strokes \(received) · Net \(score.strokes - received) · \(max(0, 2 + par - score.strokes + received)) points")
-                                        .font(.caption).foregroundStyle(FairwayVectorColors.slate)
-                                    }
-                                if !isSaved, let onEditHole {
-                                    Button(score == nil ? "Record this hole" : "Edit this hole") {
-                                        onEditHole(hole.number); dismiss()
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    Section("Scorecard") { scorecardGrid }
                 }
                 Section("Handicap history · You only") {
                     Text("HCP score below is a local WHS differential estimate, not an official posted result. Saving Statistics does not add a handicap round automatically.")
@@ -605,6 +936,115 @@ struct RoundReviewView: View {
                 }
             } message: { Text("All players' unsaved scores will be removed. Saved rounds and Handicap history are unaffected.") }
         }.tint(FairwayVectorColors.navy)
+    }
+
+    private var scorecardGrid: some View {
+        ScrollView(.horizontal) {
+            VStack(spacing: 0) {
+                HStack(spacing: 0) {
+                    scorecardLabelCell("HOLE", header: true)
+                    ForEach(round.holes) { hole in
+                        scorecardCell(String(hole.number), header: true)
+                    }
+                }
+                HStack(spacing: 0) {
+                    scorecardLabelCell("PAR", header: true)
+                    ForEach(round.holes) { hole in
+                        scorecardCell(hole.par.map(String.init) ?? "—")
+                    }
+                }
+                HStack(spacing: 0) {
+                    scorecardLabelCell("HCP", header: true)
+                    ForEach(round.holes) { hole in
+                        scorecardCell(hole.strokeIndex.map(String.init) ?? "—")
+                    }
+                }
+                ForEach(round.players) { player in
+                    HStack(spacing: 0) {
+                        scorecardLabelCell(player.isOwner ? "You" : player.name, header: true)
+                        ForEach(round.holes) { hole in
+                            let score = round.score(player: player.id, hole: hole.number)
+                            scorecardScoreCell(score, hole: hole)
+                        }
+                    }
+                }
+            }
+            .fixedSize(horizontal: true, vertical: false)
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(PureLineStyle.line, lineWidth: 1)
+            }
+        }
+        .scrollIndicators(.visible)
+        .accessibilityLabel("Round scorecard. Scroll horizontally to see all holes.")
+    }
+
+    private func scorecardLabelCell(_ title: String, header: Bool = false) -> some View {
+        Text(title)
+            .font(.system(size: 10, weight: .semibold))
+            .lineLimit(1)
+            .minimumScaleFactor(0.75)
+            .foregroundStyle(header ? PureLineStyle.ink : PureLineStyle.muted)
+            .frame(width: 76, height: 42, alignment: .leading)
+            .padding(.leading, 8)
+            .background(header ? PureLineStyle.surface : PureLineStyle.canvas)
+            .overlay(alignment: .bottom) { Rectangle().fill(PureLineStyle.line).frame(height: 1) }
+    }
+
+    private func scorecardCell(_ value: String, header: Bool = false) -> some View {
+        Text(value)
+            .font(.system(size: 12, weight: header ? .semibold : .regular).monospacedDigit())
+            .foregroundStyle(PureLineStyle.ink)
+            .frame(width: 44, height: 42)
+            .background(header ? PureLineStyle.surface : PureLineStyle.canvas)
+            .overlay {
+                Rectangle().strokeBorder(PureLineStyle.line.opacity(0.65), lineWidth: 0.5)
+            }
+    }
+
+    @ViewBuilder
+    private func scorecardScoreCell(_ score: PlayedHoleScore?, hole: PlayedHole) -> some View {
+        Group {
+            if !isSaved, let onEditHole {
+                Button {
+                    onEditHole(hole.number)
+                    dismiss()
+                } label: {
+                    scorecardScoreValue(score, hole: hole)
+                        .frame(width: 44, height: 42)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(score == nil ? "Enter" : "Edit") score for hole \(hole.number)")
+            } else {
+                scorecardScoreValue(score, hole: hole)
+                    .frame(width: 44, height: 42)
+            }
+        }
+        .background(PureLineStyle.canvas)
+        .overlay {
+            Rectangle().strokeBorder(PureLineStyle.line.opacity(0.65), lineWidth: 0.5)
+        }
+    }
+
+    @ViewBuilder
+    private func scorecardScoreValue(_ score: PlayedHoleScore?, hole: PlayedHole) -> some View {
+        if let score {
+            let relative = score.strokes - (hole.par ?? score.strokes)
+            Text(String(score.strokes))
+                .font(.system(size: 13, weight: .semibold).monospacedDigit())
+                .foregroundStyle(relative < 0 ? PureLineStyle.accent : PureLineStyle.ink)
+                .frame(width: 30, height: 30)
+                .background(relative < 0 ? PureLineStyle.accent.opacity(0.12) : .clear, in: Circle())
+                .overlay {
+                    Circle().strokeBorder(relative < 0 ? PureLineStyle.accent.opacity(0.6) : .clear, lineWidth: 1)
+                }
+        } else {
+            Text("—")
+                .font(.system(size: 13, weight: .regular).monospacedDigit())
+                .foregroundStyle(PureLineStyle.muted)
+                .frame(width: 44, height: 42)
+        }
     }
 
     @ViewBuilder private func totalsSection(_ player: RoundPlayer) -> some View {

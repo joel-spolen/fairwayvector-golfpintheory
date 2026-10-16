@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct CourseMapView: View {
     let reference: CourseReference
@@ -10,7 +11,7 @@ struct CourseMapView: View {
     private let resumesSnapshot: Bool
     @State private var roundModeEnabled: Bool
     @State private var showingRoundSetup = false
-    @State private var showingRoundReview = false
+    @State private var scorecardRound: PlayedRound?
     @State private var scoringHole: Int?
     @State private var roundPageIndex: Int
     @State private var pageDirection = 1
@@ -18,7 +19,6 @@ struct CourseMapView: View {
     @State private var isConfirmingRoundCancel = false
     @State private var transitionTargetPage: Int?
     @State private var pageProgress = 0.0
-    @State private var reviewingRound: PlayedRound?
     @State private var pendingReviewHole: Int?
 
     @State private var store: CourseStore
@@ -159,7 +159,8 @@ struct CourseMapView: View {
                     onCancel: { onChangeCourse() })
             }
         }
-        .sheet(isPresented: $showingRoundReview, onDismiss: {
+        .fullScreenCover(item: $scorecardRound, onDismiss: {
+            requestCoursePortraitOrientation()
             if roundStore.active == nil { roundModeEnabled = false }
             if let number = pendingReviewHole, activeRound != nil {
                 pendingReviewHole = nil
@@ -168,14 +169,11 @@ struct CourseMapView: View {
                     navigateRoundPage(to: index * 2 + 1)
                 }
             }
-        }) {
-            // Keep presentation stable when Save moves the draft to saved history.
-            if let round = reviewingRound {
-                RoundReviewView(initialRound: round, onEditHole: { number in
-                    // Switch the map after review dismisses; do not stack scoring sheets.
-                    pendingReviewHole = number
-                })
-            }
+        }) { round in
+            RoundScorecardView(round: round, onEditHole: { number in
+                pendingReviewHole = number
+                scorecardRound = nil
+            })
         }
         .alert("Round could not be stored", isPresented: Binding(get: { roundError != nil }, set: { if !$0 { roundError = nil } })) {
             Button("Retry draft save") {
@@ -245,8 +243,14 @@ struct CourseMapView: View {
     }
 
     private func openRoundReview() {
-        reviewingRound = activeRound
-        showingRoundReview = reviewingRound != nil
+        scorecardRound = activeRound
+    }
+
+    private func requestCoursePortraitOrientation() {
+        guard let scene = UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.windows.contains(where: \.isKeyWindow) }) else { return }
+        scene.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait)) { _ in }
     }
 
     private func showScoreEntry(for number: Int) {
