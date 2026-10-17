@@ -571,27 +571,34 @@ struct RoundScorecardView: View {
             let portrait = geometry.size.height > geometry.size.width
             let scorecardWidth = max(geometry.size.width, geometry.size.height)
             let scorecardHeight = min(geometry.size.width, geometry.size.height)
-            let columnWidth = max(1, (scorecardWidth - labelWidth) / CGFloat(max(1, columns.count)))
+            let closeButtonSpace: CGFloat = 52
+            let rowInsets = EdgeInsets(
+                top: 0,
+                leading: portrait ? geometry.safeAreaInsets.top : geometry.safeAreaInsets.leading,
+                bottom: 0,
+                trailing: (portrait ? geometry.safeAreaInsets.bottom : geometry.safeAreaInsets.trailing) + closeButtonSpace
+            )
+            let columnWidth = max(1, (scorecardWidth - labelWidth - closeButtonSpace) / CGFloat(max(1, columns.count)))
             let naturalHeight = 102 + round.players.reduce(0) {
                 $0 + 42 + (round.recordsDetailedScore(for: $1) ? 125 : 0)
             }
             let rowScale = max(1, scorecardHeight / CGFloat(naturalHeight))
             ScrollView(.vertical) {
                 VStack(spacing: 0) {
-                        row(label: "HOLE", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
+                        row(label: "HOLE", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
                             Text(column.hole.map { String($0.number) } ?? (column.title == "TOTAL" ? "TOT" : column.title) ?? "—")
                                 .font(.system(size: 11, weight: .bold).monospacedDigit())
                         }
-                        row(label: "PAR", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
+                        row(label: "PAR", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
                             scorecardText(parValue(for: column), emphasized: true)
                         }
-                        row(label: "HCP", columnWidth: columnWidth, isHeader: true, height: 34 * rowScale) { column in
+                        row(label: "HCP", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
                             scorecardText(column.hole?.strokeIndex.map(String.init) ?? "—")
                         }
 
                         ForEach(round.players) { player in
                             row(label: round.players.count == 1 ? "Score" : player.isOwner ? "You" : player.name,
-                                columnWidth: columnWidth, isEditable: !isSaved, height: 42 * rowScale) { column in
+                                columnWidth: columnWidth, rowInsets: rowInsets, isEditable: !isSaved, height: 42 * rowScale) { column in
                                 if let hole = column.hole {
                                     scoreValue(round.score(player: player.id, hole: hole.number), hole: hole)
                                 } else {
@@ -599,19 +606,19 @@ struct RoundScorecardView: View {
                                 }
                             }
                             if round.recordsDetailedScore(for: player) {
-                                row(label: "Putts", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                row(label: "Putts", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.putts))
                                 }
-                                row(label: "FIR", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                row(label: "FIR", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     fairwayCell(player: player, column: column)
                                 }
-                                row(label: "GIR", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                row(label: "GIR", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     greenCell(player: player, column: column)
                                 }
-                                row(label: "Sand", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                row(label: "Sand", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.bunkerShots))
                                 }
-                                row(label: "Penalties", columnWidth: columnWidth, height: 25 * rowScale) { column in
+                                row(label: "Penalties", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.penalties))
                                 }
                             }
@@ -619,37 +626,43 @@ struct RoundScorecardView: View {
 
                 }
             }
+            .scrollClipDisabled()
+            .padding(.trailing, closeButtonSpace)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .frame(width: scorecardWidth, height: scorecardHeight)
+            .overlay(alignment: .topTrailing) {
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(PureLineStyle.ink)
+                        .frame(width: 44, height: 44)
+                        .background(PureLineStyle.surface, in: Circle())
+                        .overlay {
+                            Circle().strokeBorder(PureLineStyle.ink.opacity(0.5), lineWidth: 1)
+                        }
+                        .contentShape(Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Close scorecard")
+                .accessibilityIdentifier("close-round-scorecard")
+                .padding(4)
+            }
             .rotationEffect(.degrees(portrait ? 90 : 0))
             .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
         }
-        // Size and rotate within the safe area so the camera and home indicator
-        // cannot cover the table; only the canvas extends to the screen edges.
+        // Keep scores and controls safe while row decoration extends to the edges.
         .background(PureLineStyle.canvas.ignoresSafeArea())
         .statusBarHidden(true)
         .preferredColorScheme(.light)
     }
 
-    private func row<Cell: View>(label: String, columnWidth: CGFloat, isHeader: Bool = false, isEditable: Bool = false,
+    private func row<Cell: View>(label: String, columnWidth: CGFloat, rowInsets: EdgeInsets, isHeader: Bool = false, isEditable: Bool = false,
                                  height: CGFloat = 34,
                                  @ViewBuilder cell: @escaping (RoundScorecardColumn) -> Cell) -> some View {
         HStack(spacing: 0) {
-            HStack(spacing: 2) {
-                Text(label.uppercased())
-                if label == "HOLE" {
-                    Spacer(minLength: 0)
-                    Button { dismiss() } label: {
-                        Image(systemName: "xmark")
-                            .frame(width: 26, height: 30)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Close scorecard")
-                    .accessibilityIdentifier("close-round-scorecard")
-                }
-            }
+            Text(label.uppercased())
                 .font(.system(size: 10, weight: .semibold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -676,7 +689,15 @@ struct RoundScorecardView: View {
                 }
             }
         }
-        .background(isHeader ? PureLineStyle.surface : PureLineStyle.canvas)
+        .background {
+            (isHeader ? PureLineStyle.surface : PureLineStyle.canvas)
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(PureLineStyle.line).frame(height: 1)
+                }
+                .padding(.leading, -rowInsets.leading)
+                .padding(.trailing, -rowInsets.trailing)
+                .allowsHitTesting(false)
+        }
     }
 
     private func parValue(for column: RoundScorecardColumn) -> String {
