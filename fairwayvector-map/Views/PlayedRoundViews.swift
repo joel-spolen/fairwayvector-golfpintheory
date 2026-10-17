@@ -573,7 +573,7 @@ struct RoundScorecardView: View {
             let scorecardHeight = min(geometry.size.width, geometry.size.height)
             let columnWidth = max(1, (scorecardWidth - labelWidth) / CGFloat(max(1, columns.count)))
             let naturalHeight = 102 + round.players.reduce(0) {
-                $0 + 72 + (round.recordsDetailedScore(for: $1) ? 125 : 0)
+                $0 + 42 + (round.recordsDetailedScore(for: $1) ? 125 : 0)
             }
             let rowScale = max(1, scorecardHeight / CGFloat(naturalHeight))
             ScrollView(.vertical) {
@@ -590,10 +590,8 @@ struct RoundScorecardView: View {
                         }
 
                         ForEach(round.players) { player in
-                            row(label: player.isOwner ? "You" : player.name, columnWidth: columnWidth, isHeader: true, height: 30 * rowScale) { _ in
-                                Color.clear
-                            }
-                            row(label: "Score", columnWidth: columnWidth, isEditable: !isSaved, height: 42 * rowScale) { column in
+                            row(label: round.players.count == 1 ? "Score" : player.isOwner ? "You" : player.name,
+                                columnWidth: columnWidth, isEditable: !isSaved, height: 42 * rowScale) { column in
                                 if let hole = column.hole {
                                     scoreValue(round.score(player: player.id, hole: hole.number), hole: hole)
                                 } else {
