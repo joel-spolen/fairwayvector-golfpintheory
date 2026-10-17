@@ -55,7 +55,7 @@ holes are editable from **Scorecard → Review / finish round**; review can sele
 any hole, and advancement seeks remaining unscored holes rather than silently
 finishing a partial card. Casual map browsing never opens score sheets. Current
 geometry, tee, actual hole numbers/par/SI and player IDs are snapshotted; changing
-course pauses rather than discards the draft. **Resume scorecard & map** appears
+course pauses rather than discards the draft. **Resume round** appears
 in Choose Course after restart and uses the saved geometry without a new course
 load. Existing weather/imagery and committed terrain behavior are unchanged.
 

@@ -39,6 +39,31 @@ struct PlayedRoundTests {
             .appendingPathComponent("rounds.json")
     }
 
+    @Test func explicitlySavedPartialRoundSurvivesReloadWithoutHCP() throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+        let store = PlayedRoundStore(url: url)
+        var round = fixture()
+        round.setScore(PlayedHoleScore(strokes: 5), player: round.owner!.id, hole: 1)
+        try store.start(round)
+        #expect(!PlayedRoundHandicapBridge.isEligible(round))
+        try store.saveActive(allowIncomplete: true)
+        let reloaded = PlayedRoundStore(url: url)
+        #expect(reloaded.active == nil)
+        #expect(reloaded.saved.count == 1)
+        #expect(reloaded.saved.first?.scores.count == 1)
+        #expect(reloaded.saved.first?.isComplete == false)
+    }
+
+    @Test func scatteredNineScoresOnEighteenHoleLayoutAreNotHCPEligible() {
+        var round = fixture()
+        for number in stride(from: 1, through: 17, by: 2) {
+            round.setScore(PlayedHoleScore(strokes: 4), player: round.owner!.id, hole: number)
+        }
+        #expect(!PlayedRoundHandicapBridge.isEligible(round))
+        #expect(PlayedRoundHandicapBridge.isEligible(complete(fixture(count: 9))))
+    }
+
     @Test func positiveAndPlusAllocationConserveStrokesAndUseCorrectEnds() {
         for handicap in -54...90 {
             let allocated = (1...18).map { PlayedRoundCalculator.strokes(handicap: handicap, rank: $0, holeCount: 18) }

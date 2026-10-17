@@ -81,6 +81,8 @@ struct PlayedRound: Codable, Identifiable {
     var scores: [String: PlayedHoleScore] = [:]
     /// Optional for decoding round archives created before per-round display settings.
     var displayOptions: RoundDisplayOptions? = nil
+    /// Optional to keep older scorecard archives decodable.
+    var notes: String? = nil
 
     var owner: RoundPlayer? { players.first(where: \.isOwner) }
     func recordsDetailedScore(for player: RoundPlayer) -> Bool {

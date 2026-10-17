@@ -12,6 +12,7 @@ struct CourseMapView: View {
     @State private var roundModeEnabled: Bool
     @State private var showingRoundSetup = false
     @State private var scorecardRound: PlayedRound?
+    @State private var finishingRound: PlayedRound?
     @State private var scoringHole: Int?
     @State private var roundPageIndex: Int
     @State private var pageDirection = 1
@@ -20,6 +21,7 @@ struct CourseMapView: View {
     @State private var transitionTargetPage: Int?
     @State private var pageProgress = 0.0
     @State private var pendingReviewHole: Int?
+    @State private var pendingCourseHole: Int?
 
     @State private var store: CourseStore
     @State private var weatherStore = CourseWeatherStore()
@@ -66,6 +68,15 @@ struct CourseMapView: View {
     }
     private var isShowingScoreEntry: Bool { activeRound != nil && roundPageIndex.isMultiple(of: 2) == false }
 
+    private var visibleRoundPages: [Int] {
+        // Keep the incoming page's identity when it becomes the current page.
+        // Replacing transition-only branches would recreate its MapKit view.
+        if let target = transitionTargetPage {
+            return [roundPageIndex, target].sorted()
+        }
+        return [roundPageIndex]
+    }
+
     private func horizontalPageOffset(width: CGFloat) -> CGFloat {
         guard transitionTargetPage != nil else { return 0 }
         if pageDirection > 0 { return -width * pageProgress }
@@ -77,22 +88,9 @@ struct CourseMapView: View {
             GeometryReader { geometry in
                 let width = geometry.size.width
                 HStack(spacing: 0) {
-                    if let targetPage = transitionTargetPage, pageDirection < 0 {
-                        roundPage(targetPage)
+                    ForEach(visibleRoundPages, id: \.self) { page in
+                        roundPage(page)
                             .frame(width: width, height: geometry.size.height)
-                            .allowsHitTesting(pageProgress > 0.5)
-                        roundPage(roundPageIndex)
-                            .frame(width: width, height: geometry.size.height)
-                            .allowsHitTesting(pageProgress <= 0.5)
-                    } else {
-                        roundPage(roundPageIndex)
-                            .frame(width: width, height: geometry.size.height)
-                            .allowsHitTesting(pageProgress <= 0.5)
-                        if let targetPage = transitionTargetPage {
-                            roundPage(targetPage)
-                                .frame(width: width, height: geometry.size.height)
-                                .allowsHitTesting(pageProgress > 0.5)
-                        }
                     }
                 }
                 .offset(x: horizontalPageOffset(width: width))
@@ -148,6 +146,14 @@ struct CourseMapView: View {
             }
         }
         .onDisappear { clearSimulation(); terrainStore.deactivate() }
+        .fullScreenCover(item: $finishingRound, onDismiss: {
+            if roundStore.active == nil {
+                roundModeEnabled = false
+                onHome()
+            }
+        }) { round in
+            RoundReviewView(initialRound: round)
+        }
         .fullScreenCover(isPresented: $showingRoundSetup) {
             if let course = store.course {
                 RoundSetupView(selectedCourseReference: reference, course: course,
@@ -162,6 +168,15 @@ struct CourseMapView: View {
         .fullScreenCover(item: $scorecardRound, onDismiss: {
             requestCoursePortraitOrientation()
             if roundStore.active == nil { roundModeEnabled = false }
+            if let number = pendingCourseHole {
+                pendingCourseHole = nil
+                if activeRound != nil {
+                    showCourseHole(number)
+                } else if let index = store.course?.holes.firstIndex(where: { $0.number == number }) {
+                    holeIndex = index
+                    roundPageIndex = index * 2
+                }
+            }
             if let number = pendingReviewHole, activeRound != nil {
                 pendingReviewHole = nil
                 scoringHole = number
@@ -172,6 +187,9 @@ struct CourseMapView: View {
         }) { round in
             RoundScorecardView(round: round, onEditHole: { number in
                 pendingReviewHole = number
+                scorecardRound = nil
+            }, onViewHole: { number in
+                pendingCourseHole = number
                 scorecardRound = nil
             })
         }
@@ -304,7 +322,9 @@ struct CourseMapView: View {
                     updated.setScore(score, player: playerID, hole: savedHoleNumber)
                 }
                 try roundStore.updateDraft(updated)
-            }, onNavigateHole: showCourseHole)
+            }, onNavigateHole: showCourseHole, onFinish: {
+                finishingRound = activeRound
+            })
         } else {
             content(for: activeRound == nil ? holeIndex : pageIndex / 2)
         }
@@ -696,6 +716,9 @@ struct CourseMapView: View {
             Button("Home", systemImage: "house.fill", action: onHome)
             if activeRound != nil {
                 Button("Scorecard", systemImage: "list.bullet.rectangle") { openRoundReview() }
+                Button("Save and exit", systemImage: "square.and.arrow.down") {
+                    finishingRound = activeRound
+                }
                 Button("Cancel round", systemImage: "xmark.circle", role: .destructive) {
                     isConfirmingRoundCancel = true
                 }

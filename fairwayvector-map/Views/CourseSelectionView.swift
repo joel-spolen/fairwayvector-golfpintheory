@@ -40,7 +40,7 @@ struct CourseSelectionView: View {
                             Label("Round in progress", systemImage: "flag.checkered").font(.headline)
                             Text("\(round.reference.courseName) · \(round.reference.teeName) · hole \(round.holes[round.currentHole].number)")
                                 .font(.subheadline).foregroundStyle(PureLineStyle.muted)
-                            Button("Resume scorecard & map") { onResumeRound?(round) }
+                            Button("Resume round") { onResumeRound?(round) }
                                 .buttonStyle(PureLinePrimaryButtonStyle())
                             Button("Discard unsaved round", role: .destructive) { confirmDiscardRound = true }
                                 .font(.subheadline)

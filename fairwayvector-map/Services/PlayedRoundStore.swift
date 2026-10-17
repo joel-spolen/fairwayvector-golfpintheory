@@ -33,7 +33,7 @@ final class PlayedRoundStore {
                 let archive = try JSONDecoder().decode(Archive.self, from: Data(contentsOf: url))
                 guard archive.version == 1 else { throw RoundStorageError.invalidArchive }
                 guard Set(archive.saved.map(\.id)).count == archive.saved.count,
-                      archive.saved.allSatisfy({ $0.isComplete && Self.validStructure($0) }),
+                      archive.saved.allSatisfy({ Self.validStructure($0) }),
                         archive.draft.map({ Self.validStructure($0) }) ?? true else { throw RoundStorageError.invalidArchive }
                                 if let draft = archive.draft, archive.saved.contains(where: { $0.id == draft.id }) { throw RoundStorageError.invalidArchive }
                 saved = archive.saved.sorted { $0.date > $1.date }; active = archive.draft
@@ -98,8 +98,9 @@ final class PlayedRoundStore {
         draftNeedsRetry = false; errorMessage = nil
     }
 
-    func saveActive() throws {
-        guard let round = active, round.isComplete else { throw RoundStorageError.incomplete }
+    func saveActive(allowIncomplete: Bool = false) throws {
+        guard let round = active, Self.validStructure(round),
+              allowIncomplete || round.isComplete else { throw RoundStorageError.incomplete }
         var updated = saved.filter { $0.id != round.id }
         updated.append(round); updated.sort { $0.date > $1.date }
         try persist(saved: updated, draft: nil)
@@ -135,7 +136,10 @@ enum RoundStorageError: LocalizedError {
 
 enum PlayedRoundHandicapBridge {
     static func isEligible(_ round: PlayedRound) -> Bool {
-        guard round.isComplete, let owner = round.owner,
+        guard let owner = round.owner,
+              [9, 18].contains(round.holes.count),
+              round.holes.allSatisfy({ round.score(player: owner.id, hole: $0.number)?.isValid == true }),
+              zip(round.holes, round.holes.dropFirst()).allSatisfy({ $1.number == $0.number + 1 }),
               !DevelopmentAPIConfiguration.isDemoCourse(round.reference.golfAPICourseID ?? "") else { return false }
         return PlayedRoundCalculator.totals(round: round, player: owner).differential != nil
     }
@@ -161,7 +165,7 @@ enum PlayedRoundHandicapBridge {
             stablefordPoints: round.allowance == 100 ? totals.stableford : nil,
             handicapDifferential: totals.differential, par: tee.par, courseRating: tee.courseRating,
             slopeRating: tee.slopeRating, pcc: 0,
-            notes: "Copied explicitly from saved scorecard. Total strokes include putts and penalties. PCC 0; local estimate, not an official submission. Index at play: \(owner.handicapIndex ?? 0).",
+            notes: (round.notes ?? "").trimmingCharacters(in: .whitespacesAndNewlines),
             holeScoresData: round.holes.compactMap { round.score(player: owner.id, hole: $0.number)?.strokes },
             holeParsData: round.holes.compactMap(\.par), holeHandicapIndicesData: round.holes.compactMap(\.strokeIndex))
         copy.sourceSavedRoundID = round.id.uuidString

@@ -216,8 +216,10 @@ struct RoundHoleEntryView: View {
     let holeNumber: Int
     let onSave: (Int, [UUID: PlayedHoleScore]) throws -> Void
     let onNavigateHole: (Int) -> Void
+    var onFinish: () -> Void = {}
     @Environment(PlayedRoundStore.self) private var roundStore
     @State private var entries: [UUID: PlayedHoleScore] = [:]
+    @State private var loadedHole: Int?
     @State private var error: String?
     @State private var showingGIRInfo = false
     private var hole: PlayedHole? { round.holes.first { $0.number == holeNumber } }
@@ -239,22 +241,26 @@ struct RoundHoleEntryView: View {
     }
 
     private func moveHole(by offset: Int) {
+        if offset > 0, holePosition == round.holes.count - 1 {
+            onFinish()
+            return
+        }
         let pageIndex = holePosition * 2 + 1
         let destinationPage = pageIndex + offset
         let lastPage = round.holes.count * 2 - 1
         guard (0...lastPage).contains(destinationPage) else { return }
-        do {
-            try saveCurrentHole()
-            onNavigateHole(round.holes[destinationPage / 2].number)
-        } catch {
-            self.error = "Save this hole before moving on: \(error.localizedDescription)"
-        }
+        onNavigateHole(round.holes[destinationPage / 2].number)
     }
 
     private func loadEntries(for number: Int) {
+        // Page transitions and sheet dismissal can trigger onAppear again.
+        // Never replace in-progress edits with an older round snapshot.
+        guard loadedHole != number else { return }
+        loadedHole = number
+        let currentRound = roundStore.active.flatMap { $0.id == round.id ? $0 : nil } ?? round
         entries = [:]
         for player in round.players {
-            let savedScore = round.score(player: player.id, hole: number)
+            let savedScore = currentRound.score(player: player.id, hole: number)
             var score = savedScore
                 ?? PlayedHoleScore(strokes: round.holes.first(where: { $0.number == number })?.par ?? 4)
             if round.recordsDetailedScore(for: player) {
@@ -356,7 +362,6 @@ struct RoundHoleEntryView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .pureLineCard()
                 }
-                    if let error { Text(error).foregroundStyle(.red) }
                 }
                 .padding(18)
             }
@@ -368,12 +373,16 @@ struct RoundHoleEntryView: View {
                             .background(PureLineStyle.surface, in: Circle())
                     }
                     .accessibilityLabel("Previous page")
+                    .accessibilityIdentifier("score-previous-page")
 
                     Button {
                         do {
                             try saveCurrentHole()
-                            let nextHoleIndex = min(holePosition + 1, round.holes.count - 1)
-                            onNavigateHole(round.holes[nextHoleIndex].number)
+                            if holePosition == round.holes.count - 1 {
+                                onFinish()
+                            } else {
+                                onNavigateHole(round.holes[holePosition + 1].number)
+                            }
                         }
                         catch { self.error = "Score could not be saved: \(error.localizedDescription)" }
                     } label: {
@@ -390,8 +399,8 @@ struct RoundHoleEntryView: View {
                             .frame(width: 48, height: 48)
                             .background(PureLineStyle.surface, in: Circle())
                     }
-                    .disabled(holePosition >= round.holes.count - 1)
                     .accessibilityLabel("Next page")
+                    .accessibilityIdentifier("score-next-page")
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(PureLineStyle.accent)
@@ -401,6 +410,14 @@ struct RoundHoleEntryView: View {
             }
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
+            .alert("Score could not be saved", isPresented: Binding(
+                get: { error != nil },
+                set: { if !$0 { error = nil } }
+            )) {
+                Button("OK", role: .cancel) { error = nil }
+            } message: {
+                Text(error ?? "")
+            }
             .sheet(isPresented: $showingGIRInfo) {
                 VStack(alignment: .leading, spacing: 14) {
                     HStack {
@@ -423,6 +440,7 @@ struct RoundHoleEntryView: View {
                 .presentationDragIndicator(.visible)
             }
             .onAppear { loadEntries(for: holeNumber) }
+            .onChange(of: holeNumber) { loadEntries(for: holeNumber) }
         .tint(PureLineStyle.accent)
     }
 
@@ -542,6 +560,7 @@ private enum RoundScorecardColumn: Identifiable {
 struct RoundScorecardView: View {
     let round: PlayedRound
     var onEditHole: ((Int) -> Void)? = nil
+    var onViewHole: ((Int) -> Void)? = nil
     @Environment(PlayedRoundStore.self) private var store
     @Environment(\.dismiss) private var dismiss
 
@@ -586,8 +605,19 @@ struct RoundScorecardView: View {
             ScrollView(.vertical) {
                 VStack(spacing: 0) {
                         row(label: "HOLE", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
-                            Text(column.hole.map { String($0.number) } ?? (column.title == "TOTAL" ? "TOT" : column.title) ?? "—")
-                                .font(.system(size: 11, weight: .bold).monospacedDigit())
+                            if let hole = column.hole, let onViewHole {
+                                Button { onViewHole(hole.number) } label: {
+                                    Text(String(hole.number))
+                                        .font(.system(size: 11, weight: .bold).monospacedDigit())
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("View hole \(hole.number) on course map")
+                            } else {
+                                Text(column.hole.map { String($0.number) } ?? (column.title == "TOTAL" ? "TOT" : column.title) ?? "—")
+                                    .font(.system(size: 11, weight: .bold).monospacedDigit())
+                            }
                         }
                         row(label: "PAR", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
                             scorecardText(parValue(for: column), emphasized: true)
@@ -889,16 +919,17 @@ struct RoundScorecardView: View {
 
 struct RoundReviewView: View {
     let initialRound: PlayedRound
+    @State private var notes = ""
+    @State private var notesLoaded = false
+    @State private var includeInHandicap = true
+    @State private var confirmingSave = false
     var onEditHole: ((Int) -> Void)? = nil
     @Environment(PlayedRoundStore.self) private var store
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Query private var hcpRounds: [GolfRound]
-    @Query private var profiles: [PlayerProfile]
     @State private var playerID: UUID?
-    @State private var confirmDiscard = false
     @State private var error: String?
-    @State private var importMessage: String?
 
     private var round: PlayedRound {
         store.saved.first { $0.id == initialRound.id }
@@ -907,6 +938,7 @@ struct RoundReviewView: View {
     private var isSaved: Bool { store.saved.contains { $0.id == round.id } }
     private var player: RoundPlayer? { round.players.first { $0.id == playerID } ?? round.owner }
     private var imported: Bool { hcpRounds.contains { $0.sourceSavedRoundID == round.id.uuidString } }
+    private var hcpEligible: Bool { PlayedRoundHandicapBridge.isEligible(round) }
 
     var body: some View {
         NavigationStack {
@@ -916,68 +948,128 @@ struct RoundReviewView: View {
                         Text("Latest draft changes are in memory only. Retry saving before quitting.").foregroundStyle(.red).font(.footnote)
                     }
                     Text(round.reference.courseName).font(.headline)
-                    Text("\(round.reference.teeName) · \(round.holes.count) holes · \(round.game.rawValue)")
-                    Text(round.date, format: .dateTime.day().month().year())
-                    Text(isSaved ? "Saved in Statistics" : "Draft · not yet saved in Statistics")
-                        .foregroundStyle(FairwayVectorColors.orange)
+                    LabeledContent("Tee", value: round.reference.teeName)
+                    LabeledContent("Holes", value: String(round.holes.count))
+                    LabeledContent("Par", value: String(round.reference.totalPar))
+                    LabeledContent("Course rating", value: round.reference.courseRating.formatted(.number.precision(.fractionLength(1))))
+                    LabeledContent("Slope rating", value: String(round.reference.slopeRating))
+                    LabeledContent("Format", value: round.game.rawValue)
+                    LabeledContent("Date") {
+                        Text(round.date, format: .dateTime.day().month().year())
+                    }
                     if round.players.count > 1 {
                         Picker("Player", selection: Binding(get: { player?.id ?? round.players[0].id }, set: { playerID = $0 })) {
                             ForEach(round.players) { Text($0.isOwner ? "You" : $0.name).tag($0.id) }
                         }
                     }
                 }
+                .listRowBackground(PureLineStyle.canvas)
                 if let player {
                     totalsSection(player)
                     Section("Scorecard") { scorecardGrid }
-                }
-                Section("Handicap history · You only") {
-                    Text("HCP score below is a local WHS differential estimate, not an official posted result. Saving Statistics does not add a handicap round automatically.")
-                        .font(.footnote)
-                    if let projected = PlayedRoundHandicapBridge.projectedIndex(round, history: hcpRounds,
-                        lowHandicapIndex: profiles.first?.lowHandicapIndex) {
-                        LabeledContent("Projected local index estimate", value: WHSCalculator.formatHCPScore(projected))
-                        Text("Uses the existing shared history, exceptional-score adjustments and caps. Requires at least three existing scoring entries. This is a local projection, not an official new index.").font(.footnote)
-                    }
-                    if isSaved {
-                        Button(imported ? "Already added to Handicap rounds" : "Add your score to Handicap rounds") {
-                            do {
-                                let added = try PlayedRoundHandicapBridge.add(round, context: context)
-                                importMessage = added ? "Your score was saved to the existing Handicap history." : "This round is already in Handicap history."
-                            } catch { self.error = error.localizedDescription }
-                        }.disabled(imported || !PlayedRoundHandicapBridge.isEligible(round))
-                    } else {
-                        Text("Save to Statistics first to enable the optional HCP copy.").font(.footnote)
-                    }
-                    if round.holes.count == 9 {
-                        Text("Nine-hole scores use the WHS expected Score Differential based on the Handicap Index at play. This local estimate is not an official posted result.").font(.footnote)
-                    } else if !PlayedRoundHandicapBridge.isEligible(round) {
-                        Text("Needs all 18 holes, actual par / unique SI, valid rating / slope and your index. This round is not eligible for Handicap import.").font(.footnote)
-                    }
-                    if let importMessage { Text(importMessage).font(.footnote) }
+                        .listRowBackground(PureLineStyle.canvas)
                 }
                 if !isSaved {
-                    Section {
-                        Button("Save round to Statistics", systemImage: "square.and.arrow.down") {
-                            do { try store.saveActive() } catch { self.error = error.localizedDescription }
-                        }.disabled(!round.isComplete || store.active?.id != round.id)
-                        if !round.isComplete { Text("Every player must have valid strokes on every hole before saving.").font(.footnote) }
-                        Button("Retry saving draft to device") {
-                            do { try store.retryDraft() } catch { self.error = error.localizedDescription }
-                        }
-                        Button("Discard round", role: .destructive) { confirmDiscard = true }
+                    Section("Notes") {
+                        TextField("Add a note (optional)", text: $notes, axis: .vertical)
+                            .lineLimit(3...6)
                     }
+                    .listRowBackground(PureLineStyle.canvas)
+                    Section {
+                        Toggle("Save your round in HCP", isOn: Binding(
+                            get: { hcpEligible && includeInHandicap },
+                            set: { includeInHandicap = hcpEligible && $0 }
+                        ))
+                            .disabled(!hcpEligible)
+                            .tint(PureLineStyle.accent)
+                        if !hcpEligible {
+                            Text("Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded.")
+                                .font(.footnote).foregroundStyle(PureLineStyle.muted)
+                        }
+                        if !round.isComplete {
+                            Text("Some holes are unplayed. You can still save this round to Statistics.")
+                                .font(.footnote).foregroundStyle(PureLineStyle.muted)
+                        }
+                    }
+                    .listRowBackground(PureLineStyle.canvas)
                 }
-                if let error { Section { Text(error).foregroundStyle(.red) } }
+                if let error {
+                    Section { Text(error).foregroundStyle(.red) }
+                        .listRowBackground(PureLineStyle.canvas)
+                }
             }
-            .roundFormStyle()
-            .navigationTitle(round.isComplete ? "Round summary" : "Round scorecard")
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
-            .confirmationDialog("Discard this unsaved round?", isPresented: $confirmDiscard, titleVisibility: .visible) {
-                Button("Discard round", role: .destructive) {
-                    do { try store.discardDraft(); dismiss() } catch { self.error = error.localizedDescription }
+            .scrollContentBackground(.hidden)
+            .background(PureLineStyle.canvas)
+            .foregroundStyle(PureLineStyle.ink)
+            .onAppear {
+                if !hcpEligible { includeInHandicap = false }
+                if !notesLoaded {
+                    notes = round.notes ?? ""
+                    notesLoaded = true
                 }
-            } message: { Text("All players' unsaved scores will be removed. Saved rounds and Handicap history are unaffected.") }
-        }.tint(FairwayVectorColors.navy)
+            }
+            .onChange(of: hcpEligible) {
+                if !hcpEligible { includeInHandicap = false }
+            }
+            .navigationTitle("Round summary")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if isSaved {
+                            if includeInHandicap && !imported && PlayedRoundHandicapBridge.isEligible(round) {
+                                saveRound()
+                            } else {
+                                dismiss()
+                            }
+                        } else if !round.isComplete || (includeInHandicap && !PlayedRoundHandicapBridge.isEligible(round)) {
+                            confirmingSave = true
+                        } else {
+                            saveRound()
+                        }
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
+            .confirmationDialog("Save this round?", isPresented: $confirmingSave, titleVisibility: .visible) {
+                Button(includeInHandicap && !PlayedRoundHandicapBridge.isEligible(round)
+                       ? "Save without HCP" : "Save round anyway") {
+                    saveRound()
+                }
+                Button("Keep editing", role: .cancel) { }
+            } message: {
+                Text((round.isComplete ? "" : "Some holes have not been played or recorded. Missing scores will remain empty. ")
+                     + (includeInHandicap && !PlayedRoundHandicapBridge.isEligible(round)
+                        ? "This round is not eligible for HCP and will be saved to Statistics only."
+                        : "The round will be saved to Statistics."))
+            }
+        }
+        .tint(PureLineStyle.accent)
+        .preferredColorScheme(.light)
+    }
+
+    private func saveRound() {
+        do {
+            // Persist Statistics first; if HCP fails, retain this screen and allow retry.
+            var snapshot = round
+            if !isSaved {
+                let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+                snapshot.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
+                try store.updateDraft(snapshot)
+                try store.saveActive(allowIncomplete: true)
+            }
+            if includeInHandicap && PlayedRoundHandicapBridge.isEligible(snapshot) {
+                _ = try PlayedRoundHandicapBridge.add(snapshot, context: context)
+            }
+            dismiss()
+        } catch {
+            self.error = error.localizedDescription
+        }
     }
 
     private var scorecardGrid: some View {
@@ -1046,23 +1138,8 @@ struct RoundReviewView: View {
 
     @ViewBuilder
     private func scorecardScoreCell(_ score: PlayedHoleScore?, hole: PlayedHole) -> some View {
-        Group {
-            if !isSaved, let onEditHole {
-                Button {
-                    onEditHole(hole.number)
-                    dismiss()
-                } label: {
-                    scorecardScoreValue(score, hole: hole)
-                        .frame(width: 44, height: 42)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("\(score == nil ? "Enter" : "Edit") score for hole \(hole.number)")
-            } else {
-                scorecardScoreValue(score, hole: hole)
-                    .frame(width: 44, height: 42)
-            }
-        }
+        scorecardScoreValue(score, hole: hole)
+            .frame(width: 44, height: 42)
         .background(PureLineStyle.canvas)
         .overlay {
             Rectangle().strokeBorder(PureLineStyle.line.opacity(0.65), lineWidth: 0.5)
@@ -1092,25 +1169,17 @@ struct RoundReviewView: View {
     @ViewBuilder private func totalsSection(_ player: RoundPlayer) -> some View {
         let t = PlayedRoundCalculator.totals(round: round, player: player)
         Section(player.isOwner ? "Your totals" : "\(player.name) · totals") {
-            LabeledContent("Scored holes", value: "\(t.scoredHoles) / \(round.holes.count)")
+            LabeledContent("Holes played", value: "\(t.scoredHoles)")
             LabeledContent("Gross strokes", value: "\(t.gross)")
             LabeledContent("Net strokes", value: t.net.map(String.init) ?? "Unavailable")
             LabeledContent("Stableford", value: t.stableford.map { "\($0) points" } ?? "Unavailable")
-            if t.puttHoles > 0 { LabeledContent("Putts", value: "\(t.putts) / \(t.puttHoles) recorded holes") }
-            LabeledContent("Fairways", value: "\(t.fairwaysHit) / \(t.fairwaysAnswered) answered eligible holes")
-            LabeledContent("GIR", value: "\(t.estimatedGIR) / \(t.girHoles) holes with putts & par")
-            if t.bunkerAnswered > 0 { LabeledContent("Bunkers", value: "\(t.bunkerShots) shots · \(t.bunkerHoles) / \(t.bunkerAnswered) recorded holes") }
-            if t.penaltyHoles > 0 { LabeledContent("Penalties (already included)", value: "\(t.penalties) / \(t.penaltyHoles) recorded holes") }
-            Text("GIR is inferred from strokes − putts ≤ par − 2, not measured arrival; penalties and recovery play affect it.").font(.footnote)
+            LabeledContent("Putts", value: t.puttHoles > 0 ? "\(t.putts)" : "—")
+            LabeledContent("Fairways", value: t.fairwaysAnswered > 0 ? "\(t.fairwaysHit)" : "—")
+            LabeledContent("GIR", value: t.girHoles > 0 ? "\(t.estimatedGIR)" : "—")
+            LabeledContent("Bunkers", value: t.bunkerAnswered > 0 ? "\(t.bunkerShots)" : "—")
+            LabeledContent("Penalties", value: t.penaltyHoles > 0 ? "\(t.penalties)" : "—")
         }
-        Section("HCP score · distinct from net score") {
-            LabeledContent("Handicap Index at play", value: player.handicapIndex.map { WHSCalculator.formatHCPScore($0) } ?? "Unknown")
-            LabeledContent("Course Handicap", value: t.courseHandicap.map(String.init) ?? "Unavailable")
-            LabeledContent("Playing Handicap (\(round.allowance)%)", value: t.playingHandicap.map(String.init) ?? "Unavailable")
-            LabeledContent("Adjusted gross · net double bogey", value: t.adjustedGross.map(String.init) ?? "Unavailable")
-            LabeledContent("HCP score · differential (PCC 0)", value: t.differential.map { WHSCalculator.formatHCPScore($0) } ?? "Unavailable")
-            Text("Course Handicap uses the full index and applicable tee. WHS adjusted gross caps each hole at net double bogey with full Course Handicap. Net and points use Playing Handicap. Partial totals are not final differentials.").font(.footnote)
-        }
+        .listRowBackground(PureLineStyle.canvas)
     }
 }
 

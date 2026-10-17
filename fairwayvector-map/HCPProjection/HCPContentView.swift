@@ -2792,6 +2792,17 @@ private struct RoundDetailView: View {
     var round: GolfRound
     var handicapIndex: Double?
 
+    private var userNotes: String {
+        let notes = round.notes.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Hide only the exact legacy import boilerplate; preserve user notes.
+        let legacyPrefix = "Copied explicitly from saved scorecard. Total strokes include putts and penalties. PCC 0; local estimate, not an official submission. Index at play: "
+        if round.sourceSavedRoundID != nil, notes.hasPrefix(legacyPrefix), notes.hasSuffix("."),
+           Double(String(notes.dropFirst(legacyPrefix.count).dropLast())) != nil {
+            return ""
+        }
+        return notes
+    }
+
     private var differential: Double? {
         WHSCalculator.scoringEntry(for: round, currentHandicapIndex: handicapIndex)?.scoreDifferential
     }
@@ -2869,14 +2880,14 @@ private struct RoundDetailView: View {
                     LabeledContent("Stableford Points", value: "\(points) pts")
                 }
                 LabeledContent("Par / Course Rating / Slope", value: "\(round.par) / \(round.courseRating.formatted(.number.precision(.fractionLength(1)))) / \(round.slopeRating)")
-                if !round.notes.isEmpty {
-                    LabeledContent("Notes", value: round.notes)
+                if !userNotes.isEmpty {
+                    LabeledContent("Notes", value: userNotes)
                 }
                 }
                 .listRowBackground(PureLineStyle.surface)
-            } else if !round.notes.isEmpty {
+            } else if !userNotes.isEmpty {
                 Section("Notes") {
-                    Text(round.notes)
+                    Text(userNotes)
                 }
                 .listRowBackground(PureLineStyle.surface)
             }
