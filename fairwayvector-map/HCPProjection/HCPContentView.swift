@@ -2788,7 +2788,7 @@ private struct HCPSettingsView: View {
     }
 }
 
-private struct RoundDetailView: View {
+struct RoundDetailView: View {
     var round: GolfRound
     var handicapIndex: Double?
 

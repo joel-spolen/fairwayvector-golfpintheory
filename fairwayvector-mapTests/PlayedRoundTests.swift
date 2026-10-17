@@ -64,6 +64,39 @@ struct PlayedRoundTests {
         #expect(PlayedRoundHandicapBridge.isEligible(complete(fixture(count: 9))))
     }
 
+    @Test func statisticsMergeHCPWithoutDuplicatesOrInventedShotDetails() throws {
+        let round = complete(fixture())
+        let copy = try PlayedRoundHandicapBridge.makeHandicapRound(round)
+        let linked = RoundPerformanceRecord.combined(played: [round], handicap: [copy])
+        #expect(linked.count == 1)
+        #expect(linked.first?.gross == 90)
+        #expect(linked.first?.puttHoles == 0)
+
+        let manual = GolfRound(clubName: "Club", courseName: "Course", teeName: "Tee",
+            holes: 18, inputMode: .adjustedGrossScore, adjustedGrossScore: 85,
+            handicapDifferential: 13, par: 72, courseRating: 72, slopeRating: 113)
+        let combined = RoundPerformanceRecord.combined(played: [round], handicap: [copy, manual])
+        #expect(combined.count == 2)
+        let hcpOnly = combined.first { $0.played == nil }
+        #expect(hcpOnly?.gross == nil)
+        #expect(hcpOnly?.adjustedGross == 85)
+        #expect(hcpOnly?.fairwayHoles == 0)
+        #expect(hcpOnly?.outcomes.isEmpty == true)
+    }
+
+    @Test func scramblingUsesOnlyKnownMissedGreensAndParOrBetter() {
+        let save = HolePerformanceSample(par: 4, score: PlayedHoleScore(strokes: 4, putts: 1))
+        #expect(save.greenHit == false)
+        #expect(save.scramble == true)
+        let miss = HolePerformanceSample(par: 5, score: PlayedHoleScore(strokes: 6, putts: 2))
+        #expect(miss.scramble == false)
+        let green = HolePerformanceSample(par: 3, score: PlayedHoleScore(strokes: 3, putts: 2))
+        #expect(green.greenHit == true)
+        #expect(green.scramble == nil)
+        let unknown = HolePerformanceSample(par: 4, score: PlayedHoleScore(strokes: 4))
+        #expect(unknown.scramble == nil)
+    }
+
     @Test func positiveAndPlusAllocationConserveStrokesAndUseCorrectEnds() {
         for handicap in -54...90 {
             let allocated = (1...18).map { PlayedRoundCalculator.strokes(handicap: handicap, rank: $0, holeCount: 18) }
