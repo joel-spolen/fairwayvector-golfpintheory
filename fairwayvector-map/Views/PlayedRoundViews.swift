@@ -919,6 +919,7 @@ struct RoundScorecardView: View {
 
 struct RoundReviewView: View {
     let initialRound: PlayedRound
+    var isHistoryDetail = false
     @State private var notes = ""
     @State private var notesLoaded = false
     @State private var includeInHandicap = true
@@ -940,8 +941,18 @@ struct RoundReviewView: View {
     private var imported: Bool { hcpRounds.contains { $0.sourceSavedRoundID == round.id.uuidString } }
     private var hcpEligible: Bool { PlayedRoundHandicapBridge.isEligible(round) }
 
+    @ViewBuilder
     var body: some View {
-        NavigationStack {
+        if isHistoryDetail {
+            reviewContent
+        } else {
+            NavigationStack { reviewContent }
+                .tint(PureLineStyle.accent)
+                .preferredColorScheme(.light)
+        }
+    }
+
+    private var reviewContent: some View {
             Form {
                 Section {
                     if store.draftNeedsRetry {
@@ -1017,9 +1028,16 @@ struct RoundReviewView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    if isHistoryDetail {
+                        Button { dismiss() } label: {
+                            Label("Back", systemImage: "chevron.left")
+                        }
+                    } else {
+                        Button("Cancel") { dismiss() }
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
+                    if !isHistoryDetail {
                     Button("Save") {
                         if isSaved {
                             if includeInHandicap && !imported && PlayedRoundHandicapBridge.isEligible(round) {
@@ -1034,8 +1052,10 @@ struct RoundReviewView: View {
                         }
                     }
                     .fontWeight(.semibold)
+                    }
                 }
             }
+            .navigationBarBackButtonHidden(isHistoryDetail)
             .confirmationDialog("Save this round?", isPresented: $confirmingSave, titleVisibility: .visible) {
                 Button(includeInHandicap && !PlayedRoundHandicapBridge.isEligible(round)
                        ? "Save without HCP" : "Save round anyway") {
@@ -1048,9 +1068,6 @@ struct RoundReviewView: View {
                         ? "This round is not eligible for HCP and will be saved to Statistics only."
                         : "The round will be saved to Statistics."))
             }
-        }
-        .tint(PureLineStyle.accent)
-        .preferredColorScheme(.light)
     }
 
     private func saveRound() {

@@ -64,7 +64,7 @@ struct ContentView: View {
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
             feature(screen)
                 .safeAreaInset(edge: .top, spacing: 0) {
-                    if screen != .course {
+                    if screen != .course && screen != .statistics {
                         HStack {
                             Button {
                                 destination = nil

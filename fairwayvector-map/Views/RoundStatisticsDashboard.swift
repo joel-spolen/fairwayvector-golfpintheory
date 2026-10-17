@@ -101,6 +101,7 @@ struct RoundPerformanceRecord: Identifiable {
 }
 
 struct RoundStatisticsDashboard: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(PlayedRoundStore.self) private var store
     @Query(sort: \GolfRound.date, order: .reverse) private var handicapRounds: [GolfRound]
     @State private var deleting: UUID?
@@ -154,9 +155,28 @@ struct RoundStatisticsDashboard: View {
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
             .navigationTitle("Rounds & statistics")
+            .navigationBarBackButtonHidden()
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                HStack {
+                    Button { dismiss() } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "chevron.left")
+                            Text("Home")
+                        }
+                        .font(.subheadline.weight(.medium))
+                        .frame(minHeight: 44)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("return-home-button")
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .foregroundStyle(PureLineStyle.accent)
+                .background(PureLineStyle.canvas)
+            }
             .confirmationDialog("Delete saved scorecard?", isPresented: Binding(
                 get: { deleting != nil }, set: { if !$0 { deleting = nil } }
             ), titleVisibility: .visible) {
@@ -446,9 +466,9 @@ struct RoundStatisticsDashboard: View {
             ForEach(records.reversed()) { record in
                 NavigationLink {
                     if let round = record.played {
-                        RoundReviewView(initialRound: round)
+                        RoundReviewView(initialRound: round, isHistoryDetail: true)
                     } else if let round = record.handicap {
-                        RoundDetailView(round: round, handicapIndex: nil)
+                        StatisticsHandicapDetail(round: round)
                     }
                 } label: {
                     HStack(spacing: 12) {
@@ -504,5 +524,22 @@ struct RoundStatisticsDashboard: View {
     private func average(_ values: [Double]) -> String {
         guard !values.isEmpty else { return "—" }
         return (values.reduce(0, +) / Double(values.count)).formatted(.number.precision(.fractionLength(1)))
+    }
+}
+
+private struct StatisticsHandicapDetail: View {
+    let round: GolfRound
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        RoundDetailView(round: round, handicapIndex: nil)
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { dismiss() } label: {
+                        Label("Back", systemImage: "chevron.left")
+                    }
+                }
+            }
     }
 }
