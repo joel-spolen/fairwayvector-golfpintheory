@@ -23,10 +23,12 @@ struct TrajectoryRootView: View {
     }
 
     @ObservedObject var viewModel: TrajectoryCalculatorViewModel
+    var onHome: () -> Void = {}
     @State private var selectedTab: Tab = .home
 
     var body: some View {
         VStack(spacing: 0) {
+            PureLineHomeButton(onHome: onHome)
             HStack(spacing: 4) {
                 ForEach(Tab.allCases, id: \.self) { tab in
                     Button {
@@ -74,12 +76,13 @@ struct TrajectoryRootView: View {
                         },
                         onExampleShot: { viewModel.randomizeExampleShot() },
                         onOpenClub: { selectedTab = .club },
-                        onOpenTrajectory: { selectedTab = .calculator }
+                        onOpenTrajectory: { selectedTab = .calculator },
+                        onHome: onHome
                     )
                 case .calculator:
-                    TrajectoryCalculatorView(viewModel: viewModel)
+                    TrajectoryCalculatorView(viewModel: viewModel, onHome: onHome)
                 case .club:
-                    TrajectoryClubView(viewModel: viewModel, onOpenTrajectory: { selectedTab = .calculator })
+                    TrajectoryClubView(viewModel: viewModel, onOpenTrajectory: { selectedTab = .calculator }, onHome: onHome)
                 }
             }
         }
@@ -95,12 +98,7 @@ struct TrajectoryPageHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
-                Text(title)
-                    .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(PureLineStyle.ink)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                Spacer(minLength: 0)
+                PureLinePageHeader(title: title, subtitle: subtitle)
                 if let onReset {
                     Button(action: onReset) {
                         Label("Reset", systemImage: "arrow.counterclockwise")
@@ -111,10 +109,6 @@ struct TrajectoryPageHeader: View {
                     .accessibilityLabel("Reset inputs")
                 }
             }
-            Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(PureLineStyle.muted)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 18)

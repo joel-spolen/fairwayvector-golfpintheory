@@ -196,7 +196,7 @@ struct RoundSetupView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button(dismissOnCompletion ? "Cancel" : "Back") {
                         onCancel()
                         if dismissOnCompletion { dismiss() }
                     }
@@ -1004,6 +1004,10 @@ struct RoundReviewView: View {
                     }
                     .listRowBackground(PureLineStyle.canvas)
                 }
+                if isSaved, let notes = round.notes?.trimmingCharacters(in: .whitespacesAndNewlines), !notes.isEmpty {
+                    Section("Notes") { Text(notes) }
+                        .listRowBackground(PureLineStyle.canvas)
+                }
                 if let error {
                     Section { Text(error).foregroundStyle(.red) }
                         .listRowBackground(PureLineStyle.canvas)
@@ -1022,7 +1026,8 @@ struct RoundReviewView: View {
             .onChange(of: hcpEligible) {
                 if !hcpEligible { includeInHandicap = false }
             }
-            .navigationTitle("Round summary")
+            .navigationTitle(isHistoryDetail ? "Round details" : "Round summary")
+            .toolbar(.visible, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)

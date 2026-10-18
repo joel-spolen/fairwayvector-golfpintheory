@@ -18,52 +18,59 @@ struct TrajectoryProfileSetupWizardView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                FairwayVectorColors.background
+                PureLineStyle.canvas
                     .ignoresSafeArea()
 
                 VStack(alignment: .leading, spacing: 18) {
                     Text("Set your starting profile")
                         .font(.title2.bold())
-                        .foregroundStyle(FairwayVectorColors.navy)
+                        .foregroundStyle(PureLineStyle.ink)
 
-                    Text("Choose the handicap range that best matches your game. More detailed distances and club values live in the Profile tab.")
+                    Text("Choose the handicap range that best matches your game. To enter personal distances and launch data, open In the bag > Club distances & launch from Home.")
                         .font(.subheadline)
-                        .foregroundStyle(FairwayVectorColors.slate)
+                        .foregroundStyle(PureLineStyle.muted)
                         .fixedSize(horizontal: false, vertical: true)
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Handicap Range")
+                        Text("Handicap range")
                             .font(.headline)
-                            .foregroundStyle(FairwayVectorColors.navy)
-                        Picker("Handicap Range", selection: $selectedBand) {
+                            .foregroundStyle(PureLineStyle.ink)
+                        Picker("Handicap range", selection: $selectedBand) {
                             ForEach(HandicapBand.allCases) { band in
                                 Text(band.label).tag(band)
                             }
                         }
                         .pickerStyle(.inline)
                     }
-                    .padding()
-                    .background(FairwayVectorColors.surface, in: RoundedRectangle(cornerRadius: 12))
+                    .pureLineCard()
 
                     Spacer()
                 }
                 .padding()
             }
-            .tint(FairwayVectorColors.navy)
-            .navigationTitle("Profile Setup")
+            .foregroundStyle(PureLineStyle.ink)
+            .tint(PureLineStyle.accent)
+            .navigationTitle("Profile setup")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    if profileStore.profile.isSetupComplete {
-                        Button("Cancel") { dismiss() }
-                    } else {
-                        Button("Close", action: onClose)
+                    Button("Cancel") {
+                        if profileStore.profile.isSetupComplete {
+                            dismiss()
+                        } else {
+                            onClose()
+                        }
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Finish") { finishSetup() }
+                    Button("Save") { finishSetup() }
                 }
             }
         }
+        .preferredColorScheme(.light)
     }
 
     private func finishSetup() {

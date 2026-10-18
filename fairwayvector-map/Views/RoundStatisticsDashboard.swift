@@ -115,15 +115,8 @@ struct RoundStatisticsDashboard: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("YOUR GAME, OVER TIME")
-                            .font(.caption2.weight(.semibold)).tracking(1.6)
-                            .foregroundStyle(PureLineStyle.accent)
-                        Text("Every round. A clearer picture.")
-                            .font(.title2.weight(.semibold)).tracking(-0.6)
-                        Text("See your progress and discover where you can improve.")
-                            .font(.subheadline).foregroundStyle(PureLineStyle.muted)
-                    }
+                    PureLinePageHeader(title: "Rounds & statistics",
+                        subtitle: "See your progress and discover where you can improve.")
                     if let message = store.errorMessage {
                         VStack(alignment: .leading, spacing: 10) {
                             Text(message).font(.footnote).foregroundStyle(.red)
@@ -156,26 +149,12 @@ struct RoundStatisticsDashboard: View {
             .foregroundStyle(PureLineStyle.ink)
             .navigationTitle("Rounds & statistics")
             .navigationBarBackButtonHidden()
+            .toolbar(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .safeAreaInset(edge: .top, spacing: 0) {
-                HStack {
-                    Button { dismiss() } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "chevron.left")
-                            Text("Home")
-                        }
-                        .font(.subheadline.weight(.medium))
-                        .frame(minHeight: 44)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityIdentifier("return-home-button")
-                    Spacer()
-                }
-                .padding(.horizontal, 20)
-                .foregroundStyle(PureLineStyle.accent)
-                .background(PureLineStyle.canvas)
+                PureLineHomeButton { dismiss() }
             }
             .confirmationDialog("Delete saved scorecard?", isPresented: Binding(
                 get: { deleting != nil }, set: { if !$0 { deleting = nil } }
@@ -533,6 +512,7 @@ private struct StatisticsHandicapDetail: View {
 
     var body: some View {
         RoundDetailView(round: round, handicapIndex: nil)
+            .toolbar(.visible, for: .navigationBar)
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

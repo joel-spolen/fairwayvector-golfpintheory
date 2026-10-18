@@ -29,12 +29,8 @@ struct CourseSelectionView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(isStartRoundFlow ? "Start a round" : "Where to?")
-                            .font(.largeTitle.weight(.semibold)).tracking(-1)
-                        Text(isStartRoundFlow ? "Choose your course and tee." : "Find your course. Choose your tee.")
-                            .font(.subheadline).foregroundStyle(PureLineStyle.muted)
-                    }
+                    PureLinePageHeader(title: isStartRoundFlow ? "Start a round" : "Explore a course",
+                        subtitle: "Choose your course and tee.")
                     if showsRoundInProgress, let round = roundStore.active {
                         VStack(alignment: .leading, spacing: 14) {
                             Label("Round in progress", systemImage: "flag.checkered").font(.headline)
@@ -106,6 +102,7 @@ struct CourseSelectionView: View {
             }
             .background(PureLineStyle.canvas)
             .navigationTitle("Choose Course")
+            .toolbar(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)

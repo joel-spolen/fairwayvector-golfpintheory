@@ -13,6 +13,50 @@ enum PureLineStyle {
     static let line = Color(red: 0.88, green: 0.92, blue: 0.91)
 }
 
+/// Root navigation only. Place inside the feature's stack, never above it.
+struct PureLineHomeButton: View {
+    let onHome: () -> Void
+
+    var body: some View {
+        HStack {
+            Button(action: onHome) {
+                HStack(spacing: 6) {
+                    Image(systemName: "chevron.left")
+                    Text("Home")
+                }
+                .font(.subheadline.weight(.medium))
+                .frame(minHeight: 44)
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("return-home-button")
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .foregroundStyle(PureLineStyle.accent)
+        .background(PureLineStyle.canvas)
+    }
+}
+
+struct PureLinePageHeader: View {
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.largeTitle.weight(.semibold)).tracking(-0.6)
+                .foregroundStyle(PureLineStyle.ink)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(subtitle)
+                .font(.subheadline)
+                .foregroundStyle(PureLineStyle.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 extension View {
     func pureLineCard(padding: CGFloat = 18) -> some View {
         self.padding(padding)

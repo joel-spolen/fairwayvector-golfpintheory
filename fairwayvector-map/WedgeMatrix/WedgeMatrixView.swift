@@ -14,6 +14,8 @@ struct WedgeMatrixView: View {
         }
     }
 
+    var onHome: () -> Void = {}
+
     @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
     @AppStorage("wedgeMatrix.distanceUnit") private var selectedUnitRawValue = WedgeDistanceUnit.yards.rawValue
     @State private var wedges: [Wedge] = Wedge.defaults
@@ -33,6 +35,7 @@ struct WedgeMatrixView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            PureLineHomeButton(onHome: onHome)
             HStack(spacing: 4) {
                 ForEach(Section.allCases, id: \.self) { item in
                     Button {
@@ -194,20 +197,10 @@ struct WedgePageHeader: View {
     var horizontalInset: CGFloat = 18
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.largeTitle.weight(.semibold))
-                .foregroundStyle(PureLineStyle.ink)
-            Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(PureLineStyle.muted)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        PureLinePageHeader(title: title, subtitle: subtitle)
         .padding(.horizontal, horizontalInset)
         .padding(.vertical, 18)
         .background(PureLineStyle.canvas)
-        .accessibilityElement(children: .combine)
     }
 }
 

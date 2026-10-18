@@ -30,6 +30,7 @@ struct TrajectoryCalculatorView: View {
     }
 
     @ObservedObject var viewModel: TrajectoryCalculatorViewModel
+    var onHome: () -> Void = {}
     @AppStorage("trajectory.calculator.inputMode") private var inputModeRawValue = TrajectoryInputMode.simple.rawValue
     @State private var launchSource: LaunchConditionSource = .club
     @State private var showConditions = false
@@ -398,7 +399,7 @@ struct ClubCarouselView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        Group {
             VStack(spacing: 18) {
                 Text("Choose the club to use for launch conditions.")
                     .font(.subheadline)
@@ -462,6 +463,8 @@ struct ClubCarouselView: View {
             .padding(.top, 8)
             .background(PureLineStyle.canvas.ignoresSafeArea())
             .navigationTitle("Club Selector")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.visible, for: .navigationBar)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar)

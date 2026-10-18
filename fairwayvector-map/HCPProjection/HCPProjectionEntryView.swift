@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct HCPProjectionEntryView: View {
+    var onHome: () -> Void = {}
     private let courseCatalog = CourseCatalogStore()
 
     static let sharedModelContainer: ModelContainer = {
@@ -23,7 +24,7 @@ struct HCPProjectionEntryView: View {
     }()
 
     var body: some View {
-        HCPProjectionRootView(courseCatalog: courseCatalog)
+        HCPProjectionRootView(courseCatalog: courseCatalog, onHome: onHome)
     }
 }
 

@@ -63,24 +63,6 @@ struct ContentView: View {
         .modelContainer(HCPProjectionEntryView.sharedModelContainer)
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
             feature(screen)
-                .safeAreaInset(edge: .top, spacing: 0) {
-                    if screen != .course && screen != .statistics {
-                        HStack {
-                            Button {
-                                destination = nil
-                            } label: {
-                                Label("Home", systemImage: "chevron.left")
-                                    .font(.subheadline.weight(.medium))
-                                    .frame(minHeight: 44)
-                            }
-                            .accessibilityIdentifier("return-home-button")
-                            Spacer()
-                        }
-                        .padding(.horizontal, 20)
-                        .foregroundStyle(PureLineStyle.accent)
-                        .background(PureLineStyle.canvas)
-                    }
-                }
                 .environmentObject(trajectoryModel)
                 .environment(roundStore)
                 .modelContainer(HCPProjectionEntryView.sharedModelContainer)
@@ -105,13 +87,13 @@ struct ContentView: View {
         case .course:
             CourseMapFlowView(onHome: { destination = nil }, requestStartRound: $requestStartRound)
         case .handicap:
-            HCPProjectionEntryView()
+            HCPProjectionEntryView(onHome: { destination = nil })
         case .practice:
-            PracticeView(destination: $practiceDestination, trajectoryModel: trajectoryModel)
+            PracticeView(destination: $practiceDestination, trajectoryModel: trajectoryModel, onHome: { destination = nil })
         case .statistics:
             RoundStatisticsView()
         case .bag:
-            InTheBagView(trajectoryModel: trajectoryModel)
+            InTheBagView(trajectoryModel: trajectoryModel, onHome: { destination = nil })
         }
     }
 }
@@ -196,24 +178,9 @@ private struct CourseMapFlowView: View {
                 selection = $0
             })
             .safeAreaInset(edge: .top, spacing: 0) {
-                courseSelectionHomeButton
+                PureLineHomeButton(onHome: onHome)
             }
         }
-    }
-
-    private var courseSelectionHomeButton: some View {
-        HStack {
-            Button(action: onHome) {
-                Label("Home", systemImage: "chevron.left")
-                    .font(.subheadline.weight(.medium))
-                    .frame(minHeight: 44)
-            }
-            .accessibilityIdentifier("return-home-button")
-            Spacer()
-        }
-        .padding(.horizontal, 20)
-        .foregroundStyle(PureLineStyle.accent)
-        .background(PureLineStyle.canvas)
     }
 
     private func prepareRoundSetup(for reference: CourseReference) {

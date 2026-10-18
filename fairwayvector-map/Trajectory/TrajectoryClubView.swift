@@ -72,6 +72,7 @@ private final class ClubConditionsStore: ObservableObject {
 struct TrajectoryClubView: View {
     @ObservedObject var viewModel: TrajectoryCalculatorViewModel
     let onOpenTrajectory: () -> Void
+    var onHome: () -> Void = {}
     @StateObject private var clubConditions = ClubConditionsStore()
     @State private var targetCarryMetersValue = Units.metersFromYards(150)
     @State private var recommendations: [ClubRecommendation] = []
@@ -94,9 +95,10 @@ struct TrajectoryClubView: View {
                             profile: viewModel.playerProfileStore.profile)
     }
 
-    init(viewModel: TrajectoryCalculatorViewModel, onOpenTrajectory: @escaping () -> Void = {}) {
+    init(viewModel: TrajectoryCalculatorViewModel, onOpenTrajectory: @escaping () -> Void = {}, onHome: @escaping () -> Void = {}) {
         self.viewModel = viewModel
         self.onOpenTrajectory = onOpenTrajectory
+        self.onHome = onHome
     }
 
     var body: some View {

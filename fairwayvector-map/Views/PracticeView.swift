@@ -15,16 +15,17 @@ enum PracticeDestination: String, CaseIterable {
 struct PracticeView: View {
     @Binding var destination: PracticeDestination
     @ObservedObject var trajectoryModel: TrajectoryCalculatorViewModel
+    var onHome: () -> Void = {}
 
     var body: some View {
         Group {
             switch destination {
             case .trajectory:
-                TrajectoryRootView(viewModel: trajectoryModel)
+                TrajectoryRootView(viewModel: trajectoryModel, onHome: onHome)
             case .wedge:
-                WedgeMatrixView()
+                WedgeMatrixView(onHome: onHome)
             }
         }
-        .tint(destination == .wedge ? PureLineStyle.accent : FairwayVectorColors.navy)
+        .tint(PureLineStyle.accent)
     }
 }

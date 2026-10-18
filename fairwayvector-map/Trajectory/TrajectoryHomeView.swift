@@ -7,6 +7,7 @@ struct TrajectoryHomeView: View {
     let onExampleShot: () -> Void
     let onOpenClub: () -> Void
     let onOpenTrajectory: () -> Void
+    var onHome: () -> Void = {}
     @State private var showHowItWorks = false
 
     var body: some View {

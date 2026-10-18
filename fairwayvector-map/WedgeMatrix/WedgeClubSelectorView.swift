@@ -60,9 +60,9 @@ struct WedgeClubSelectorView: View {
                     )
                 } else {
                     ContentUnavailableView(
-                        "No Clubs In Bag",
+                        "No clubs in bag",
                         systemImage: "bag.badge.questionmark",
-                        description: Text("Add wedges in the Bag tab to get a recommendation.")
+                        description: Text("From Home, open In the bag > Wedge bag to add wedges and get a recommendation.")
                     )
                     .foregroundStyle(PureLineStyle.muted)
                     .padding(.vertical, 24)

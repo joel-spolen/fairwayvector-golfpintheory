@@ -10,22 +10,17 @@ struct InTheBagView: View {
     }
 
     @ObservedObject var trajectoryModel: TrajectoryCalculatorViewModel
+    var onHome: () -> Void = {}
     @State private var activeEditor: Editor?
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Build your bag")
-                            .font(.largeTitle.weight(.semibold))
-                            .foregroundStyle(PureLineStyle.ink)
-                        Text("Choose the clubs you carry and set up your club and wedge distances.")
-                            .font(.subheadline)
-                            .foregroundStyle(PureLineStyle.muted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    PureLinePageHeader(
+                        title: "Build your bag",
+                        subtitle: "Choose the clubs you carry and set up your club and wedge distances."
+                    )
                     .padding(.vertical, 18)
 
                     VStack(alignment: .leading, spacing: 4) {
@@ -68,11 +63,13 @@ struct InTheBagView: View {
                     .pureLineCard()
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 44)
                 .padding(.bottom, 18)
             }
             .background(PureLineStyle.canvas)
             .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top, spacing: 0) {
+                PureLineHomeButton(onHome: onHome)
+            }
         }
         .tint(PureLineStyle.accent)
         .sheet(item: $activeEditor) { editor in

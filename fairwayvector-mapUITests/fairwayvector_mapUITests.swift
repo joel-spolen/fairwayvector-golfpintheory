@@ -8,133 +8,184 @@
 import XCTest
 
 final class fairwayvector_mapUITests: XCTestCase {
-
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    private func launchAtHome() -> XCUIApplication {
         let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // XCUIAutomation Documentation
-        // https://developer.apple.com/documentation/xcuiautomation
+        XCTAssertTrue(app.buttons["global-settings-button"].waitForExistence(timeout: 12))
+        return app
     }
 
-        @MainActor
-        func testTrajectoryOpensWithoutSplashAndCanClose() {
-            let app = XCUIApplication()
-            app.launch()
-
-            let openTrajectory = app.buttons["Explore Trajectory"]
-            XCTAssertTrue(openTrajectory.waitForExistence(timeout: 12))
-            openTrajectory.tap()
-
-            let trajectoryHome = app.staticTexts["Know which club to hit."]
-            XCTAssertTrue(trajectoryHome.waitForExistence(timeout: 5))
-            XCTAssertEqual(app.tabBars.count, 1)
-            XCTAssertFalse(app.staticTexts["Know your flight"].exists)
-            app.tabBars.buttons["Home"].tap()
-            XCTAssertTrue(openTrajectory.waitForExistence(timeout: 5))
+    @MainActor
+    private func scrollTo(_ element: XCUIElement, in app: XCUIApplication, maximumSwipes: Int = 12) {
+        for _ in 0..<maximumSwipes {
+            if element.exists && element.isHittable { return }
+            app.swipeUp()
         }
-
-        @MainActor
-        func testHCPProjectionOpensWithoutSplash() {
-            let app = XCUIApplication()
-            app.launch()
-
-            let openHCP = app.buttons["View Handicap"]
-            XCTAssertTrue(openHCP.waitForExistence(timeout: 12))
-            openHCP.tap()
-
-            XCTAssertTrue(app.staticTexts["Plan the score or stableford points that move your handicap."].waitForExistence(timeout: 8))
-            XCTAssertEqual(app.tabBars.count, 1)
-            XCTAssertFalse(app.staticTexts["Know your place on the course"].exists)
-            app.tabBars.buttons["Home"].tap()
-            XCTAssertTrue(openHCP.waitForExistence(timeout: 5))
-        }
+        XCTAssertTrue(element.exists && element.isHittable, "Expected a reachable element: \(element)")
+    }
 
     @MainActor
-    func testSharedProfileAndSettings() {
-        let app = XCUIApplication()
-        app.launch()
-        let profileTab = app.tabBars.buttons["Profile"]
-        XCTAssertTrue(profileTab.waitForExistence(timeout: 12))
-        profileTab.tap()
-        XCTAssertTrue(app.staticTexts["Clubs & launch profile"].waitForExistence(timeout: 5))
-        app.buttons["Settings"].tap()
+    private func openHomeDestination(_ title: String, in app: XCUIApplication) {
+        // Home rows combine their title and subtitle into a button label.
+        let destination = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title)).firstMatch
+        scrollTo(destination, in: app)
+        destination.tap()
+    }
+
+    @MainActor
+    private func returnHome(in app: XCUIApplication) {
+        let homeButtons = app.buttons.matching(NSPredicate(
+            format: "identifier == %@ OR label == %@", "return-home-button", "Home"
+        ))
+        XCTAssertTrue(homeButtons.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(homeButtons.count, 1, "Feature roots should expose one Home control")
+        XCTAssertTrue(homeButtons.firstMatch.isHittable)
+        homeButtons.firstMatch.tap()
+        let settings = app.buttons["global-settings-button"]
+        XCTAssertTrue(settings.waitForExistence(timeout: 5))
+        // Home keeps its scroll position while a feature is presented.
+        for _ in 0..<12 {
+            if settings.isHittable { break }
+            app.swipeDown()
+        }
+        XCTAssertTrue(settings.isHittable)
+    }
+
+    @MainActor
+    func testTrajectoryOpensFromHomeAndReturnsHome() {
+        let app = launchAtHome()
+        openHomeDestination("Trajectory", in: app)
+        XCTAssertTrue(app.staticTexts["Know which club to hit."].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Know your flight"].exists)
+        returnHome(in: app)
+    }
+
+    @MainActor
+    func testHandicapOpensFromHomeAndReturnsHome() {
+        let app = launchAtHome()
+        openHomeDestination("Handicap", in: app)
+        XCTAssertTrue(app.staticTexts["Your handicap"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.staticTexts["Know your place on the course"].exists)
+        returnHome(in: app)
+    }
+
+    @MainActor
+    func testClubProfileIsInTheBagAndSettingsRemainOnHome() {
+        let app = launchAtHome()
+        openHomeDestination("In the bag", in: app)
+        XCTAssertTrue(app.staticTexts["Build your bag"].waitForExistence(timeout: 5))
+        let clubProfile = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Club distances & launch")).firstMatch
+        scrollTo(clubProfile, in: app)
+        clubProfile.tap()
+        XCTAssertTrue(app.navigationBars["Club distances & launch"].waitForExistence(timeout: 5))
+        app.buttons["Done"].tap()
+        XCTAssertTrue(app.staticTexts["Build your bag"].waitForExistence(timeout: 5))
+        returnHome(in: app)
+
+        app.buttons["global-settings-button"].tap()
+        XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Distance units"].waitForExistence(timeout: 5))
         app.buttons["Done"].tap()
+        XCTAssertTrue(app.buttons["global-settings-button"].waitForExistence(timeout: 5))
     }
 
     @MainActor
-    func testCourseSelectorSearchesSwedishGolfAPI() {
-        let app = XCUIApplication()
-        app.launch()
-        let courseTab = app.tabBars.buttons["Course"]
-        XCTAssertTrue(courseTab.waitForExistence(timeout: 12))
-        courseTab.tap()
+    func testCourseSelectionNavigationWithoutProviderSearch() {
+        let app = launchAtHome()
+        openHomeDestination("Explore a course", in: app)
+        XCTAssertTrue(app.staticTexts["Explore a course"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["golf-country-picker"].exists)
+        XCTAssertTrue(app.textFields["golf-club-search-field"].exists)
+        // Do not search, refresh, or open a recent course: this route needs no provider or map traffic.
+        returnHome(in: app)
 
-        XCTAssertFalse(app.staticTexts["Golf API key not configured. Add GOLF_API_KEY in the app target’s build settings."].exists)
-        let countryPicker = app.buttons.matching(identifier: "golf-country-picker").firstMatch
-        XCTAssertTrue(countryPicker.waitForExistence(timeout: 5))
-        countryPicker.tap()
-        app.buttons.matching(identifier: "Sweden").firstMatch.tap()
-        let searchField = app.textFields["golf-club-search-field"]
-        XCTAssertTrue(searchField.exists)
-        searchField.tap()
-        searchField.typeText("Åre")
-        app.buttons["Search golf clubs"].tap()
-        XCTAssertTrue(app.staticTexts["Åre Golf"].waitForExistence(timeout: 30))
+        openHomeDestination("Start round", in: app)
+        XCTAssertTrue(app.staticTexts["Start a round"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Choose your course and tee."].exists)
+        returnHome(in: app)
     }
 
     @MainActor
-    func testWedgeMatrixUsesPracticeSection() {
-        let app = XCUIApplication()
-        app.launch()
+    func testWedgeToolsAndWedgeBagUseHomeRoutes() {
+        let app = launchAtHome()
+        openHomeDestination("Wedge Matrix", in: app)
+        XCTAssertTrue(app.staticTexts["Your wedge setup"].waitForExistence(timeout: 5))
+        app.buttons["Matrix"].tap()
+        XCTAssertTrue(app.staticTexts["Wedge matrix"].waitForExistence(timeout: 5))
+        returnHome(in: app)
 
-        let wedgeShortcut = app.buttons["Explore Wedge Matrix"]
-        XCTAssertTrue(wedgeShortcut.waitForExistence(timeout: 12))
-        wedgeShortcut.tap()
-        XCTAssertTrue(app.navigationBars["Wedge Matrix"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.tabBars.count, 1)
-        XCTAssertTrue(app.tabBars.buttons["Practice"].exists)
-
-        app.tabBars.buttons["Profile"].tap()
-        XCTAssertTrue(app.buttons["Wedge bag & matrix"].waitForExistence(timeout: 5))
+        openHomeDestination("In the bag", in: app)
+        let wedgeBag = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Wedge bag")).firstMatch
+        scrollTo(wedgeBag, in: app)
+        wedgeBag.tap()
+        XCTAssertTrue(app.staticTexts["Your wedge bag"].waitForExistence(timeout: 5))
+        app.buttons["Done"].tap()
+        returnHome(in: app)
     }
 
     @MainActor
     func testDistanceUnitsAreSharedWithWedgeMatrix() {
-        let app = XCUIApplication()
-        app.launch()
-        let profileTab = app.tabBars.buttons["Profile"]
-        XCTAssertTrue(profileTab.waitForExistence(timeout: 12))
-        profileTab.tap()
-        let settings = app.buttons["Settings"]
-        XCTAssertTrue(settings.waitForExistence(timeout: 5))
-        settings.tap()
-
+        let app = launchAtHome()
+        app.buttons["global-settings-button"].tap()
         let meters = app.buttons["Meters"]
         XCTAssertTrue(meters.waitForExistence(timeout: 5))
+        let originalUnit = meters.isSelected ? "Meters" : "Yards"
         meters.tap()
         app.buttons["Done"].tap()
-        app.buttons["Wedge bag & matrix"].tap()
-        XCTAssertTrue(app.navigationBars["Wedge Matrix"].waitForExistence(timeout: 5))
-        app.buttons["Matrix"].tap()
-        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label ENDSWITH %@", " m")).firstMatch.waitForExistence(timeout: 5))
+
+        openHomeDestination("Wedge Matrix", in: app)
+        app.buttons["Selector"].tap()
+        XCTAssertTrue(app.staticTexts["Choose a wedge"].waitForExistence(timeout: 5))
+        // Slider endpoints exist even when the user has no wedges; no invented bag data is needed.
+        XCTAssertTrue(app.staticTexts["20 m"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["160 m"].exists)
+        returnHome(in: app)
+
+        app.buttons["global-settings-button"].tap()
+        XCTAssertTrue(app.buttons[originalUnit].waitForExistence(timeout: 5))
+        app.buttons[originalUnit].tap()
+        app.buttons["Done"].tap()
+    }
+
+    @MainActor
+    func testStatisticsRootReturnsHome() {
+        let app = launchAtHome()
+        openHomeDestination("Rounds & statistics", in: app)
+        XCTAssertTrue(app.staticTexts["Rounds & statistics"].waitForExistence(timeout: 5))
+        returnHome(in: app)
+    }
+
+    @MainActor
+    func testExistingStatisticsRoundUsesBack() throws {
+        let app = launchAtHome()
+        openHomeDestination("Rounds & statistics", in: app)
+        XCTAssertTrue(app.staticTexts["Rounds & statistics"].waitForExistence(timeout: 5))
+        // Use only genuine persisted history. A clean install cannot exercise a detail route.
+        if app.staticTexts["Your story starts here"].exists {
+            throw XCTSkip("No saved rounds available; no synthetic history is injected.")
+        }
+        let round = app.scrollViews.buttons.matching(NSPredicate(format: "label CONTAINS %@", " holes")).firstMatch
+        scrollTo(round, in: app, maximumSwipes: 30)
+        let roundLabel = round.label
+        round.tap()
+
+        let backButtons = app.navigationBars.buttons.matching(identifier: "Back")
+        XCTAssertTrue(backButtons.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(backButtons.count, 1)
+        XCTAssertFalse(app.buttons["return-home-button"].exists)
+        XCTAssertFalse(app.buttons["Home"].exists)
+        XCTAssertFalse(app.navigationBars.buttons["Save"].exists)
+        XCTAssertFalse(app.navigationBars.buttons["Cancel"].exists)
+        backButtons.firstMatch.tap()
+
+        XCTAssertTrue(app.staticTexts["Rounds & statistics"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[roundLabel].exists, "Back should preserve the history route")
+        returnHome(in: app)
     }
 
     @MainActor

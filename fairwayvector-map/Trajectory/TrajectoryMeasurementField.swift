@@ -159,7 +159,7 @@ struct TrajectoryMeasurementField: View {
                     Button("Cancel") { isEditingValue = false }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+                    Button("Save") {
                         commitDraft()
                         isEditingValue = false
                     }

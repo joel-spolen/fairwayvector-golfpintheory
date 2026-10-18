@@ -29,19 +29,9 @@ private struct HCPPageHeader: View {
     let subtitle: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.largeTitle.weight(.semibold))
-                .foregroundStyle(PureLineStyle.ink)
-            Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(PureLineStyle.muted)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(18)
-        .background(PureLineStyle.canvas)
-        .accessibilityElement(children: .combine)
+        PureLinePageHeader(title: title, subtitle: subtitle)
+            .padding(18)
+            .background(PureLineStyle.canvas)
     }
 }
 
@@ -119,6 +109,7 @@ struct HCPProjectionRootView: View {
     }
 
     let courseCatalog: CourseCatalogStore
+    var onHome: () -> Void = {}
 
     @Environment(\.modelContext) private var modelContext
     @Query(filter: #Predicate<GolfClub> { $0.isCustom == true }, sort: \GolfClub.name) private var clubs: [GolfClub]
@@ -130,6 +121,7 @@ struct HCPProjectionRootView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            PureLineHomeButton(onHome: onHome)
             HStack(spacing: 4) {
                 ForEach(Tab.allCases, id: \.self) { tab in
                     Button {
@@ -169,11 +161,11 @@ struct HCPProjectionRootView: View {
             Group {
                 switch selectedTab {
                 case .home:
-                    HomeView(courseCatalog: courseCatalog, rounds: rounds, profile: profiles.first, clubs: clubs, courses: courses, tees: tees, onAddRound: { selectedTab = .round }, onPredict: { selectedTab = .predict }, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle)
+                    HomeView(courseCatalog: courseCatalog, rounds: rounds, profile: profiles.first, clubs: clubs, courses: courses, tees: tees, onAddRound: { selectedTab = .round }, onPredict: { selectedTab = .predict }, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle, onHome: onHome)
                 case .predict:
-                    TargetCalculatorView(courseCatalog: courseCatalog, clubs: clubs, courses: courses, tees: tees, rounds: rounds, profile: profiles.first, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle)
+                    TargetCalculatorView(courseCatalog: courseCatalog, clubs: clubs, courses: courses, tees: tees, rounds: rounds, profile: profiles.first, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle, onHome: onHome)
                 case .round:
-                    NewRoundView(courseCatalog: courseCatalog, clubs: clubs, courses: courses, tees: tees, rounds: rounds, profile: profiles.first, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle)
+                    NewRoundView(courseCatalog: courseCatalog, clubs: clubs, courses: courses, tees: tees, rounds: rounds, profile: profiles.first, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle, onHome: onHome)
                 }
             }
         }
@@ -202,6 +194,7 @@ private struct HomeView: View {
     var onPredict: (() -> Void)? = nil
     var pageTitle = "Your handicap"
     var pageSubtitle = "Track your rounds. Plan your next score."
+    var onHome: () -> Void = {}
 
     private var entries: [ScoringRecordEntry] {
         WHSCalculator.scoringEntries(from: rounds, lowHandicapIndex: profile?.lowHandicapIndex)
@@ -833,6 +826,7 @@ private struct TargetCalculatorView: View {
     var profile: PlayerProfile?
     var pageTitle = "Plan your next round"
     var pageSubtitle = "Choose a course and tee to see how your score could move your Handicap Index."
+    var onHome: () -> Void = {}
 
     @State private var searchText = ""
     @State private var selectedClubName = ""
@@ -1189,6 +1183,7 @@ private struct NewRoundView: View {
     var profile: PlayerProfile?
     var pageTitle = "Record a round"
     var pageSubtitle = "Select your course and tee, or enter an official HCP score without a course."
+    var onHome: () -> Void = {}
 
     @State private var searchText = ""
     @State private var selectedClubName = ""
@@ -1202,6 +1197,7 @@ private struct NewRoundView: View {
     @State private var points = 36
     @State private var pcc = 0.0
     @State private var notes = ""
+    @State private var showingSavedConfirmation = false
     @State private var showingAddCourse = false
     @State private var showingCustomCourses = false
     @State private var selectedCustomTeeID: PersistentIdentifier?
@@ -1565,6 +1561,14 @@ private struct NewRoundView: View {
                 if rounds.count < 3 && inputMode == .stablefordPoints {
                     inputMode = .adjustedGrossScore
                 }
+            }
+            .onChange(of: rounds.count) { oldCount, newCount in
+                if newCount > oldCount { showingSavedConfirmation = true }
+            }
+            .alert("Round saved", isPresented: $showingSavedConfirmation) {
+                Button("Done", role: .cancel) { }
+            } message: {
+                Text("Your round is now in your history.")
             }
             .onChange(of: isManualDifferential) {
                 if isManualDifferential {
@@ -2825,6 +2829,9 @@ struct RoundDetailView: View {
                     LabeledContent("Club", value: round.clubName)
                     LabeledContent("Tee", value: round.teeName)
                     LabeledContent("Holes", value: "\(round.holes)")
+                    LabeledContent("Par", value: String(round.par))
+                    LabeledContent("Course rating", value: round.courseRating.formatted(.number.precision(.fractionLength(1))))
+                    LabeledContent("Slope rating", value: String(round.slopeRating))
                 }
                 LabeledContent("Date", value: round.date.formatted(date: .abbreviated, time: .omitted))
             }
@@ -2864,7 +2871,6 @@ struct RoundDetailView: View {
 
             if !isNoCourseRound {
                 Section("Score Summary") {
-                LabeledContent("Input Mode", value: round.inputMode.title)
                 if let gross = round.adjustedGrossScore {
                     LabeledContent {
                         Text("\(gross)")
@@ -2879,7 +2885,6 @@ struct RoundDetailView: View {
                 if let points = round.stablefordPoints {
                     LabeledContent("Stableford Points", value: "\(points) pts")
                 }
-                LabeledContent("Par / Course Rating / Slope", value: "\(round.par) / \(round.courseRating.formatted(.number.precision(.fractionLength(1)))) / \(round.slopeRating)")
                 if !userNotes.isEmpty {
                     LabeledContent("Notes", value: userNotes)
                 }
@@ -2932,7 +2937,8 @@ struct RoundDetailView: View {
             }
         }
         .hcpPureLineList()
-        .navigationTitle(isNoCourseRound ? "No Course Round" : round.courseName)
+        .navigationTitle("Round details")
+        .toolbar(.visible, for: .navigationBar)
     }
 }
 
