@@ -173,13 +173,10 @@ private struct CourseMapFlowView: View {
                 requestStartRound = false
                 resumedRound = round
                 selection = round.reference
-            }, onStartCourse: {
+            }, onHome: onHome, onStartCourse: {
                 isStartingRoundFlow = false
                 selection = $0
             })
-            .safeAreaInset(edge: .top, spacing: 0) {
-                PureLineHomeButton(onHome: onHome)
-            }
         }
     }
 

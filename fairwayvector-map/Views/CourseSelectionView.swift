@@ -6,17 +6,20 @@ struct CourseSelectionView: View {
     let onResumeRound: ((PlayedRound) -> Void)?
     let showsRoundInProgress: Bool
     let isStartRoundFlow: Bool
+    var onHome: () -> Void = {}
     @Environment(PlayedRoundStore.self) private var roundStore
     @State private var confirmDiscardRound = false
 
     init(showsRoundInProgress: Bool = false, isStartRoundFlow: Bool = false,
          onStartRound: ((CourseReference) -> Void)? = nil,
          onResumeRound: ((PlayedRound) -> Void)? = nil,
+         onHome: @escaping () -> Void = {},
          onStartCourse: @escaping (CourseReference) -> Void) {
         self.showsRoundInProgress = showsRoundInProgress
         self.isStartRoundFlow = isStartRoundFlow
         self.onStartRound = onStartRound
         self.onResumeRound = onResumeRound
+        self.onHome = onHome
         self.onStartCourse = onStartCourse
     }
 
@@ -27,7 +30,9 @@ struct CourseSelectionView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
+            VStack(spacing: 0) {
+                PureLineHomeButton(onHome: onHome)
+                ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     PureLinePageHeader(title: isStartRoundFlow ? "Start a round" : "Explore a course",
                         subtitle: "Choose your course and tee.")
@@ -99,13 +104,13 @@ struct CourseSelectionView: View {
                 .foregroundStyle(PureLineStyle.ink)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 24)
+                }
+                .background(PureLineStyle.canvas)
             }
             .background(PureLineStyle.canvas)
             .navigationTitle("Choose Course")
             .toolbar(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
         }
         .tint(PureLineStyle.accent)
         .confirmationDialog("Discard the unsaved round?", isPresented: $confirmDiscardRound, titleVisibility: .visible) {
