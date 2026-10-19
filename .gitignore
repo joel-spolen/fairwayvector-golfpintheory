@@ -2,3 +2,32 @@ fairwayvector-pintheory/GolfAPI.local.xcconfig
 fairwayvector-pintheory/GPXZ.local.xcconfig
 .DS_Store
 exports/
+
+# Xcode / Swift build products and local build state
+DerivedData/
+**/DerivedData/
+**/.build/
+**/build/
+*.app/
+*.appex/
+*.framework/
+*.dSYM/
+*.ipa
+*.xcarchive/
+*.xcresult/
+*.profdata
+*.xccheckout
+
+# Per-user Xcode settings, schemes, breakpoints, and UI state
+**/xcuserdata/
+*.xcuserstate
+
+# Swift and Xcode diagnostics/coverage generated during local development
+*.dia
+*.gcda
+*.gcno
+*.xccovreport
+*.xccovarchive/
+
+# macOS Finder metadata
+._*
