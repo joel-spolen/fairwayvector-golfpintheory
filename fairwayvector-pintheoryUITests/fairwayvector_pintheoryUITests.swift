@@ -1,13 +1,13 @@
 //
-//  fairwayvector_mapUITests.swift
-//  fairwayvector-mapUITests
+//  fairwayvector_pintheoryUITests.swift
+//  fairwayvector-pintheoryUITests
 //
 //  Created by Joel spolen on 2026-09-28.
 //
 
 import XCTest
 
-final class fairwayvector_mapUITests: XCTestCase {
+final class fairwayvector_pintheoryUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
     }

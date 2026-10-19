@@ -1,4 +1,4 @@
-# FairwayVector Map — development API pause + GPXZ terrain
+# PinTheory — development API pause + GPXZ terrain
 
 ## Shared Golf API course selection in Handicap
 
@@ -435,7 +435,7 @@ files for real Golf API course **0121161534832877**, club **141519520190750993**
 No new provider download was needed. No keys, ledger, preferences, player profile,
 score store or unrelated app files were copied or inspected.
 
-`fairwayvector-map/Resources/SavedCourses/Hills/` contains five portable resources:
+`fairwayvector-pintheory/Resources/SavedCourses/Hills/` contains five portable resources:
 
 - `course-0121161534832877-detail.json`: six original tees and original ratings.
 - `course-0121161534832877-coordinates.json`: 121 original public provider points.
@@ -504,7 +504,7 @@ supported-platform diagnostic appeared.
 ## Local evaluation configuration
 
 For later explicitly enabled live evaluation, the tracked GPXZ configuration defaults to a blank key. Optionally create
-`fairwayvector-map/GPXZ.local.xcconfig` locally and set `GPXZ_API_KEY` there.
+`fairwayvector-pintheory/GPXZ.local.xcconfig` locally and set `GPXZ_API_KEY` there.
 It is ignored by Git and excluded from resources. It is independent of the
 Golf API key. Opening a course/hole/tee/saved flag reads terrain cache only,
 without checking remote credentials. Blank or unresolved build placeholders

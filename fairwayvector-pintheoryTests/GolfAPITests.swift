@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 private final class GolfAPIStubProtocol: URLProtocol, @unchecked Sendable {
     nonisolated(unsafe) static var handler: ((URLRequest) -> (Int, Data))?

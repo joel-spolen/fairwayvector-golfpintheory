@@ -32,7 +32,7 @@ MAX_CELLS = 16_000_000
 MAX_DIMENSION = 16_384
 DATA_FILE = "hills-terrain-v1.f32"
 MANIFEST_FILE = "hills-terrain-v1.json"
-DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "fairwayvector-map/Resources/Terrain"
+DEFAULT_OUTPUT = Path(__file__).resolve().parents[1] / "fairwayvector-pintheory/Resources/Terrain"
 
 
 def require(condition: bool, message: str) -> None:

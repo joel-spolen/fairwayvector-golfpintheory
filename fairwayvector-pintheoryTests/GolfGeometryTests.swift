@@ -1,7 +1,7 @@
 import CoreLocation
 import Foundation
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 @MainActor
 struct GolfGeometryTests {

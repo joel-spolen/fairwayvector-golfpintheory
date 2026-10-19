@@ -1,6 +1,6 @@
 import Testing
 import UIKit
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 struct TrajectoryIntegrationTests {
     @Test func trajectoryArtworkIsBundled() {

@@ -1,5 +1,5 @@
 import XCTest
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Offline source only. No provider clients, live caches or real user defaults.
 @MainActor

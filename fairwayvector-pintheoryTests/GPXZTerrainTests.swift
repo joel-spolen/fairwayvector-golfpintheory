@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Offline acceptance source only. No test below may use a live URLSession.
 @MainActor struct GPXZTerrainTests {

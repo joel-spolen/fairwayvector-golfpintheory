@@ -1,7 +1,7 @@
 import Foundation
 import CryptoKit
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// These acceptance tests intercept EVERY URLSession request. Compile only until authorized.
 @MainActor struct GPXZOfflineAcquisitionTests {

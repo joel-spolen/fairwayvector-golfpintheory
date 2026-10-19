@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Regression SOURCE: compile only. All sessions forbid HTTP; all files are temporary fixtures.
 @MainActor struct DevelopmentAPIMockTests {

@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Offline regression source. Compile only; sessions forbid any actual transport.
 @MainActor

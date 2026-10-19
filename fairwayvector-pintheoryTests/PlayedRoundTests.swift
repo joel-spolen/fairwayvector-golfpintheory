@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Offline regression SOURCE. Compile-only validation; do not execute without authorization.
 @MainActor

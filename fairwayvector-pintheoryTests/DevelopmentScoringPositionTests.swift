@@ -1,6 +1,6 @@
 #if DEBUG
 import XCTest
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Offline regression SOURCE only; no GPS manager, provider, real settings or predictor.
 @MainActor

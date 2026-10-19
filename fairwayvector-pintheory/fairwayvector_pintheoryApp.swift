@@ -1,6 +1,6 @@
 //
-//  fairwayvector_mapApp.swift
-//  fairwayvector-map
+//  fairwayvector_pintheoryApp.swift
+//  fairwayvector-pintheory
 //
 //  Created by Joel spolen on 2026-09-28.
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct fairwayvector_mapApp: App {
+struct fairwayvector_pintheoryApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

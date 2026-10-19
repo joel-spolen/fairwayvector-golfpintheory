@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "2660"
-   version = "1.7">
+   version = "1.8">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1C673895306A3B6200309840"
-               BuildableName = "fairwayvector-map.app"
-               BlueprintName = "fairwayvector-map"
-               ReferencedContainer = "container:fairwayvector-map.xcodeproj">
+               BuildableName = "fairwayvector-pintheory.app"
+               BlueprintName = "fairwayvector-pintheory"
+               ReferencedContainer = "container:fairwayvector-pintheory.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,9 +36,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1C6738A4306A3B6400309840"
-               BuildableName = "fairwayvector-mapTests.xctest"
-               BlueprintName = "fairwayvector-mapTests"
-               ReferencedContainer = "container:fairwayvector-map.xcodeproj">
+               BuildableName = "fairwayvector-pintheoryTests.xctest"
+               BlueprintName = "fairwayvector-pintheoryTests"
+               ReferencedContainer = "container:fairwayvector-pintheory.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1C6738AE306A3B6400309840"
-               BuildableName = "fairwayvector-mapUITests.xctest"
-               BlueprintName = "fairwayvector-mapUITests"
-               ReferencedContainer = "container:fairwayvector-map.xcodeproj">
+               BuildableName = "fairwayvector-pintheoryUITests.xctest"
+               BlueprintName = "fairwayvector-pintheoryUITests"
+               ReferencedContainer = "container:fairwayvector-pintheory.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -70,9 +70,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1C673895306A3B6200309840"
-            BuildableName = "fairwayvector-map.app"
-            BlueprintName = "fairwayvector-map"
-            ReferencedContainer = "container:fairwayvector-map.xcodeproj">
+            BuildableName = "fairwayvector-pintheory.app"
+            BlueprintName = "fairwayvector-pintheory"
+            ReferencedContainer = "container:fairwayvector-pintheory.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -87,9 +87,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1C673895306A3B6200309840"
-            BuildableName = "fairwayvector-map.app"
-            BlueprintName = "fairwayvector-map"
-            ReferencedContainer = "container:fairwayvector-map.xcodeproj">
+            BuildableName = "fairwayvector-pintheory.app"
+            BlueprintName = "fairwayvector-pintheory"
+            ReferencedContainer = "container:fairwayvector-pintheory.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
@@ -98,6 +98,7 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
+      revealInOrganizer = "YES"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>

@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 private final class OverpassStubProtocol: URLProtocol, @unchecked Sendable {
     nonisolated(unsafe) static var response: ((URLRequest) -> (Int, Data))?

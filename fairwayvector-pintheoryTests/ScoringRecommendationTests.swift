@@ -1,5 +1,5 @@
 import XCTest
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Offline regression SOURCE. Compile only; no app launch, provider transport,
 /// real preferences, weather acquisition, live caches or paid-provider ledger.

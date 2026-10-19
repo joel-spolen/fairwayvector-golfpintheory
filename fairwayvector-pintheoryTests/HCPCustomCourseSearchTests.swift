@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 import Testing
-@testable import fairwayvector_map
+@testable import fairwayvector_pintheory
 
 /// Offline regression source: local models only, no provider construction or transport.
 @MainActor

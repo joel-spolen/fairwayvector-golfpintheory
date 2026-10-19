@@ -1,13 +1,13 @@
 //
-//  fairwayvector_mapUITestsLaunchTests.swift
-//  fairwayvector-mapUITests
+//  fairwayvector_pintheoryUITestsLaunchTests.swift
+//  fairwayvector-pintheoryUITests
 //
 //  Created by Joel spolen on 2026-09-28.
 //
 
 import XCTest
 
-final class fairwayvector_mapUITestsLaunchTests: XCTestCase {
+final class fairwayvector_pintheoryUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
