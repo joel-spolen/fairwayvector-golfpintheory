@@ -96,7 +96,7 @@ struct UnifiedSettingsView: View {
                     Button {
                         aboutSheet = .company
                     } label: {
-                        Label("FairwayVector", systemImage: "info.circle")
+                        Label("PinTheory", systemImage: "info.circle")
                     }
                     Button {
                         aboutSheet = .privacy
@@ -126,7 +126,7 @@ struct UnifiedSettingsView: View {
                     switch destination {
                     case .company:
                         FairwayVectorAboutView()
-                            .navigationTitle("FairwayVector")
+                            .navigationTitle("PinTheory")
                     case .privacy:
                         FairwayVectorPrivacyPolicyView()
                             .navigationTitle("Privacy policy")
@@ -170,7 +170,7 @@ private struct FairwayVectorAboutView: View {
                     .font(.largeTitle.weight(.semibold))
                     .foregroundStyle(PureLineStyle.ink)
 
-                Text("FairwayVector is a Sweden-based software company building digital tools for golf.")
+                Text("PinTheory is a golf app from FairwayVector, a Sweden-based software company.")
                     .font(.body)
                     .foregroundStyle(PureLineStyle.ink)
 
