@@ -109,7 +109,7 @@ final class CourseShotRecommendationTests: XCTestCase {
         XCTAssertEqual(density, expected, accuracy: 1e-12)
     }
 
-    func testMissingOrStaleInputsCannotProduceSnapshot() {
+    func testMissingOrStaleInputsCannotProduceSnapshot() throws {
         XCTAssertNil(capture(weather: weather(pressure: nil))) // Never substitute pressure_msl.
         XCTAssertNil(capture(weather: weather(direction: nil)))
         XCTAssertNil(capture(selected: GeoPoint(lat: target.lat + 0.001, lon: target.lon)))

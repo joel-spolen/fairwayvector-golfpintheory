@@ -42,7 +42,7 @@ struct CourseMapView: View {
     @State private var isShowingDevelopmentProfile = false
     @AppStorage("wedgeMatrix.wedges") private var developmentStoredWedges = ""
     #endif
-    @AppStorage("distanceUnit") private var unit: DistanceUnit = .meters
+    @AppStorage("distanceUnit", store: .standard) private var unit: DistanceUnit = .meters
     @AppStorage("customFlagPositions") private var customFlagPositions = ""
 
     init(reference: CourseReference, requestStartRound: Binding<Bool> = .constant(false),

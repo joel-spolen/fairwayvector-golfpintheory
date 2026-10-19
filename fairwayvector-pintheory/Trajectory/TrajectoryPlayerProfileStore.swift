@@ -32,7 +32,16 @@ final class PlayerProfileStore: ObservableObject {
     }
 
     func effectiveProfile(for club: TrajectoryGolfClub) -> ClubLaunchProfile {
-        ClubProfileDefaults.effectiveProfile(for: club, playerProfile: profile)
+        ClubProfileDefaults.effectiveProfile(for: club, playerProfile: profile, wedges: wedges)
+    }
+
+    /// Resolve only from the injected store; never from an active/global account.
+    var wedges: [Wedge] {
+        Wedge.catalog(from: userDefaults.string(forKey: "wedgeMatrix.wedges") ?? "")
+    }
+
+    func isAvailable(for club: TrajectoryGolfClub) -> Bool {
+        ClubProfileDefaults.isAvailable(for: club, playerProfile: profile, wedges: wedges)
     }
 
     private func saveProfile() {

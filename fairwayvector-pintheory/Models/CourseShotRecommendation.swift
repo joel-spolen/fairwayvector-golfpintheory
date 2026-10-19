@@ -8,6 +8,7 @@ struct CourseShotRecommendationInput: Equatable {
     let originSample: TerrainSample
     let targetSample: TerrainSample
     let profile: TrajectoryPlayerProfile
+    let wedges: [Wedge]
     let distanceM: Double
     let bearingDeg: Double
     let scoringPlan: ScoringShotPlan
@@ -55,7 +56,7 @@ struct CourseShotRecommendationInput: Equatable {
         guard distance.isFinite, distance > 0.1 else { return nil }
         guard profileIssue(adviceProfile) == nil || scoringPlan.isScoring(distanceM: distance) else { return nil }
         return Self(request: request, weather: weather, weatherLocation: weatherLocation,
-                    originSample: first, targetSample: last, profile: adviceProfile, distanceM: distance,
+                    originSample: first, targetSample: last, profile: adviceProfile, wedges: wedges, distanceM: distance,
                                         bearingDeg: GolfGeometry.bearing(from: origin, to: selectedTarget), scoringPlan: scoringPlan,
                                         usesWind: usesWind, usesElevation: usesElevation)
     }

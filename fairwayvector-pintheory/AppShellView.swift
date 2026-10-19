@@ -2,6 +2,8 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+    let accountData: PinTheoryAccountData
+
     private enum Destination: String, Identifiable {
         case course
         case handicap
@@ -12,16 +14,23 @@ struct ContentView: View {
         var id: String { rawValue }
     }
 
-    @AppStorage("map.hasSeenSplash") private var hasSeenSplash = false
-    @AppStorage("distanceUnit") private var distanceUnit: DistanceUnit = .meters
-    @AppStorage("wedgeMatrix.distanceUnit") private var wedgeDistanceUnit = WedgeDistanceUnit.yards.rawValue
+    @AppStorage("map.hasSeenSplash", store: .standard) private var hasSeenSplash = false
+    @AppStorage("distanceUnit", store: .standard) private var distanceUnit: DistanceUnit = .meters
+    @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var wedgeDistanceUnit = WedgeDistanceUnit.yards.rawValue
     @State private var isShowingSplash = true
     @State private var destination: Destination?
     @State private var showingSettings = false
     @State private var practiceDestination: PracticeDestination = .trajectory
-    @StateObject private var trajectoryModel = TrajectoryCalculatorViewModel()
-    @State private var roundStore = PlayedRoundStore()
+    @StateObject private var trajectoryModel: TrajectoryCalculatorViewModel
+    @State private var roundStore: PlayedRoundStore
     @State private var requestStartRound = false
+
+    init(accountData: PinTheoryAccountData) {
+        self.accountData = accountData
+        _trajectoryModel = StateObject(wrappedValue: TrajectoryCalculatorViewModel(
+            playerProfileStore: PlayerProfileStore(userDefaults: accountData.defaults)))
+        _roundStore = State(initialValue: PlayedRoundStore(url: accountData.roundsURL))
+    }
 
     var body: some View {
         ZStack {
@@ -60,18 +69,20 @@ struct ContentView: View {
         .overlay { SharedHandicapSync(trajectoryModel: trajectoryModel).allowsHitTesting(false) }
         .environmentObject(trajectoryModel)
         .environment(roundStore)
-        .modelContainer(HCPProjectionEntryView.sharedModelContainer)
+        .modelContainer(accountData.modelContainer)
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
             feature(screen)
                 .environmentObject(trajectoryModel)
                 .environment(roundStore)
-                .modelContainer(HCPProjectionEntryView.sharedModelContainer)
+                .modelContainer(accountData.modelContainer)
+                .defaultAppStorage(accountData.defaults)
                 .preferredColorScheme(.light)
         }
         .sheet(isPresented: $showingSettings) {
             UnifiedSettingsView()
             .environmentObject(trajectoryModel)
-            .modelContainer(HCPProjectionEntryView.sharedModelContainer)
+            .modelContainer(accountData.modelContainer)
+            .defaultAppStorage(accountData.defaults)
             .preferredColorScheme(.light)
         }
         .onChange(of: distanceUnit, initial: true) { _, unit in
@@ -80,6 +91,7 @@ struct ContentView: View {
         }
         // Unlike an environment override, this also controls presented screens.
         .preferredColorScheme(.light)
+        .defaultAppStorage(accountData.defaults)
     }
 
     @ViewBuilder private func feature(_ screen: Destination) -> some View {
@@ -197,6 +209,5 @@ private struct CourseMapFlowView: View {
     }
 }
 
-#Preview {
-    ContentView()
-}
+// The authenticated shell requires a login-owned PinTheoryAccountData instance.
+// It deliberately has no unauthenticated/default initializer or disk-backed preview.

@@ -5,8 +5,8 @@ import SwiftUI
 /// A global default unit system plus optional per-field overrides. Views resolve
 /// the effective unit system for a field via `unitSystem(for:)`.
 final class UnitPreferences: ObservableObject {
-    @AppStorage("unitPreferences.globalDefault") private var globalDefaultRaw: String = UnitSystem.imperial.rawValue
-    @AppStorage("unitPreferences.overrides") private var overridesRaw: String = "{}"
+    @AppStorage("unitPreferences.globalDefault", store: .standard) private var globalDefaultRaw: String = UnitSystem.imperial.rawValue
+    @AppStorage("unitPreferences.overrides", store: .standard) private var overridesRaw: String = "{}"
 
     var globalDefault: UnitSystem {
         get { UnitSystem(rawValue: globalDefaultRaw) ?? .imperial }

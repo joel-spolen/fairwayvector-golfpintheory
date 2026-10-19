@@ -335,7 +335,8 @@ enum ClubProfileDefaults {
         return profile(from: values, source: .baseline)
     }
 
-    static func effectiveProfile(for club: TrajectoryGolfClub, playerProfile: TrajectoryPlayerProfile) -> ClubLaunchProfile {
+    static func effectiveProfile(for club: TrajectoryGolfClub, playerProfile: TrajectoryPlayerProfile,
+                                 wedges: [Wedge] = []) -> ClubLaunchProfile {
         let profile: ClubLaunchProfile
         switch playerProfile.detailLevel {
         case .easy:
@@ -346,7 +347,7 @@ enum ClubProfileDefaults {
             profile = expertProfile(for: club, playerProfile: playerProfile)
         }
 
-        guard let wedgeCarryM = wedgeBagCarryMeters(for: club) else { return profile }
+        guard let wedgeCarryM = wedgeBagCarryMeters(for: club, wedges: wedges) else { return profile }
         var wedgeProfile = profile
         let carryScale = wedgeCarryM / max(profile.carryDistanceM.value, 1)
         wedgeProfile.carryDistanceM = ProfileValue(value: wedgeCarryM, source: .userProvided)
@@ -357,25 +358,25 @@ enum ClubProfileDefaults {
         return wedgeProfile
     }
 
-    static func isAvailable(for club: TrajectoryGolfClub, playerProfile: TrajectoryPlayerProfile) -> Bool {
-        if club.isWedge, let wedge = wedgeEntry(for: club) {
+    static func isAvailable(for club: TrajectoryGolfClub, playerProfile: TrajectoryPlayerProfile,
+                            wedges: [Wedge] = []) -> Bool {
+        if club.isWedge, let wedge = wedgeEntry(for: club, wedges: wedges) {
             return wedge.isInBag
         }
         return playerProfile.availableClubs.contains(club)
     }
 
-    private static func wedgeBagCarryMeters(for club: TrajectoryGolfClub) -> Double? {
-        guard let wedge = wedgeEntry(for: club), wedge.isInBag else { return nil }
+    private static func wedgeBagCarryMeters(for club: TrajectoryGolfClub, wedges: [Wedge]) -> Double? {
+        guard let wedge = wedgeEntry(for: club, wedges: wedges), wedge.isInBag else { return nil }
         let carryYards = wedge.overrideCarry(for: .stock, swing: .full)
             ?? (wedge.fullCarryUserProvided ? wedge.fullCarry : nil)
         guard let carryYards, carryYards.isFinite, carryYards > 0 else { return nil }
         return Units.metersFromYards(carryYards)
     }
 
-    private static func wedgeEntry(for club: TrajectoryGolfClub) -> Wedge? {
+    private static func wedgeEntry(for club: TrajectoryGolfClub, wedges: [Wedge]) -> Wedge? {
         guard club.isWedge else { return nil }
-        let stored = UserDefaults.standard.string(forKey: "wedgeMatrix.wedges") ?? ""
-        return Wedge.catalog(from: stored).first { TrajectoryGolfClub.wedge(named: $0.name) == club }
+        return wedges.first { TrajectoryGolfClub.wedge(named: $0.name) == club }
     }
 
     private static func simpleProfile(for club: TrajectoryGolfClub, playerProfile: TrajectoryPlayerProfile) -> ClubLaunchProfile {

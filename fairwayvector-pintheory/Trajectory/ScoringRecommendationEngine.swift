@@ -47,7 +47,7 @@ struct ScoringShotPlan: Equatable {
         }.compactMap { club(named: $0.name) })
 
         func append(id: String, name: String, club: TrajectoryGolfClub, fullM: Double, matrix: Wedge?) {
-            let launch = ClubProfileDefaults.effectiveProfile(for: club, playerProfile: profile)
+            let launch = ClubProfileDefaults.effectiveProfile(for: club, playerProfile: profile, wedges: wedges)
             guard fullM.isFinite, fullM > 0,
                   launch.launchAngleDeg.value.isFinite, (0...75).contains(launch.launchAngleDeg.value),
                   launch.spinRateRpm.value.isFinite, launch.spinRateRpm.value >= 0,
@@ -101,7 +101,7 @@ struct ScoringShotPlan: Equatable {
                    fullM: (entered ?? wedge.fullCarry) * 0.9144, matrix: wedge)
         }
         for club in wedgeClubs where profile.availableClubs.contains(club) && !mapped.contains(club) {
-            let effective = ClubProfileDefaults.effectiveProfile(for: club, playerProfile: profile)
+            let effective = ClubProfileDefaults.effectiveProfile(for: club, playerProfile: profile, wedges: wedges)
             guard effective.carryDistanceM.source != .baseline else { continue }
             append(id: club.rawValue, name: club.label, club: club,
                    fullM: effective.carryDistanceM.value, matrix: nil)

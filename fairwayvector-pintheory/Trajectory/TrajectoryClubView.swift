@@ -74,6 +74,7 @@ struct TrajectoryClubView: View {
     let onOpenTrajectory: () -> Void
     var onHome: () -> Void = {}
     @StateObject private var clubConditions = ClubConditionsStore()
+    @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
     @State private var targetCarryMetersValue = Units.metersFromYards(150)
     @State private var recommendations: [ClubRecommendation] = []
     @State private var errorMessage: String?
@@ -87,12 +88,14 @@ struct TrajectoryClubView: View {
         let targetCarryM: Double
         let conditions: ClubRecommendationConditions
         let profile: TrajectoryPlayerProfile
+        let wedges: [Wedge]
     }
 
     private var recommendationInput: RecommendationInput {
         RecommendationInput(targetCarryM: targetCarryMetersValue,
                             conditions: clubConditions.snapshot,
-                            profile: viewModel.playerProfileStore.profile)
+                            profile: viewModel.playerProfileStore.profile,
+                            wedges: Wedge.catalog(from: storedWedges))
     }
 
     init(viewModel: TrajectoryCalculatorViewModel, onOpenTrajectory: @escaping () -> Void = {}, onHome: @escaping () -> Void = {}) {
@@ -616,7 +619,7 @@ struct TrajectoryClubView: View {
                   recommendationInput == captured else { return }
             do {
                 let calculated = try await viewModel.recommendClub(for: captured.targetCarryM,
-                    conditions: captured.conditions, profile: captured.profile)
+                    conditions: captured.conditions, profile: captured.profile, wedges: captured.wedges)
                 guard !Task.isCancelled, recommendationGeneration == generation,
                       recommendationInput == captured else { return }
                 recommendations = calculated

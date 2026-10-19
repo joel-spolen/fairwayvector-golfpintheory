@@ -167,7 +167,8 @@ struct CourseShotRecommendationView: View {
                     unavailable = evaluation.unavailable
                 } else {
                     unavailable = []
-                    let launches = try ClubRecommendationEngine.launches(profile: captured.profile, conditions: captured.conditions)
+                    let launches = try ClubRecommendationEngine.launches(profile: captured.profile,
+                        conditions: captured.conditions, wedges: captured.wedges)
                     recommendations = try await engine.recommend(for: captured.distanceM, launches: launches).map {
                         CourseClubRecommendation(id: $0.club.rawValue, title: $0.club.label,
                             recommendation: $0, scoringShot: nil, calibratedLaunch: nil)

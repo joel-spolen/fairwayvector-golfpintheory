@@ -1,0 +1,6 @@
+// Public client configuration only. This does NOT enable the staged account UI.
+// Supply the project URL and sb_publishable_ key in Accounts.local.xcconfig.
+// Never put service-role keys, provider secrets, or session tokens here.
+PINTHEORY_SUPABASE_URL =
+PINTHEORY_SUPABASE_PUBLISHABLE_KEY =
+#include? "Accounts.local.xcconfig"

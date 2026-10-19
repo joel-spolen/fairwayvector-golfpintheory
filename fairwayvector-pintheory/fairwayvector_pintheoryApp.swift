@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct fairwayvector_pintheoryApp: App {
+    @StateObject private var accountSession = PinTheoryAccountSession()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            PinTheoryAccountRootView(session: accountSession)
         }
     }
 }

@@ -31,7 +31,7 @@ struct TrajectoryCalculatorView: View {
 
     @ObservedObject var viewModel: TrajectoryCalculatorViewModel
     var onHome: () -> Void = {}
-    @AppStorage("trajectory.calculator.inputMode") private var inputModeRawValue = TrajectoryInputMode.simple.rawValue
+    @AppStorage("trajectory.calculator.inputMode", store: .standard) private var inputModeRawValue = TrajectoryInputMode.simple.rawValue
     @State private var launchSource: LaunchConditionSource = .club
     @State private var showConditions = false
     private let resultsAnchor = "trajectory-results"
@@ -226,7 +226,7 @@ struct TrajectoryCalculatorView: View {
 
     private var ownedClubs: [TrajectoryGolfClub] {
         let clubs = TrajectoryGolfClub.allCases.filter {
-            ClubProfileDefaults.isAvailable(for: $0, playerProfile: viewModel.playerProfileStore.profile)
+            viewModel.playerProfileStore.isAvailable(for: $0)
         }
         return clubs.isEmpty ? [viewModel.activeClub] : clubs
     }

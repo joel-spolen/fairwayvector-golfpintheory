@@ -113,7 +113,8 @@ private struct MediumProfileView: View {
         Group {
                 Section {
                 ForEach(ownedClubs) { club in
-                    let effective = ClubProfileDefaults.effectiveProfile(for: club, playerProfile: previewProfile)
+                    let effective = ClubProfileDefaults.effectiveProfile(for: club, playerProfile: previewProfile,
+                                                                         wedges: profileStore.wedges)
                     let override = previewProfile.override(for: club)
                     ProfileDistanceRow(
                         title: club.label,

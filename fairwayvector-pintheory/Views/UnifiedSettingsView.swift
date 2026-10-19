@@ -5,9 +5,11 @@ struct UnifiedSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query private var profiles: [PlayerProfile]
-    @AppStorage("distanceUnit") private var mapUnit: DistanceUnit = .meters
-    @AppStorage("wedgeMatrix.distanceUnit") private var wedgeUnit = WedgeDistanceUnit.yards.rawValue
+    @AppStorage("distanceUnit", store: .standard) private var mapUnit: DistanceUnit = .meters
+    @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var wedgeUnit = WedgeDistanceUnit.yards.rawValue
     @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
+    @EnvironmentObject private var accountSession: PinTheoryAccountSession
+    @State private var confirmingSignOut = false
     @State private var aboutSheet: AboutSheet?
 
     private enum AboutSheet: String, Identifiable {
@@ -26,6 +28,16 @@ struct UnifiedSettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section("Account") {
+                    Label("Signed in", systemImage: "person.crop.circle.badge.checkmark")
+                    Text("Your rounds and club setup are saved on this device for this account. Cloud sync is not connected yet.")
+                        .font(.footnote).foregroundStyle(PureLineStyle.muted)
+                    NavigationLink("Account & privacy") { PinTheoryAccountPrivacyView() }
+                    Button("Sign out", role: .destructive) { confirmingSignOut = true }
+                        .accessibilityIdentifier("account-sign-out")
+                }
+                .listRowBackground(PureLineStyle.surface)
+
                 Section("Tee played from") {
                     Picker("Tee rating", selection: Binding(
                         get: { profile?.sexOrDefault ?? .male },
@@ -120,6 +132,11 @@ struct UnifiedSettingsView: View {
             }
         }
         .tint(PureLineStyle.accent)
+        .confirmationDialog("Sign out of PinTheory?", isPresented: $confirmingSignOut, titleVisibility: .visible) {
+            Button("Sign out", role: .destructive) { accountSession.signOut() }
+        } message: {
+            Text("Saved records and the current round draft stay on this device, accessible only after signing into the same account. They are not backed up to the cloud. Unsaved form edits will be lost.")
+        }
         .sheet(item: $aboutSheet) { destination in
             NavigationStack {
                 Group {
@@ -128,7 +145,7 @@ struct UnifiedSettingsView: View {
                         FairwayVectorAboutView()
                             .navigationTitle("PinTheory")
                     case .privacy:
-                        FairwayVectorPrivacyPolicyView()
+                        PinTheoryAccountPrivacyView()
                             .navigationTitle("Privacy policy")
                     }
                 }

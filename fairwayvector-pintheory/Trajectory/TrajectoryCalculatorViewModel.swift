@@ -138,7 +138,7 @@ final class TrajectoryCalculatorViewModel: ObservableObject {
     private let userDefaults: UserDefaults
 
     init(playerProfileStore: PlayerProfileStore? = nil, userDefaults: UserDefaults = .standard) {
-        self.playerProfileStore = playerProfileStore ?? PlayerProfileStore()
+        self.playerProfileStore = playerProfileStore ?? PlayerProfileStore(userDefaults: userDefaults)
         self.userDefaults = userDefaults
         do {
             predictor = try HybridPredictor()
@@ -263,8 +263,11 @@ final class TrajectoryCalculatorViewModel: ObservableObject {
     }
 
     func recommendClub(for targetCarryM: Double, conditions: ClubRecommendationConditions,
-                       profile: TrajectoryPlayerProfile? = nil) async throws -> [ClubRecommendation] {
-        let launches = try ClubRecommendationEngine.launches(profile: profile ?? playerProfileStore.profile, conditions: conditions)
+                       profile: TrajectoryPlayerProfile? = nil,
+                       wedges: [Wedge]? = nil) async throws -> [ClubRecommendation] {
+        let capturedWedges = wedges ?? playerProfileStore.wedges
+        let launches = try ClubRecommendationEngine.launches(profile: profile ?? playerProfileStore.profile,
+            conditions: conditions, wedges: capturedWedges)
         return try await recommendationEngine.recommend(for: targetCarryM, launches: launches)
     }
 

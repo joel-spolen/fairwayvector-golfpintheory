@@ -3,3 +3,4 @@ GOLF_API_MODE = mock
 GOLF_API_KEY =
 #include? "GolfAPI.local.xcconfig"
 #include "GPXZ.xcconfig"
+#include "Accounts.xcconfig"

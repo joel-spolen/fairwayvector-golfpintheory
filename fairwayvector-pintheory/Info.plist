@@ -16,6 +16,15 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.fairwayvector.pintheory.auth</string>
+			<key>CFBundleURLSchemes</key>
+			<array><string>pintheory</string></array>
+		</dict>
+	</array>
 	<key>GOLF_API_KEY</key>
 	<string>$(GOLF_API_KEY)</string>
 	<key>GOLF_API_MODE</key>
@@ -24,6 +33,10 @@
 	<string>$(GPXZ_API_KEY)</string>
 	<key>GPXZ_API_MODE</key>
 	<string>$(GPXZ_API_MODE)</string>
+	<key>PINTHEORY_SUPABASE_URL</key>
+	<string>$(PINTHEORY_SUPABASE_URL)</string>
+	<key>PINTHEORY_SUPABASE_PUBLISHABLE_KEY</key>
+	<string>$(PINTHEORY_SUPABASE_PUBLISHABLE_KEY)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>

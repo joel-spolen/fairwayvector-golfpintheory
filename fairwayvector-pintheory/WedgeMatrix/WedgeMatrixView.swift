@@ -17,7 +17,7 @@ struct WedgeMatrixView: View {
     var onHome: () -> Void = {}
 
     @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
-    @AppStorage("wedgeMatrix.distanceUnit") private var selectedUnitRawValue = WedgeDistanceUnit.yards.rawValue
+    @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var selectedUnitRawValue = WedgeDistanceUnit.yards.rawValue
     @State private var wedges: [Wedge] = Wedge.defaults
     @State private var selectedTrajectory: WedgeTrajectory = .stock
     @State private var targetDistance = 92.0
@@ -142,7 +142,7 @@ struct WedgeMatrixView: View {
 
 struct WedgeBagSetupView: View {
     @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
-    @AppStorage("wedgeMatrix.distanceUnit") private var selectedUnitRawValue = WedgeDistanceUnit.yards.rawValue
+    @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var selectedUnitRawValue = WedgeDistanceUnit.yards.rawValue
     @State private var wedges: [Wedge] = Wedge.defaults
     @ObservedObject var profileStore: PlayerProfileStore
 
