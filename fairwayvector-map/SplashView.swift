@@ -15,14 +15,15 @@ struct SplashView: View {
                     .resizable()
                     .scaledToFill()
                     .frame(width: proxy.size.width, height: proxy.size.height)
+                    .scaleEffect(1.06)
                     .clipped()
                     .opacity(isVisible ? 1 : 0)
-                    .ignoresSafeArea()
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("PinTheory")
             .accessibilityAddTraits(.isHeader)
         }
+        .ignoresSafeArea()
         .background(Color(red: 0.012, green: 0.043, blue: 0.034).ignoresSafeArea())
         .onAppear(perform: startAnimation)
     }

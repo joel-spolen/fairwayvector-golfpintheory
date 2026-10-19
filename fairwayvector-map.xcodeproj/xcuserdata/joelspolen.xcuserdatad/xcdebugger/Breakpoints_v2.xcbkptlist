@@ -22,7 +22,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "BD7A7E26-5C78-4434-90E4-B5DD92F50639"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "fairwayvector-map/SplashView.swift"
@@ -32,6 +32,52 @@
             endingLineNumber = "37"
             landmarkName = "startAnimation()"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "FE22B6E9-67C6-4651-8B55-D4D62D8FAC7F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "fairwayvector-map/SplashView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "startAnimation()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "FE22B6E9-67C6-4651-8B55-D4D62D8FAC7F - 6dab1aaf1ceb630c"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in closure #2 @Swift.MainActor () -&gt; () in fairwayvector_map.SplashView.startAnimation() -&gt; ()"
+                  moduleName = "fairwayvector-map.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/joelspolen/repositories/fairwayvector/fairwayvector-map/fairwayvector-map/SplashView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "45"
+                  endingLineNumber = "45">
+               </Location>
+               <Location
+                  uuid = "FE22B6E9-67C6-4651-8B55-D4D62D8FAC7F - 521366884ca37dd0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 @Swift.MainActor () -&gt; () in fairwayvector_map.SplashView.startAnimation() -&gt; ()"
+                  moduleName = "fairwayvector-map.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/joelspolen/repositories/fairwayvector/fairwayvector-map/fairwayvector-map/SplashView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "45"
+                  endingLineNumber = "45">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
