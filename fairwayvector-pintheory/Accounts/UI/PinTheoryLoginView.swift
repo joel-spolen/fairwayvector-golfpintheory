@@ -1,4 +1,5 @@
 import SwiftUI
+import AuthenticationServices
 
 /// Root owns restoration, callback routing and account-data opening. Google
 /// callbacks return directly to the service through the actual-window broker.
@@ -76,12 +77,41 @@ struct PinTheoryLoginView: View {
                 }
 
                 Button { start(.google) } label: {
-                    Text("Continue with Google").padding(.horizontal, 16).padding(.vertical, 12)
-                        .fixedSize(horizontal: false, vertical: true)
+                    HStack(spacing: 12) {
+                        Image("GoogleSignInLogo")
+                            .renderingMode(.original)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .accessibilityHidden(true)
+                        Text("Sign in with Google")
+                            .font(.system(size: 14, weight: .medium))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .foregroundStyle(Color(red: 0.12, green: 0.12, blue: 0.12))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(.white, in: RoundedRectangle(cornerRadius: 4))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4)
+                            .strokeBorder(Color(red: 0.45, green: 0.47, blue: 0.46), lineWidth: 1)
+                    }
+                    .contentShape(RoundedRectangle(cornerRadius: 4))
                 }
-                .buttonStyle(PureLinePrimaryButtonStyle())
+                .buttonStyle(.plain)
+                .opacity(unavailable || !browser.hasPresentationAnchor ? 0.5 : 1)
                 .disabled(unavailable || !browser.hasPresentationAnchor)
                 .accessibilityIdentifier("account-google-sign-in")
+
+                // Presentation placeholder only: no Apple authorization or token exchange.
+                SignInWithAppleButton(.signIn, onRequest: { _ in }, onCompletion: { _ in })
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(height: 44)
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .disabled(true)
+                    .accessibilityLabel("Sign in with Apple, not available yet")
+                    .accessibilityIdentifier("account-apple-sign-in-placeholder")
 
                 HStack(spacing: 12) {
                     Rectangle().fill(PureLineStyle.line).frame(height: 1)
@@ -120,17 +150,6 @@ struct PinTheoryLoginView: View {
                     }
                     .accessibilityIdentifier("account-network-diagnostic")
                 }
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Label("Your golf records stay local for now", systemImage: "iphone")
-                        .font(.subheadline.weight(.semibold))
-                    Text("Account sync is not connected yet. Signing in does not back up or transfer your rounds, handicap or club setup.")
-                        .font(.footnote).foregroundStyle(PureLineStyle.muted)
-                    Text("Prerelease test integration. In-app account deletion is not available yet; this is not ready for public release.")
-                        .font(.footnote).foregroundStyle(PureLineStyle.muted)
-                }
-                .fixedSize(horizontal: false, vertical: true)
-                .pureLineCard()
 
                 Button("Account & privacy") { focusedField = nil; showingPrivacy = true }
                     .font(.subheadline.weight(.medium)).frame(minHeight: 44)
