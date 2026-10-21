@@ -34,11 +34,11 @@ struct PinTheoryAccountView: View {
 
                         if let details {
                             accountSummary(details)
+                            nameManagement
                             if details.supportsEmailManagement {
-                                nameManagement
                                 passwordManagement
-                                deleteAccountSection
                             }
+                            deleteAccountSection
                         } else if isWorking {
                             ProgressView("Loading account details…")
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -327,23 +327,28 @@ struct PinTheoryAccountView: View {
     @MainActor
     private func loadDetails() async {
         guard details == nil, !isWorking else { return }
+        if let cached = session.accountDetails {
+            details = cached
+            firstName = cached.firstName
+            lastName = cached.lastName
+        }
         guard let auth = session.auth else {
-            errorMessage = "Account service is unavailable."
+            if details == nil { errorMessage = "Account service is unavailable." }
             return
         }
         guard case .authenticated = auth.state else {
-            errorMessage = "Connect to the internet to load verified account details."
+            if details == nil { errorMessage = "Connect to the internet to load account details." }
             return
         }
         isWorking = true
         defer { isWorking = false }
         do {
-            details = try await auth.accountDetails()
+            details = try await session.loadAccountDetails()
             firstName = details?.firstName ?? ""
             lastName = details?.lastName ?? ""
             errorMessage = nil
         } catch {
-            errorMessage = error.localizedDescription
+            if details == nil { errorMessage = error.localizedDescription }
         }
     }
 
@@ -377,8 +382,7 @@ struct PinTheoryAccountView: View {
     @MainActor
     private func saveDisplayName() async {
         await perform("Your display name has been saved.") {
-            guard let auth = session.auth else { throw PinTheoryAuthError.authenticationRequired }
-            let updated = try await auth.updateDisplayName(firstName: firstName, lastName: lastName)
+            let updated = try await session.updateAccountDisplayName(firstName: firstName, lastName: lastName)
             details = updated
             firstName = updated.firstName
             lastName = updated.lastName

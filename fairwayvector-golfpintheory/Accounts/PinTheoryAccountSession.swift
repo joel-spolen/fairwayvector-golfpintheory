@@ -7,6 +7,7 @@ final class PinTheoryAccountSession: ObservableObject {
     let auth: PinTheoryAuthService?
     let browser = PinTheoryWebAuthenticationBroker()
     @Published private(set) var accountData: PinTheoryAccountData?
+    @Published private(set) var accountDetails: PinTheoryAccountDetails?
     @Published private(set) var message: String?
     @Published private(set) var accountDeletionNotice: String?
     @Published private(set) var started = false
@@ -92,6 +93,7 @@ final class PinTheoryAccountSession: ObservableObject {
         browser.cancel()
         restoreTask?.cancel()
         accountData = nil
+        accountDetails = nil
         message = nil
         do { try auth?.signOut() }
         catch { message = "Secure sign-out could not finish. Please retry before using another account." }
@@ -120,6 +122,35 @@ final class PinTheoryAccountSession: ObservableObject {
             : "Your Golf PinTheory account was deleted."
     }
 
+    func loadAccountDetails() async throws -> PinTheoryAccountDetails {
+        guard let accountData else { throw PinTheoryAuthError.authenticationRequired }
+        // Display cached account details immediately, then refresh them from Auth.
+        if accountDetails == nil { accountDetails = accountData.loadAccountProfile() }
+        if let cached = accountDetails, accountData.accountProfileCacheIsFresh() { return cached }
+        guard let auth else { throw PinTheoryAuthError.authenticationRequired }
+        guard case .authenticated = auth.state else {
+            if let cached = accountDetails { return cached }
+            throw PinTheoryAuthError.authenticationRequired
+        }
+        do {
+            let verified = try await auth.accountDetails()
+            try accountData.saveAccountProfile(verified)
+            accountDetails = verified
+            return verified
+        } catch {
+            if let cached = accountDetails { return cached }
+            throw error
+        }
+    }
+
+    func updateAccountDisplayName(firstName: String, lastName: String) async throws -> PinTheoryAccountDetails {
+        guard let auth, let accountData else { throw PinTheoryAuthError.authenticationRequired }
+        let updated = try await auth.updateDisplayName(firstName: firstName, lastName: lastName)
+        try accountData.saveAccountProfile(updated)
+        accountDetails = updated
+        return updated
+    }
+
     private func apply(_ state: PinTheoryAuthState) {
         switch state {
         case .authenticated(let identity), .offlineCachedIdentity(let identity):
@@ -129,6 +160,7 @@ final class PinTheoryAccountSession: ObservableObject {
                 if accountData?.id.hasSuffix(identity.userID.uuidString.lowercased()) == true { return }
                 accountData = nil
                 accountData = try PinTheoryAccountData(projectHost: projectHost, userID: identity.userID)
+                accountDetails = accountData?.loadAccountProfile()
                 message = nil
             } catch {
                 accountData = nil
@@ -136,6 +168,7 @@ final class PinTheoryAccountSession: ObservableObject {
             }
         case .signedOut, .restoring, .passwordRecovery:
             accountData = nil
+            accountDetails = nil
                 if message?.hasPrefix("Your Golf PinTheory account was deleted") != true,
                     message?.hasPrefix("Your account was deleted") != true {
                 message = nil

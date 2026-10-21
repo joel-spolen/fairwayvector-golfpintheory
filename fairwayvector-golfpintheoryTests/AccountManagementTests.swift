@@ -32,6 +32,21 @@ struct AccountManagementTests {
         #expect(!(await transport.paths).contains { $0.contains("password") })
     }
 
+    @Test func accountDetailsUseGoogleIdentityNameWhenNoNameWasSaved() async throws {
+        let transport = AccountManagementFetch()
+        await transport.setGoogleIdentityData([
+            "name": "Ada Lovelace",
+            "given_name": "Ada",
+            "family_name": "Lovelace",
+        ])
+        let auth = try service(transport)
+        try await auth.signInWithPassword(email: AccountManagementWire.email, password: "fixture-password")
+        let details = try await auth.accountDetails()
+        #expect(details.firstName == "Ada")
+        #expect(details.lastName == "Lovelace")
+        #expect(details.displayName == "Ada Lovelace")
+    }
+
     @Test func emailAccountCanSaveOptionalDisplayNameToAuthMetadata() async throws {
         let transport = AccountManagementFetch()
         let auth = try service(transport)
@@ -123,14 +138,21 @@ nonisolated private enum AccountManagementWire {
     static let id = UUID(uuidString: "C1769DF3-564D-4AF5-B248-E76CF3DF21D4")!
     static let email = "player@example.test"
 
-    static func user(_ providers: [String], metadata: [String: Any] = [:]) throws -> Data {
+    static func user(_ providers: [String], metadata: [String: Any] = [:],
+                     googleIdentityData: [String: Any] = [:]) throws -> Data {
         let object: [String: Any] = [
             "id": id.uuidString, "aud": "authenticated", "email": email,
             "app_metadata": [:], "user_metadata": metadata, "created_at": "2026-10-21T12:00:00Z",
             "updated_at": "2026-10-21T12:00:00Z",
             "identities": providers.map { provider in
-                ["id": "fixture-identity", "identity_id": UUID().uuidString, "user_id": id.uuidString,
-                 "provider": provider]
+                var identity: [String: Any] = [
+                    "id": "fixture-identity", "identity_id": UUID().uuidString,
+                    "user_id": id.uuidString, "provider": provider
+                ]
+                if provider == "google", !googleIdentityData.isEmpty {
+                    identity["identity_data"] = googleIdentityData
+                }
+                return identity
             }
         ]
         return try JSONSerialization.data(withJSONObject: object)
@@ -151,11 +173,13 @@ private actor AccountManagementFetch {
     private var providers = ["email", "google"]
     private var deletionStatus = 200
     private var metadata: [String: Any] = [:]
+    private var googleIdentityData: [String: Any] = [:]
     private(set) var deletionRequestWasValid = false
     var savedMetadata: [String: Any] { metadata }
 
     func setProviders(_ value: [String]) { providers = value }
     func setDeletionStatus(_ value: Int) { deletionStatus = value }
+    func setGoogleIdentityData(_ value: [String: Any]) { googleIdentityData = value }
 
     func respond(_ request: URLRequest) async throws -> (Data, URLResponse) {
         let url = try #require(request.url)
@@ -180,16 +204,19 @@ private actor AccountManagementFetch {
             status = 200
         case "GET /auth/v1/user":
             #expect(request.value(forHTTPHeaderField: "Authorization")?.hasPrefix("Bearer ") == true)
-            data = try AccountManagementWire.user(providers, metadata: metadata)
+            data = try AccountManagementWire.user(providers, metadata: metadata,
+                                                  googleIdentityData: googleIdentityData)
             status = 200
         case "PUT /auth/v1/user":
             #expect(request.value(forHTTPHeaderField: "Authorization")?.hasPrefix("Bearer ") == true)
             if let updatedMetadata = body?["data"] as? [String: Any] {
                 metadata.merge(updatedMetadata) { _, new in new }
-                data = try AccountManagementWire.user(providers, metadata: metadata)
+                data = try AccountManagementWire.user(providers, metadata: metadata,
+                                                      googleIdentityData: googleIdentityData)
             } else {
                 #expect(body?["password"] as? String == "fixture-new-password")
-                data = try AccountManagementWire.user(providers, metadata: metadata)
+                data = try AccountManagementWire.user(providers, metadata: metadata,
+                                                      googleIdentityData: googleIdentityData)
             }
             status = 200
         case "POST /functions/v1/delete-account":

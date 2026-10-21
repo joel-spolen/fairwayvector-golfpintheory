@@ -12,6 +12,7 @@ final class PinTheoryAccountData: Identifiable {
     let directory: URL
     let modelContainer: ModelContainer
     let roundsURL: URL
+    let accountProfileURL: URL
 
     /// Permanently erases this account's saved rounds, active draft, SwiftData
     /// records and account-scoped preferences. Does not touch device preferences
@@ -33,11 +34,61 @@ final class PinTheoryAccountData: Identifiable {
         } catch { throw StorageError.localEraseFailed }
     }
 
+    func loadAccountProfile() -> PinTheoryAccountDetails? {
+        guard let data = try? Data(contentsOf: accountProfileURL),
+              let profile = try? JSONDecoder().decode(CachedAccountProfile.self, from: data) else { return nil }
+        return profile.details
+    }
+
+    func accountProfileCacheIsFresh(maxAge: TimeInterval = 24 * 60 * 60) -> Bool {
+        guard let data = try? Data(contentsOf: accountProfileURL),
+              let profile = try? JSONDecoder().decode(CachedAccountProfile.self, from: data) else { return false }
+        let age = Date().timeIntervalSince(profile.updatedAt)
+        return age >= 0 && age < maxAge
+    }
+
+    func saveAccountProfile(_ details: PinTheoryAccountDetails) throws {
+        let profile = CachedAccountProfile(details: details)
+        let data: Data
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.sortedKeys]
+            data = try encoder.encode(profile)
+            try data.write(to: accountProfileURL, options: .atomic)
+        } catch { throw StorageError.accountProfileWriteFailed }
+    }
+
+    private struct CachedAccountProfile: Codable {
+        let email: String?
+        let pendingEmail: String?
+        let providers: [String]
+        let firstName: String
+        let lastName: String
+        let displayName: String
+        let updatedAt: Date
+
+        init(details: PinTheoryAccountDetails) {
+            email = details.email
+            pendingEmail = details.pendingEmail
+            providers = details.providers
+            firstName = details.firstName
+            lastName = details.lastName
+            displayName = details.displayName
+            updatedAt = Date()
+        }
+
+        var details: PinTheoryAccountDetails {
+            PinTheoryAccountDetails(email: email, pendingEmail: pendingEmail, providers: providers,
+                                   firstName: firstName, lastName: lastName, displayName: displayName)
+        }
+    }
+
     enum StorageError: Error {
         case invalidProjectHost
         case defaultsUnavailable
         case defaultsWriteFailed
         case localEraseFailed
+        case accountProfileWriteFailed
     }
 
     init(projectHost: String, userID: UUID, root: URL? = nil) throws {
@@ -54,6 +105,7 @@ final class PinTheoryAccountData: Identifiable {
             .appendingPathComponent(projectID, isDirectory: true)
             .appendingPathComponent(userID.uuidString.lowercased(), isDirectory: true)
         roundsURL = directory.appendingPathComponent("rounds-v1.json")
+        accountProfileURL = directory.appendingPathComponent("account-profile-v1.json")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
 
         let schema = Schema([PlayerProfile.self, GolfClub.self, GolfCourse.self, TeeSet.self, GolfRound.self])

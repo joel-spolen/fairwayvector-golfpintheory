@@ -67,6 +67,7 @@ final class PinTheoryAuthService: ObservableObject {
     private struct VerifiedAccountContext {
         let user: User
         let providers: [String]
+        let identities: [UserIdentity]
     }
 
     var canRequestAccountDeletion: Bool { deletionEndpointAvailable }
@@ -582,10 +583,8 @@ final class PinTheoryAuthService: ObservableObject {
         do {
             let context = try await verifiedAccountContext(ticket: ticket, client: client)
             return PinTheoryAccountDetails(email: context.user.email, pendingEmail: context.user.newEmail,
-                providers: context.providers,
-                firstName: Self.metadataString("first_name", in: context.user),
-                lastName: Self.metadataString("last_name", in: context.user),
-                displayName: Self.metadataString("display_name", in: context.user))
+                providers: context.providers, firstName: Self.accountName(context).first,
+                lastName: Self.accountName(context).last, displayName: Self.accountName(context).display)
         } catch {
             throw recordManagementFailure(error, ticket: ticket, fallback: .authRequired)
         }
@@ -603,7 +602,6 @@ final class PinTheoryAuthService: ObservableObject {
         defer { finish(ticket) }
         do {
             let context = try await verifiedAccountContext(ticket: ticket, client: client)
-            guard context.providers.contains("email") else { throw PinTheoryAuthError.emailIdentityRequired }
             let metadata: [String: AnyJSON] = [
                 "first_name": first.isEmpty ? .null : .string(first),
                 "last_name": last.isEmpty ? .null : .string(last),
@@ -618,11 +616,13 @@ final class PinTheoryAuthService: ObservableObject {
             let token = try await confirm(current, client: client, ticket: ticket,
                                           expectedUserID: context.user.id)
             let verified = try await client.user(jwt: token)
+            let verifiedIdentities = try await client.userIdentities()
             try check(ticket)
             guard verified.id == context.user.id,
-                  Self.metadataString("first_name", in: verified) == first,
-                  Self.metadataString("last_name", in: verified) == last,
-                  Self.metadataString("display_name", in: verified) == displayName else {
+                verifiedIdentities.allSatisfy({ $0.userId == context.user.id }),
+                Self.metadataString("first_name", in: verified) == first,
+                Self.metadataString("last_name", in: verified) == last,
+                Self.metadataString("display_name", in: verified) == displayName else {
                 throw PinTheoryAuthError.displayNameUpdateUnavailable
             }
             return PinTheoryAccountDetails(email: verified.email, pendingEmail: verified.newEmail,
@@ -729,7 +729,44 @@ final class PinTheoryAuthService: ObservableObject {
               let current = client.currentSession, current.user.id == identity.userID,
               current.accessToken == token else { throw PinTheoryAuthError.authenticationRequired }
         let providers = Set(identities.map(\.provider)).sorted()
-        return VerifiedAccountContext(user: user, providers: providers)
+        return VerifiedAccountContext(user: user, providers: providers, identities: identities)
+    }
+
+    private static func accountName(_ context: VerifiedAccountContext) -> (first: String, last: String, display: String) {
+        let googleData = context.identities.first(where: { $0.provider.lowercased() == "google" })?.identityData ?? [:]
+        let googleFullName = firstMetadataString(["name", "full_name", "display_name"], in: googleData)
+        let googleNameParts = splitFullName(googleFullName)
+        let googleFirst = firstMetadataString(["given_name", "first_name"], in: googleData)
+        let googleLast = firstMetadataString(["family_name", "last_name"], in: googleData)
+
+        let first = context.user.userMetadata.keys.contains("first_name")
+            ? metadataString("first_name", in: context.user) : (googleFirst.isEmpty ? googleNameParts.first : googleFirst)
+        let last = context.user.userMetadata.keys.contains("last_name")
+            ? metadataString("last_name", in: context.user) : (googleLast.isEmpty ? googleNameParts.last : googleLast)
+        let display: String
+        if context.user.userMetadata.keys.contains("display_name") {
+            display = metadataString("display_name", in: context.user)
+        } else {
+            let providerDisplay = firstMetadataString(["display_name", "name", "full_name"], in: googleData)
+            display = providerDisplay.isEmpty ? [first, last].filter { !$0.isEmpty }.joined(separator: " ") : providerDisplay
+        }
+        return (first, last, display)
+    }
+
+    private static func firstMetadataString(_ keys: [String], in metadata: [String: AnyJSON]) -> String {
+        for key in keys {
+            if case .string(let value)? = metadata[key] {
+                let normalized = normalizedName(value)
+                if !normalized.isEmpty { return normalized }
+            }
+        }
+        return ""
+    }
+
+    private static func splitFullName(_ name: String) -> (first: String, last: String) {
+        let parts = normalizedName(name).split(whereSeparator: \.isWhitespace)
+        guard let first = parts.first else { return ("", "") }
+        return (String(first), parts.dropFirst().joined(separator: " "))
     }
 
     private func reauthenticateEmailPassword(client: AuthClient, email: String, password: String,
