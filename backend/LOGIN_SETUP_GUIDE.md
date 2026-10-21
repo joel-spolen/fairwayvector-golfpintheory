@@ -1,4 +1,4 @@
-# PinTheory login setup — step-by-step operator guide
+# Golf PinTheory login setup — step-by-step operator guide
 
 Updated: 2026-10-21. Dashboard labels can change; use the linked official guides when a menu differs.
 
@@ -8,8 +8,8 @@ The app now has **Sign in**, **Create account**, **Forgot password**, and Google
 
 1. In Authentication → Sign In / Providers → Email, keep **Email enabled**, **new user signups enabled** for your test cohort and **Confirm email enabled**. Password login uses the same Email provider; no new client key is required. Set a suitable server-side password policy (recommended minimum eight characters, stronger as appropriate). The app recommends eight for new passwords; Supabase is authoritative.
 2. In Authentication → URL Configuration → Redirect URLs, allowlist BOTH exact values: `golfpintheory://auth/callback` and `golfpintheory://auth/reset-password`. If using a mobile Site URL, set it to `golfpintheory://auth/callback`; an existing HTTPS fallback can remain. Remove the old custom-scheme redirect; this prelaunch app does not support it. Google's HTTPS provider callback remains unchanged.
-3. In Authentication → Emails / Email Templates → **Confirm signup**, use a subject such as **Confirm your PinTheory account** and keep the action link as `{{ .ConfirmationURL }}`. This is now the signup email template, NOT Magic Link. Label the button **Confirm email**. Do not paste a literal mobile callback URL or a custom token-hash URL into that button.
-4. In Email Templates → **Reset Password**, use **Reset your PinTheory password**, retain `{{ .ConfirmationURL }}` and label the button **Reset password**. Supabase must preserve the request's `redirect_to` destination so this returns to `/reset-password`, not the ordinary `/callback` path.
+3. In Authentication → Emails / Email Templates → **Confirm signup**, use a subject such as **Confirm your Golf PinTheory account** and keep the action link as `{{ .ConfirmationURL }}`. This is now the signup email template, NOT Magic Link. Label the button **Confirm email**. Do not paste a literal mobile callback URL or a custom token-hash URL into that button.
+4. In Email Templates → **Reset Password**, use **Reset your Golf PinTheory password**, retain `{{ .ConfirmationURL }}` and label the button **Reset password**. Supabase must preserve the request's `redirect_to` destination so this returns to `/reset-password`, not the ordinary `/callback` path.
 5. The existing Magic Link template can remain, but it is no longer used by the email/password login screen. Existing SMTP/domain settings still apply to signup confirmation and reset mail. Changing login style does not solve SMTP, recipient restrictions or delivery failures.
 6. Keep email sender link/click tracking disabled. Request signup/reset on the device on which you will open its email; PKCE confirmation/reset requires that installation's verifier. If opening confirmation elsewhere, return to the requesting device; cross-device browser completion needs a separately designed web flow.
 7. After rebuilding, create a test account, confirm the email, then sign in with email/password. Returning logins do not send email. Existing magic-link/Google-only identities may not have a password: use **Forgot password** for the same email rather than creating duplicates. Apple private-relay emails and provider linking still need deliberate handling.
@@ -41,7 +41,7 @@ There are TWO different callbacks. Do not interchange them:
 | Purpose                                                       | Value for this project                                      |
 | ------------------------------------------------------------- | ----------------------------------------------------------- |
 | Apple/Google → Supabase (enter in the provider console)       | `https://hdeiikpgtralsfnwbxft.supabase.co/auth/v1/callback` |
-| Supabase → PinTheory (enter in Supabase's redirect allowlist) | `golfpintheory://auth/callback`                             |
+| Supabase → Golf PinTheory (enter in Supabase's redirect allowlist) | `golfpintheory://auth/callback`                             |
 
 The app registers only the `golfpintheory` URL scheme and routes both ordinary and password-reset callbacks. A future staging-specific scheme/universal-link design may require updating both code and allowlist together. Repeat all project-specific URLs for a separate production project.
 
@@ -56,7 +56,7 @@ The app registers only the `golfpintheory` URL scheme and routes both ordinary a
 ### Email template
 
 1. Open Authentication → Email Templates → Magic Link (or Magic Link / OTP).
-2. Use a recognizable subject such as **Sign in to PinTheory**.
+2. Use a recognizable subject such as **Sign in to Golf PinTheory**.
 3. Preserve Supabase's `{{ .ConfirmationURL }}` as the sign-in link destination. Do not replace it with a direct app URL or a token-hash callback; the staged service expects a PKCE authorization-code callback, not an implicit token fragment or token-hash URL.
 4. Optionally include `{{ .Token }}` as the code for the app's email-code fallback. This requires the corresponding code-entry UI, which is not yet connected.
 5. Disable click/link tracking for authentication emails at your sending provider; tracking rewrites and automated scanners can interfere with one-time links.
@@ -72,7 +72,7 @@ Supabase's built-in sender is for limited testing, not production. Currently it 
 4. Wait until the provider reports the sender/domain verified. If the provider account is sandboxed, complete its production-access requirements before inviting arbitrary recipients.
 5. Obtain the provider's SMTP host, port, username and password. Store these securely.
 6. Open Supabase → Authentication → Email / SMTP Settings, then enable custom SMTP.
-7. Enter those SMTP settings, sender name **PinTheory**, and a verified sender address on your domain.
+7. Enter those SMTP settings, sender name **Golf PinTheory**, and a verified sender address on your domain.
 8. Save. Review Authentication → Rate Limits and the provider's quota; choose conservative limits suitable for testing, then revisit before launch.
 9. After app integration, test delivery to addresses outside your Supabase organization and check inbox/spam, sender identity and link behavior. Never share a live link/code in chat.
 
@@ -80,15 +80,15 @@ Email delivery is separate from Google/Apple sign-in. You can configure email fi
 
 ## 5. Configure Google login — current browser-PKCE flow
 
-The foundation currently opens Google in a browser authentication session. Start with a **Web application** OAuth client even though PinTheory itself is an iOS app. Native Google SDK integration is deferred.
+The foundation currently opens Google in a browser authentication session. Start with a **Web application** OAuth client even though Golf PinTheory itself is an iOS app. Native Google SDK integration is deferred.
 
-1. Open [Google Cloud Console](https://console.cloud.google.com/) and create/select a project for PinTheory.
+1. Open [Google Cloud Console](https://console.cloud.google.com/) and create/select a project for Golf PinTheory.
 2. Open **Google Auth Platform** (older consoles may use APIs & Services → OAuth consent screen).
-3. Under **Branding**, enter **PinTheory**, a monitored support email, developer contact, and your real homepage/privacy-policy/terms URLs. Do not use the current outdated local-only privacy text for a public launch.
+3. Under **Branding**, enter **Golf PinTheory**, a monitored support email, developer contact, and your real homepage/privacy-policy/terms URLs. Do not use the current outdated local-only privacy text for a public launch.
 4. Add/verify domains you own if Google requests it. Do not attempt to claim ownership of `supabase.co`.
 5. Under **Audience**, choose **External** for a consumer app. While in Testing, add each tester's Google account under Test users.
 6. Under **Data Access**, request only `openid`, `userinfo.email` and `userinfo.profile`. Do not add Gmail, Drive or unrelated scopes.
-7. Under **Clients**, create an OAuth client of type **Web application**. Name it something like **PinTheory staging browser login**.
+7. Under **Clients**, create an OAuth client of type **Web application**. Name it something like **Golf PinTheory staging browser login**.
 8. Under **Authorized redirect URIs**, add exactly `https://hdeiikpgtralsfnwbxft.supabase.co/auth/v1/callback`.
 9. A native browser redirect flow does not require JavaScript origins. Only add a real web origin if you later implement browser-hosted Google UI; never enter the custom mobile scheme in that field.
 10. Create the client. Copy its client ID and secret directly into Supabase → Authentication → Providers → Google.

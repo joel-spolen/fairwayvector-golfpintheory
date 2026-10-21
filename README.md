@@ -1,6 +1,8 @@
-# PinTheory for iOS
+# Golf PinTheory for iOS
 
-PinTheory is a SwiftUI golf companion for course discovery and on-course planning, round scoring and statistics, handicap projections, club setup, wedge planning, and golf-shot trajectory estimates.
+Golf PinTheory is a SwiftUI golf companion for course discovery and on-course planning, round scoring and statistics, handicap projections, club setup, wedge planning, and golf-shot trajectory estimates.
+
+**Rename (2026-10-21):** The repository, project, target, product and source/test directories now use `fairwayvector-golfpintheory`; Swift module/entry/test identifiers use `fairwayvector_golfpintheory`. The registered app bundle ID `com.fairwayvector.app.pintheory`, test bundle IDs, `PinTheoryAccounts` storage directory, `com.fairwayvector.pintheory.*` storage identities, auth configuration and `golfpintheory` callback URLs are intentionally preserved; this is not a storage migration. A fresh Debug simulator `build-for-testing` passed after the filesystem rename; no app or tests were executed. Reopen the renamed Xcode project if the editor still references the old location.
 
 ## Requirements
 
@@ -10,28 +12,28 @@ PinTheory is a SwiftUI golf companion for course discovery and on-course plannin
 
 ## Project layout
 
-| Path                                       | Purpose                                                               |
-| ------------------------------------------ | --------------------------------------------------------------------- |
-| `fairwayvector-pintheory/`                 | SwiftUI app sources and bundled resources                             |
-| `fairwayvector-pintheory/Services/`        | Course, weather, round-storage, and terrain services                  |
-| `fairwayvector-pintheory/Trajectory/`      | Shot inputs, trajectory physics, prediction, and club recommendations |
-| `fairwayvector-pintheory/HCPProjection/`   | Handicap projection and course-selection flows                        |
-| `fairwayvector-pintheory/WedgeMatrix/`     | Wedge carry matrix and club selection                                 |
-| `fairwayvector-pintheory/Assets.xcassets/` | App icon, splash art, and illustration assets                         |
-| `fairwayvector-pintheoryTests/`            | Swift Testing unit and regression tests                               |
-| `fairwayvector-pintheoryUITests/`          | XCUITest coverage                                                     |
-| `tools/`                                   | Offline terrain preparation and saved-course packaging tools          |
-| `exports/`                                 | Local-only export staging; ignored by Git                             |
+| Path                                           | Purpose                                                               |
+| ---------------------------------------------- | --------------------------------------------------------------------- |
+| `fairwayvector-golfpintheory/`                 | SwiftUI app sources and bundled resources                             |
+| `fairwayvector-golfpintheory/Services/`        | Course, weather, round-storage, and terrain services                  |
+| `fairwayvector-golfpintheory/Trajectory/`      | Shot inputs, trajectory physics, prediction, and club recommendations |
+| `fairwayvector-golfpintheory/HCPProjection/`   | Handicap projection and course-selection flows                        |
+| `fairwayvector-golfpintheory/WedgeMatrix/`     | Wedge carry matrix and club selection                                 |
+| `fairwayvector-golfpintheory/Assets.xcassets/` | App icon, splash art, and illustration assets                         |
+| `fairwayvector-golfpintheoryTests/`            | Swift Testing unit and regression tests                               |
+| `fairwayvector-golfpintheoryUITests/`          | XCUITest coverage                                                     |
+| `tools/`                                       | Offline terrain preparation and saved-course packaging tools          |
+| `exports/`                                     | Local-only export staging; ignored by Git                             |
 
-The Xcode project is `fairwayvector-pintheory.xcodeproj`; its shared scheme and app target are `fairwayvector-pintheory`.
+The Xcode project is `fairwayvector-golfpintheory.xcodeproj`; its shared scheme and app target are `fairwayvector-golfpintheory`.
 
 ## Build
 
-Open the project in Xcode, select the `fairwayvector-pintheory` scheme, and choose an iOS Simulator destination. Or build from the repository root:
+Open the project in Xcode, select the `fairwayvector-golfpintheory` scheme, and choose an iOS Simulator destination. Or build from the repository root:
 
 ```sh
-xcodebuild -project fairwayvector-pintheory.xcodeproj \
-  -scheme fairwayvector-pintheory \
+xcodebuild -project fairwayvector-golfpintheory.xcodeproj \
+  -scheme fairwayvector-golfpintheory \
   -configuration Debug \
   -sdk iphonesimulator \
   -destination 'generic/platform=iOS Simulator' \
@@ -42,10 +44,10 @@ To compile the app and test bundles without executing tests, replace `build` wit
 
 ## API configuration and development safety
 
-Golf API and GPXZ are **mocked by default** in both Debug and Release. Their tracked defaults are in `fairwayvector-pintheory/GolfAPI.xcconfig` and `fairwayvector-pintheory/GPXZ.xcconfig`. Each may optionally include a local, ignored configuration file:
+Golf API and GPXZ are **mocked by default** in both Debug and Release. Their tracked defaults are in `fairwayvector-golfpintheory/GolfAPI.xcconfig` and `fairwayvector-golfpintheory/GPXZ.xcconfig`. Each may optionally include a local, ignored configuration file:
 
-- `fairwayvector-pintheory/GolfAPI.local.xcconfig`
-- `fairwayvector-pintheory/GPXZ.local.xcconfig`
+- `fairwayvector-golfpintheory/GolfAPI.local.xcconfig`
+- `fairwayvector-golfpintheory/GPXZ.local.xcconfig`
 
 Keep API keys in these local files or another approved secret store. Do not commit credentials, paste them into chat, or add them to tracked project settings. A key by itself does not enable a live provider: live access requires an explicit `GOLF_API_MODE = live` or `GPXZ_API_MODE = live` build-setting override. Confirm the intended provider mode in the app's Settings before testing. Return it to `mock` when live testing is complete.
 
@@ -57,9 +59,9 @@ The repository includes unit/regression tests and UI tests. Many regression test
 
 ## Email and Google login — prerelease integration (2026-10-19)
 
-**Email/password update (2026-10-21):** The login screen now uses email + password, with Create account, confirmation resend, Forgot password and restricted password-update UI. Google remains; Apple stays hidden. Add `golfpintheory://auth/reset-password` to Supabase's allowed redirects alongside `golfpintheory://auth/callback`. Configure **Confirm signup** and **Reset Password** email templates (retain `{{ .ConfirmationURL }}`); Magic Link is no longer the signup template used by this UI. Returning password logins do not send email. Confirmation/reset still rely on working SMTP and same-installation PKCE. Recovery is persisted as a restricted state before exchange, blocks Home/offline content/cloud tokens, and successful password update requires a fresh ordinary login. Passwords are never persisted locally. Legacy magic-link/code service methods remain solely for compatibility/regressions. Full Debug build-for-testing passed for the password changes, without executing tests, launching the app or sending email. See [current dashboard checklist](backend/LOGIN_SETUP_GUIDE.md#current-email--password-configuration-supersedes-magic-link-instructions-below). Original passwordless behavior described below is superseded by this paragraph.
+**Email/password update (2026-10-21):** The login screen now uses email + password, with Create account, confirmation resend, Forgot password and restricted password-update UI. Google remains; Apple is now a visible, disabled placeholder rather than hidden. Add `golfpintheory://auth/reset-password` to Supabase's allowed redirects alongside `golfpintheory://auth/callback`. Configure **Confirm signup** and **Reset Password** email templates (retain `{{ .ConfirmationURL }}`); Magic Link is no longer the signup template used by this UI. Returning password logins do not send email. Confirmation/reset still rely on working SMTP and same-installation PKCE. Recovery is persisted as a restricted state before exchange, blocks Home/offline content/cloud tokens, and successful password update requires a fresh ordinary login. Passwords are never persisted locally. Legacy magic-link/code service methods remain solely for compatibility/regressions. Full Debug build-for-testing passed for the password changes, without executing tests, launching the app or sending email. See [current dashboard checklist](backend/LOGIN_SETUP_GUIDE.md#current-email--password-configuration-supersedes-magic-link-instructions-below). Original passwordless behavior described below is superseded by this paragraph.
 
-**Email and Google login are connected to startup; cloud sync is not.** A configured build restores its session or shows the login screen before Home. Apple is intentionally absent from the login UI. This is a prerelease test integration, not ready for public distribution: account deletion/provider revocation, full privacy review and cloud saved-content integration remain outstanding.
+**Email and Google login are connected to startup; cloud sync is not.** A configured build restores its session or shows the login screen before Home. Apple appears as a disabled placeholder; Apple sign-in is not enabled. This is a prerelease test integration, not ready for public distribution: account deletion/provider revocation, full privacy review and cloud saved-content integration remain outstanding.
 
 **Callback scheme update (2026-10-21):** This prelaunch app does not retain the old scheme. Update the hosted redirect allowlist and any mobile Site URL as described in the setup guide; Google's HTTPS provider callback is unchanged. This scheme change has source/editor checks only, not a new build or runtime verification.
 
@@ -71,11 +73,11 @@ The repository includes unit/regression tests and UI tests. Many regression test
 - Login and Settings expose current account/privacy information; the privacy manifest now declares linked email and user identity for app functionality. Public policy/store disclosures and provider data review still require release work.
 
 - [Backend setup](backend/README.md) and [wire contract](backend/CONTRACT.md): undeployed Supabase SQL migration, per-user ownership, compare-and-swap revisions, immutable ordered change events, soft deletion and mutation-ID replay protection. Conflicts return the server version without overwriting either submission. SQL regression scripts are included but have not been executed.
-- [Authentication service](fairwayvector-pintheory/Accounts/Auth/README.md): official Supabase Auth, ThisDeviceOnly Keychain, cached offline identity and server-verified token access. Unexposed Apple service methods remain for future work; no Apple capability or button is enabled.
-- [Sync journal](fairwayvector-pintheory/Accounts/Sync/AccountSyncJournal.swift): account UUID-scoped atomic local snapshot, durable outbox/conflict history and pull cursor. The coordinator provides bounded push/pull and invalidation guards. This journal is NOT a copy of the existing SwiftData/round/profile stores.
+- [Authentication service](fairwayvector-golfpintheory/Accounts/Auth/README.md): official Supabase Auth, ThisDeviceOnly Keychain, cached offline identity and server-verified token access. Unexposed Apple service methods remain for future work; the visible Apple placeholder is disabled and no Apple capability is enabled.
+- [Sync journal](fairwayvector-golfpintheory/Accounts/Sync/AccountSyncJournal.swift): account UUID-scoped atomic local snapshot, durable outbox/conflict history and pull cursor. The coordinator provides bounded push/pull and invalidation guards. This journal is NOT a copy of the existing SwiftData/round/profile stores.
 - Account test sources cover configuration, injected auth responses/storage, late callbacks, journal persistence, account separation, conflicts, replay and pagination. No tests have been executed for this phase.
 
-Public configuration defaults are blank in [Accounts.xcconfig](fairwayvector-pintheory/Accounts.xcconfig), included by the existing build configuration. The ignored local override has the user-supplied project URL and publishable key. Use an `sb_publishable_` client key only, never a service-role/provider secret. Xcode URL values must escape the `//` comment delimiter (for example, `https:/$()/project-ref.supabase.co`). Configuration files and the internal auth README are excluded from app resources. Build/install configuration is required; code integration does not verify your provider dashboards.
+Public configuration defaults are blank in [Accounts.xcconfig](fairwayvector-golfpintheory/Accounts.xcconfig), included by the existing build configuration. The ignored local override has the user-supplied project URL and publishable key. Use an `sb_publishable_` client key only, never a service-role/provider secret. Xcode URL values must escape the `//` comment delimiter (for example, `https:/$()/project-ref.supabase.co`). Configuration files and the internal auth README are excluded from app resources. Build/install configuration is required; code integration does not verify your provider dashboards.
 
 ### Next integration gates
 
@@ -91,7 +93,7 @@ Public configuration defaults are blank in [Accounts.xcconfig](fairwayvector-pin
 
 Startup correction (2026-10-21): the splash is now owned by the account root, so it appears before sign-in/restoration rather than only after login, and does not repeat when Home is constructed. Email request failures now display fixed operational categories (network, unauthorized project configuration, rate limit, disabled email/signup, rejected request, CAPTCHA requirement, delivery failure) without printing raw server details or recipient addresses. A successful request is not proof of inbox delivery. Check Supabase Authentication logs and your SMTP provider delivery/bounce logs at the request time if mail does not arrive. Mocked SDK request/response regressions were added and full Debug build-for-testing passed; no tests executed, app launched or emails sent for this correction. Actual delivery failure cause remains unverified without the device error/provider logs.
 
-1. Build/install the configured app from Xcode. Expect email and Google login, no Apple button, and no Home until sign-in.
+1. Build/install the configured app from Xcode. Expect email and Google login, a visible but disabled Apple placeholder, and no Home until sign-in.
 2. Use a Google test account listed in your Google project's audience; confirm return to Home and a Google identity in Supabase Authentication → Users.
 3. Sign out in Settings. Request an email link, open it on the same device and confirm Home. Code fallback needs `{{ .Token }}` in the email template.
 4. Save test account-local data, restart and check restoration; after a successful login, test offline reopening. Sign out and use another account: the original data must not appear. Sign back into the first account to recover that device's records.
@@ -99,7 +101,7 @@ Startup correction (2026-10-21): the splash is now owned by the account root, so
 
 ## App branding and assets
 
-The iOS display name is `PinTheory` in `fairwayvector-pintheory/Info.plist`. The animated splash uses the `splashscreen` image set in `Assets.xcassets`; the iOS home-screen icon is the `AppIcon` image set. Explanatory golf illustrations are individual image sets in the same catalog. Keep each asset's catalog name stable when replacing its image, since SwiftUI loads many by name.
+The iOS display name is `Golf PinTheory` in `fairwayvector-golfpintheory/Info.plist`. The animated splash uses the `splashscreen` image set in `Assets.xcassets`; the iOS home-screen icon is the `AppIcon` image set. Explanatory golf illustrations are individual image sets in the same catalog. Keep each asset's catalog name stable when replacing its image, since SwiftUI loads many by name.
 
 ## Offline terrain tooling
 

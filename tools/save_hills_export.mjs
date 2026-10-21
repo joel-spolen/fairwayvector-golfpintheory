@@ -51,7 +51,7 @@ const safe = terrain.responses.filter(record => geometry.holes.some(hole => reco
 // This export contains no provably public whole-path records. Never package clicked/GPS paths.
 assert.equal(safe.length, 0, 'Re-review a changed terrain export before packaging any terrain.');
 const backup = path.resolve('exports/hills-iphone-2026-10-05');
-const output = path.resolve('fairwayvector-pintheory/Resources/SavedCourses/Hills');
+const output = path.resolve('fairwayvector-golfpintheory/Resources/SavedCourses/Hills');
 assert(!fs.existsSync(backup) && !fs.existsSync(output), 'Refuse to overwrite an existing export/resource.');
 names.forEach((name, i) => {
   const file = path.join(backup, name);

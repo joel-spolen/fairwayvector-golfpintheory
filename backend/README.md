@@ -1,4 +1,4 @@
-# PinTheory Supabase — phase-one backend foundation
+# Golf PinTheory Supabase — phase-one backend foundation
 
 **Not deployed. Not database-tested. Not fully shipped auth or offline sync.**
 This backend foundation has corresponding Swift sync wire/journal foundation and

@@ -1,4 +1,4 @@
-# PinTheory sync wire contract v1 — backend foundation only
+# Golf PinTheory sync wire contract v1 — backend foundation only
 
 Status: source reviewed, **not deployed or database-tested**. No client integration,
 production DTO approval, or shipped authentication is implied.
