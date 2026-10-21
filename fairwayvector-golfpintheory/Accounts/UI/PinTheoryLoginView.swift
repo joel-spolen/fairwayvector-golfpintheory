@@ -65,13 +65,14 @@ struct PinTheoryLoginView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Image(systemName: "location.north.circle")
-                        .font(.largeTitle.weight(.light))
-                        .foregroundStyle(PureLineStyle.accent)
+                    Image("icon")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 76, height: 76)
+                        .clipShape(RoundedRectangle(cornerRadius: 17))
                         .accessibilityHidden(true)
                     Text("Golf PinTheory").font(.largeTitle.weight(.semibold)).tracking(-0.6)
                         .accessibilityAddTraits(.isHeader)
-                    Text("Golf, made clearer.").font(.title3).foregroundStyle(PureLineStyle.muted)
                     Text("Sign in to continue").font(.headline).padding(.top, 8)
                 }
 
