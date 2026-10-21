@@ -9,6 +9,7 @@ struct PureLineHomeView: View {
     let onOpenTrajectory: () -> Void
     let onOpenStatistics: () -> Void
     let onOpenSettings: () -> Void
+    let onOpenAccount: () -> Void
 
     var body: some View {
         NavigationStack {
@@ -106,6 +107,15 @@ struct PureLineHomeView: View {
                             .padding(.bottom, 10)
                         destination("Rounds & statistics", detail: "Review your scores and spot the trends", symbol: "chart.xyaxis.line", action: onOpenStatistics)
                             .accessibilityIdentifier("home-rounds-statistics-button")
+                    }
+                    .foregroundStyle(PureLineStyle.ink)
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Account settings")
+                            .font(.title3.weight(.semibold)).tracking(-0.4)
+                            .padding(.bottom, 10)
+                        destination("Account", detail: "Details about your account", symbol: "person.crop.circle", action: onOpenAccount)
+                            .accessibilityIdentifier("home-account-button")
                     }
                     .foregroundStyle(PureLineStyle.ink)
 

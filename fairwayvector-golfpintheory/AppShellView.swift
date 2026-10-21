@@ -10,6 +10,7 @@ struct ContentView: View {
         case practice
         case statistics
         case bag
+        case account
 
         var id: String { rawValue }
     }
@@ -46,7 +47,8 @@ struct ContentView: View {
                     destination = .practice
                 },
                 onOpenStatistics: { destination = .statistics },
-                onOpenSettings: { showingSettings = true }
+                onOpenSettings: { showingSettings = true },
+                onOpenAccount: { destination = .account }
             )
 
         }
@@ -94,6 +96,8 @@ struct ContentView: View {
             RoundStatisticsView()
         case .bag:
             InTheBagView(trajectoryModel: trajectoryModel, onHome: { destination = nil })
+        case .account:
+            PinTheoryAccountView(onHome: { destination = nil })
         }
     }
 }

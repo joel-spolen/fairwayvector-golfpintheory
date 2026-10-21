@@ -17,7 +17,6 @@ struct PinTheoryLoginView: View {
     @State private var localError: String?
     @State private var operation: Task<Void, Never>?
     @State private var generation: UInt64 = 0
-    @State private var showingPrivacy = false
     @FocusState private var focusedField: Field?
 
     private enum Field: Hashable { case email, password, confirmation }
@@ -151,7 +150,7 @@ struct PinTheoryLoginView: View {
                     .accessibilityIdentifier("account-network-diagnostic")
                 }
 
-                Button("Account & privacy") { focusedField = nil; showingPrivacy = true }
+                Link("Privacy policy", destination: URL(string: "https://golfpintheory.com/privacy-policy/")!)
                     .font(.subheadline.weight(.medium)).frame(minHeight: 44)
                     .accessibilityIdentifier("account-privacy")
                 Text("Golf PinTheory by FairwayVector").font(.caption).foregroundStyle(PureLineStyle.muted)
@@ -166,18 +165,6 @@ struct PinTheoryLoginView: View {
         .tint(PureLineStyle.accent)
         .preferredColorScheme(.light)
         .background { PinTheoryAuthenticationWindowReader(broker: browser).frame(width: 0, height: 0) }
-        .sheet(isPresented: $showingPrivacy) {
-            NavigationStack {
-                PinTheoryAccountPrivacyView()
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") { showingPrivacy = false }
-                        }
-                    }
-            }
-            .tint(PureLineStyle.accent)
-            .preferredColorScheme(.light)
-        }
         .onAppear { showServiceError() }
         .onDisappear {
             if auth.state == .passwordRecovery { detachOperation() }
