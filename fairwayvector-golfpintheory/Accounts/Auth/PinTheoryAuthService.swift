@@ -391,11 +391,11 @@ final class PinTheoryAuthService: ObservableObject {
             try check(ticket)
             let session = try await client.signInWithIdToken(credentials: .init(provider: .apple, idToken: token, nonce: nonce))
             _ = try await confirm(session, client: client, ticket: ticket)
-        } catch { throw fail(error, ticket: ticket) }
+        } catch { throw fail(Self.googleOAuthError(error), ticket: ticket) }
     }
 
     /// Google uses official SDK OAuth + PKCE, NOT a native Google SDK ID token.
-    /// The future UI supplies/retains an ASWebAuthenticationSession browser and its
+    /// The UI supplies/retains an ASWebAuthenticationSession browser and its
     /// presentation anchor. Validate the complete destination before SDK exchange.
     func signInWithGoogle(
         launchFlow: @escaping @MainActor @Sendable (URL) async throws -> URL
@@ -403,20 +403,48 @@ final class PinTheoryAuthService: ObservableObject {
         try requireOrdinarySignIn()
         let (ticket, client) = try begin()
         defer { finish(ticket) }
+        var stage = "authorization_setup"
         do {
-            let session = try await client.signInWithOAuth(provider: .google,
-                redirectTo: PinTheoryAuthConfiguration.callbackURL,
-                launchFlow: { [weak self] url in
-                    guard let self else { throw PinTheoryAuthError.cancelled }
-                    try self.check(ticket)
-                    try self.requirePKCEVerifier()
-                    let callback = try await launchFlow(url)
-                    try self.check(ticket)
-                    try PinTheoryAuthConfiguration.validateCallback(callback, allowRecovery: false)
-                    return callback
-                })
+            let authorizationURL = try client.getOAuthSignInURL(provider: .google,
+                redirectTo: PinTheoryAuthConfiguration.callbackURL)
+            try check(ticket)
+            try requirePKCEVerifier()
+
+            stage = "browser_authorization"
+            let callback = try await launchFlow(authorizationURL)
+            try check(ticket)
+
+            stage = "app_callback_validation"
+            if let reason = PinTheoryAuthConfiguration.callbackValidationFailure(callback, allowRecovery: false) {
+                Self.logGoogleOAuthStage("Callback rejected: \(reason)")
+            }
+            try PinTheoryAuthConfiguration.validateCallback(callback, allowRecovery: false)
+            let normalizedCallback = try PinTheoryAuthConfiguration.callbackURLForCodeExchange(callback)
+            stage = "pkce_verifier_validation"
+            do { try requirePKCEVerifier() }
+            catch {
+                Self.logGoogleOAuthStage("Callback verifier unavailable")
+                throw error
+            }
+
+            stage = "authorization_code_exchange"
+            let session = try await client.session(from: normalizedCallback)
+            try check(ticket)
+
+            stage = "server_session_verification"
             _ = try await confirm(session, client: client, ticket: ticket)
-        } catch { throw fail(error, ticket: ticket) }
+            Self.logGoogleOAuthStage("Sign-in completed")
+        } catch {
+            Self.logGoogleOAuthStage("Sign-in failed at \(stage)")
+            throw fail(Self.googleOAuthError(error), ticket: ticket)
+        }
+    }
+
+    private static func logGoogleOAuthStage(_ message: String) {
+        #if DEBUG
+        Logger(subsystem: "com.fairwayvector.pintheory", category: "GoogleOAuth")
+            .notice("\(message, privacy: .public)")
+        #endif
     }
 
     func sendEmailMagicLink(to email: String) async throws {
@@ -782,6 +810,35 @@ final class PinTheoryAuthService: ObservableObject {
             }
         }
         return PinTheoryAuthError.signInFailed
+    }
+
+    private static func googleOAuthError(_ error: Error) -> PinTheoryAuthError {
+        if let known = error as? PinTheoryAuthError {
+            switch known {
+            case .invalidCallback: return .googleOAuthCallbackFailed
+            case .signInFailed: return .googleOAuthUnavailable
+            default: return known
+            }
+        }
+        if let urlError = error as? URLError { return .networkError(urlError) }
+        if let authError = error as? AuthError {
+            switch authError {
+            case .pkceGrantCodeExchange, .implicitGrantRedirect:
+                return .googleOAuthCallbackFailed
+            case let .api(_, _, _, response):
+                if response.statusCode == 401 || response.statusCode == 403 {
+                    return .accountServiceUnauthorized
+                }
+                if (500...599).contains(response.statusCode) { return .networkUnavailable }
+                return .googleOAuthSetupFailed
+            default:
+                return .googleOAuthUnavailable
+            }
+        }
+        if (error as? ASWebAuthenticationSessionError)?.code == .canceledLogin {
+            return .cancelled
+        }
+        return .googleOAuthUnavailable
     }
 
     func verifyEmailCode(email: String, code: String) async throws {

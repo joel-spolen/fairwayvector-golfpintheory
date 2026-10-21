@@ -315,7 +315,7 @@ struct AccountPasswordTests {
         do {
             try await auth.signInWithGoogle { _ in URL(string: "golfpintheory://auth/reset-password?code=wrong-flow")! }
             Issue.record("Google accepted a reset URL")
-        } catch { #expect(error as? PinTheoryAuthError == .invalidCallback) }
+        } catch { #expect(error as? PinTheoryAuthError == .googleOAuthCallbackFailed) }
         #expect(await transport.paths.isEmpty)
         #expect(auth.state == .signedOut)
     }

@@ -8,6 +8,7 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
     case invalidCredentials, weakPassword, emailNotConfirmed
     case recentAuthenticationRequired, accountDeletionUnavailable, authRequired
     case emailIdentityRequired
+    case googleOAuthSetupFailed, googleOAuthCallbackFailed, googleOAuthUnavailable
     case accountPasswordUpdateUnavailable
     case invalidDisplayName, displayNameUpdateUnavailable
     /// Numeric URL-loading code only, never NSError userInfo or failing URL.
@@ -36,6 +37,9 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
         case .accountDeletionUnavailable: "Account deletion could not be completed. Please try again later."
         case .authRequired: "Your account session is no longer valid. Sign in again and retry."
         case .emailIdentityRequired: "This action is available only for accounts with an email sign-in method."
+        case .googleOAuthSetupFailed: "Google sign-in was rejected. Check that Google is enabled in Supabase and the Google OAuth client's authorized redirect URI exactly matches the Supabase Auth callback URL."
+        case .googleOAuthCallbackFailed: "Google returned to Golf PinTheory, but the one-time sign-in code could not be verified. Start Google sign-in again on this device. If it keeps happening, check the Supabase Auth logs for a PKCE or code-exchange error at the time of the attempt."
+        case .googleOAuthUnavailable: "Google sign-in could not be completed. Try again; if it keeps happening, check the Supabase Auth logs for this attempt."
         case .accountPasswordUpdateUnavailable: "The password could not be updated. Please try again later."
         case .invalidDisplayName: "Names must be 80 characters or fewer."
         case .displayNameUpdateUnavailable: "Your display name could not be saved. Please try again."
@@ -135,7 +139,7 @@ nonisolated struct PinTheoryAuthConfiguration: Sendable {
         return allowedDestination && parts.host == "auth"
             && parts.user == nil && parts.password == nil && parts.port == nil
             && parts.percentEncodedHost == "auth"
-            && parts.fragment == nil
+            && (parts.fragment == nil || parts.fragment?.isEmpty == true)
     }
 
     static func isPasswordResetCallback(_ url: URL) -> Bool {
@@ -144,12 +148,51 @@ nonisolated struct PinTheoryAuthConfiguration: Sendable {
     }
 
     static func validateCallback(_ url: URL, allowRecovery: Bool = true) throws {
-        guard acceptsCallback(url),
-              allowRecovery || !isPasswordResetCallback(url),
-              let items = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems,
-              !items.contains(where: { $0.name.hasPrefix("error") }),
-              items.filter({ $0.name == "code" }).count == 1,
-              let code = items.first(where: { $0.name == "code" })?.value, !code.isEmpty
-        else { throw PinTheoryAuthError.invalidCallback }
+        guard callbackValidationFailure(url, allowRecovery: allowRecovery) == nil else {
+            throw PinTheoryAuthError.invalidCallback
+        }
+    }
+
+    /// A value-free diagnostic for callback failures. Never include query values,
+    /// which may contain authorization codes or provider response details.
+    static func callbackValidationFailure(_ url: URL, allowRecovery: Bool = true) -> String? {
+        guard let parts = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return "unparseable_callback"
+        }
+        // Keep these as sequential checks so a rejection always identifies its
+        // actual failing component (instead of reporting a combined predicate).
+        guard parts.scheme == "golfpintheory" else { return "unexpected_callback_scheme" }
+        guard parts.host == "auth", parts.percentEncodedHost == "auth" else { return "unexpected_callback_host" }
+        guard parts.user == nil, parts.password == nil else { return "unexpected_callback_userinfo" }
+        guard parts.port == nil else { return "unexpected_callback_port" }
+        guard parts.percentEncodedPath == "/callback" || parts.percentEncodedPath == "/reset-password" else {
+            return "unexpected_callback_path"
+        }
+        guard parts.fragment == nil || parts.fragment?.isEmpty == true else { return "unexpected_callback_fragment" }
+        guard allowRecovery || parts.percentEncodedPath != "/reset-password" else {
+            return "callback_purpose_not_allowed"
+        }
+        guard let items = parts.queryItems else { return "missing_callback_query" }
+        guard !items.contains(where: { $0.name.hasPrefix("error") }) else {
+            return "provider_returned_oauth_error"
+        }
+        let codes = items.filter { $0.name == "code" }
+        guard codes.count == 1 else { return codes.isEmpty ? "missing_authorization_code" : "duplicate_authorization_code" }
+        guard let code = codes.first?.value, !code.isEmpty else { return "empty_authorization_code" }
+        return nil
+    }
+
+    /// Removes a harmless trailing `#` before the SDK parses OAuth parameters.
+    /// Non-empty fragments are rejected by callbackValidationFailure.
+    static func callbackURLForCodeExchange(_ url: URL) throws -> URL {
+        try validateCallback(url, allowRecovery: false)
+        guard let parts = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            throw PinTheoryAuthError.invalidCallback
+        }
+        guard parts.fragment?.isEmpty == true else { return url }
+        var normalized = parts
+        normalized.fragment = nil
+        guard let result = normalized.url else { throw PinTheoryAuthError.invalidCallback }
+        return result
     }
 }

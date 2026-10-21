@@ -59,6 +59,10 @@ struct AccountAuthTests {
 
     @Test func callbackRequiresExactDestinationAndOnePKCECode() throws {
         try PinTheoryAuthConfiguration.validateCallback(URL(string: "golfpintheory://auth/callback?code=fixture")!)
+        let emptyFragment = URL(string: "golfpintheory://auth/callback?code=fixture#")!
+        try PinTheoryAuthConfiguration.validateCallback(emptyFragment, allowRecovery: false)
+        #expect(try PinTheoryAuthConfiguration.callbackURLForCodeExchange(emptyFragment).absoluteString
+            == "golfpintheory://auth/callback?code=fixture")
         for url in ["other://auth/callback?code=x", "golfpintheory://other/callback?code=x",
                     "golfpintheory://auth/callback/?code=x", "golfpintheory://auth/%63allback?code=x",
                     "golfpintheory://user@auth/callback?code=x", "golfpintheory://auth:443/callback?code=x",
