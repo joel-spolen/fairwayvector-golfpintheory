@@ -1,8 +1,23 @@
 # PinTheory login setup — step-by-step operator guide
 
-Updated: 2026-10-19. Dashboard labels can change; use the linked official guides when a menu differs.
+Updated: 2026-10-21. Dashboard labels can change; use the linked official guides when a menu differs.
 
-**These steps configure external services. They do not enable the unfinished app login UI or sync integration.** No dashboard changes or deployments have been made by writing this guide. Start with development/staging, not real customer data.
+## Current email + password configuration (supersedes magic-link instructions below)
+
+The app now has **Sign in**, **Create account**, **Forgot password**, and Google browser login. Apple is deferred. URL-scheme routing is integrated; actual account flows have compiled but have not been tested against the live service. Older sections below describe the original passwordless plan and must not be followed for the current email UI.
+
+1. In Authentication → Sign In / Providers → Email, keep **Email enabled**, **new user signups enabled** for your test cohort and **Confirm email enabled**. Password login uses the same Email provider; no new client key is required. Set a suitable server-side password policy (recommended minimum eight characters, stronger as appropriate). The app recommends eight for new passwords; Supabase is authoritative.
+2. In Authentication → URL Configuration → Redirect URLs, allowlist BOTH exact values: `golfpintheory://auth/callback` and `golfpintheory://auth/reset-password`. If using a mobile Site URL, set it to `golfpintheory://auth/callback`; an existing HTTPS fallback can remain. Remove the old custom-scheme redirect; this prelaunch app does not support it. Google's HTTPS provider callback remains unchanged.
+3. In Authentication → Emails / Email Templates → **Confirm signup**, use a subject such as **Confirm your PinTheory account** and keep the action link as `{{ .ConfirmationURL }}`. This is now the signup email template, NOT Magic Link. Label the button **Confirm email**. Do not paste a literal mobile callback URL or a custom token-hash URL into that button.
+4. In Email Templates → **Reset Password**, use **Reset your PinTheory password**, retain `{{ .ConfirmationURL }}` and label the button **Reset password**. Supabase must preserve the request's `redirect_to` destination so this returns to `/reset-password`, not the ordinary `/callback` path.
+5. The existing Magic Link template can remain, but it is no longer used by the email/password login screen. Existing SMTP/domain settings still apply to signup confirmation and reset mail. Changing login style does not solve SMTP, recipient restrictions or delivery failures.
+6. Keep email sender link/click tracking disabled. Request signup/reset on the device on which you will open its email; PKCE confirmation/reset requires that installation's verifier. If opening confirmation elsewhere, return to the requesting device; cross-device browser completion needs a separately designed web flow.
+7. After rebuilding, create a test account, confirm the email, then sign in with email/password. Returning logins do not send email. Existing magic-link/Google-only identities may not have a password: use **Forgot password** for the same email rather than creating duplicates. Apple private-relay emails and provider linking still need deliberate handling.
+8. Test Forgot password on the requesting device, open the reset link, enter/confirm a new password, then sign in again. Recovery sessions never expose Home. Restarting during recovery must keep the recovery gate; successful updates clear local credentials and require normal sign-in.
+
+Passwords are entered only in the app's secure fields and sent over HTTPS to Supabase; they are not stored by the app. Do not paste passwords, confirmation/reset URLs, codes, SMTP secrets or tokens into chat. Account deletion and cloud golf-record sync are still unfinished and remain release gates.
+
+**Historical provider setup follows.** No dashboard changes or deployments have been made by writing this guide. Start with development/staging, not real customer data.
 
 ## 1. Confirm project and app identity
 
@@ -17,8 +32,8 @@ The supplied project URL and publishable key are already in the ignored local ap
 ## 2. Configure the Supabase redirect URLs
 
 1. Open Supabase → Authentication → URL Configuration.
-2. For a mobile-only staging setup, set **Site URL** to `pintheory://auth/callback`. Supabase supports mobile URI schemes as the default destination. If using an HTTPS fallback instead, it must be a real page you own that explains how to return to the app—not an invented callback page.
-3. Under **Redirect URLs**, add exactly `pintheory://auth/callback`.
+2. For a mobile-only staging setup, set **Site URL** to `golfpintheory://auth/callback`. Supabase supports mobile URI schemes as the default destination. If using an HTTPS fallback instead, it must be a real page you own that explains how to return to the app—not an invented callback page.
+3. Under **Redirect URLs**, add exactly `golfpintheory://auth/callback` and `golfpintheory://auth/reset-password`.
 4. Save. Avoid wildcard redirects in production.
 
 There are TWO different callbacks. Do not interchange them:
@@ -26,9 +41,9 @@ There are TWO different callbacks. Do not interchange them:
 | Purpose                                                       | Value for this project                                      |
 | ------------------------------------------------------------- | ----------------------------------------------------------- |
 | Apple/Google → Supabase (enter in the provider console)       | `https://hdeiikpgtralsfnwbxft.supabase.co/auth/v1/callback` |
-| Supabase → PinTheory (enter in Supabase's redirect allowlist) | `pintheory://auth/callback`                                 |
+| Supabase → PinTheory (enter in Supabase's redirect allowlist) | `golfpintheory://auth/callback`                             |
 
-The app still needs URL-scheme registration/routing during implementation. Until that is added, the mobile callback cannot open the app successfully. A future staging-specific scheme/universal-link design may require updating both code and allowlist together. Repeat all project-specific URLs for a separate production project.
+The app registers only the `golfpintheory` URL scheme and routes both ordinary and password-reset callbacks. A future staging-specific scheme/universal-link design may require updating both code and allowlist together. Repeat all project-specific URLs for a separate production project.
 
 ## 3. Enable email sign-in
 

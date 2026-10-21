@@ -41,7 +41,7 @@ struct AccountAuthTests {
         #expect(try PinTheoryAuthConfiguration.load(projectURL: "https://example.test", publishableKey: "\n") == nil)
         let value = try configuration()
         #expect(value.projectURL.absoluteString == "https://staging.example.test")
-        #expect(PinTheoryAuthConfiguration.callbackURL.absoluteString == "pintheory://auth/callback")
+        #expect(PinTheoryAuthConfiguration.callbackURL.absoluteString == "golfpintheory://auth/callback")
         for url in ["http://example.test", "https://user:pass@example.test", "https://example.test/auth/v1",
                     "https://example.test/?q=value", "https://example.test/#fragment", "https://example.test:444",
                     "https://example.test/%2F", "https://example..test"] {
@@ -58,13 +58,13 @@ struct AccountAuthTests {
     }
 
     @Test func callbackRequiresExactDestinationAndOnePKCECode() throws {
-        try PinTheoryAuthConfiguration.validateCallback(URL(string: "pintheory://auth/callback?code=fixture")!)
-        for url in ["other://auth/callback?code=x", "pintheory://other/callback?code=x",
-                    "pintheory://auth/callback/?code=x", "pintheory://auth/%63allback?code=x",
-                    "pintheory://user@auth/callback?code=x", "pintheory://auth:443/callback?code=x",
-                    "pintheory://auth/callback?code=x#access_token=secret", "pintheory://auth/callback",
-                    "pintheory://auth/callback?code=", "pintheory://auth/callback?code=x&code=y",
-                    "pintheory://auth/callback?error_description=expired", "https://auth/callback?code=x"] {
+        try PinTheoryAuthConfiguration.validateCallback(URL(string: "golfpintheory://auth/callback?code=fixture")!)
+        for url in ["other://auth/callback?code=x", "golfpintheory://other/callback?code=x",
+                    "golfpintheory://auth/callback/?code=x", "golfpintheory://auth/%63allback?code=x",
+                    "golfpintheory://user@auth/callback?code=x", "golfpintheory://auth:443/callback?code=x",
+                    "golfpintheory://auth/callback?code=x#access_token=secret", "golfpintheory://auth/callback",
+                    "golfpintheory://auth/callback?code=", "golfpintheory://auth/callback?code=x&code=y",
+                    "golfpintheory://auth/callback?error_description=expired", "https://auth/callback?code=x"] {
             #expect(throws: PinTheoryAuthError.self) {
                 try PinTheoryAuthConfiguration.validateCallback(URL(string: url)!)
             }
@@ -342,6 +342,122 @@ struct AccountAuthTests {
         }
     }
 
+    @Test func emailMagicLinkUsesSDKPKCERequestAndDurableVerifierWithoutSigningIn() async throws {
+        let storage = AuthMemoryStorage()
+        let fixture = AuthEmailFetchFixture()
+        let service = PinTheoryAuthService(configuration: try configuration(), storage: storage, fetch: { request in
+            await fixture.recordRequest()
+            let url = try #require(request.url)
+            #expect(url.scheme == "https")
+            #expect(url.host == "staging.example.test")
+            #expect(url.path == "/auth/v1/otp")
+            #expect(request.httpMethod == "POST")
+            #expect(request.value(forHTTPHeaderField: "apikey") == "sb_publishable_fixture_only")
+            let query = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems)
+            #expect(query.filter { $0.name == "redirect_to" }.map(\.value) == ["golfpintheory://auth/callback"])
+            let body = try #require(request.httpBody)
+            let json = try #require(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            #expect(json["email"] as? String == "fixture@example.test")
+            #expect(json["create_user"] as? Bool == true)
+            let challenge = try #require(json["code_challenge"] as? String)
+            #expect(!challenge.isEmpty)
+            #expect(json["code_challenge_method"] as? String == "s256")
+            let storedVerifier = try storage.retrieve(key: PinTheoryAuthStorageLease.verifierKey)
+            let verifier = try #require(storedVerifier)
+            #expect(!verifier.isEmpty)
+            return (Data("{}".utf8), HTTPURLResponse(url: url, statusCode: 200, httpVersion: nil,
+                headerFields: ["Content-Type": "application/json"])!)
+        })
+
+        try await service.sendEmailMagicLink(to: "fixture@example.test")
+        #expect(await fixture.requestCount == 1)
+        #expect(service.state == .signedOut)
+        #expect(!service.isBusy)
+        #expect(service.lastError == nil)
+        #expect(try storage.retrieve(key: PinTheoryAuthStorageLease.sessionKey) == nil)
+        #expect(try storage.retrieve(key: PinTheoryAuthStorageLease.confirmationKey) == nil)
+        let storedVerifier = try storage.retrieve(key: PinTheoryAuthStorageLease.verifierKey)
+        let verifier = try #require(storedVerifier)
+        #expect(!verifier.isEmpty)
+
+        // A newly installed SDK client must still see the pending cold-start verifier.
+        let restored = PinTheoryAuthService(configuration: try configuration(), storage: storage, fetch: { _ in
+            Issue.record("Restoring a pending email verifier must not make an HTTP request")
+            throw URLError(.badServerResponse)
+        })
+        try await restored.restore()
+        #expect(restored.state == .signedOut)
+        #expect(!restored.isBusy)
+        #expect(try storage.retrieve(key: PinTheoryAuthStorageLease.verifierKey) == verifier)
+    }
+
+    @Test func emailMagicLinkSDKFailuresAreSanitizedAndSendsRemainRetryable() async throws {
+        let cases: [(status: Int, code: String, expected: PinTheoryAuthError)] = [
+            (429, "over_email_send_rate_limit", .emailRateLimited),
+            (500, "unexpected_failure", .emailDeliveryUnavailable),
+            (400, "email_provider_disabled", .emailProviderDisabled),
+            (422, "validation_failed", .emailRequestRejected),
+            (401, "bad_jwt", .accountServiceUnauthorized),
+            (400, "captcha_failed", .captchaRequired),
+            (0, "offline", .networkUnavailable)
+        ]
+        for item in cases {
+            let storage = AuthMemoryStorage()
+            let fixture = AuthEmailFetchFixture()
+            await fixture.setStatus(item.status)
+            let body = try JSONSerialization.data(withJSONObject: [
+                "code": item.code,
+                "msg": "sensitive secret URL https://example.test/auth?token=secret&email=fixture@example.test"
+            ])
+            let service = PinTheoryAuthService(configuration: try configuration(), storage: storage, fetch: { request in
+                let status = await fixture.recordRequest() ?? 200
+                #expect(request.url?.path == "/auth/v1/otp")
+                #expect(request.httpMethod == "POST")
+                if status == 0 { throw URLError(.notConnectedToInternet) }
+                // The API version makes the real SDK decode `code` (rather than legacy `error_code`).
+                // Keep every SDK retry failing, including its automatic POST retries for HTTP 500.
+                return (status == 200 ? Data("{}".utf8) : body,
+                        HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil,
+                            headerFields: ["Content-Type": "application/json",
+                                           "X-Supabase-Api-Version": "2024-01-01"])!)
+            })
+
+            do {
+                try await service.sendEmailMagicLink(to: "fixture@example.test")
+                Issue.record("Failed email request was accepted")
+            } catch {
+                #expect(error as? PinTheoryAuthError == item.expected)
+                #expect(!error.localizedDescription.contains("sensitive"))
+                #expect(!error.localizedDescription.contains("secret"))
+                #expect(!error.localizedDescription.contains("https://"))
+                #expect(!error.localizedDescription.contains("fixture@example.test"))
+            }
+            #expect(await fixture.requestCount > 0)
+            #expect(service.lastError == item.expected)
+            #expect(service.state == .signedOut)
+            #expect(!service.isBusy)
+            #expect(try storage.retrieve(key: PinTheoryAuthStorageLease.sessionKey) == nil)
+            #expect(try storage.retrieve(key: PinTheoryAuthStorageLease.confirmationKey) == nil)
+            let storedVerifier = try storage.retrieve(key: PinTheoryAuthStorageLease.verifierKey)
+            let verifier = try #require(storedVerifier)
+            #expect(!verifier.isEmpty)
+
+            // Retry through the same service: failure must not lock its client or busy gate.
+            let failedRequestCount = await fixture.requestCount
+            await fixture.setStatus(nil)
+            try await service.sendEmailMagicLink(to: "fixture@example.test")
+            #expect(await fixture.requestCount == failedRequestCount + 1)
+            #expect(service.lastError == nil)
+            #expect(service.state == .signedOut)
+            #expect(!service.isBusy)
+            #expect(try storage.retrieve(key: PinTheoryAuthStorageLease.sessionKey) == nil)
+            #expect(try storage.retrieve(key: PinTheoryAuthStorageLease.confirmationKey) == nil)
+            let storedRetryVerifier = try storage.retrieve(key: PinTheoryAuthStorageLease.verifierKey)
+            let retryVerifier = try #require(storedRetryVerifier)
+            #expect(!retryVerifier.isEmpty)
+        }
+    }
+
     @Test func emailCodeEstablishesSessionOnlyAfterServerConfirmation() async throws {
         let id = UUID()
         let storage = AuthMemoryStorage()
@@ -446,7 +562,7 @@ struct AccountAuthTests {
         do {
             try await service.signInWithGoogle { _ in
                 try service.signOut()
-                return URL(string: "pintheory://auth/callback?code=late")!
+                return URL(string: "golfpintheory://auth/callback?code=late")!
             }
             Issue.record("Late callback accepted")
         } catch { #expect(error as? PinTheoryAuthError == .cancelled) }
@@ -507,6 +623,19 @@ struct AccountAuthTests {
         storage.setFailRemovals(false)
         try service.signOut()
         #expect(service.lastError == nil)
+    }
+}
+
+private actor AuthEmailFetchFixture {
+    private var status: Int?
+    private(set) var requestCount = 0
+
+    func setStatus(_ status: Int?) { self.status = status }
+
+    @discardableResult
+    func recordRequest() -> Int? {
+        requestCount += 1
+        return status
     }
 }
 

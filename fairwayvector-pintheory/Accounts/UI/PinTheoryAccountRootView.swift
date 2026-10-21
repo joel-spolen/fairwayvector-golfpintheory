@@ -2,6 +2,8 @@ import SwiftUI
 
 struct PinTheoryAccountRootView: View {
     @ObservedObject var session: PinTheoryAccountSession
+    @AppStorage("map.hasSeenSplash", store: .standard) private var hasSeenSplash = false
+    @State private var showingSplash = true
 
     var body: some View {
         Group {
@@ -13,6 +15,18 @@ struct PinTheoryAccountRootView: View {
             }
         }
         .environmentObject(session)
+        .overlay {
+            if showingSplash {
+                SplashView(isReturningUser: hasSeenSplash) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showingSplash = false
+                        hasSeenSplash = true
+                    }
+                }
+                .transition(.opacity)
+                .zIndex(1)
+            }
+        }
         .preferredColorScheme(.light)
         .onAppear { session.start() }
         .onOpenURL { url in Task { await session.handle(url) } }
@@ -43,6 +57,8 @@ private struct PinTheoryAuthenticatedGate: View {
                 } else { ProgressView("Restoring your account…") }
             case .restoring:
                 ProgressView("Restoring your account…")
+            case .passwordRecovery:
+                PinTheoryPasswordRecoveryView(auth: auth)
             case .authenticated, .offlineCachedIdentity:
                 if let data = session.accountData {
                     ContentView(accountData: data).id(data.id)

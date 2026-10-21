@@ -60,6 +60,9 @@ nonisolated final class PinTheoryAuthStorageLease: AuthLocalStorage, @unchecked 
     static let sessionKey = "session-v1"
     static let verifierKey = "session-v1-code-verifier"
     static let confirmationKey = "server-confirmed-user-v1"
+    // Service-owned only; never exposed to the SDK lease. No identity/password.
+    static let recoveryKey = "password-recovery-required-v1"
+    static let pendingRecoveryKey = "password-recovery-request-v1"
     private let storage: any AuthLocalStorage
     private let lock = NSLock()
     private var active = true

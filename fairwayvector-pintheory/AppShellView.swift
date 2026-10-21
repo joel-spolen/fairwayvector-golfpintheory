@@ -14,10 +14,8 @@ struct ContentView: View {
         var id: String { rawValue }
     }
 
-    @AppStorage("map.hasSeenSplash", store: .standard) private var hasSeenSplash = false
     @AppStorage("distanceUnit", store: .standard) private var distanceUnit: DistanceUnit = .meters
     @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var wedgeDistanceUnit = WedgeDistanceUnit.yards.rawValue
-    @State private var isShowingSplash = true
     @State private var destination: Destination?
     @State private var showingSettings = false
     @State private var practiceDestination: PracticeDestination = .trajectory
@@ -51,16 +49,6 @@ struct ContentView: View {
                 onOpenSettings: { showingSettings = true }
             )
 
-            if isShowingSplash {
-                SplashView(isReturningUser: hasSeenSplash) {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        isShowingSplash = false
-                        hasSeenSplash = true
-                    }
-                }
-                .transition(.opacity)
-                .zIndex(1)
-            }
         }
         .background {
             KeyboardDismissOnTap()

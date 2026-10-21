@@ -9,7 +9,7 @@ struct PinTheoryAccountPrivacyView: View {
             VStack(alignment: .leading, spacing: 24) {
                 PureLinePageHeader(title: "Account & privacy", subtitle: "PinTheory · prerelease account integration")
 
-                section("Sign-in uses the network", text: "Supabase Auth manages your account identity, email address and sign-in session. Email sign-in sends your email address to Supabase and uses its configured email delivery service to send a link or code. Google sign-in opens Google's authorization flow; Google and Supabase process the identity information needed to sign you in, which can include your email and Google profile details. These services have their own privacy policies.")
+                section("Sign-in uses the network", text: "Supabase Auth manages your account identity, email address and sign-in session. Email/password sign-in sends your credentials over HTTPS to Supabase; the app does not save your password. Account creation and password reset use the configured email delivery service to send confirmation or reset links. Google sign-in opens Google's authorization flow; Google and Supabase process the identity information needed to sign you in, which can include your email and Google profile details. These services have their own privacy policies.")
 
                 section("Golf records are still local", text: "Your saved rounds, handicap information, club setup and other golf records are stored locally on this device. They are not connected to account sync yet. Signing in does not upload these records or make them available on another device. Do not rely on this test integration as a cloud backup.")
 

@@ -1,4 +1,81 @@
-# iOS auth service — prerelease email/Google integration
+# iOS auth service — password/Google and restricted recovery
+
+## Current password contract (2026-10-21)
+
+Service/config/storage and new `AccountPasswordTests.swift` source only. The root,
+account-session owner and login UI are owned by the separate UI integration work.
+Do not ship until their exhaustive state switches and callback routing support
+`.passwordRecovery`, including callbacks when already in that restricted state.
+The session owner must detach account data for recovery, never open an account.
+
+- `signInWithPassword(email:password:) async throws`: official SDK password grant,
+  then matching online `/user` confirmation. No minimum length for existing login.
+  Magic-link-only accounts with no password receive generic invalid credentials.
+- `signUpWithPassword(email:password:) async throws -> Bool`: `true` means check
+  confirmation email (SDK user-only response), **not** proof an account was created;
+  `false` means a session was independently confirmed and authenticated. Retains
+  the persisted PKCE verifier for user-only responses. No identity/existence result.
+- `sendPasswordReset(email:) async throws`: SDK recovery email with PKCE and the
+  exact distinct redirect `golfpintheory://auth/reset-password`.
+- `completePasswordReset(password:) async throws`: restricted state and durable
+  marker required; online user validation followed by SDK
+  `update(user: UserAttributes(password:))`. A matching successful update performs
+  the existing **local** `signOut()` and requires ordinary login again. No Home,
+  confirmation marker, cloud token or offline cache access from recovery. Local
+  logout does not revoke remote sessions; SDK remote logout is not invoked.
+- `resendSignupConfirmation(email:) async throws`: SDK `.signup` resend, callback
+  redirect and durable PKCE verifier; no account-existence result.
+- Legacy magic-link/code methods remain for source compatibility; the new UI
+  should use password plus Google. Google explicitly rejects recovery destinations.
+- Server enforces password policy. UI should recommend at least eight characters
+  for new signup/reset passwords. Never log or persist passwords. `weakPassword`,
+  `invalidCredentials`, `emailNotConfirmed` are fixed sanitized categories; the last
+  asks the user to confirm email or request another confirmation email. Provider
+  error messages, weak-password reasons, addresses and response bodies are hidden.
+
+### Callback and durable marker contract
+
+**Supabase prerequisite:** separately allowlist both literal redirects
+`golfpintheory://auth/callback` and `golfpintheory://auth/reset-password` in Auth URL
+Configuration. This change does not edit the hosted allowlist or any console.
+Callbacks require the exact literal path and one nonempty PKCE code; fragments,
+credentials, ports, encoded-path aliases and error parameters are rejected.
+Only the `golfpintheory` scheme is registered. `acceptsCallback` / `validateCallback`
+accept only the exact destinations above; the old scheme is not supported.
+`validateCallback(_:allowRecovery: false)` rejects reset URLs for Google.
+Query `type=recovery` is not recovery authority: routing uses the distinct path
+and locally persisted intent/activation, never an SDK auth-event listener.
+
+Service-owned Keychain markers (same host-scoped ThisDeviceOnly storage as tokens):
+
+| Key                                       | Value / lifecycle                                                                                                                                                                                                                               |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `password-recovery-request-v1`            | UTF-8 `1`; stored before sending reset. Preserved on ambiguous send errors/restart. Also restricts a rewritten ordinary callback. A deliberately initiated ordinary login/signup/resend supersedes this pending intent, not activated recovery. |
+| `password-recovery-required-v1`           | UTF-8 `1`, no identity; persisted **before** PKCE exchange. Removed only after confirmed update + local credential cleanup, or explicit successful logout. Never removed by error cleanup.                                                      |
+| `server-confirmed-user-v1`                | Existing ordinary-login UUID marker; removed on recovery activation and restart before any recovery validation. Never written in recovery.                                                                                                      |
+| `session-v1` / `session-v1-code-verifier` | Existing SDK session/default JSON encoder-decoder and PKCE keys. No password storage.                                                                                                                                                           |
+
+After restart an activated marker restricts even an otherwise confirmed session:
+online `/user` validation may restore only identity-free `.passwordRecovery`.
+Missing session stays restricted for callback retry; network/invalid-session/update
+errors never permit offline recovery/Home. Exchange errors retain needed verifier;
+update errors retain the marker and restricted session. Storage errors lock the
+client nondestructively for `retrySecureStorage()`. Explicit logout deletes the
+recovery marker **last**, after session/verifier/confirmation cleanup succeeds.
+Generation checks and revoked SDK leases reject late exchange/update responses.
+
+### Validation for this password change
+
+Local SDK source APIs were read before editing. Added injected fake-fetch test
+sources for password grant, both signup modes, resend, reset destination, marker
+before exchange, restart/offline gating, retry/update/logout and late responses,
+Google exclusion and sanitized errors. Editor diagnostics reported no errors in
+changed Swift files; this is **not compiler or runtime verification**. No commands,
+builds, tests, app launches, network calls or secret reads were performed.
+
+---
+
+## Historical email/Google integration notes (superseded where above differs)
 
 Source-only, using the installed **Auth** product from supabase-swift **2.55.4**.
 The app-wide `PinTheoryAccountSession` now constructs the service and gates Home through the email/Google UI. Cloud golf-record sync, account deletion and public-release compliance remain incomplete. Apple methods are unexposed.
@@ -11,7 +88,7 @@ Current integration supplies URL-scheme registration/routing, browser presentati
   and `PINTHEORY_SUPABASE_PUBLISHABLE_KEY`. Missing/blank either value returns
   `nil` (disabled); malformed nonblank configuration throws a sanitized error.
   Only an HTTPS root URL and `sb_publishable_…` key are supported. No legacy JWT
-  API keys or secrets. The redirect is always `pintheory://auth/callback`.
+  API keys or secrets. The ordinary redirect is always `golfpintheory://auth/callback`.
 - No configuration, plist, URL scheme, entitlement, provider console or project
   changes are supplied. Configure those separately before any live use.
 - Create one main-actor service per project, explicitly call `restore()`, and

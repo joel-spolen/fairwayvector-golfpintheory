@@ -76,7 +76,12 @@ final class PinTheoryAccountSession: ObservableObject {
         await restoreTask?.value
         guard let auth, !auth.isBusy, let url = pendingCallback else { return }
         pendingCallback = nil
-        guard auth.state == .signedOut else { return }
+        if PinTheoryAuthConfiguration.isPasswordResetCallback(url) {
+            // Recovery must detach any open account, including in other windows.
+            accountData = nil
+        } else {
+            guard auth.state == .signedOut || auth.state == .passwordRecovery else { return }
+        }
         do { try await auth.handleCallback(url) }
         catch { /* Never display callback URLs or raw server errors. */ }
     }
@@ -104,8 +109,9 @@ final class PinTheoryAccountSession: ObservableObject {
                 accountData = nil
                 message = "Your account storage could not be opened. Existing records have been preserved. Retry or sign out."
             }
-        case .signedOut, .restoring:
+        case .signedOut, .restoring, .passwordRecovery:
             accountData = nil
+            message = nil
         }
     }
 }
