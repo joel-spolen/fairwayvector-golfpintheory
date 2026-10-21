@@ -47,10 +47,12 @@ struct PureLinePageHeader: View {
                 .font(.largeTitle.weight(.semibold)).tracking(-0.6)
                 .foregroundStyle(PureLineStyle.ink)
                 .fixedSize(horizontal: false, vertical: true)
-            Text(subtitle)
-                .font(.subheadline)
-                .foregroundStyle(PureLineStyle.muted)
-                .fixedSize(horizontal: false, vertical: true)
+            if !subtitle.isEmpty {
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(PureLineStyle.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityElement(children: .combine)

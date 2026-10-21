@@ -3,4 +3,5 @@
 // Never put service-role keys, provider secrets, or session tokens here.
 PINTHEORY_SUPABASE_URL =
 PINTHEORY_SUPABASE_PUBLISHABLE_KEY =
+GOLFPINTHEORY_ACCOUNT_DELETION_ENABLED = NO
 #include? "Accounts.local.xcconfig"

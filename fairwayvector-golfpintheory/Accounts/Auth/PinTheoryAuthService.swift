@@ -6,9 +6,29 @@ import Foundation
 import Security
 import Network
 import OSLog
+import SwiftUI
+
+nonisolated private final class PinTheoryNoRedirectDelegate: NSObject, URLSessionTaskDelegate {
+    func urlSession(_ session: URLSession, task: URLSessionTask,
+                    willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest,
+                    completionHandler: @escaping (URLRequest?) -> Void) {
+        completionHandler(nil)
+    }
+}
 
 nonisolated struct PinTheoryAuthIdentity: Equatable, Sendable {
     let userID: UUID
+}
+
+/// Verified profile details safe for display; never contains session credentials.
+nonisolated struct PinTheoryAccountDetails: Equatable, Sendable {
+    let email: String?
+    let pendingEmail: String?
+    let providers: [String]
+    let firstName: String
+    let lastName: String
+    let displayName: String
+    var supportsEmailManagement: Bool { providers.contains("email") }
 }
 
 nonisolated enum PinTheoryAuthState: Equatable, Sendable {
@@ -30,20 +50,35 @@ final class PinTheoryAuthService: ObservableObject {
     @Published private(set) var lastError: PinTheoryAuthError?
     @Published private(set) var lastNetworkDiagnostic: String?
     private let networkMonitor = NWPathMonitor()
+    private static let noRedirectSession = URLSession(configuration: .ephemeral,
+        delegate: PinTheoryNoRedirectDelegate(), delegateQueue: nil)
 
     private let configuration: PinTheoryAuthConfiguration
     private let storage: any AuthLocalStorage
     private let fetch: AuthClient.FetchHandler
+    private let deletionFetch: AuthClient.FetchHandler
+    private let deletionEndpointAvailable: Bool
     private var client: AuthClient?
     private var lease: PinTheoryAuthStorageLease?
     private var generation: UInt64 = 0
     private var appleNonce: String?
 
+    private struct VerifiedAccountContext {
+        let user: User
+        let providers: [String]
+    }
+
+    var canRequestAccountDeletion: Bool { deletionEndpointAvailable }
+
     init(configuration: PinTheoryAuthConfiguration, storage: (any AuthLocalStorage)? = nil,
-         fetch: @escaping AuthClient.FetchHandler = { try await URLSession.shared.data(for: $0) }) {
+         fetch: @escaping AuthClient.FetchHandler = { try await URLSession.shared.data(for: $0) },
+         deletionFetch: AuthClient.FetchHandler? = nil,
+         deletionEndpointAvailable: Bool = Bundle.main.object(forInfoDictionaryKey: "GOLFPINTHEORY_ACCOUNT_DELETION_ENABLED") as? String == "YES") {
         self.configuration = configuration
         self.storage = storage ?? PinTheoryKeychainAuthStorage(configuration: configuration)
         self.fetch = fetch
+        self.deletionFetch = deletionFetch ?? { try await Self.noRedirectSession.data(for: $0) }
+        self.deletionEndpointAvailable = deletionEndpointAvailable
         networkMonitor.start(queue: DispatchQueue(label: "com.fairwayvector.auth.network-observation"))
         installClient()
     }
@@ -498,11 +533,232 @@ final class PinTheoryAuthService: ObservableObject {
             let user = try await client.update(user: UserAttributes(password: password))
             try check(ticket)
             guard user.id == session.user.id else { throw PinTheoryAuthError.authenticationRequired }
-        } catch { throw fail(Self.passwordError(error), ticket: ticket) }
+        } catch {
+            let mapped = (error as? PinTheoryAuthError) == .recentAuthenticationRequired
+                ? PinTheoryAuthError.recentAuthenticationRequired
+                : Self.passwordError(error)
+            throw fail(mapped, ticket: ticket)
+        }
         // Outside the operation catch: logout advances generation, and storage
         // failures must surface as storage failures, not stale-ticket cancellation.
         // Never confirm/open Home. This is the existing LOCAL logout API.
         try signOut()
+    }
+
+    /// Returns server-verified profile and provider data for the currently authenticated UID.
+    /// Offline-cached identity is deliberately insufficient for account management.
+    func accountDetails() async throws -> PinTheoryAccountDetails {
+        let (ticket, client) = try begin()
+        defer { finish(ticket) }
+        do {
+            let context = try await verifiedAccountContext(ticket: ticket, client: client)
+            return PinTheoryAccountDetails(email: context.user.email, pendingEmail: context.user.newEmail,
+                providers: context.providers,
+                firstName: Self.metadataString("first_name", in: context.user),
+                lastName: Self.metadataString("last_name", in: context.user),
+                displayName: Self.metadataString("display_name", in: context.user))
+        } catch {
+            throw recordManagementFailure(error, ticket: ticket, fallback: .authRequired)
+        }
+    }
+
+    /// Stores an optional user-facing name in Supabase Auth user metadata.
+    /// `display_name` is the display value; first/last are retained separately.
+    /// This metadata is not an authorization source.
+    func updateDisplayName(firstName: String, lastName: String) async throws -> PinTheoryAccountDetails {
+        let first = Self.normalizedName(firstName)
+        let last = Self.normalizedName(lastName)
+        guard first.count <= 80, last.count <= 80 else { throw PinTheoryAuthError.invalidDisplayName }
+        let displayName = [first, last].filter { !$0.isEmpty }.joined(separator: " ")
+        let (ticket, client) = try begin()
+        defer { finish(ticket) }
+        do {
+            let context = try await verifiedAccountContext(ticket: ticket, client: client)
+            guard context.providers.contains("email") else { throw PinTheoryAuthError.emailIdentityRequired }
+            let metadata: [String: AnyJSON] = [
+                "first_name": first.isEmpty ? .null : .string(first),
+                "last_name": last.isEmpty ? .null : .string(last),
+                "display_name": displayName.isEmpty ? .null : .string(displayName),
+            ]
+            let updated = try await client.update(user: UserAttributes(data: metadata))
+            try check(ticket)
+            guard updated.id == context.user.id,
+                  let current = client.currentSession, current.user.id == context.user.id else {
+                throw PinTheoryAuthError.authenticationRequired
+            }
+            let token = try await confirm(current, client: client, ticket: ticket,
+                                          expectedUserID: context.user.id)
+            let verified = try await client.user(jwt: token)
+            try check(ticket)
+            guard verified.id == context.user.id,
+                  Self.metadataString("first_name", in: verified) == first,
+                  Self.metadataString("last_name", in: verified) == last,
+                  Self.metadataString("display_name", in: verified) == displayName else {
+                throw PinTheoryAuthError.displayNameUpdateUnavailable
+            }
+            return PinTheoryAccountDetails(email: verified.email, pendingEmail: verified.newEmail,
+                providers: context.providers, firstName: first, lastName: last,
+                displayName: displayName)
+        } catch {
+            throw recordManagementFailure(error, ticket: ticket, fallback: .displayNameUpdateUnavailable)
+        }
+    }
+
+    private static func metadataString(_ key: String, in user: User) -> String {
+        guard case .string(let value)? = user.userMetadata[key] else { return "" }
+        return value
+    }
+
+    private static func normalizedName(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Re-authenticates the email identity before changing its password. Both authentication
+    /// and update responses must remain bound to the same confirmed UID.
+    func changePassword(currentPassword: String, newPassword: String) async throws {
+        let (ticket, client) = try begin()
+        defer { finish(ticket) }
+        do {
+            let context = try await verifiedAccountContext(ticket: ticket, client: client)
+            guard context.providers.contains("email"), let email = context.user.email else {
+                throw PinTheoryAuthError.emailIdentityRequired
+            }
+            _ = try await reauthenticateEmailPassword(client: client, email: email,
+                password: currentPassword, expectedUserID: context.user.id, ticket: ticket)
+            try check(ticket)
+            // Password grant just refreshed this same account's session; Supabase
+            // applies its configured recent-auth policy to the following update.
+            let updated = try await client.update(user: UserAttributes(password: newPassword))
+            try check(ticket)
+            guard updated.id == context.user.id,
+                  let current = client.currentSession, current.user.id == context.user.id else {
+                throw PinTheoryAuthError.authenticationRequired
+            }
+            _ = try await confirm(current, client: client, ticket: ticket, expectedUserID: context.user.id)
+        } catch {
+            throw recordManagementFailure(error, ticket: ticket, fallback: .accountPasswordUpdateUnavailable)
+        }
+    }
+
+    /// Deletes only after a fresh email/password grant. OAuth identities have no password
+    /// available here and require provider reauthentication, which is intentionally unsupported.
+    func deleteAccount(emailPassword: String) async throws {
+        guard deletionEndpointAvailable else { throw PinTheoryAuthError.accountDeletionUnavailable }
+        let (ticket, client) = try begin()
+        defer { finish(ticket) }
+        do {
+            let context = try await verifiedAccountContext(ticket: ticket, client: client)
+            guard context.providers.contains("email"), let email = context.user.email else {
+                throw PinTheoryAuthError.accountDeletionReauthenticationRequired
+            }
+            let fresh: Session
+            do { fresh = try await client.signIn(email: email, password: emailPassword) }
+            catch { throw PinTheoryAuthError.recentAuthenticationRequired }
+            try check(ticket)
+            guard fresh.user.id == context.user.id,
+                  let current = client.currentSession, current.user.id == context.user.id,
+                  current.accessToken == fresh.accessToken else {
+                throw PinTheoryAuthError.authenticationRequired
+            }
+                        let verifiedSession = try await confirm(fresh, client: client, ticket: ticket,
+                                                                                                        expectedUserID: context.user.id)
+                        guard verifiedSession == fresh.accessToken else { throw PinTheoryAuthError.authenticationRequired }
+            let reverified = try await client.user(jwt: fresh.accessToken)
+            try check(ticket)
+            guard reverified.id == context.user.id else { throw PinTheoryAuthError.authenticationRequired }
+            let response = try await sendAccountDeletionRequest(accessToken: fresh.accessToken)
+            try check(ticket)
+            guard response.statusCode == 200,
+                  let body = try JSONSerialization.jsonObject(with: response.data) as? [String: Any],
+                  body["status"] as? String == "deleted" else {
+                if response.statusCode == 401 { throw PinTheoryAuthError.authRequired }
+                if response.statusCode == 403 { throw PinTheoryAuthError.recentAuthenticationRequired }
+                throw PinTheoryAuthError.accountDeletionUnavailable
+            }
+        } catch {
+            throw recordManagementFailure(error, ticket: ticket, fallback: .accountDeletionUnavailable)
+        }
+        // Server has confirmed deletion. Clear local credentials only now; never claim
+        // completion for the backend's retryable deletion_pending response.
+        try signOut()
+    }
+
+    private func verifiedAccountContext(ticket: UInt64? = nil, client: AuthClient? = nil) async throws -> VerifiedAccountContext {
+        let client = client ?? self.client
+        guard let client else { throw PinTheoryAuthError.authenticationRequired }
+        if let ticket { try check(ticket) }
+        guard case .authenticated(let identity) = state,
+              try !hasMarker(PinTheoryAuthStorageLease.recoveryKey) else {
+            throw PinTheoryAuthError.authenticationRequired
+        }
+        let session = try await client.session
+        let token = try await confirm(session, client: client, ticket: ticket ?? generation,
+                                      expectedUserID: identity.userID)
+        guard token == session.accessToken else { throw PinTheoryAuthError.authenticationRequired }
+        let user = try await client.user(jwt: token)
+        let identities = try await client.userIdentities()
+        if let ticket { try check(ticket) }
+        guard user.id == identity.userID,
+              identities.allSatisfy({ $0.userId == identity.userID }),
+              let current = client.currentSession, current.user.id == identity.userID,
+              current.accessToken == token else { throw PinTheoryAuthError.authenticationRequired }
+        let providers = Set(identities.map(\.provider)).sorted()
+        return VerifiedAccountContext(user: user, providers: providers)
+    }
+
+    private func reauthenticateEmailPassword(client: AuthClient, email: String, password: String,
+                                             expectedUserID: UUID, ticket: UInt64) async throws -> Session {
+        let fresh: Session
+        do { fresh = try await client.signIn(email: email, password: password) }
+        catch { throw PinTheoryAuthError.recentAuthenticationRequired }
+        try check(ticket)
+        guard fresh.user.id == expectedUserID,
+              let current = client.currentSession, current.user.id == expectedUserID,
+              current.accessToken == fresh.accessToken else {
+            throw PinTheoryAuthError.authenticationRequired
+        }
+        return fresh
+    }
+
+    private func sendAccountDeletionRequest(accessToken: String) async throws -> (data: Data, statusCode: Int) {
+        let url = configuration.accountDeletionURL
+        guard let parts = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              parts.scheme == "https", parts.host == configuration.projectURL.host,
+              parts.port == nil, parts.percentEncodedPath == "/functions/v1/delete-account",
+              parts.query == nil, parts.fragment == nil else {
+            throw PinTheoryAuthError.accountDeletionUnavailable
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(configuration.publishableKey, forHTTPHeaderField: "apikey")
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = Data("{}".utf8)
+        let (data, response) = try await deletionFetch(request)
+        guard let http = response as? HTTPURLResponse, http.url == url,
+              (200...299).contains(http.statusCode) || (400...499).contains(http.statusCode)
+        else { throw PinTheoryAuthError.accountDeletionUnavailable }
+        return (data, http.statusCode)
+    }
+
+    private func recordManagementFailure(_ error: Error, ticket: UInt64,
+                                         fallback: PinTheoryAuthError) -> PinTheoryAuthError {
+        guard ticket == generation else { return .cancelled }
+        let sanitized: PinTheoryAuthError
+        if let known = error as? PinTheoryAuthError { sanitized = known }
+        else if let urlError = error as? URLError { sanitized = .networkError(urlError) }
+        else if let authError = error as? AuthError,
+                case let .api(_, code, _, response) = authError {
+            if code.rawValue == "weak_password" || code.rawValue == "same_password" {
+                sanitized = .weakPassword
+            } else if response.statusCode == 401 || response.statusCode == 403 {
+                sanitized = .recentAuthenticationRequired
+            } else if response.statusCode == 429 {
+                sanitized = .emailRateLimited
+            } else { sanitized = fallback }
+        } else { sanitized = fallback }
+        lastError = sanitized
+        return sanitized
     }
 
     private static func passwordError(_ error: Error) -> Error {

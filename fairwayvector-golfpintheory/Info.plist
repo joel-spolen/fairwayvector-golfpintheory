@@ -39,6 +39,8 @@
 	<string>$(PINTHEORY_SUPABASE_URL)</string>
 	<key>PINTHEORY_SUPABASE_PUBLISHABLE_KEY</key>
 	<string>$(PINTHEORY_SUPABASE_PUBLISHABLE_KEY)</string>
+	<key>GOLFPINTHEORY_ACCOUNT_DELETION_ENABLED</key>
+	<string>$(GOLFPINTHEORY_ACCOUNT_DELETION_ENABLED)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>

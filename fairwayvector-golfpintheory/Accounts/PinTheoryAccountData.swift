@@ -13,10 +13,31 @@ final class PinTheoryAccountData: Identifiable {
     let modelContainer: ModelContainer
     let roundsURL: URL
 
+    /// Permanently erases this account's saved rounds, active draft, SwiftData
+    /// records and account-scoped preferences. Does not touch device preferences
+    /// or any other account's directory.
+    func eraseLocalContent() throws {
+        let context = ModelContext(modelContainer)
+        do {
+            for profile in try context.fetch(FetchDescriptor<PlayerProfile>()) { context.delete(profile) }
+            for club in try context.fetch(FetchDescriptor<GolfClub>()) { context.delete(club) }
+            for course in try context.fetch(FetchDescriptor<GolfCourse>()) { context.delete(course) }
+            for tee in try context.fetch(FetchDescriptor<TeeSet>()) { context.delete(tee) }
+            for round in try context.fetch(FetchDescriptor<GolfRound>()) { context.delete(round) }
+            try context.save()
+            defaults.removePersistentDomain(forName: defaultsSuiteName)
+            guard defaults.synchronize() else { throw StorageError.defaultsWriteFailed }
+            if FileManager.default.fileExists(atPath: directory.path) {
+                try FileManager.default.removeItem(at: directory)
+            }
+        } catch { throw StorageError.localEraseFailed }
+    }
+
     enum StorageError: Error {
         case invalidProjectHost
         case defaultsUnavailable
         case defaultsWriteFailed
+        case localEraseFailed
     }
 
     init(projectHost: String, userID: UUID, root: URL? = nil) throws {

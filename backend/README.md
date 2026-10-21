@@ -11,10 +11,16 @@ network requests, builds, or test execution were performed for that fix.
 
 - [Migration](migrations/202610190001_sync_foundation.sql): transactional, private
   storage + RLS + authenticated-only public RPC entry points.
+- [Account deletion migration](migrations/202610210001_account_deletion.sql):
+  forward-only recent-auth block, serialized purge and service-only purge bridge.
+- [Delete-account Edge Function](../supabase/functions/delete-account/index.ts):
+  verifies the caller, blocks sync, purges sync history and removes the Auth user.
 - [Wire contract](CONTRACT.md): exact arguments, envelopes, conflicts, cursor rules,
   and limitations; authoritative for independent iOS/Android integration.
 - [Security regression](tests/security_regression.sql): disposable fixture test in
   one rollback-contained transaction, including two UIDs and anonymous access.
+- [Deletion regression](tests/account_deletion_regression.sql): unexecuted staging
+  source for recent-auth gating and idempotent service-role purge.
 - [Concurrency schedule](tests/concurrency_regression.sql): manually selected
   two-session sections, plus required race variants; NOT a one-shot test file.
 
@@ -39,28 +45,32 @@ network requests, builds, or test execution were performed for that fix.
 4. Review SQL and this contract with the database/security owner. Prerequisites:
    Supabase PostgreSQL with `auth.users`, `auth.uid()`, roles `anon`,
    `authenticated`, `service_role`, and a trusted migration owner able to create
-   schemas/functions/policies and bypass table RLS. Function ownership must remain
-   that trusted non-client role. No additional extensions are required.
-5. Manually execute the migration file in its entirety in staging using approved
-   SQL tooling as the migration owner. It is a single BEGIN/COMMIT transaction;
-   failures must be investigated, not partially continued. The file is deliberately
-   not rerunnable (`IF NOT EXISTS` must not conceal schema drift). Record its
+   schemas/functions/policies and bypass table RLS. The deletion migration assumes
+   that trusted role is `postgres` and explicitly assigns its SECURITY DEFINER and
+   trigger functions to it; do not weaken that ownership check to fit another role.
+   No additional extensions are required.
+5. Manually execute migrations in timestamp order in staging using approved SQL
+   tooling: first `202610190001_sync_foundation.sql`, then
+   `202610210001_account_deletion.sql`. Each is a single BEGIN/COMMIT transaction;
+   failures must be investigated, not partially continued. They are deliberately
+   not rerunnable (`IF NOT EXISTS` must not conceal schema drift). Record each
    checksum, operator, project, database version and execution outcome in the
-   deployment ledger. Do not claim it has been applied based on source existence.
+   deployment ledger. Do not claim they have been applied based on source existence.
 6. Expose only the usual `public` API schema; never add `pintheory_sync` to exposed
    schemas. Ensure `authenticated` has ordinary `public` schema usage. Check
-   actual function ACLs: only authenticated may execute these two RPCs (trusted
-   owner/superuser inherently privileged). API roles, including service_role, have
-   no direct private table/schema privileges. Confirm project-specific default
-   grants haven't created an unintended alternate access path. Keep Realtime off
-   for private tables; no Realtime subscription is required for correctness.
+   actual function ACLs: authenticated may execute the two sync RPCs and the begin
+   deletion RPC; service_role alone may execute the purge bridge. API roles have no
+   direct private table/schema privileges. Confirm project-specific default grants
+   haven't created an unintended alternate access path. Keep Realtime off for
+   private tables; no Realtime subscription is required for correctness.
 7. Only after separate authorization, manually execute the security regression in
    disposable staging with stop-on-first-error and PL/pgSQL assertions enabled.
-   It rolls back fixtures; never run against production. Run the concurrency file
-   as labelled selected sections in separate SQL sessions; it persists a test UID
-   and must use a disposable project. Run every documented race variant, not only
-   the first one. Also test RPCs through real Supabase Auth/PostgREST user JWTs;
-   SQL role/claim simulation is not provider/JWT validation.
+   The security and account-deletion files roll back fixtures; never run against
+   production. Run the concurrency file as labelled selected sections in separate
+   SQL sessions; it persists a test UID and must use a disposable project. Run
+   every documented race variant, not only the first one. Also test RPCs through
+   real Supabase Auth/PostgREST user JWTs; SQL role/claim simulation is not
+   provider/JWT validation.
 8. Review results, limits and restore drill before separate production approval.
    Promote the identical reviewed migration manually, record the ledger entry,
    verify ACL/RLS/RPC behavior, and monitor failures/storage. No destructive down
@@ -70,19 +80,50 @@ network requests, builds, or test execution were performed for that fix.
 
 ## Security / concurrency design review
 
+### Account deletion source workflow
+
+Deploy the SQL migrations above before deploying
+`supabase/functions/delete-account`. Configure these Edge Function secrets in the
+Supabase project (never in the app or repository): `SUPABASE_URL`,
+`SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. `CORS_ALLOWED_ORIGIN` is an
+optional non-secret exact browser-app origin; native app requests normally omit
+`Origin`. When an `Origin` is present, only that one configured origin is allowed.
+
+The app sends `POST https://<project-ref>.supabase.co/functions/v1/delete-account`
+with `Authorization: Bearer <current access token>` and its normal publishable
+`apikey` header. The function verifies that token through Auth, calls
+`pintheory_begin_account_deletion` using the user JWT, invokes the service-only
+purge bridge, then removes the Auth identity. The first transition requires JWT
+`iat` no more than 10 minutes old; replays while already deleting are idempotent.
+Reauthenticate in-app if the RPC returns a recent-authentication error. A 503
+`deletion_pending` means leave the account blocked and retry with a still-valid
+session; do not tell the user deletion completed until HTTP 200. The app still
+needs to clear its local account data/session after success.
+
+This source flow erases sync records, immutable events and receipts before Auth
+identity removal; Auth deletion then removes the retained deleting account row by
+its existing FK. It does not revoke third-party provider grants, erase backups,
+or define backup retention. A failure between successful Auth deletion and the
+client receiving its response may require operator recovery: the already-deleted
+user can no longer reauthenticate to retry. These and staging API/retry checks are
+release gates; no SQL or Edge deployment has been performed.
+
 - UID derives from `auth.uid()` only. There is no owner argument or owner-changing
   path. All data access predicates include that UID; schema-qualified references
   and fixed `search_path = pg_catalog` protect SECURITY DEFINER RPCs.
 - Private tables enable RLS with UID SELECT policies but grant no direct access.
-  No client INSERT/UPDATE/DELETE policies exist. API function PUBLIC/anon/service
-  grants are explicitly revoked; only authenticated EXECUTE is granted.
+  No client INSERT/UPDATE/DELETE policies exist. Public/anon execution is revoked;
+  authenticated can execute sync/begin-deletion RPCs and service_role alone can
+  execute the purge bridge.
 - One locked account row serializes every mutation, receipt replay and sequence
   allocation for the UID. Records, event, sequence and receipt commit atomically.
   Concurrent different users do not share that lock. Revision mismatch and source
   uniqueness conflict commit receipts without changing records or sequences.
 - History snapshots and full request/response receipts reject UPDATE/DELETE using
-  triggers, even for ordinary owner DML. API roles cannot TRUNCATE. This is not
-  tamper-proof against a database superuser capable of altering/disabling triggers.
+  triggers. The forward deletion migration permits only transaction-local matching
+  DELETEs while `current_user` is their fixed `postgres` function owner. API roles
+  cannot TRUNCATE. This is not tamper-proof against a database superuser capable
+  of altering/disabling triggers.
 - High-water-mark pagination reads immutable bounded snapshots, not mutable rows
   ordered by timestamps. Default READ COMMITTED is assumed. Higher-isolation
   serialization failures need whole-request retries with the same mutation ID.
@@ -114,16 +155,15 @@ network requests, builds, or test execution were performed for that fix.
    No automatic adoption of old unowned local stores; quarantine pending explicit
    user action. First login requires connectivity; offline access after prior
    authentication is a client workflow, not proof an expired JWT is valid.
-4. **Deletion is a release blocker, not a fake endpoint.** A real privileged,
-   recent-authenticated resumable service must first upsert/commit the blocking
-   account state, revoke sessions/provider grants (Apple included where required),
-   then erase user data/Auth identity with auditable retry semantics and disclosed
-   backup retention. History immutability triggers deliberately block cascading
-   deletion once history exists: even `auth.users` deletion will fail until a
-   reviewed narrowly privileged purge mechanism is designed. Do not globally
-   disable triggers or advertise delete-account completion. Keep account state
-   blocked throughout failures. Do not remove state while an auth UID can still
-   authenticate and lazily reopen it. No client state-reset or unblock RPC exists.
+4. **Deletion source exists, but is not release-ready/deployed.** The forward
+   migration and Edge Function block sync, require a recent JWT `iat` for the
+   initial transition, purge immutable history through a narrowly guarded
+   service-only path, then delete the Auth identity. Provider-grant revocation,
+   backup erasure/retention, local app cleanup, actual staging retry/API validation
+   and recovery after an ambiguous successful Auth deletion remain unresolved.
+   Do not describe deletion as deployed or verified until those gates are closed.
+   Account state remains deleting on retryable failures; there is no client unblock
+   RPC.
 5. Events, receipts (including losing payloads), and tombstones are retained
    indefinitely, with cost/privacy implications. No GC/compaction or full-rebootstrap
    watermark protocol exists. Add reviewed retention and account erasure handling

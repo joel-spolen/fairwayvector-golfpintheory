@@ -6,6 +6,10 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
     case emailRateLimited, emailDeliveryUnavailable, emailProviderDisabled
     case emailRequestRejected, networkUnavailable, accountServiceUnauthorized, captchaRequired
     case invalidCredentials, weakPassword, emailNotConfirmed
+    case recentAuthenticationRequired, accountDeletionUnavailable, authRequired
+    case emailIdentityRequired, accountDeletionReauthenticationRequired
+    case accountPasswordUpdateUnavailable
+    case invalidDisplayName, displayNameUpdateUnavailable
     /// Numeric URL-loading code only, never NSError userInfo or failing URL.
     case connectionFailure(Int)
 
@@ -28,6 +32,14 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
         case .invalidCredentials: "The email or password is incorrect. Try again or reset your password."
         case .weakPassword: "Choose a stronger password that meets the account service's requirements."
         case .emailNotConfirmed: "Confirm your email before signing in. Check your inbox or request another confirmation email."
+        case .recentAuthenticationRequired: "Your password could not be verified. Check it and try again."
+        case .accountDeletionUnavailable: "Account deletion could not be completed. Please try again later."
+        case .authRequired: "Your account session is no longer valid. Sign in again and retry."
+        case .accountDeletionReauthenticationRequired: "For your security, verify your email password before deleting this account."
+        case .emailIdentityRequired: "This action is available only for accounts with an email sign-in method."
+        case .accountPasswordUpdateUnavailable: "The password could not be updated. Please try again later."
+        case .invalidDisplayName: "Names must be 80 characters or fewer."
+        case .displayNameUpdateUnavailable: "Your display name could not be saved. Please try again."
         }
     }
 
@@ -73,6 +85,11 @@ nonisolated struct PinTheoryAuthConfiguration: Sendable {
     static let passwordResetURL = URL(string: "golfpintheory://auth/reset-password")!
     let projectURL: URL
     let publishableKey: String
+
+    var accountDeletionURL: URL {
+        projectURL.appendingPathComponent("functions").appendingPathComponent("v1")
+            .appendingPathComponent("delete-account")
+    }
 
     init(projectURL: URL, publishableKey: String) throws {
         guard let parts = URLComponents(url: projectURL, resolvingAgainstBaseURL: false),

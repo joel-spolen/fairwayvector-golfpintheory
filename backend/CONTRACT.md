@@ -6,10 +6,11 @@ production DTO approval, or shipped authentication is implied.
 ## Transport and identity
 
 Supabase PostgREST authenticated POST RPCs in `public`:
-`pintheory_sync_mutate` and `pintheory_sync_changes`. Ownership comes exclusively
-from verified `auth.uid()`, never a request owner, email, or payload field. Requests
-require a user session JWT; a publishable project key alone is insufficient.
-The private `pintheory_sync` schema must NOT be exposed through the Data API.
+`pintheory_sync_mutate`, `pintheory_sync_changes`, and
+`pintheory_begin_account_deletion`. Ownership comes exclusively from verified
+`auth.uid()`, never a request owner, email, or payload field. Requests require a
+user session JWT; a publishable project key alone is insufficient. The private
+`pintheory_sync` schema must NOT be exposed through the Data API.
 
 UUIDs are canonical UUID strings. The client generates stable `record_id` and
 `mutation_id` UUIDs and persists them before sending. A UUID identifies one record
@@ -188,10 +189,35 @@ retention watermark, compaction, or expired-cursor recovery protocol yet.
 - `40001`/`40P01`: retry whole transaction with identical mutation ID/request.
 - Storage/constraint/transport failures: do not mark synced; retry safely.
 
-The lazy account insert requires an extant `auth.users` UID. Trusted control-plane
-code must INSERT the account as blocked/deleting if absent, or UPDATE it if
-present, then commit before promising writes are blocked. Its row lock serializes
-with mutations: an already-running write may commit before the flag, never after
-the flag has won the lock and committed. State cannot be changed by API roles.
-No account deletion RPC or endpoint is provided. Read requests already in flight
-can finish across a block; there is no retroactive response revocation.
+The lazy account insert requires an extant `auth.users` UID. The forward-only
+`202610210001_account_deletion.sql` migration adds the authenticated
+`pintheory_begin_account_deletion()` RPC and the
+`supabase/functions/delete-account` Edge Function. The begin RPC locks the same
+account row as mutations and requires JWT `iat` within the preceding 10 minutes
+only for `active` -> `deleting`; an already-deleting state is idempotent without
+a fresh `iat`. Pulls hold a shared row lock through their read, so transition and
+purge serialize with in-flight sync RPCs. Once the transition commits, sync reads
+and writes fail closed.
+
+The private `pintheory_sync.purge_account_data(uuid)` function requires
+`auth.role() = 'service_role'`, a matching account in `deleting` state, and locks
+that account row. It removes records, events and receipts while retaining the
+deleting account row. Immutable-history triggers permit only DELETE when a
+transaction-local `pintheory.purge_uid` matches `OLD.user_id` and `current_user`
+is the fixed `postgres` function owner. The schema remains unexposed; the narrow
+`public.pintheory_purge_account(uuid)` PostgREST bridge is executable only by
+`service_role` and invokes that private function as `postgres`.
+
+The Edge Function verifies the caller's access token, invokes the begin RPC with
+that user JWT, calls the service-role purge bridge, then deletes the Auth identity.
+Deploy the base migration first, then the deletion migration, then the function.
+Its server-side environment requires `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and
+`SUPABASE_SERVICE_ROLE_KEY`; optional `CORS_ALLOWED_ORIGIN` permits one exact
+browser origin. Do not put the service-role key in the app. HTTP 200 means the
+source workflow completed; a 503 means deletion remains pending and the account
+must stay blocked while a still-valid session retries.
+
+Provider-grant revocation, backup erasure/retention, client local-data clearing,
+and recovery if Auth deletion succeeds but its response is lost are not solved by
+this source workflow. Read requests already in flight before the transition can
+finish; there is no retroactive response revocation.
