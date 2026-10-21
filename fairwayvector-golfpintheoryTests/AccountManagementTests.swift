@@ -78,25 +78,27 @@ struct AccountManagementTests {
         #expect((await transport.paths).contains("PUT /auth/v1/user"))
     }
 
-    @Test func oauthOnlyAccountsCannotChangePasswordOrDelete() async throws {
+    @Test func oauthOnlyAccountsCannotChangePasswordButCanDelete() async throws {
         let transport = AccountManagementFetch()
         await transport.setProviders(["google"])
         let auth = try service(transport)
         try await auth.signInWithPassword(email: AccountManagementWire.email, password: "fixture-password")
         do { try await auth.changePassword(currentPassword: "x", newPassword: "y"); Issue.record("Google password change accepted") }
         catch { #expect(error as? PinTheoryAuthError == .emailIdentityRequired) }
-        do { try await auth.deleteAccount(emailPassword: "x"); Issue.record("Google deletion accepted") }
-        catch { #expect(error as? PinTheoryAuthError == .accountDeletionReauthenticationRequired) }
-        #expect(!(await transport.paths).contains("POST /functions/v1/delete-account"))
+        try await auth.deleteAccount()
+        #expect(auth.state == .signedOut)
+        #expect((await transport.paths).contains("POST /functions/v1/delete-account"))
     }
 
-    @Test func deletionReauthenticatesThenUsesExactEndpointAndSignsOutOnlyOnAcknowledgment() async throws {
+    @Test func deletionRefreshesSessionThenUsesExactEndpointWithoutPassword() async throws {
         let transport = AccountManagementFetch()
         let auth = try service(transport)
         try await auth.signInWithPassword(email: AccountManagementWire.email, password: "fixture-password")
-        try await auth.deleteAccount(emailPassword: "fixture-password")
+        try await auth.deleteAccount()
         #expect(auth.state == .signedOut)
-        #expect(Array((await transport.paths).suffix(2)) == ["POST /auth/v1/token", "POST /functions/v1/delete-account"])
+        let paths = await transport.paths
+        #expect(paths.contains("POST /auth/v1/token"))
+        #expect(paths.last == "POST /functions/v1/delete-account")
         #expect(await transport.deletionRequestWasValid)
     }
 
@@ -106,7 +108,7 @@ struct AccountManagementTests {
         await transport.setDeletionStatus(status)
         let auth = try service(transport)
         try await auth.signInWithPassword(email: AccountManagementWire.email, password: "fixture-password")
-        do { try await auth.deleteAccount(emailPassword: "fixture-password"); Issue.record("Failed deletion was accepted") }
+        do { try await auth.deleteAccount(); Issue.record("Failed deletion was accepted") }
         catch {
             let expected: PinTheoryAuthError = status == 401 ? .authRequired
                 : (status == 403 ? .recentAuthenticationRequired : .accountDeletionUnavailable)
@@ -166,9 +168,14 @@ private actor AccountManagementFetch {
         let status: Int
         switch path {
         case "POST /auth/v1/token":
-            #expect(URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first?.value == "password")
-            #expect(body?["email"] as? String == AccountManagementWire.email)
-            #expect(body?["password"] as? String == "fixture-password")
+            let grantType = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first?.value
+            if grantType == "password" {
+                #expect(body?["email"] as? String == AccountManagementWire.email)
+                #expect(body?["password"] as? String == "fixture-password")
+            } else {
+                #expect(grantType == "refresh_token")
+                #expect(body?["refresh_token"] as? String == "fixture-refresh")
+            }
             data = try AccountManagementWire.session()
             status = 200
         case "GET /auth/v1/user":

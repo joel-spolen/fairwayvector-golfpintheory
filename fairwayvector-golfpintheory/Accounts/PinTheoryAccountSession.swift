@@ -8,6 +8,7 @@ final class PinTheoryAccountSession: ObservableObject {
     let browser = PinTheoryWebAuthenticationBroker()
     @Published private(set) var accountData: PinTheoryAccountData?
     @Published private(set) var message: String?
+    @Published private(set) var accountDeletionNotice: String?
     @Published private(set) var started = false
     private let projectHost: String?
     private var subscription: AnyCancellable?
@@ -96,27 +97,33 @@ final class PinTheoryAccountSession: ObservableObject {
         catch { message = "Secure sign-out could not finish. Please retry before using another account." }
     }
 
-    func deleteAccount(emailPassword: String) async throws {
+    func deleteAccount() async throws {
         guard let auth else { throw PinTheoryAuthError.authenticationRequired }
+        accountDeletionNotice = nil
         let existingData = accountData
-        try await auth.deleteAccount(emailPassword: emailPassword)
+        do { try await auth.deleteAccount() }
+        catch {
+            // The server may have confirmed deletion even if local Keychain cleanup failed.
+            // Continue to the signed-out UI only for that confirmed-success state.
+            guard auth.accountWasDeleted else { throw error }
+        }
         // Backend deletion succeeded. Never restore this identity locally even if
         // device cleanup reports an error; surface that partial-cleanup result.
         accountData = nil
+        var localCleanupFailed = false
         if let existingData {
             do { try existingData.eraseLocalContent() }
-            catch {
-                message = "Your account was deleted, but some records remain on this device. Remove Golf PinTheory from this device or contact support."
-            }
+            catch { localCleanupFailed = true }
         }
-        if auth.state == .signedOut, message == nil {
-            message = "Your Golf PinTheory account was deleted."
-        }
+        accountDeletionNotice = localCleanupFailed
+            ? "Your account was deleted, but some records remain on this device. Remove Golf PinTheory from this device or contact support."
+            : "Your Golf PinTheory account was deleted."
     }
 
     private func apply(_ state: PinTheoryAuthState) {
         switch state {
         case .authenticated(let identity), .offlineCachedIdentity(let identity):
+            if auth?.accountWasDeleted != true { accountDeletionNotice = nil }
             guard let projectHost else { return }
             do {
                 if accountData?.id.hasSuffix(identity.userID.uuidString.lowercased()) == true { return }

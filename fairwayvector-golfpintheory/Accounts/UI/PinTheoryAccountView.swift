@@ -18,8 +18,9 @@ struct PinTheoryAccountView: View {
     @State private var currentPassword = ""
     @State private var newPassword = ""
     @State private var confirmNewPassword = ""
-    @State private var deletionPassword = ""
+    @State private var confirmsAccountDeletion = false
     @State private var isWorking = false
+    @State private var isDeletingAccount = false
     @State private var notice: String?
     @State private var errorMessage: String?
 
@@ -82,6 +83,11 @@ struct PinTheoryAccountView: View {
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
             .toolbar(.hidden, for: .navigationBar)
+        }
+        .overlay {
+            if isDeletingAccount {
+                deletionProgressOverlay
+            }
         }
         .tint(PureLineStyle.accent)
         .task { await loadDetails() }
@@ -234,10 +240,9 @@ struct PinTheoryAccountView: View {
                 .font(.subheadline)
                 .foregroundStyle(PureLineStyle.muted)
             if session.auth?.canRequestAccountDeletion == true {
-                SecureField("Confirm your current password", text: $deletionPassword)
-                    .textContentType(.password)
-                    .textFieldStyle(.roundedBorder)
-                    .accessibilityIdentifier("account-delete-password")
+                Toggle("I want to delete my account", isOn: $confirmsAccountDeletion)
+                    .tint(.red)
+                    .accessibilityIdentifier("account-confirm-delete-toggle")
                 Button(role: .destructive) { confirmingDelete = true } label: {
                     Label("Delete account", systemImage: "trash")
                         .font(.headline)
@@ -247,7 +252,8 @@ struct PinTheoryAccountView: View {
                 }
                     .frame(maxWidth: .infinity, minHeight: 46)
                     .tint(.red)
-                    .disabled(isWorking || deletionPassword.isEmpty)
+                    .opacity(confirmsAccountDeletion ? 1 : 0.45)
+                    .disabled(isWorking || !confirmsAccountDeletion)
                     .accessibilityIdentifier("account-delete")
             } else {
                 Text("Account deletion is not available yet. Contact support if you need your account removed.")
@@ -256,6 +262,38 @@ struct PinTheoryAccountView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .pureLineCard()
+    }
+
+    private var deletionProgressOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.28)
+                .ignoresSafeArea()
+            VStack(spacing: 16) {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(PureLineStyle.accent)
+                Text("Deleting your account…")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                Text("Please keep Golf PinTheory open. This may take a moment.")
+                    .font(.subheadline)
+                    .foregroundStyle(PureLineStyle.muted)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(24)
+            .frame(maxWidth: 320)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20))
+            .overlay {
+                RoundedRectangle(cornerRadius: 20)
+                    .strokeBorder(PureLineStyle.line.opacity(0.7), lineWidth: 1)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("account-deletion-progress")
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .ignoresSafeArea()
+        .transition(.opacity)
+        .zIndex(10)
     }
 
     private func detailRow(_ title: String, value: String) -> some View {
@@ -350,9 +388,12 @@ struct PinTheoryAccountView: View {
 
     @MainActor
     private func deleteAccount() async {
+        guard !isDeletingAccount else { return }
+        guard confirmsAccountDeletion else { return }
+        isDeletingAccount = true
+        defer { isDeletingAccount = false }
         await perform("Your account was deleted.") {
-            try await session.deleteAccount(emailPassword: deletionPassword)
-            deletionPassword = ""
+            try await session.deleteAccount()
         }
     }
 }

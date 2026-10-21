@@ -7,7 +7,7 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
     case emailRequestRejected, networkUnavailable, accountServiceUnauthorized, captchaRequired
     case invalidCredentials, weakPassword, emailNotConfirmed
     case recentAuthenticationRequired, accountDeletionUnavailable, authRequired
-    case emailIdentityRequired, accountDeletionReauthenticationRequired
+    case emailIdentityRequired
     case accountPasswordUpdateUnavailable
     case invalidDisplayName, displayNameUpdateUnavailable
     /// Numeric URL-loading code only, never NSError userInfo or failing URL.
@@ -35,7 +35,6 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
         case .recentAuthenticationRequired: "Your password could not be verified. Check it and try again."
         case .accountDeletionUnavailable: "Account deletion could not be completed. Please try again later."
         case .authRequired: "Your account session is no longer valid. Sign in again and retry."
-        case .accountDeletionReauthenticationRequired: "For your security, verify your email password before deleting this account."
         case .emailIdentityRequired: "This action is available only for accounts with an email sign-in method."
         case .accountPasswordUpdateUnavailable: "The password could not be updated. Please try again later."
         case .invalidDisplayName: "Names must be 80 characters or fewer."

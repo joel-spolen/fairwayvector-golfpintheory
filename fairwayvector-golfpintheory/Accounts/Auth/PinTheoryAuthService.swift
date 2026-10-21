@@ -49,6 +49,7 @@ final class PinTheoryAuthService: ObservableObject {
     @Published private(set) var isBusy = false
     @Published private(set) var lastError: PinTheoryAuthError?
     @Published private(set) var lastNetworkDiagnostic: String?
+    @Published private(set) var accountWasDeleted = false
     private let networkMonitor = NWPathMonitor()
     private static let noRedirectSession = URLSession(configuration: .ephemeral,
         delegate: PinTheoryNoRedirectDelegate(), delegateQueue: nil)
@@ -640,29 +641,25 @@ final class PinTheoryAuthService: ObservableObject {
         }
     }
 
-    /// Deletes only after a fresh email/password grant. OAuth identities have no password
-    /// available here and require provider reauthentication, which is intentionally unsupported.
-    func deleteAccount(emailPassword: String) async throws {
+    /// Refreshes the existing authenticated session to satisfy the backend's
+    /// recent-authentication requirement, then requests deletion. No password is needed.
+    func deleteAccount() async throws {
+        accountWasDeleted = false
         guard deletionEndpointAvailable else { throw PinTheoryAuthError.accountDeletionUnavailable }
         let (ticket, client) = try begin()
         defer { finish(ticket) }
         do {
             let context = try await verifiedAccountContext(ticket: ticket, client: client)
-            guard context.providers.contains("email"), let email = context.user.email else {
-                throw PinTheoryAuthError.accountDeletionReauthenticationRequired
-            }
-            let fresh: Session
-            do { fresh = try await client.signIn(email: email, password: emailPassword) }
-            catch { throw PinTheoryAuthError.recentAuthenticationRequired }
+            let fresh = try await client.refreshSession()
             try check(ticket)
             guard fresh.user.id == context.user.id,
                   let current = client.currentSession, current.user.id == context.user.id,
                   current.accessToken == fresh.accessToken else {
                 throw PinTheoryAuthError.authenticationRequired
             }
-                        let verifiedSession = try await confirm(fresh, client: client, ticket: ticket,
-                                                                                                        expectedUserID: context.user.id)
-                        guard verifiedSession == fresh.accessToken else { throw PinTheoryAuthError.authenticationRequired }
+            let verifiedSession = try await confirm(fresh, client: client, ticket: ticket,
+                                                    expectedUserID: context.user.id)
+            guard verifiedSession == fresh.accessToken else { throw PinTheoryAuthError.authenticationRequired }
             let reverified = try await client.user(jwt: fresh.accessToken)
             try check(ticket)
             guard reverified.id == context.user.id else { throw PinTheoryAuthError.authenticationRequired }
@@ -680,6 +677,7 @@ final class PinTheoryAuthService: ObservableObject {
         }
         // Server has confirmed deletion. Clear local credentials only now; never claim
         // completion for the backend's retryable deletion_pending response.
+        accountWasDeleted = true
         try signOut()
     }
 

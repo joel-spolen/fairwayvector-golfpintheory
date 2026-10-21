@@ -95,7 +95,9 @@ with `Authorization: Bearer <current access token>` and its normal publishable
 `pintheory_begin_account_deletion` using the user JWT, invokes the service-only
 purge bridge, then removes the Auth identity. The first transition requires JWT
 `iat` no more than 10 minutes old; replays while already deleting are idempotent.
-Reauthenticate in-app if the RPC returns a recent-authentication error. A 503
+The iOS client refreshes its current session immediately before deletion to meet
+this requirement; deleting an account does not ask the user to re-enter a password.
+If the RPC still returns a recent-authentication error, retry after signing in again. A 503
 `deletion_pending` means leave the account blocked and retry with a still-valid
 session; do not tell the user deletion completed until HTTP 200. The app still
 needs to clear its local account data/session after success.
