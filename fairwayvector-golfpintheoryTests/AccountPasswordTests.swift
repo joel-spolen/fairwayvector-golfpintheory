@@ -308,6 +308,26 @@ struct AccountPasswordTests {
         #expect(!auth.isBusy)
     }
 
+    @Test func signupServerFailureIsNotReportedAsOffline() async throws {
+        let configuration = try PinTheoryAuthConfiguration(
+            projectURL: URL(string: "https://password.example.test")!,
+            publishableKey: "sb_publishable_password_fixture")
+        let auth = PinTheoryAuthService(configuration: configuration, storage: PasswordMemoryStorage(),
+            fetch: { request in
+                throw AuthError.api(message: "private provider detail", errorCode: .unexpectedFailure,
+                    underlyingData: Data(), underlyingResponse: HTTPURLResponse(
+                        url: request.url!, statusCode: 500, httpVersion: nil, headerFields: nil)!)
+            })
+        do {
+            _ = try await auth.signUpWithPassword(email: "fixture@example.test", password: "fixture-password")
+            Issue.record("Server failure was accepted")
+        } catch {
+            #expect(error as? PinTheoryAuthError == .accountServiceUnavailable)
+            #expect(!error.localizedDescription.contains("-1009"))
+            #expect(!error.localizedDescription.contains("private"))
+        }
+    }
+
     @Test func googleCannotConsumeRecoveryDestination() async throws {
         let storage = PasswordMemoryStorage()
         let transport = PasswordFetch()

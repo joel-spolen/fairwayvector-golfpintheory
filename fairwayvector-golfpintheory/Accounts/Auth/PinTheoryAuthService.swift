@@ -842,7 +842,7 @@ final class PinTheoryAuthService: ObservableObject {
                 default: break
                 }
                 if response.statusCode == 429 { return PinTheoryAuthError.emailRateLimited }
-                if (500...599).contains(response.statusCode) { return PinTheoryAuthError.networkUnavailable }
+                if (500...599).contains(response.statusCode) { return PinTheoryAuthError.accountServiceUnavailable }
             default: break
             }
         }
@@ -866,7 +866,7 @@ final class PinTheoryAuthService: ObservableObject {
                 if response.statusCode == 401 || response.statusCode == 403 {
                     return .accountServiceUnauthorized
                 }
-                if (500...599).contains(response.statusCode) { return .networkUnavailable }
+                if (500...599).contains(response.statusCode) { return .accountServiceUnavailable }
                 return .googleOAuthSetupFailed
             default:
                 return .googleOAuthUnavailable

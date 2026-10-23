@@ -5,6 +5,7 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
     case authenticationRequired, operationInProgress, secureStorageUnavailable
     case emailRateLimited, emailDeliveryUnavailable, emailProviderDisabled
     case emailRequestRejected, networkUnavailable, accountServiceUnauthorized, captchaRequired
+    case accountServiceUnavailable
     case invalidCredentials, weakPassword, emailNotConfirmed
     case recentAuthenticationRequired, accountDeletionUnavailable, authRequired
     case emailIdentityRequired
@@ -26,7 +27,8 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
         case .emailDeliveryUnavailable: "The sign-in email could not be sent. Check Supabase Auth logs and the configured email provider's delivery logs."
         case .emailProviderDisabled: "Email sign-in or new account registration is disabled for this project. Check Supabase Authentication settings."
         case .emailRequestRejected: "The email request was rejected. Check the address and Supabase Auth logs; the email sender may restrict recipients."
-        case .networkUnavailable: "iOS reported that the sign-in request has no available internet connection. Check Wi-Fi/mobile data, the app's mobile-data permission, and any VPN or network filter. (Network code -1009.)"
+        case .networkUnavailable: "iOS could not connect this request to the account service. Other apps may still have internet access. Check this app’s mobile-data permission and any VPN or network filter. (Network code -1009.)"
+        case .accountServiceUnavailable: "The account service could not complete your request. Please try again later."
         case .connectionFailure(let code): Self.connectionDescription(code)
         case .accountServiceUnauthorized: "The sign-in service rejected this app's configuration. Check the Supabase project URL and publishable key."
         case .captchaRequired: "This project requires a security challenge that this app does not support yet. Contact the developer."
