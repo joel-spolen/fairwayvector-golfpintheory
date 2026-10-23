@@ -392,7 +392,7 @@ final class PinTheoryAuthService: ObservableObject {
             try check(ticket)
             let session = try await client.signInWithIdToken(credentials: .init(provider: .apple, idToken: token, nonce: nonce))
             _ = try await confirm(session, client: client, ticket: ticket)
-        } catch { throw fail(Self.googleOAuthError(error), ticket: ticket) }
+        } catch { throw fail(error, ticket: ticket) }
     }
 
     /// Google uses official SDK OAuth + PKCE, NOT a native Google SDK ID token.

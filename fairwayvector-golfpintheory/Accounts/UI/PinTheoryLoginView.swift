@@ -104,13 +104,13 @@ struct PinTheoryLoginView: View {
                 .disabled(unavailable || !browser.hasPresentationAnchor)
                 .accessibilityIdentifier("account-google-sign-in")
 
-                // Presentation placeholder only: no Apple authorization or token exchange.
+                // Apple sign-in is paused until the Apple Developer membership migration is complete.
                 SignInWithAppleButton(.signIn, onRequest: { _ in }, onCompletion: { _ in })
                     .signInWithAppleButtonStyle(.black)
                     .frame(height: 44)
                     .clipShape(RoundedRectangle(cornerRadius: 4))
                     .disabled(true)
-                    .accessibilityLabel("Sign in with Apple, not available yet")
+                    .accessibilityLabel("Sign in with Apple, coming soon")
                     .accessibilityIdentifier("account-apple-sign-in-placeholder")
 
                 HStack(spacing: 12) {

@@ -38,9 +38,9 @@ The supplied project URL and publishable key are already in the ignored local ap
 
 There are TWO different callbacks. Do not interchange them:
 
-| Purpose                                                       | Value for this project                                      |
-| ------------------------------------------------------------- | ----------------------------------------------------------- |
-| Apple/Google → Supabase (enter in the provider console)       | `https://hdeiikpgtralsfnwbxft.supabase.co/auth/v1/callback` |
+| Purpose                                                            | Value for this project                                      |
+| ------------------------------------------------------------------ | ----------------------------------------------------------- |
+| Apple/Google → Supabase (enter in the provider console)            | `https://hdeiikpgtralsfnwbxft.supabase.co/auth/v1/callback` |
 | Supabase → Golf PinTheory (enter in Supabase's redirect allowlist) | `golfpintheory://auth/callback`                             |
 
 The app registers only the `golfpintheory` URL scheme and routes both ordinary and password-reset callbacks. A future staging-specific scheme/universal-link design may require updating both code and allowlist together. Repeat all project-specific URLs for a separate production project.
@@ -97,7 +97,9 @@ The foundation currently opens Google in a browser authentication session. Start
 
 Later native Google setup requires an iOS OAuth client with the final bundle ID and an Android client with its final package name and signing certificate fingerprints. Do not guess the Android identifier now. Those additions are not required for the current browser-based foundation.
 
-## 6. Configure native Sign in with Apple for iOS
+## 6. Resume native Sign in with Apple for iOS (currently paused)
+
+Apple login is implemented in source but the UI and signing capability are paused while the developer membership migration is pending. Wait until Apple restores membership benefits before doing these steps.
 
 1. Open [Apple Developer → Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list).
 2. Under **Identifiers → App IDs**, find or register the confirmed app bundle ID.
@@ -106,7 +108,7 @@ Later native Google setup requires an iOS OAuth client with the final bundle ID 
 5. Enable Apple and add the actual bundle ID to its accepted **Client IDs**.
 6. Save. Native-only identity-token sign-in does not require the browser OAuth Services ID/client secret in the next section.
 
-The code integration will also add the matching Sign in with Apple capability/entitlement in Xcode and refresh signing/provisioning as needed. Dashboard configuration alone does not add that entitlement.
+The app target now includes the Sign in with Apple capability and entitlement for `com.fairwayvector.app.pintheory`. Xcode automatic signing should refresh the provisioning profile. Verify the same App ID is enabled in Apple Developer and the same bundle ID is in Supabase's Apple provider. Dashboard configuration alone does not configure the Apple Developer capability or provisioning profile.
 
 ## 7. Add Apple browser login for Android (can wait until Android work)
 
