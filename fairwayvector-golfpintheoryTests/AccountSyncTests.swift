@@ -54,6 +54,86 @@ struct AccountSyncTests {
         #expect(AccountSyncRecordKind.allCases.count == 9)
     }
 
+    @Test func missingServerContractFailsClosedWithLocalDataNotice() {
+        #expect(AccountSyncError.serverContractUnavailable.localizedDescription.contains("remains on this device"))
+    }
+
+    @Test func golferProfileSyncDTOContainsOnlyPersonalFactsAndUsesStableOwnerKey() throws {
+        let owner = UUID()
+        let profile = PlayerProfile(name: "Ada", lowHandicapIndex: 4.2,
+            selectedCountry: "Sweden", defaultInputModeRawValue: RoundInputMode.stablefordPoints.rawValue,
+            sexRawValue: PlayerSex.female.rawValue)
+        let recordID = AccountSyncDomainAdapter.golferProfileRecordID(ownerID: owner)
+        let mutation = try AccountSyncDomainAdapter.golferProfileMutation(profile, ownerID: owner,
+            expectedRevision: .zero)
+        #expect(mutation.recordID == recordID)
+        #expect(AccountSyncDomainAdapter.golferProfileRecordID(ownerID: owner) == recordID)
+        #expect(Set(mutation.payload.keys) == Set(["name", "lowHandicapIndex"]))
+        #expect(try AccountSyncDomainAdapter.golferProfile(from: AccountSyncLocalRecord(mutation: mutation)).name == "Ada")
+    }
+
+    @Test func customCourseHierarchyUsesStableLinkedIDsAndRoundTrips() throws {
+        let owner = UUID()
+        let club = GolfClub(name: "My Club", city: "Uppsala", country: "Sweden", isCustom: true)
+        let course = GolfCourse(clubName: "My Club", name: "North", isCustom: true)
+        let tee = TeeSet(clubName: "My Club", courseName: "North", name: "Blue", holes: 9, par: 36,
+            courseRating: 35.4, slopeRating: 118, ratingSexRawValue: PlayerSex.male.rawValue,
+            isCustom: true, holeParsData: Array(repeating: 4, count: 9),
+            holeHandicapIndicesData: Array(1...9))
+        let values = try AccountSyncDomainAdapter.customMutations(ownerID: owner,
+            clubs: [club], courses: [course], tees: [tee])
+        #expect(values.mutations.count == 3)
+        #expect(Set(values.mutations.map(\.kind)) == [.customClub, .customCourse, .customTee])
+        #expect(values.clubsByID.count == 1)
+        #expect(values.coursesByID.count == 1)
+        #expect(values.teesByID.count == 1)
+        let clubRecord = AccountSyncLocalRecord(mutation: try #require(values.mutations.first { $0.kind == .customClub }))
+        let courseRecord = AccountSyncLocalRecord(mutation: try #require(values.mutations.first { $0.kind == .customCourse }))
+        let teeRecord = AccountSyncLocalRecord(mutation: try #require(values.mutations.first { $0.kind == .customTee }))
+        let decodedClub = try AccountSyncDomainAdapter.customClub(from: clubRecord)
+        let decodedCourse = try AccountSyncDomainAdapter.customCourse(from: courseRecord)
+        let decodedTee = try AccountSyncDomainAdapter.customTee(from: teeRecord)
+        #expect(decodedCourse.clubID == decodedClub.id)
+        #expect(decodedTee.clubID == decodedClub.id)
+        #expect(decodedTee.courseID == decodedCourse.id)
+        #expect(decodedTee.payload.holePars == Array(repeating: 4, count: 9))
+        #expect(club.syncID == decodedClub.id)
+        #expect(course.syncID == decodedCourse.id)
+        #expect(tee.syncID == decodedTee.id)
+    }
+
+    @Test func wedgeSetupPreservesBagAndCalibratedCarries() throws {
+        let owner = UUID()
+        var wedge = Wedge(name: "56", brand: "Test", notes: "Bunker", fullCarry: 82,
+            isInBag: true, fullCarryUserProvided: true)
+        wedge.setCarry(57, for: .stock, swing: .threeQuarter)
+        let mutation = try AccountSyncDomainAdapter.wedgeMutation(wedge, ownerID: owner)
+        let restored = try AccountSyncDomainAdapter.wedge(from: AccountSyncLocalRecord(mutation: mutation), ownerID: owner)
+        #expect(mutation.recordID == AccountSyncDomainAdapter.wedgeRecordID(ownerID: owner, wedgeName: "56"))
+        #expect(restored.id == mutation.recordID)
+        #expect(restored.brand == "Test")
+        #expect(restored.notes == "Bunker")
+        #expect(restored.isInBag)
+        #expect(restored.fullCarryUserProvided)
+        #expect(restored.overrideCarry(for: .stock, swing: .threeQuarter) == 57)
+    }
+
+    @Test func handicapOnlyEntryPreservesStableIDAndSourceLink() throws {
+        let round = GolfRound(date: Date(timeIntervalSince1970: 1_800_000_000), clubName: "", courseName: "",
+            teeName: "", holes: 18, inputMode: .adjustedGrossScore, adjustedGrossScore: 91,
+            handicapDifferential: 18.2, par: 72, courseRating: 72, slopeRating: 113,
+            notes: "Manual entry", holeScoresData: nil)
+        round.sourceSavedRoundID = UUID(uuidString: "00000000-0000-0000-0000-000000000042")!.uuidString
+        let mutation = try AccountSyncDomainAdapter.handicapRoundMutation(round)
+        let decoded = try AccountSyncDomainAdapter.handicapRound(from: AccountSyncLocalRecord(mutation: mutation))
+        #expect(round.syncID == mutation.recordID)
+        #expect(decoded.id == mutation.recordID)
+        #expect(decoded.payload.adjustedGrossScore == 91)
+        #expect(decoded.payload.handicapDifferential == 18.2)
+        #expect(decoded.payload.sourceSavedRoundID == "00000000-0000-0000-0000-000000000042")
+        #expect(decoded.payload.date == round.date)
+    }
+
     @Test func jsonPayloadAndAllResultAlternativesRoundTrip() throws {
         let value: JSONValue = .object(["null": .null, "bool": .bool(true), "text": .string("value"),
             "number": .number(Decimal(string: "9007199254740993.125")!), "list": .array([.number(2), .object([:])])])
@@ -444,6 +524,7 @@ private actor AccountSyncScriptedTransport: AccountSyncTransport {
     init(result: AccountSyncMutationResult, pages: [AccountSyncChangePage]) {
         self.result = result; self.pages = pages
     }
+    func validateServerContract(accessToken: String) async throws {}
     func mutate(_ mutation: AccountSyncMutation, accessToken: String) async throws -> AccountSyncMutationResult { result }
     func changes(_ request: AccountSyncChangesRequest, accessToken: String) async throws -> AccountSyncChangePage {
         requests.append(request)
@@ -457,6 +538,7 @@ private actor AccountSyncSuspendedTransport: AccountSyncTransport {
     private var started = false
     private var waiter: CheckedContinuation<Void, Never>?
 
+    func validateServerContract(accessToken: String) async throws {}
     func mutate(_ mutation: AccountSyncMutation, accessToken: String) async throws -> AccountSyncMutationResult {
         await withCheckedContinuation { continuation in
             reply = continuation

@@ -13,6 +13,11 @@ struct Wedge: Identifiable, Codable, Equatable {
     var fullCarryUserProvided = false
     private var shotCarries: [String: Double] = [:]
 
+    var syncCarryOverrides: [String: Double] {
+        get { shotCarries }
+        set { shotCarries = newValue }
+    }
+
     var brandDisplay: String? {
         let trimmedBrand = brand.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmedBrand.isEmpty ? nil : trimmedBrand

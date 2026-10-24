@@ -13,6 +13,9 @@ network requests, builds, or test execution were performed for that fix.
   storage + RLS + authenticated-only public RPC entry points.
 - [Account deletion migration](migrations/202610210001_account_deletion.sql):
   forward-only recent-auth block, serialized purge and service-only purge bridge.
+- [Domain validation migration](migrations/202610230001_sync_domain_validation.sql):
+  strict payload allowlists/ranges, custom course/tee ownership links, and
+  preflight checks that reject incompatible existing sync history without deleting it.
 - [Delete-account Edge Function](../supabase/functions/delete-account/index.ts):
   verifies the caller, blocks sync, purges sync history and removes the Auth user.
 - [Wire contract](CONTRACT.md): exact arguments, envelopes, conflicts, cursor rules,
@@ -49,9 +52,10 @@ network requests, builds, or test execution were performed for that fix.
    that trusted role is `postgres` and explicitly assigns its SECURITY DEFINER and
    trigger functions to it; do not weaken that ownership check to fit another role.
    No additional extensions are required.
-5. Manually execute migrations in timestamp order in staging using approved SQL
-   tooling: first `202610190001_sync_foundation.sql`, then
-   `202610210001_account_deletion.sql`. Each is a single BEGIN/COMMIT transaction;
+5. Manually execute migrations in timestamp order in a **disposable staging**
+   project using approved SQL tooling: `202610190001_sync_foundation.sql`, then
+   `202610210001_account_deletion.sql`, then
+   `202610230001_sync_domain_validation.sql`. Each is a single BEGIN/COMMIT transaction;
    failures must be investigated, not partially continued. They are deliberately
    not rerunnable (`IF NOT EXISTS` must not conceal schema drift). Record each
    checksum, operator, project, database version and execution outcome in the
@@ -63,7 +67,8 @@ network requests, builds, or test execution were performed for that fix.
    direct private table/schema privileges. Confirm project-specific default grants
    haven't created an unintended alternate access path. Keep Realtime off for
    private tables; no Realtime subscription is required for correctness.
-7. Only after separate authorization, manually execute the security regression in
+7. Only after separate authorization, manually execute the security, domain-payload,
+   and account-deletion regressions in
    disposable staging with stop-on-first-error and PL/pgSQL assertions enabled.
    The security and account-deletion files roll back fixtures; never run against
    production. Run the concurrency file as labelled selected sections in separate

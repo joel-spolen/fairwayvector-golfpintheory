@@ -55,6 +55,44 @@ struct PlayedRoundTests {
         #expect(reloaded.saved.first?.isComplete == false)
     }
 
+    @Test func playedRoundSyncDTOExcludesDraftDisplayAndCourseGeometry() throws {
+        let original = complete(fixture())
+        let mutation = try AccountSyncDomainAdapter.playedRoundMutation(original, expectedRevision: .zero)
+        #expect(mutation.recordID == original.id)
+        #expect(mutation.kind == .playedRound)
+        #expect(Set(mutation.payload.keys) == Set([
+            "version", "date", "reference", "holes", "players", "game", "detailMode", "allowance", "scores"
+        ]))
+        #expect(mutation.payload["course"] == nil)
+        #expect(mutation.payload["displayOptions"] == nil)
+
+        let record = AccountSyncRecord(recordID: original.id, kind: .playedRound, schemaVersion: 1,
+            payload: mutation.payload, revision: try AccountSyncRevision("1"),
+            createdAt: "2026-10-23T10:00:00+00:00", updatedAt: "2026-10-23T10:00:00+00:00", deletedAt: nil)
+        let restored = try AccountSyncDomainAdapter.playedRound(from: record)
+        #expect(restored.id == original.id)
+        #expect(restored.scores == original.scores)
+        #expect(restored.players == original.players)
+        #expect(restored.course.holes.allSatisfy { $0.path.isEmpty && $0.green.isEmpty })
+    }
+
+    @Test func deletedSavedRoundLeavesRetryableCloudTombstone() throws {
+        let url = temporaryURL()
+        defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }
+        let store = PlayedRoundStore(url: url)
+        let round = complete(fixture())
+        try store.start(round)
+        try store.saveActive()
+        try store.delete(round.id)
+        #expect(store.saved.isEmpty)
+        #expect(store.pendingCloudDeletions == [round.id])
+
+        let reopened = PlayedRoundStore(url: url)
+        #expect(reopened.pendingCloudDeletions == [round.id])
+        try reopened.mergeCloudRecords([], deletedIDs: [], acknowledgedDeletionIDs: [round.id])
+        #expect(reopened.pendingCloudDeletions.isEmpty)
+    }
+
     @Test func scatteredNineScoresOnEighteenHoleLayoutAreNotHCPEligible() {
         var round = fixture()
         for number in stride(from: 1, through: 17, by: 2) {

@@ -14,7 +14,8 @@ select pg_catalog.set_config('request.jwt.claim.sub', '33333333-3333-4333-8333-3
 select pg_catalog.set_config('request.jwt.claims', '{"sub":"33333333-3333-4333-8333-333333333333","role":"authenticated"}', true);
 select public.pintheory_sync_mutate(
     'cccccccc-0000-4000-8000-000000000001', 'cccccccc-1111-4111-8111-111111111111',
-    'wedge', '0', 'put', 1, '{"label":"A"}');
+    'wedge', '0', 'put', 1,
+    '{"name":"56","brand":"","notes":"A","fullCarry":82,"isInBag":true,"fullCarryUserProvided":true,"carryOverrides":{}}');
 -- EXPECT applied revision "1". Do not commit yet.
 
 -- SESSION B: execute while A remains open. MUST block, not return early.
@@ -24,12 +25,13 @@ select pg_catalog.set_config('request.jwt.claim.sub', '33333333-3333-4333-8333-3
 select pg_catalog.set_config('request.jwt.claims', '{"sub":"33333333-3333-4333-8333-333333333333","role":"authenticated"}', true);
 select public.pintheory_sync_mutate(
     'cccccccc-0000-4000-8000-000000000002', 'cccccccc-1111-4111-8111-111111111111',
-    'wedge', '0', 'put', 1, '{"label":"B"}');
+    'wedge', '0', 'put', 1,
+    '{"name":"56","brand":"","notes":"B","fullCarry":82,"isInBag":true,"fullCarryUserProvided":true,"carryOverrides":{}}');
 
 -- SESSION A ONLY: release B.
 commit;
 
--- SESSION B: RPC must now return conflict, current.payload.label = A,
+-- SESSION B: RPC must now return conflict, current.payload.notes = A,
 -- current.revision = "1". Commit, then run assertions as owner below.
 commit;
 

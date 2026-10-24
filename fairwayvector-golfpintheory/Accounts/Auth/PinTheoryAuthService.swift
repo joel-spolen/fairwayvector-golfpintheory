@@ -72,6 +72,11 @@ final class PinTheoryAuthService: ObservableObject {
 
     var canRequestAccountDeletion: Bool { deletionEndpointAvailable }
 
+    func accountSyncConfiguration() throws -> AccountSyncSupabaseConfiguration {
+        try AccountSyncSupabaseConfiguration(projectURL: configuration.projectURL,
+                                             publishableKey: configuration.publishableKey)
+    }
+
     init(configuration: PinTheoryAuthConfiguration, storage: (any AuthLocalStorage)? = nil,
          fetch: @escaping AuthClient.FetchHandler = { try await URLSession.shared.data(for: $0) },
          deletionFetch: AuthClient.FetchHandler? = nil,

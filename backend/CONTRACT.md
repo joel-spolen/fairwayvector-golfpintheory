@@ -1,13 +1,15 @@
-# Golf PinTheory sync wire contract v1 — backend foundation only
+# Golf PinTheory sync wire contract v1 — staging validation source
 
-Status: source reviewed, **not deployed or database-tested**. No client integration,
-production DTO approval, or shipped authentication is implied.
+Status: client DTOs and a forward-only domain-validation migration are implemented
+in source; **the migration is not deployed or database-tested**. Do not enable sync
+for valuable data until the documented disposable-staging sequence passes.
 
 ## Transport and identity
 
 Supabase PostgREST authenticated POST RPCs in `public`:
-`pintheory_sync_mutate`, `pintheory_sync_changes`, and
-`pintheory_begin_account_deletion`. Ownership comes exclusively from verified
+`pintheory_sync_capabilities`, `pintheory_sync_mutate`, `pintheory_sync_changes`, and
+`pintheory_begin_account_deletion`. The client checks capability versions before
+any sync RPC; an older server fails closed before sending records. Ownership comes exclusively from verified
 `auth.uid()`, never a request owner, email, or payload field. Requests require a
 user session JWT; a publishable project key alone is insufficient. The private
 `pintheory_sync` schema must NOT be exposed through the Data API.
@@ -81,8 +83,16 @@ Kinds: `golfer_profile`, `club_profile`, `wedge`, `custom_club`, `custom_course`
   The initial migration is still undeployed, so no old out-of-domain feed exists
   to migrate. Any deployed variant needs a forward migration plus history/receipt
   audit and a recovery plan before this assumption is valid.
-  This is NOT complete content field allowlisting or domain validation. No
-  permission to upload existing archives, preferences, or provider geometry.
+  The base migration alone does NOT provide content field allowlisting. The
+  forward-only `202610230001_sync_domain_validation.sql` migration adds strict
+  per-kind allowlists and field/range checks for the current iOS profile, wedge,
+  custom club/course/tee, saved scorecard, and handicap-round DTOs. It rejects
+  unknown kinds/fields, including flags and club-profile records not yet approved.
+  It also checks custom course/tee references against active parent records owned
+  by the same account. It preflights current records, change events and immutable
+  receipts; if old generic payloads exist, it aborts without rewriting or deleting
+  them. The base migration by itself is unsafe for client uploads. Preferences,
+  active drafts, downloaded catalog data and provider geometry remain excluded.
 
 Record envelope (identical in applied responses, conflicts and events):
 
@@ -139,8 +149,11 @@ The link is an opaque reference within that user's namespace, not a foreign key
 requiring a live saved round. Out-of-order sync and preserved HCP history after
 saved-round deletion are supported. It never reveals another UID's records. No
 automatic HCP import, score calculation, eligibility determination, or cascading
-saved-round deletion exists. Custom course/tee and other payload references are
-also opaque: cross-record ownership/existence/domain validation is NOT implemented.
+saved-round deletion exists. With the domain-validation migration installed,
+custom-course and custom-tee parent links must reference matching active records
+owned by the same account; they are not SQL foreign keys, so soft deletion still
+requires the client to delete children first. Other unapproved record kinds are
+rejected until a later DTO/migration explicitly adds them.
 
 ## Changes / bootstrap
 

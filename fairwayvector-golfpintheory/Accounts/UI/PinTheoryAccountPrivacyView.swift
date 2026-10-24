@@ -11,11 +11,11 @@ struct PinTheoryAccountPrivacyView: View {
 
                 section("Your account", text: "Your email is used to sign you in and send important account emails. Signing out does not delete your account.")
 
-                section("Your golf data", text: "Your rounds and club setup are currently saved on this device only. They are not backed up online or available on your other devices.")
+                section("Your golf data", text: "Your golf data is saved on this device by default. If you enable cloud sync in Settings, Golf PinTheory syncs your player name and low Handicap Index, saved scorecards, handicap-only entries, custom clubs/courses/tees, and wedge setup across devices. Active rounds, preferences, downloaded course catalogs, and course geometry stay on this device.")
 
                 section("Your location", text: "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings.")
 
-                Text("Account deletion is not available in this version yet.")
+                Text("You can request account deletion from Account settings. Deletion removes the account and its server-side sync data; local data on this device is also cleared after the server confirms deletion.")
                     .font(.footnote)
                     .foregroundStyle(PureLineStyle.muted)
             }

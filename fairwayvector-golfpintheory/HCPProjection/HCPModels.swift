@@ -69,6 +69,8 @@ final class PlayerProfile {
 
 @Model
 final class GolfClub {
+    /// Stable cross-device identity; nil on legacy rows until the user opts into sync.
+    var syncID: UUID? = nil
     var name: String
     var city: String
     var country: String
@@ -84,6 +86,8 @@ final class GolfClub {
 
 @Model
 final class GolfCourse {
+    /// Stable cross-device identity; nil on legacy rows until the user opts into sync.
+    var syncID: UUID? = nil
     var clubName: String
     var name: String
     var isCustom: Bool?
@@ -97,6 +101,8 @@ final class GolfCourse {
 
 @Model
 final class TeeSet {
+    /// Stable cross-device identity; nil on legacy rows until the user opts into sync.
+    var syncID: UUID? = nil
     var clubName: String
     var courseName: String
     var name: String
@@ -170,6 +176,8 @@ final class TeeSet {
 
 @Model
 final class GolfRound {
+    /// Stable cross-device identity; assigned before sync for legacy/local rows.
+    var syncID: UUID? = nil
     var date: Date
     var clubName: String
     var courseName: String

@@ -4,6 +4,8 @@ import SwiftUI
 struct UnifiedSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(PlayedRoundStore.self) private var playedRoundStore
+    @EnvironmentObject private var accountSession: PinTheoryAccountSession
     @Query private var profiles: [PlayerProfile]
     @AppStorage("distanceUnit", store: .standard) private var mapUnit: DistanceUnit = .meters
     @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var wedgeUnit = WedgeDistanceUnit.yards.rawValue
@@ -91,6 +93,27 @@ struct UnifiedSettingsView: View {
                 }
                 .listRowBackground(PureLineStyle.surface)
 
+                Section("Cloud sync") {
+                    Toggle("Sync across devices", isOn: Binding(
+                        get: { accountSession.hasOptedIntoSavedDataSync },
+                        set: { enabled in
+                            accountSession.setSavedDataSyncEnabled(enabled, roundStore: playedRoundStore,
+                                profile: profile, modelContext: modelContext)
+                        }
+                    ))
+                    .disabled(accountSession.isSyncingSavedData)
+                    .accessibilityIdentifier("account-cloud-sync")
+                    if let status = accountSession.savedDataSyncMessage {
+                        Text(status)
+                            .font(.footnote)
+                            .foregroundStyle(accountSession.savedDataSyncConflictCount == 0
+                                ? PureLineStyle.muted : Color.orange)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityIdentifier("account-cloud-sync-status")
+                    }
+                }
+                .listRowBackground(PureLineStyle.surface)
+
                 Section("About") {
                     Button {
                         aboutSheet = .company
@@ -149,6 +172,7 @@ struct UnifiedSettingsView: View {
             edit(newProfile)
         }
     }
+
 }
 
 private struct FairwayVectorAboutView: View {

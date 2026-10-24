@@ -1,6 +1,7 @@
 import Foundation
 
 nonisolated protocol AccountSyncTransport: Sendable {
+    func validateServerContract(accessToken: String) async throws
     func mutate(_ mutation: AccountSyncMutation, accessToken: String) async throws -> AccountSyncMutationResult
     func changes(_ request: AccountSyncChangesRequest, accessToken: String) async throws -> AccountSyncChangePage
 }
@@ -35,6 +36,16 @@ nonisolated private final class AccountSyncNoRedirectDelegate: NSObject, URLSess
 }
 
 nonisolated final class URLSessionAccountSyncTransport: AccountSyncTransport, Sendable {
+    private struct Capabilities: Decodable {
+        let syncSchemaVersion: Int
+        let payloadValidationVersion: Int
+
+        enum CodingKeys: String, CodingKey {
+            case syncSchemaVersion = "sync_schema_version"
+            case payloadValidationVersion = "payload_validation_version"
+        }
+    }
+
     private let configuration: AccountSyncSupabaseConfiguration
     private let session: URLSession
 
@@ -53,6 +64,14 @@ nonisolated final class URLSessionAccountSyncTransport: AccountSyncTransport, Se
 
     deinit { session.invalidateAndCancel() }
 
+    func validateServerContract(accessToken: String) async throws {
+        let capabilities: Capabilities = try await post("pintheory_sync_capabilities",
+            body: EmptyRPCBody(), accessToken: accessToken)
+        guard capabilities.syncSchemaVersion == 1, capabilities.payloadValidationVersion == 1 else {
+            throw AccountSyncError.serverContractUnavailable
+        }
+    }
+
     func mutate(_ mutation: AccountSyncMutation, accessToken: String) async throws -> AccountSyncMutationResult {
         try mutation.validate()
         let result: AccountSyncMutationResult = try await post("pintheory_sync_mutate", body: mutation, accessToken: accessToken)
@@ -69,6 +88,7 @@ nonisolated final class URLSessionAccountSyncTransport: AccountSyncTransport, Se
     }
 
     nonisolated private struct RPCError: Decodable { let code: String? }
+    nonisolated private struct EmptyRPCBody: Encodable {}
 
     private func post<Body: Encodable, Response: Decodable>(
         _ rpc: String, body: Body, accessToken: String
@@ -97,6 +117,9 @@ nonisolated final class URLSessionAccountSyncTransport: AccountSyncTransport, Se
             let code = (try? JSONDecoder().decode(RPCError.self, from: data))?.code
             if http.statusCode == 401 || code == "28000" || code == "PGRST301" || code == "PGRST303" {
                 throw AccountSyncError.authenticationRequired
+            }
+            if code == "PGRST202" || code == "42883" {
+                throw AccountSyncError.serverContractUnavailable
             }
             if code == "42501" || code == "23503" { throw AccountSyncError.accountUnavailable }
             if http.statusCode == 429 || http.statusCode >= 500 || code == "40001" || code == "40P01" {

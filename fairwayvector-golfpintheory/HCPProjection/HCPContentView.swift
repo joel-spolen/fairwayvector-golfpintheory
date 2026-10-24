@@ -315,6 +315,7 @@ private struct HomeView: View {
         .accessibilityValue("\(entries.count) scoring entries")
         .accessibilityHint("View all saved rounds")
     }
+
 }
 
 private struct HCPTrendGraphCard: View {

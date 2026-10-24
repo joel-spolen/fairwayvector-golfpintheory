@@ -8,9 +8,28 @@ final class PlayedRoundStore {
         var version = 1
         var saved: [PlayedRound] = []
         var draft: PlayedRound?
+        var deletedIDs: [UUID] = []
+
+        private enum CodingKeys: String, CodingKey { case version, saved, draft, deletedIDs }
+
+        init(saved: [PlayedRound] = [], draft: PlayedRound? = nil, deletedIDs: [UUID] = []) {
+            self.saved = saved
+            self.draft = draft
+            self.deletedIDs = deletedIDs
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            version = try container.decode(Int.self, forKey: .version)
+            saved = try container.decodeIfPresent([PlayedRound].self, forKey: .saved) ?? []
+            draft = try container.decodeIfPresent(PlayedRound.self, forKey: .draft)
+            deletedIDs = try container.decodeIfPresent([UUID].self, forKey: .deletedIDs) ?? []
+        }
     }
     private(set) var saved: [PlayedRound] = []
+    private(set) var savedRevision = 0
     private(set) var active: PlayedRound?
+    private(set) var pendingCloudDeletions: Set<UUID> = []
     private(set) var draftNeedsRetry = false
     var errorMessage: String?
     private let url: URL
@@ -36,7 +55,14 @@ final class PlayedRoundStore {
                       archive.saved.allSatisfy({ Self.validStructure($0) }),
                         archive.draft.map({ Self.validStructure($0) }) ?? true else { throw RoundStorageError.invalidArchive }
                                 if let draft = archive.draft, archive.saved.contains(where: { $0.id == draft.id }) { throw RoundStorageError.invalidArchive }
-                saved = archive.saved.sorted { $0.date > $1.date }; active = archive.draft
+                                guard Set(archive.deletedIDs).count == archive.deletedIDs.count,
+                                            Set(archive.deletedIDs).isDisjoint(with: Set(archive.saved.map(\.id))) else {
+                                        throw RoundStorageError.invalidArchive
+                                }
+                                saved = archive.saved.sorted { $0.date > $1.date }
+                                active = archive.draft
+                                pendingCloudDeletions = Set(archive.deletedIDs)
+                savedRevision &+= 1
             }
             loadFailed = false; errorMessage = nil
         } catch {
@@ -64,9 +90,9 @@ final class PlayedRoundStore {
         && round.currentHole >= 0 && round.currentHole < round.holes.count
     }
 
-    private func persist(saved: [PlayedRound], draft: PlayedRound?) throws {
+    private func persist(saved: [PlayedRound], draft: PlayedRound?, deletedIDs: Set<UUID>? = nil) throws {
         guard !loadFailed else { throw RoundStorageError.invalidArchive }
-        let archive = Archive(saved: saved, draft: draft)
+        let archive = Archive(saved: saved, draft: draft, deletedIDs: Array(deletedIDs ?? pendingCloudDeletions).sorted { $0.uuidString < $1.uuidString })
         let data = try JSONEncoder().encode(archive)
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
@@ -105,6 +131,7 @@ final class PlayedRoundStore {
         updated.append(round); updated.sort { $0.date > $1.date }
         try persist(saved: updated, draft: nil)
         saved = updated; active = nil
+        savedRevision &+= 1
         draftNeedsRetry = false; errorMessage = nil
     }
 
@@ -116,9 +143,46 @@ final class PlayedRoundStore {
 
     func delete(_ id: UUID) throws {
         let updated = saved.filter { $0.id != id }
-        try persist(saved: updated, draft: active)
+        var deletions = pendingCloudDeletions
+        if saved.contains(where: { $0.id == id }) { deletions.insert(id) }
+        try persist(saved: updated, draft: active, deletedIDs: deletions)
         saved = updated
+        pendingCloudDeletions = deletions
+        savedRevision &+= 1
         draftNeedsRetry = false; errorMessage = nil
+    }
+
+    /// Merge remotely synchronized saved scorecards by their stable round UUID.
+    /// Active drafts are local-only and are deliberately left untouched.
+    func mergeCloudRecords(_ remote: [PlayedRound], deletedIDs: Set<UUID>,
+                           acknowledgedDeletionIDs: Set<UUID> = []) throws {
+        guard !loadFailed, remote.allSatisfy(Self.validStructure),
+              Set(remote.map(\.id)).count == remote.count else { throw RoundStorageError.invalidArchive }
+        var merged = saved.filter { !deletedIDs.contains($0.id) }
+        for round in remote {
+            if let index = merged.firstIndex(where: { $0.id == round.id }) { merged[index] = round }
+            else { merged.append(round) }
+        }
+        merged.sort { $0.date > $1.date }
+        var deletions = pendingCloudDeletions.subtracting(acknowledgedDeletionIDs)
+        deletions.subtract(deletedIDs)
+        let changed = !Self.sameSavedRounds(merged, saved) || deletions != pendingCloudDeletions
+        try persist(saved: merged, draft: active, deletedIDs: deletions)
+        saved = merged
+        pendingCloudDeletions = deletions
+        if changed { savedRevision &+= 1 }
+        draftNeedsRetry = false
+        errorMessage = nil
+    }
+
+    private static func sameSavedRounds(_ lhs: [PlayedRound], _ rhs: [PlayedRound]) -> Bool {
+        guard lhs.count == rhs.count else { return false }
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        return zip(lhs, rhs).allSatisfy { left, right in
+            left.id == right.id
+                && (try? encoder.encode(left)) == (try? encoder.encode(right))
+        }
     }
 }
 

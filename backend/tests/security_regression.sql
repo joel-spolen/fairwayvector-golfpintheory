@@ -17,33 +17,33 @@ declare
 begin
     a := public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-1111-4111-8111-111111111111',
-        'played_round', '0', 'put', 1, '{"notes":"local version"}');
+        'played_round', '0', 'put', 1, '{"version":1,"date":"2026-10-23T12:00:00Z","reference":{"clubName":"Fixture Club","courseName":"Fixture Course","city":"Town","region":"Region","holeCount":9,"totalPar":36,"teeName":"Blue","teeSex":"male","courseRating":35.4,"slopeRating":118},"holes":[{"number":1,"par":4,"strokeIndex":1},{"number":2,"par":4,"strokeIndex":2},{"number":3,"par":4,"strokeIndex":3},{"number":4,"par":4,"strokeIndex":4},{"number":5,"par":4,"strokeIndex":5},{"number":6,"par":4,"strokeIndex":6},{"number":7,"par":4,"strokeIndex":7},{"number":8,"par":4,"strokeIndex":8},{"number":9,"par":4,"strokeIndex":9}],"players":[{"id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","name":"Fixture Player","isOwner":true,"handicapIndex":4.2}],"game":"Stroke play","detailMode":"Detailed","allowance":100,"scores":{"AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA:1":{"strokes":5,"fairway":"Yes"}},"notes":"local version"}');
     assert a->>'status' = 'applied' and a#>>'{record,revision}' = '1', 'create failed';
     b := public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-1111-4111-8111-111111111111',
-        'played_round', '0', 'put', 1, '{"notes":"local version"}');
+        'played_round', '0', 'put', 1, '{"version":1,"date":"2026-10-23T12:00:00Z","reference":{"clubName":"Fixture Club","courseName":"Fixture Course","city":"Town","region":"Region","holeCount":9,"totalPar":36,"teeName":"Blue","teeSex":"male","courseRating":35.4,"slopeRating":118},"holes":[{"number":1,"par":4,"strokeIndex":1},{"number":2,"par":4,"strokeIndex":2},{"number":3,"par":4,"strokeIndex":3},{"number":4,"par":4,"strokeIndex":4},{"number":5,"par":4,"strokeIndex":5},{"number":6,"par":4,"strokeIndex":6},{"number":7,"par":4,"strokeIndex":7},{"number":8,"par":4,"strokeIndex":8},{"number":9,"par":4,"strokeIndex":9}],"players":[{"id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","name":"Fixture Player","isOwner":true,"handicapIndex":4.2}],"game":"Stroke play","detailMode":"Detailed","allowance":100,"scores":{"AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA:1":{"strokes":5,"fairway":"Yes"}},"notes":"local version"}');
     assert a = b, 'receipt replay changed';
     begin
         perform public.pintheory_sync_mutate(
             'aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-1111-4111-8111-111111111111',
-            'played_round', '0', 'put', 1, '{"notes":"different"}');
+            'played_round', '0', 'put', 1, '{"version":1,"date":"2026-10-23T12:00:00Z","reference":{"clubName":"Fixture Club","courseName":"Fixture Course","city":"Town","region":"Region","holeCount":9,"totalPar":36,"teeName":"Blue","teeSex":"male","courseRating":35.4,"slopeRating":118},"holes":[{"number":1,"par":4,"strokeIndex":1},{"number":2,"par":4,"strokeIndex":2},{"number":3,"par":4,"strokeIndex":3},{"number":4,"par":4,"strokeIndex":4},{"number":5,"par":4,"strokeIndex":5},{"number":6,"par":4,"strokeIndex":6},{"number":7,"par":4,"strokeIndex":7},{"number":8,"par":4,"strokeIndex":8},{"number":9,"par":4,"strokeIndex":9}],"players":[{"id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","name":"Fixture Player","isOwner":true,"handicapIndex":4.2}],"game":"Stroke play","detailMode":"Detailed","allowance":100,"scores":{"AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA:1":{"strokes":5,"fairway":"Yes"}},"notes":"different"}');
         raise exception 'changed request accepted';
     exception when invalid_parameter_value then null;
     end;
     a := public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000002', 'aaaaaaaa-1111-4111-8111-111111111111',
-        'played_round', '0', 'put', 1, '{"notes":"losing edit"}');
+        'played_round', '0', 'put', 1, '{"version":1,"date":"2026-10-23T12:00:00Z","reference":{"clubName":"Fixture Club","courseName":"Fixture Course","city":"Town","region":"Region","holeCount":9,"totalPar":36,"teeName":"Blue","teeSex":"male","courseRating":35.4,"slopeRating":118},"holes":[{"number":1,"par":4,"strokeIndex":1},{"number":2,"par":4,"strokeIndex":2},{"number":3,"par":4,"strokeIndex":3},{"number":4,"par":4,"strokeIndex":4},{"number":5,"par":4,"strokeIndex":5},{"number":6,"par":4,"strokeIndex":6},{"number":7,"par":4,"strokeIndex":7},{"number":8,"par":4,"strokeIndex":8},{"number":9,"par":4,"strokeIndex":9}],"players":[{"id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","name":"Fixture Player","isOwner":true,"handicapIndex":4.2}],"game":"Stroke play","detailMode":"Detailed","allowance":100,"scores":{"AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA:1":{"strokes":5,"fairway":"Yes"}},"notes":"losing edit"}');
     assert a->>'status' = 'conflict' and a#>>'{current,payload,notes}' = 'local version', 'CAS overwrote';
     perform public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000003', 'aaaaaaaa-1111-4111-8111-111111111111',
         'played_round', '1', 'delete', 1, '{}');
     b := public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000002', 'aaaaaaaa-1111-4111-8111-111111111111',
-        'played_round', '0', 'put', 1, '{"notes":"losing edit"}');
+        'played_round', '0', 'put', 1, '{"version":1,"date":"2026-10-23T12:00:00Z","reference":{"clubName":"Fixture Club","courseName":"Fixture Course","city":"Town","region":"Region","holeCount":9,"totalPar":36,"teeName":"Blue","teeSex":"male","courseRating":35.4,"slopeRating":118},"holes":[{"number":1,"par":4,"strokeIndex":1},{"number":2,"par":4,"strokeIndex":2},{"number":3,"par":4,"strokeIndex":3},{"number":4,"par":4,"strokeIndex":4},{"number":5,"par":4,"strokeIndex":5},{"number":6,"par":4,"strokeIndex":6},{"number":7,"par":4,"strokeIndex":7},{"number":8,"par":4,"strokeIndex":8},{"number":9,"par":4,"strokeIndex":9}],"players":[{"id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","name":"Fixture Player","isOwner":true,"handicapIndex":4.2}],"game":"Stroke play","detailMode":"Detailed","allowance":100,"scores":{"AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA:1":{"strokes":5,"fairway":"Yes"}},"notes":"losing edit"}');
     assert a = b, 'conflict receipt was recomputed';
     b := public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000004', 'aaaaaaaa-1111-4111-8111-111111111111',
-        'played_round', '1', 'put', 1, '{"notes":"stale resurrection"}');
+        'played_round', '1', 'put', 1, '{"version":1,"date":"2026-10-23T12:00:00Z","reference":{"clubName":"Fixture Club","courseName":"Fixture Course","city":"Town","region":"Region","holeCount":9,"totalPar":36,"teeName":"Blue","teeSex":"male","courseRating":35.4,"slopeRating":118},"holes":[{"number":1,"par":4,"strokeIndex":1},{"number":2,"par":4,"strokeIndex":2},{"number":3,"par":4,"strokeIndex":3},{"number":4,"par":4,"strokeIndex":4},{"number":5,"par":4,"strokeIndex":5},{"number":6,"par":4,"strokeIndex":6},{"number":7,"par":4,"strokeIndex":7},{"number":8,"par":4,"strokeIndex":8},{"number":9,"par":4,"strokeIndex":9}],"players":[{"id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","name":"Fixture Player","isOwner":true,"handicapIndex":4.2}],"game":"Stroke play","detailMode":"Detailed","allowance":100,"scores":{"AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA:1":{"strokes":5,"fairway":"Yes"}},"notes":"stale resurrection"}');
     assert b->>'status' = 'conflict' and b#>>'{current,deleted_at}' is not null, 'delete/edit lost';
     page := public.pintheory_sync_changes('0', null, 1);
     assert page->>'through' = '2' and page->>'next_after' = '1'
@@ -57,11 +57,11 @@ begin
     perform public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000005', 'aaaaaaaa-2222-4222-8222-222222222222',
         'handicap_round', '0', 'put', 1,
-        '{"sourceSavedRoundID":"aaaaaaaa-1111-4111-8111-111111111111"}');
+        '{"date":"2026-10-23T12:00:00Z","clubName":"Fixture Club","courseName":"Fixture Course","teeName":"Blue","holes":18,"inputMode":"adjustedGrossScore","adjustedGrossScore":91,"handicapDifferential":18.2,"par":72,"courseRating":72,"slopeRating":113,"pcc":0,"notes":"Manual entry","sourceSavedRoundID":"aaaaaaaa-1111-4111-8111-111111111111"}');
     b := public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000006', 'aaaaaaaa-3333-4333-8333-333333333333',
         'handicap_round', '0', 'put', 1,
-        '{"sourceSavedRoundID":"aaaaaaaa-1111-4111-8111-111111111111"}');
+        '{"date":"2026-10-23T12:00:00Z","clubName":"Fixture Club","courseName":"Fixture Course","teeName":"Blue","holes":18,"inputMode":"adjustedGrossScore","adjustedGrossScore":91,"handicapDifferential":18.2,"par":72,"courseRating":72,"slopeRating":113,"pcc":0,"notes":"Manual entry","sourceSavedRoundID":"aaaaaaaa-1111-4111-8111-111111111111"}');
     assert b->>'status' = 'source_conflict'
         and b#>>'{source_record,record_id}' = 'aaaaaaaa-2222-4222-8222-222222222222', 'source duplicate';
     begin
@@ -106,7 +106,7 @@ begin
     assert r->'events' = '[]'::jsonb, 'cross-user feed leak';
     r := public.pintheory_sync_mutate(
         'aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-1111-4111-8111-111111111111',
-        'played_round', '1', 'put', 1, '{}');
+        'golfer_profile', '1', 'put', 1, '{"name":"Fixture Player","lowHandicapIndex":4.2}');
     assert r->>'status' = 'conflict' and r->'current' = 'null'::jsonb, 'cross-user CAS leak';
 end;
 $$;
@@ -157,7 +157,7 @@ begin
     begin
         perform public.pintheory_sync_mutate(
             'aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-1111-4111-8111-111111111111',
-            'played_round', '0', 'put', 1, '{"notes":"local version"}');
+            'played_round', '0', 'put', 1, '{"version":1,"date":"2026-10-23T12:00:00Z","reference":{"clubName":"Fixture Club","courseName":"Fixture Course","city":"Town","region":"Region","holeCount":9,"totalPar":36,"teeName":"Blue","teeSex":"male","courseRating":35.4,"slopeRating":118},"holes":[{"number":1,"par":4,"strokeIndex":1},{"number":2,"par":4,"strokeIndex":2},{"number":3,"par":4,"strokeIndex":3},{"number":4,"par":4,"strokeIndex":4},{"number":5,"par":4,"strokeIndex":5},{"number":6,"par":4,"strokeIndex":6},{"number":7,"par":4,"strokeIndex":7},{"number":8,"par":4,"strokeIndex":8},{"number":9,"par":4,"strokeIndex":9}],"players":[{"id":"aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","name":"Fixture Player","isOwner":true,"handicapIndex":4.2}],"game":"Stroke play","detailMode":"Detailed","allowance":100,"scores":{"AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAAA:1":{"strokes":5,"fairway":"Yes"}},"notes":"local version"}');
         raise exception 'blocked account replay allowed';
     exception when insufficient_privilege then null;
     end;

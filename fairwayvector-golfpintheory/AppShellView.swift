@@ -1,8 +1,117 @@
 import SwiftData
 import SwiftUI
 
+private struct SyncableLocalDataFingerprint: Encodable {
+    struct Golfer: Encodable {
+        let name: String
+        let lowHandicapIndex: Double?
+    }
+    struct Club: Encodable {
+        let name: String
+        let city: String
+        let country: String
+    }
+    struct Course: Encodable {
+        let clubName: String
+        let name: String
+    }
+    struct Tee: Encodable {
+        let clubName: String
+        let courseName: String
+        let name: String
+        let holes: Int
+        let par: Int
+        let courseRating: Double
+        let slopeRating: Int
+        let ratingSex: String?
+        let holePars: [Int]?
+        let holeHandicapIndices: [Int]?
+    }
+    struct HandicapRound: Encodable {
+        let syncID: UUID?
+        let date: Date
+        let clubName: String
+        let courseName: String
+        let teeName: String
+        let holes: Int
+        let inputMode: String
+        let adjustedGrossScore: Int?
+        let stablefordPoints: Int?
+        let handicapDifferential: Double?
+        let par: Int
+        let courseRating: Double
+        let slopeRating: Int
+        let pcc: Double
+        let notes: String
+        let holeScores: [Int]?
+        let holePars: [Int]?
+        let holeHandicapIndices: [Int]?
+        let sourceSavedRoundID: String?
+    }
+
+    let golfer: Golfer?
+    let clubs: [Club]
+    let courses: [Course]
+    let tees: [Tee]
+    let handicapRounds: [HandicapRound]
+    let wedgeSetup: String
+}
+
+/// Observes only account-owned fields approved for sync; unrelated preferences
+/// and provider/catalog changes do not schedule uploads.
+private struct SyncableLocalDataMonitor: View {
+    let isEnabled: Bool
+    let onChanged: () -> Void
+
+    @Query private var profiles: [PlayerProfile]
+    @Query private var clubs: [GolfClub]
+    @Query private var courses: [GolfCourse]
+    @Query private var tees: [TeeSet]
+    @Query private var rounds: [GolfRound]
+    @AppStorage("wedgeMatrix.wedges") private var wedgeSetup = ""
+
+    private var fingerprint: Data {
+        let snapshot = SyncableLocalDataFingerprint(
+            golfer: profiles.first.map { .init(name: $0.name, lowHandicapIndex: $0.lowHandicapIndex) },
+            clubs: clubs.filter { $0.isCustom == true }
+                .map { .init(name: $0.name, city: $0.city, country: $0.country) }
+                .sorted { "\($0.country)|\($0.city)|\($0.name)" < "\($1.country)|\($1.city)|\($1.name)" },
+            courses: courses.filter { $0.isCustom == true }
+                .map { .init(clubName: $0.clubName, name: $0.name) }
+                .sorted { "\($0.clubName)|\($0.name)" < "\($1.clubName)|\($1.name)" },
+            tees: tees.filter { $0.isCustom == true }
+                .map { .init(clubName: $0.clubName, courseName: $0.courseName, name: $0.name,
+                    holes: $0.holes, par: $0.par, courseRating: $0.courseRating,
+                    slopeRating: $0.slopeRating, ratingSex: $0.ratingSexRawValue,
+                    holePars: $0.holeParsData, holeHandicapIndices: $0.holeHandicapIndicesData) }
+                .sorted { "\($0.clubName)|\($0.courseName)|\($0.name)" < "\($1.clubName)|\($1.courseName)|\($1.name)" },
+            handicapRounds: rounds.map { .init(syncID: $0.syncID, date: $0.date,
+                clubName: $0.clubName, courseName: $0.courseName, teeName: $0.teeName,
+                holes: $0.holes, inputMode: $0.inputModeRawValue,
+                adjustedGrossScore: $0.adjustedGrossScore, stablefordPoints: $0.stablefordPoints,
+                handicapDifferential: $0.handicapDifferential, par: $0.par,
+                courseRating: $0.courseRating, slopeRating: $0.slopeRating, pcc: $0.pcc,
+                notes: $0.notes, holeScores: $0.holeScoresData, holePars: $0.holeParsData,
+                holeHandicapIndices: $0.holeHandicapIndicesData, sourceSavedRoundID: $0.sourceSavedRoundID) }
+                .sorted { ($0.syncID?.uuidString ?? "") < ($1.syncID?.uuidString ?? "") },
+            wedgeSetup: wedgeSetup)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        return (try? encoder.encode(snapshot)) ?? Data()
+    }
+
+    var body: some View {
+        Color.clear
+            .onChange(of: fingerprint) { _, _ in
+                if isEnabled { onChanged() }
+            }
+            .accessibilityHidden(true)
+    }
+}
+
 struct ContentView: View {
     let accountData: PinTheoryAccountData
+    @EnvironmentObject private var accountSession: PinTheoryAccountSession
 
     private enum Destination: String, Identifiable {
         case course
@@ -23,6 +132,7 @@ struct ContentView: View {
     @StateObject private var trajectoryModel: TrajectoryCalculatorViewModel
     @State private var roundStore: PlayedRoundStore
     @State private var requestStartRound = false
+    @State private var automaticSyncTask: Task<Void, Never>?
 
     init(accountData: PinTheoryAccountData) {
         self.accountData = accountData
@@ -60,6 +170,12 @@ struct ContentView: View {
         .environmentObject(trajectoryModel)
         .environment(roundStore)
         .modelContainer(accountData.modelContainer)
+        .overlay {
+            SyncableLocalDataMonitor(isEnabled: accountSession.hasOptedIntoSavedDataSync) {
+                scheduleAutomaticSync()
+            }
+            .frame(width: 0, height: 0)
+        }
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
             feature(screen)
                 .environmentObject(trajectoryModel)
@@ -71,6 +187,7 @@ struct ContentView: View {
         .sheet(isPresented: $showingSettings) {
             UnifiedSettingsView()
             .environmentObject(trajectoryModel)
+            .environment(roundStore)
             .modelContainer(accountData.modelContainer)
             .defaultAppStorage(accountData.defaults)
             .preferredColorScheme(.light)
@@ -78,6 +195,10 @@ struct ContentView: View {
         .onChange(of: distanceUnit, initial: true) { _, unit in
             wedgeDistanceUnit = unit == .meters ? WedgeDistanceUnit.meters.rawValue : WedgeDistanceUnit.yards.rawValue
             trajectoryModel.unitPreferences.globalDefault = unit == .meters ? .metric : .imperial
+        }
+        .task { await syncSavedDataIfEnabled() }
+        .onChange(of: roundStore.savedRevision) { _, _ in
+            scheduleAutomaticSync()
         }
         // Unlike an environment override, this also controls presented screens.
         .preferredColorScheme(.light)
@@ -100,6 +221,27 @@ struct ContentView: View {
             PinTheoryAccountView(onHome: { destination = nil })
         }
     }
+
+    @MainActor
+    private func syncSavedDataIfEnabled() async {
+        guard accountSession.hasOptedIntoSavedDataSync else { return }
+        let context = accountData.modelContainer.mainContext
+        let profile = (try? context.fetch(FetchDescriptor<PlayerProfile>()))?.first
+        await accountSession.enableAndSyncSavedData(roundStore: roundStore, profile: profile,
+                                                    modelContext: context)
+    }
+
+    @MainActor
+    private func scheduleAutomaticSync() {
+        guard accountSession.hasOptedIntoSavedDataSync else { return }
+        automaticSyncTask?.cancel()
+        automaticSyncTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            guard !Task.isCancelled else { return }
+            await syncSavedDataIfEnabled()
+        }
+    }
+
 }
 
 private struct CourseMapFlowView: View {
