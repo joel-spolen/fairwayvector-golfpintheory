@@ -103,14 +103,6 @@ struct UnifiedSettingsView: View {
                     ))
                     .disabled(accountSession.isSyncingSavedData)
                     .accessibilityIdentifier("account-cloud-sync")
-                    if let status = accountSession.savedDataSyncMessage {
-                        Text(status)
-                            .font(.footnote)
-                            .foregroundStyle(accountSession.savedDataSyncConflictCount == 0
-                                ? PureLineStyle.muted : Color.orange)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .accessibilityIdentifier("account-cloud-sync-status")
-                    }
                 }
                 .listRowBackground(PureLineStyle.surface)
 
