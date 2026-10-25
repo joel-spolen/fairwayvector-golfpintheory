@@ -1,8 +1,6 @@
 import Foundation
 
-/// Deliberately no retries, probes, logging of request bodies, or key-bearing URLs.
-/// A redirect is rejected so a credential header can never follow a new host.
-nonisolated final class GPXZRedirectPolicy: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+nonisolated private final class ProviderNoRedirectDelegate: NSObject, URLSessionTaskDelegate, Sendable {
     func urlSession(_ session: URLSession, task: URLSessionTask,
                     willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest,
                     completionHandler: @escaping @Sendable (URLRequest?) -> Void) {
@@ -12,23 +10,30 @@ nonisolated final class GPXZRedirectPolicy: NSObject, URLSessionTaskDelegate, @u
 
 nonisolated struct GPXZElevationClient: Sendable {
     let session: URLSession
-    let key: String
+    private let hasInjectedSession: Bool
+    let edgeBaseURL: URL?
     let mode: DevelopmentAPIConfiguration.Mode
-    init(key: String? = nil, session: URLSession? = nil,
+    init(session: URLSession? = nil, projectURL: URL? = nil,
          mode: DevelopmentAPIConfiguration.Mode = DevelopmentAPIConfiguration.current.gpxz) {
         self.mode = mode
-        self.key = mode == .mock ? "" : (key ?? (Bundle.main.object(forInfoDictionaryKey: "GPXZ_API_KEY") as? String ?? ""))
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = 30
-        config.timeoutIntervalForResource = 45
-        config.urlCache = nil
-        self.session = session ?? URLSession(configuration: config, delegate: GPXZRedirectPolicy(), delegateQueue: nil)
+        hasInjectedSession = session != nil
+        if let session {
+            self.session = session
+        } else {
+            let settings = URLSessionConfiguration.ephemeral
+            settings.urlCache = nil
+            settings.httpCookieStorage = nil
+            settings.urlCredentialStorage = nil
+            settings.httpShouldSetCookies = false
+            settings.requestCachePolicy = .reloadIgnoringLocalCacheData
+            settings.timeoutIntervalForRequest = 30
+            settings.timeoutIntervalForResource = 60
+            self.session = URLSession(configuration: settings, delegate: ProviderNoRedirectDelegate(), delegateQueue: nil)
+        }
+        edgeBaseURL = SupabaseProviderEndpoint.dataURL(projectURL: projectURL, route: "/elevation/sample")
     }
     var configured: Bool {
-        mode == .mock || (!key.isEmpty && !key.contains("$(") && !key.contains("${") && !key.contains("YOUR_")
-            && !key.contains("<") && !key.contains(">")
-        )
+        mode == .mock || edgeBaseURL != nil
     }
 
     struct Response: Decodable, Sendable {
@@ -49,17 +54,16 @@ nonisolated struct GPXZElevationClient: Sendable {
     }
 
     // Building/encoding occurs BEFORE budget reservation. The caller then reserves and sends once.
-    func request(path: [GeoPoint]) throws -> (URLRequest, Int) {
+    func request(path: [GeoPoint], courseID: String? = nil) throws -> (URLRequest, Int) {
         guard configured else { throw TerrainError.notConfigured }
         let path = try TerrainGeometry.clean(path)
         let length = TerrainGeometry.chainages(path).last ?? 0
         guard path.count >= 2, length > 0, length.isFinite else { throw TerrainError.invalidPath }
         let count = length >= 511 ? 512 : max(2, Int(ceil(length)) + 1)
         guard (2...512).contains(count) else { throw TerrainError.invalidPath }
-        var request = URLRequest(url: URL(string: mode == .mock
-            ? "https://development.invalid/synthetic-terrain" : "https://api.gpxz.io/v1/elevation/sample")!)
+        let endpoint = edgeBaseURL ?? URL(string: "https://development.invalid/synthetic-terrain")!
+        var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"
-        if mode == .live { request.setValue(key, forHTTPHeaderField: "x-api-key") }
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         var form = URLComponents()
         form.queryItems = [
@@ -68,6 +72,12 @@ nonisolated struct GPXZElevationClient: Sendable {
             URLQueryItem(name: "interpolation", value: "bilinear"),
             URLQueryItem(name: "bathymetry", value: "false")
         ]
+        if let courseID {
+            let metadataID = courseID.hasPrefix("golfapi:") ? String(courseID.dropFirst("golfapi:".count)) : courseID
+            if metadataID.range(of: #"^[A-Za-z0-9_-]{1,100}$"#, options: .regularExpression) != nil {
+                form.queryItems?.append(URLQueryItem(name: "courseID", value: metadataID))
+            }
+        }
         // URL query syntax permits '+', but form decoders treat it as a space.
         // Fixed field order gives a stable fingerprint of the actual wire body.
         guard let encoded = form.percentEncodedQuery else { throw TerrainError.invalidPath }
@@ -78,32 +88,50 @@ nonisolated struct GPXZElevationClient: Sendable {
 
     func send(_ request: URLRequest, path: [GeoPoint], count: Int,
               dispatch: @Sendable (@Sendable () -> Void) -> Bool = { start in start(); return true }) async throws -> TerrainResponseRecord {
-        // Final hard gate also protects callers passing an already-built live URLRequest.
-        // No dispatch callback, credential access or session task exists in mock mode.
+        // No dispatch callback or network task exists in mock mode.
         if mode == .mock { return try Self.syntheticRecord(path: path, count: count) }
         guard configured else { throw TerrainError.notConfigured }
-        let (data, rawResponse): (Data, URLResponse) = try await withCheckedThrowingContinuation { continuation in
+        let authorizedRequest: URLRequest
+        if hasInjectedSession {
+            authorizedRequest = request
+        } else {
+            do { authorizedRequest = try await SupabaseProviderGateway.shared.authorizedRequest(request) }
+            catch { throw TerrainError.notConfigured }
+        }
+        let response: SupabaseProviderResponse = try await withCheckedThrowingContinuation { continuation in
             // Task creation/resume shares the interaction lock with beginTargetInteraction.
             // A maySend check alone could race an executor hop before actual dispatch.
             let started = dispatch {
-                session.dataTask(with: request) { data, response, error in
-                    if error != nil { continuation.resume(throwing: TerrainError.transport) }
-                    else if let data, let response { continuation.resume(returning: (data, response)) }
-                    else { continuation.resume(throwing: TerrainError.invalidResponse) }
-                }.resume()
+                session.dataTask(with: authorizedRequest) { data, rawResponse, error in
+                    if error != nil {
+                        continuation.resume(throwing: TerrainError.transport)
+                    } else if let data, let http = rawResponse as? HTTPURLResponse {
+                        let headers: [String: String] = Dictionary(uniqueKeysWithValues: http.allHeaderFields.compactMap { key, value -> (String, String)? in
+                            guard let key = key as? String else { return nil }
+                            return (key, String(describing: value))
+                        })
+                        continuation.resume(returning: SupabaseProviderResponse(data: data,
+                            statusCode: http.statusCode, headers: headers))
+                    } else {
+                        continuation.resume(throwing: TerrainError.invalidResponse)
+                    }
+                }
+                .resume()
             }
             if !started { continuation.resume(throwing: TerrainError.requestPaused) }
         }
-        guard let http = rawResponse as? HTTPURLResponse else { throw TerrainError.invalidResponse }
-        guard (200...299).contains(http.statusCode) else {
-                if [429, 503].contains(http.statusCode),
-                    let value = http.value(forHTTPHeaderField: "Retry-After"), let date = Self.retryDate(value) {
+        guard (200...299).contains(response.statusCode) else {
+            if response.statusCode == 401 || response.statusCode == 403 {
+                throw TerrainError.notConfigured
+            }
+            if [429, 503].contains(response.statusCode),
+               let value = response.value(forHTTPHeaderField: "Retry-After"), let date = Self.retryDate(value) {
                 throw TerrainError.retryAfter(date)
             }
-            throw TerrainError.http(http.statusCode, reason: Self.providerReason(data: data, key: key))
+            throw TerrainError.http(response.statusCode, reason: Self.edgeErrorMessage(data: response.data))
         }
-        return try Self.validate(data: data, path: path, count: count,
-                                 datasetVersion: http.value(forHTTPHeaderField: "X-DATASET-VERSION"), fetchedAt: .now)
+        return try Self.validate(data: response.data, path: path, count: count,
+                                 datasetVersion: response.value(forHTTPHeaderField: "X-DATASET-VERSION"), fetchedAt: .now)
     }
 
     /// Coordinate-based surface keeps shared endpoints identical across independently sampled paths.
@@ -162,25 +190,24 @@ nonisolated struct GPXZElevationClient: Sendable {
         return TerrainResponseRecord(path: path, samples: samples, fetchedAt: fetchedAt)
     }
 
-    /// Decode ONLY the documented plain-language field, never HTML, URLs, or headers.
-    /// Keep unknown/oversized error formats out of both UI and the persisted failure lock.
-    static func providerReason(data: Data, key: String) -> String? {
+    /// Accept only the Edge Function's fixed error envelope; never echo provider
+    /// URLs, credentials, headers, or raw upstream response bodies.
+    static func edgeErrorMessage(data: Data) -> String? {
         guard data.count <= 65_536,
-              let envelope = try? JSONDecoder().decode(ProviderError.self, from: data) else { return nil }
-        var text = envelope.error
-        if !key.isEmpty { text = text.replacingOccurrences(of: key, with: "[redacted]") }
-        // Header/credential-bearing details are not safe to echo, even inside an error field.
-        if text.range(of: #"(?i)(x-api-key|api[_ -]?key|authorization|bearer|cookie|headers?\s*:)"#,
+              let envelope = try? JSONDecoder().decode(EdgeErrorEnvelope.self, from: data) else { return nil }
+        var text = envelope.error.message
+        if text.range(of: #"(?i)(x-api-key|api[_ -]?key|authorization|bearer|cookie|headers?\s*:|https?://)"#,
                       options: .regularExpression) != nil {
-            return "Provider detail omitted because it contains credential or header information."
+            return nil
         }
-        text = text.replacingOccurrences(of: #"(?i)\b[a-z][a-z0-9+.-]*://\S+|\bak_[a-z0-9_-]+"#,
-                                         with: "[redacted]", options: .regularExpression)
         text = text.components(separatedBy: .controlCharacters).joined(separator: " ")
             .split(whereSeparator: { $0.isWhitespace }).joined(separator: " ")
         guard !text.isEmpty else { return nil }
         return String(text.prefix(400))
     }
+
+    private struct EdgeErrorEnvelope: Decodable { let error: EdgeError }
+    private struct EdgeError: Decodable { let code: String; let message: String }
 
     private static func retryDate(_ value: String) -> Date? {
         if let seconds = Double(value), seconds.isFinite, seconds >= 0 { return Date.now.addingTimeInterval(seconds) }

@@ -13,9 +13,10 @@ import Testing
         GPXZOfflineProtocol.registry.register(recorder, id: id)
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [GPXZOfflineProtocol.self]
+        config.connectionProxyDictionary = ["HTTPEnable": 1, "HTTPProxy": "127.0.0.1", "HTTPPort": 8080]
         config.httpAdditionalHeaders = ["X-Offline-Test": id]
         return GPXZTerrainRepository(root: root,
-            client: GPXZElevationClient(key: "OFFLINE_FIXTURE_NOT_A_KEY", session: URLSession(configuration: config), mode: .live),
+            client: GPXZElevationClient(session: URLSession(configuration: config), mode: .live),
             ledgerURL: root.appendingPathComponent("ledger.json"))
     }
 
@@ -28,7 +29,7 @@ import Testing
         async let first = repo.profile(courseID: id, path: [point(0), point(200)], straight: true)
         async let duplicate = repo.profile(courseID: id, path: [point(0), point(200)], straight: true)
         let (a, b) = await (first, duplicate)
-        #expect(a.message == nil && b.message == nil)
+        #expect(a.message == nil && b.message == nil, "offline interceptor: \(recorder.lastFailure ?? "no protocol error")")
         #expect(recorder.paths.count == 1)
         _ = await repo.profile(courseID: id, path: [point(150), point(50)], straight: true)
         #expect(recorder.paths.count == 1)
@@ -76,7 +77,7 @@ import Testing
         let path = [point(0), point(600)]
         let first = await repo.profile(courseID: "osm:400", path: path, straight: true)
         #expect(first.message?.contains("HTTP 400") == true)
-        #expect(first.message?.contains("OFFLINE: samples rejected") == true)
+        #expect(first.message?.contains("OFFLINE") == false)
         #expect(first.quota?.used == 1)
         let restarted = repository(root: root, recorder: recorder)
         let repeated = await restarted.profile(courseID: "osm:400", path: path, straight: true)
@@ -129,7 +130,7 @@ import Testing
         }
         #expect(recorder.paths.count == 1)
         #expect(store.holeMessage?.contains("HTTP 400") == false)
-        #expect(store.shotMessage?.contains("HTTP 400") == false)
+        #expect(store.shotMessage?.contains("OFFLINE") == false)
         #expect(store.quota?.used == 1)
     }
 
@@ -221,19 +222,30 @@ nonisolated final class GPXZOfflineRecorder: @unchecked Sendable {
     let mode: Mode
     private let lock = NSLock()
     private var storage: [[GeoPoint]] = []
+    private var failureStorage: String?
     init(mode: Mode) { self.mode = mode }
     var paths: [[GeoPoint]] { lock.lock(); defer { lock.unlock() }; return storage }
+    var lastFailure: String? { lock.lock(); defer { lock.unlock() }; return failureStorage }
     func record(_ path: [GeoPoint]) { lock.lock(); storage.append(path); lock.unlock() }
+    func recordFailure(_ failure: String) { lock.lock(); failureStorage = failure; lock.unlock() }
 }
 
 /// Shared strict form parser for serialization assertions and every mock dispatch.
 /// No live transport or production parser changes are involved.
 nonisolated enum GPXZOfflineForm {
     static func decode(_ request: URLRequest) throws -> [String: String] {
+        let body: Data
+        if let httpBody = request.httpBody {
+            body = httpBody
+        } else if let stream = request.httpBodyStream {
+            body = try read(stream)
+        } else {
+            throw URLError(.badURL)
+        }
         guard request.httpMethod == "POST",
               request.value(forHTTPHeaderField: "Content-Type") == "application/x-www-form-urlencoded",
-              let data = request.httpBody, data.allSatisfy({ $0 < 128 }),
-              let text = String(data: data, encoding: .utf8), !text.contains("+"), !text.contains("|") else {
+              body.allSatisfy({ $0 < 128 }),
+              let text = String(data: body, encoding: .utf8), !text.contains("+"), !text.contains("|") else {
             throw URLError(.badURL)
         }
         var components = URLComponents()
@@ -243,13 +255,29 @@ nonisolated enum GPXZOfflineForm {
             guard fields[item.name] == nil, let value = item.value else { throw URLError(.badURL) }
             fields[item.name] = value
         }
-        guard fields.count == 4, let samples = fields["samples"],
+                guard (fields.count == 4 || fields.count == 5), let samples = fields["samples"],
               samples.range(of: #"^[0-9]+$"#, options: .regularExpression) != nil,
               let count = Int(samples), (2...512).contains(count), samples == String(count),
-              fields["latlons"] != nil, fields["interpolation"] == "bilinear", fields["bathymetry"] == "false" else {
+              fields["latlons"] != nil, fields["interpolation"] == "bilinear", fields["bathymetry"] == "false",
+              fields["courseID"].map({ !$0.isEmpty && $0.count <= 100 }) ?? true else {
             throw URLError(.badURL)
         }
         return fields
+    }
+
+    private static func read(_ stream: InputStream) throws -> Data {
+        stream.open()
+        defer { stream.close() }
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: 16_384)
+        while stream.hasBytesAvailable {
+            let count = stream.read(&buffer, maxLength: buffer.count)
+            if count < 0 { throw stream.streamError ?? URLError(.cannotDecodeContentData) }
+            if count == 0 { break }
+            data.append(buffer, count: count)
+            guard data.count <= 300_000 else { throw URLError(.dataLengthExceedsMaximum) }
+        }
+        return data
     }
 }
 
@@ -294,6 +322,10 @@ nonisolated final class GPXZOfflineProtocol: URLProtocol, @unchecked Sendable {
             client?.urlProtocol(self, didLoad: data)
             client?.urlProtocolDidFinishLoading(self)
         } catch {
+            if let id = request.value(forHTTPHeaderField: "X-Offline-Test"),
+               let recorder = Self.registry.get(id) {
+                recorder.recordFailure("\(String(describing: error)); url=\(request.url?.absoluteString ?? "nil"); body=\(request.httpBody.flatMap { String(data: $0, encoding: .utf8) } ?? "nil")")
+            }
             client?.urlProtocol(self, didFailWithError: error) // NEVER fall through to real networking.
         }
     }

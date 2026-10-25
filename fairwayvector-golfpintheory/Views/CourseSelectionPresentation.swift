@@ -261,7 +261,7 @@ struct CourseSelectionStatus: View {
 
     var body: some View {
         if !model.isConfigured {
-            message("Golf API key not configured. Add GOLF_API_KEY in the app target’s build settings.", image: "key.horizontal")
+            message("Supabase provider data is not configured in this app build.", image: "key.horizontal")
         }
         if let error = model.errorMessage,
            !(suppressNoMatches && error.hasPrefix("No golf clubs matched")) {

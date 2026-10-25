@@ -27,7 +27,7 @@ import Testing
         cache.writeCourseDetail(sentinel, id: "real-hills")
         cache.writeCoordinates(sentinel, id: "real-hills")
         let before = try FileManager.default.contentsOfDirectory(atPath: root.path).sorted()
-        let client = GolfAPIClient(session: session(), cache: cache, apiKey: "OFFLINE_EXISTING_KEY", mode: .mock, bundledSavedCourses: nil)
+        let client = GolfAPIClient(session: session(), cache: cache, mode: .mock, bundledSavedCourses: nil)
         #expect(client.isConfigured)
         for refresh in [false, true] {
             let clubs = try await client.searchClubs(named: "Hills", country: "Sweden", forceRefresh: refresh)
@@ -91,7 +91,7 @@ import Testing
         cache.writeCourseDetail(rawDetail, id: id)
         cache.writeCoordinates(rawCoordinates, id: id)
         let before = try FileManager.default.contentsOfDirectory(atPath: root.path).sorted()
-        let client = GolfAPIClient(session: session(), cache: cache, apiKey: "OFFLINE_EXISTING_KEY", mode: .mock, bundledSavedCourses: nil)
+        let client = GolfAPIClient(session: session(), cache: cache, mode: .mock, bundledSavedCourses: nil)
         for refresh in [false, true] {
             let clubs = try await client.searchClubs(named: "Hills", country: "Sweden", forceRefresh: refresh)
             #expect(clubs.map(\.clubName) == ["Cached Hills regression fixture", "Demo Hills"])
@@ -120,7 +120,7 @@ import Testing
         let bundle = BundledSavedCourseStore()
         let id = BundledSavedCourseStore.hillsCourseID
         let client = GolfAPIClient(session: session(), cache: GolfAPICache(directoryURL: root),
-            apiKey: "IGNORED_OFFLINE_KEY", mode: .mock, bundledSavedCourses: bundle)
+            mode: .mock, bundledSavedCourses: bundle)
         for refresh in [false, true] {
             let clubs = try await client.searchClubs(named: "Hills", country: "Sweden", forceRefresh: refresh)
             let club = try #require(clubs.first)
@@ -185,10 +185,9 @@ import Testing
     }
 
     @Test func terrainSendGatePrecedesDispatchEvenForLiveRequest() async throws {
-        let client = GPXZElevationClient(key: "OFFLINE_EXISTING_KEY", session: session(), mode: .mock)
-        #expect(client.key.isEmpty)
+        let client = GPXZElevationClient(session: session(), mode: .mock)
         let path = [GeoPoint(lat: 57.623, lon: 12), GeoPoint(lat: 57.626, lon: 12.001)]
-        let request = URLRequest(url: URL(string: "https://api.gpxz.io/v1/elevation/sample")!)
+        let request = URLRequest(url: URL(string: "https://supabase.example.test/functions/v1/golf-data/api/v1/elevation/sample")!)
         let record = try await client.send(request, path: path, count: 100, dispatch: { _ in
             Issue.record("Mock must never enter the URLSession dispatch gate")
             return false
@@ -216,7 +215,7 @@ import Testing
         try ledgerBytes.write(to: ledgerURL)
         let marker = ledgerURL.appendingPathExtension("initialized"), markerBytes = Data("untouched marker".utf8)
         try markerBytes.write(to: marker)
-        let client = GPXZElevationClient(key: "OFFLINE_EXISTING_KEY", session: session(), mode: .mock)
+        let client = GPXZElevationClient(session: session(), mode: .mock)
         let path = [GeoPoint(lat: 57.623, lon: 12), GeoPoint(lat: 57.625, lon: 12)]
         for _ in 0..<2 {
             let repo = GPXZTerrainRepository(root: root, client: client, ledgerURL: ledgerURL)

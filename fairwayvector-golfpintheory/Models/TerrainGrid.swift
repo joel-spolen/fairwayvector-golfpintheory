@@ -71,17 +71,17 @@ nonisolated enum TerrainError: Error, LocalizedError, Sendable {
     var errorDescription: String? {
         switch self {
         case .invalidPath: "Terrain path must contain valid WGS84 points (maximum 5,000)."
-        case .invalidResponse: "GPXZ returned an invalid profile; nothing was saved."
+        case .invalidResponse: "Supabase returned an invalid terrain profile; nothing was saved."
         case .cacheUnavailable: "Terrain cache could not be read or saved. Paid requests are blocked; preserve the cache and resolve the storage issue."
-        case .ledgerUnavailable: "The GPXZ quota ledger is unreadable. Paid requests are blocked; do not delete it to bypass the limit."
+        case .ledgerUnavailable: "The local terrain request ledger is unreadable. Requests are blocked; do not delete it to bypass the limit."
         case .exhausted: "The local 100-call UTC monthly limit is exhausted. Showing saved terrain only."
-        case .notConfigured: "GPXZ is not configured. Set GPXZ_API_KEY in the optional GPXZ.local.xcconfig. Saved terrain remains available."
+        case .notConfigured: "The authenticated Supabase terrain service is unavailable. Sign in and check the app's Supabase configuration. Saved terrain remains available."
         case .requestPaused: "Terrain acquisition paused for target interaction. Release a target to request its missing shot terrain."
         case .http(let status, let reason):
-            "GPXZ request failed (HTTP \(status)). \(reason ?? "Provider supplied no usable error detail.") No automatic retry."
-        case .transport: "GPXZ could not complete the request. No automatic retry; the reservation is retained."
+            "Supabase terrain request failed (HTTP \(status)). \(reason ?? "The data service supplied no usable detail.") No automatic retry."
+        case .transport: "Supabase could not complete the terrain request. No automatic retry; the local reservation is retained."
         case .failedRequest(let reason): "\(reason) Identical failed request blocked. Correct the cause, then confirm Retry terrain to try again."
-        case .retryAfter(let date): "GPXZ requests are paused until \(date.formatted()). Retry explicitly afterwards."
+        case .retryAfter(let date): "Supabase has paused terrain requests until \(date.formatted()). Retry explicitly afterwards."
         }
     }
 }

@@ -1,4 +1,2 @@
-// Development evaluation only: bundled credentials are extractable. Production needs a proxy.
+// Development only: live provider access is routed through the authenticated Supabase Edge Function.
 GPXZ_API_MODE = mock
-GPXZ_API_KEY =
-#include? "GPXZ.local.xcconfig"

@@ -77,6 +77,15 @@ final class PinTheoryAuthService: ObservableObject {
                                              publishableKey: configuration.publishableKey)
     }
 
+    /// User bearer tokens authorize requests to the project's Edge Function only;
+    /// provider credentials are never read or sent by the iOS process.
+    func providerDataAccessToken() async throws -> String {
+        guard case .authenticated(let identity) = state else {
+            throw PinTheoryAuthError.authenticationRequired
+        }
+        return try await authenticatedAccessToken(for: identity.userID)
+    }
+
     init(configuration: PinTheoryAuthConfiguration, storage: (any AuthLocalStorage)? = nil,
          fetch: @escaping AuthClient.FetchHandler = { try await URLSession.shared.data(for: $0) },
          deletionFetch: AuthClient.FetchHandler? = nil,

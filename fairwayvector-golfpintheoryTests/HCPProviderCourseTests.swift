@@ -100,7 +100,8 @@ struct HCPProviderCourseTests {
             let cache = GolfAPICache(directoryURL: root)
             let bytes = try JSONSerialization.data(withJSONObject: json())
             cache.writeCourseDetail(bytes, id: "hcp-real-course")
-            let client = GolfAPIClient(session: forbiddenSession(), cache: cache, apiKey: "",
+            let client = GolfAPIClient(session: forbiddenSession(), cache: cache,
+                                       projectURL: URL(string: "https://edge.example.test"),
                                        mode: mode, bundledSavedCourses: nil)
             #expect(client.cachedClubs().isEmpty)
             let club = try #require(client.cachedClubs(requiresGPS: false).first)
@@ -136,7 +137,7 @@ struct HCPProviderCourseTests {
         let cache = GolfAPICache(directoryURL: root)
         let bytes = try JSONSerialization.data(withJSONObject: json())
         cache.writeCourseDetail(bytes, id: "hcp-real-course")
-        let client = GolfAPIClient(session: forbiddenSession(), cache: cache, apiKey: "", mode: .mock, bundledSavedCourses: nil)
+        let client = GolfAPIClient(session: forbiddenSession(), cache: cache, mode: .mock, bundledSavedCourses: nil)
         let club = try #require(client.cachedClubs(requiresGPS: false).first)
         let detail = try GolfAPICourseDetail(json: json())
         let reference = GolfAPICourseSelection(club: club, course: club.courses[0],
@@ -157,7 +158,7 @@ struct HCPProviderCourseTests {
         defer { try? FileManager.default.removeItem(at: root) }
         let bundle = BundledSavedCourseStore()
         let client = GolfAPIClient(session: forbiddenSession(), cache: GolfAPICache(directoryURL: root),
-            apiKey: "", mode: .mock, bundledSavedCourses: bundle)
+            mode: .mock, bundledSavedCourses: bundle)
         let club = try #require(client.cachedClubs(requiresGPS: false).first { club in
             club.courses.contains { $0.courseID == BundledSavedCourseStore.hillsCourseID }
         })

@@ -88,7 +88,7 @@ struct GolfAPITests {
         return GolfAPIClient(
             session: URLSession(configuration: configuration),
             cache: GolfAPICache(directoryURL: directory),
-            apiKey: "unit-test-key",
+            projectURL: URL(string: "https://edge.example.test")!,
             mode: .live // Explicit transport evaluation; this session intercepts every request offline.
         )
     }
@@ -107,6 +107,16 @@ struct GolfAPITests {
         #expect(detail.tees.first?.rating(for: "male") == 70.1)
         #expect(detail.tees.first?.rating(for: "female") == nil)
         #expect(detail.tees.first?.lengthsMeters[0] == 380 * 0.9144)
+    }
+
+    @Test func providerDataEndpointsAreFixedToSupabaseEdgeFunction() throws {
+        let project = URL(string: "https://project.example.test")!
+        let golf = try #require(SupabaseProviderEndpoint.dataURL(projectURL: project, route: "/golf/clubs"))
+        let elevation = try #require(SupabaseProviderEndpoint.dataURL(projectURL: project, route: "/elevation/sample"))
+        #expect(golf.absoluteString == "https://project.example.test/functions/v1/golf-data/api/v1/golf/clubs")
+        #expect(elevation.absoluteString == "https://project.example.test/functions/v1/golf-data/api/v1/elevation/sample")
+        #expect(SupabaseProviderEndpoint.dataURL(projectURL: URL(string: "http://project.example.test"), route: "/golf/clubs") == nil)
+        #expect(SupabaseProviderEndpoint.dataURL(projectURL: project, route: "//api.gpxz.io/v1/elevation/sample") == nil)
     }
 
     @Test func buildsPointOnlyHolesWithRatingsParIndexesAndTeeLengths() throws {
@@ -136,7 +146,10 @@ struct GolfAPITests {
         defer { try? FileManager.default.removeItem(at: directory) }
         let response = Data(courseDetailJSON.utf8)
         let client = makeClient(directory: directory) { request in
-            #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer unit-test-key")
+            #expect(request.url?.host == "edge.example.test")
+            #expect(request.url?.path == "/functions/v1/golf-data/api/v1/golf/courses/course-123")
+            #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
+            #expect(request.value(forHTTPHeaderField: "x-api-key") == nil)
             return (200, response)
         }
 
@@ -153,8 +166,8 @@ struct GolfAPITests {
         let coordinateData = Data(coordinatesJSON.utf8)
         let client = makeClient(directory: directory) { request in
             switch request.url?.path {
-            case "/api/v2.3/courses/course-123": (200, detailData)
-            case "/api/v2.3/coordinates/course-123": (200, coordinateData)
+            case "/functions/v1/golf-data/api/v1/golf/courses/course-123": (200, detailData)
+            case "/functions/v1/golf-data/api/v1/golf/coordinates/course-123": (200, coordinateData)
             default: (404, Data())
             }
         }
@@ -173,7 +186,9 @@ struct GolfAPITests {
         let response = Data(#"{"apiRequestsLeft":"99.9","numClubs":1,"clubs":[{"clubID":"club-1","clubName":"Åre Golfklubb","city":"Åre","state":"Jämtland","country":"Sweden","courses":[] }]}"#.utf8)
         let client = makeClient(directory: directory) { request in
             #expect(request.url?.query?.contains("country=Sweden") == true)
-            #expect(request.value(forHTTPHeaderField: "Authorization") == "Bearer unit-test-key")
+            #expect(request.url?.host == "edge.example.test")
+            #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
+            #expect(request.value(forHTTPHeaderField: "x-api-key") == nil)
             return (200, response)
         }
 
@@ -194,6 +209,7 @@ struct GolfAPITests {
             #expect(query["country"] == "Sweden")
             #expect(query["state"] == "Jämtland")
             #expect(query["name"] == "Åre")
+            #expect(request.url?.path == "/functions/v1/golf-data/api/v1/golf/clubs")
             return (200, Data(#"{"apiRequestsLeft":"99.9","numClubs":0,"clubs":[]}"#.utf8))
         }
 
@@ -202,7 +218,7 @@ struct GolfAPITests {
         GolfAPIStubProtocol.handler = nil
     }
 
-    @Test func missingAPIKeyFailsBeforeNetworkRequest() async {
+    @Test func missingSupabaseConfigurationFailsBeforeNetworkRequest() async {
         let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
         defer { try? FileManager.default.removeItem(at: directory) }
         GolfAPIStubProtocol.handler = { _ in (200, Data(#"{"clubs":[]}"#.utf8)) }
@@ -212,15 +228,15 @@ struct GolfAPITests {
         let noKeyClient = GolfAPIClient(
             session: URLSession(configuration: configuration),
             cache: GolfAPICache(directoryURL: directory),
-            apiKey: "",
+            projectURL: URL(string: "http://edge.example.test"),
             mode: .live
         )
 
         do {
             _ = try await noKeyClient.searchClubs(named: "Åre", country: "Sweden")
-            Issue.record("Expected a missing Golf API key error")
+            Issue.record("Expected missing Supabase project configuration")
         } catch let error as GolfAPIError {
-            #expect(error == .missingAPIKey)
+            #expect(error == .missingDataServiceConfiguration)
             #expect(GolfAPIStubProtocol.requestCount == 0)
         } catch {
             Issue.record("Unexpected error: \(error)")

@@ -244,7 +244,7 @@ struct GolfAPICourseSelection: Hashable, Identifiable {
 }
 
 enum GolfAPIError: LocalizedError, Equatable {
-    case missingAPIKey
+    case missingDataServiceConfiguration
     case unauthorized
     case httpStatus(Int)
     case invalidResponse(String)
@@ -254,14 +254,14 @@ enum GolfAPIError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .missingAPIKey:
-            return "Golf API is not configured. Add GOLF_API_KEY to the app target's build settings."
+        case .missingDataServiceConfiguration:
+            return "Supabase provider data is not configured in this app build."
         case .unauthorized:
-            return "Golf API rejected the key. Check that the API key is active."
+            return "Supabase could not authorize this provider-data request. Sign in again and retry."
         case .httpStatus(let status):
-            return "Golf API returned HTTP \(status). Try again shortly."
+            return "Supabase provider-data request returned HTTP \(status). Try again shortly."
         case .invalidResponse(let detail):
-            return "Golf API returned incomplete course data: \(detail)"
+            return "Supabase returned incomplete course data: \(detail)"
         case .noGPSData(let course):
             return "\(course) has no GPS coordinates in Golf API."
         case .noRatedTees(let course):

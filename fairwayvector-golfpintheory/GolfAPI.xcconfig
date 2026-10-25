@@ -1,6 +1,4 @@
 // Safe in Debug AND Release, regardless of an existing key. Live requires explicit opt-in.
 GOLF_API_MODE = mock
-GOLF_API_KEY =
-#include? "GolfAPI.local.xcconfig"
 #include "GPXZ.xcconfig"
 #include "Accounts.xcconfig"

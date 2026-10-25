@@ -6,19 +6,18 @@ struct GolfAPICoursePayload {
 }
 
 struct GolfAPIClient {
-    static let baseURL = URL(string: "https://golfapi.io/api/v2.3")!
     static let shared = GolfAPIClient()
 
-    private let session: URLSession
+    private let session: URLSession?
     private let cache: GolfAPICache
-    private let apiKey: String
+    private let edgeBaseURL: URL?
     private let bundledSavedCourses: BundledSavedCourseStore?
     let mode: DevelopmentAPIConfiguration.Mode
 
     init(
-        session: URLSession = .shared,
+        session: URLSession? = nil,
         cache: GolfAPICache = GolfAPICache(),
-        apiKey: String? = nil,
+        projectURL: URL? = nil,
         mode: DevelopmentAPIConfiguration.Mode = DevelopmentAPIConfiguration.current.golfAPI,
         bundledSavedCourses: BundledSavedCourseStore? = BundledSavedCourseStore()
     ) {
@@ -26,12 +25,11 @@ struct GolfAPIClient {
         self.cache = cache
         self.mode = mode
         self.bundledSavedCourses = bundledSavedCourses
-        self.apiKey = mode == .mock ? "" : (apiKey ?? (Bundle.main.object(forInfoDictionaryKey: "GOLF_API_KEY") as? String ?? ""))
+        edgeBaseURL = SupabaseProviderEndpoint.functionBase(projectURL: projectURL)
     }
 
     var isConfigured: Bool {
-        mode == .mock || (!apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-            && !apiKey.contains("$(") && !apiKey.contains("${"))
+        mode == .mock || edgeBaseURL != nil
     }
 
     func searchClubs(
@@ -68,7 +66,7 @@ struct GolfAPIClient {
         if !normalizedCountry.isEmpty { queryItems.append(URLQueryItem(name: "country", value: normalizedCountry)) }
         if !normalizedRegion.isEmpty { queryItems.append(URLQueryItem(name: "state", value: normalizedRegion)) }
         if !normalizedQuery.isEmpty { queryItems.append(URLQueryItem(name: "name", value: normalizedQuery)) }
-        let data = try await get("/clubs", queryItems: queryItems)
+        let data = try await get("/golf/clubs", queryItems: queryItems)
         _ = try Self.decodeClubs(from: data)
         if mode == .live { cache.writeSearch(data, query: normalizedQuery, country: normalizedCountry, region: normalizedRegion) }
         return try Self.decodeClubs(from: data)
@@ -87,7 +85,7 @@ struct GolfAPIClient {
           if (mode == .mock || !forceRefresh), let bytes = bundledSavedCourses?.detail(id: id),
               let detail = try? Self.decodeDetail(from: bytes), detail.courseID == id { return detail }
           if mode == .mock, id != DevelopmentGolfAPIFixtures.courseID { throw GolfAPIError.savedCourseUnavailable(id) }
-        let data = try await get("/courses/\(id)")
+        let data = try await get("/golf/courses/\(id)")
         let detail = try Self.decodeDetail(from: data)
         guard detail.courseID == id else {
             throw GolfAPIError.invalidResponse("The returned course ID does not match the requested course.")
@@ -107,7 +105,7 @@ struct GolfAPIClient {
           if (mode == .mock || !forceRefresh), let bytes = bundledSavedCourses?.coordinates(id: id),
               let coordinates = try? Self.decodeCoordinates(from: bytes, expectedCourseID: id) { return coordinates }
           if mode == .mock, id != DevelopmentGolfAPIFixtures.courseID { throw GolfAPIError.savedCourseUnavailable(id) }
-        let data = try await get("/coordinates/\(id)")
+        let data = try await get("/golf/coordinates/\(id)")
         let coordinates = try Self.decodeCoordinates(from: data, expectedCourseID: id)
         if mode == .live { cache.writeCoordinates(data, id: id) }
         return coordinates
@@ -133,7 +131,7 @@ struct GolfAPIClient {
     func checkForUpdates(to detail: GolfAPICourseDetail) async throws -> Bool {
         guard mode == .live else { return false }
         guard let timestamp = detail.timestampUpdated, !timestamp.isEmpty else { return false }
-        let data = try await get("/courses", queryItems: [
+        let data = try await get("/golf/courses", queryItems: [
             URLQueryItem(name: "country", value: "Sweden"),
             URLQueryItem(name: "name", value: detail.clubName),
             URLQueryItem(name: "timestampUpdated", value: timestamp),
@@ -222,27 +220,49 @@ struct GolfAPIClient {
     }
 
     private func get(_ path: String, queryItems: [URLQueryItem] = []) async throws -> Data {
-        // Hard gate at the only transport boundary, BEFORE keys, URLRequest or URLSession.
-        if mode == .mock { return try DevelopmentGolfAPIFixtures.response(path: path, queryItems: queryItems) }
-        guard !DevelopmentAPIConfiguration.isDemoCourse(path) else {
-            throw GolfAPIError.invalidResponse("Demo IDs cannot be sent to the live provider. Select a real course after rebuilding in live mode.")
+        // Mock mode is fixture-only. Live mode is restricted to Supabase's
+        // authenticated Edge Function; no provider URL or provider key exists here.
+        if mode == .mock {
+            let fixturePath = path.hasPrefix("/golf/") ? String(path.dropFirst("/golf".count)) : path
+            return try DevelopmentGolfAPIFixtures.response(path: fixturePath, queryItems: queryItems)
         }
-        guard isConfigured else { throw GolfAPIError.missingAPIKey }
-        var components = URLComponents(url: Self.baseURL.appending(path: path), resolvingAgainstBaseURL: false)!
+        guard let edgeBaseURL else { throw GolfAPIError.missingDataServiceConfiguration }
+        var components = URLComponents(url: edgeBaseURL.appending(path: String(path.dropFirst())), resolvingAgainstBaseURL: false)!
         if !queryItems.isEmpty { components.queryItems = queryItems }
         var request = URLRequest(url: components.url!)
         request.httpMethod = "GET"
         request.timeoutInterval = 25
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
-        let (data, response) = try await session.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw GolfAPIError.invalidResponse("The server did not return an HTTP response.")
-        }
-        guard http.statusCode != 401 && http.statusCode != 403 else { throw GolfAPIError.unauthorized }
-        guard (200..<300).contains(http.statusCode) else { throw GolfAPIError.httpStatus(http.statusCode) }
-        return data
+        let result: SupabaseProviderResponse
+        do {
+            if let session {
+                let (data, response) = try await session.data(for: request)
+                guard let http = response as? HTTPURLResponse else {
+                    throw GolfAPIError.invalidResponse("The data service did not return an HTTP response.")
+                }
+                let headers: [String: String] = Dictionary(uniqueKeysWithValues: http.allHeaderFields.compactMap { key, value -> (String, String)? in
+                    guard let key = key as? String else { return nil }
+                    return (key, String(describing: value))
+                })
+                result = SupabaseProviderResponse(data: data, statusCode: http.statusCode, headers: headers)
+            } else {
+                result = try await SupabaseProviderGateway.shared.send(request)
+            }
+        } catch let error as GolfAPIError { throw error }
+        catch let error as SupabaseProviderError {
+            switch error {
+            case .authenticationRequired: throw GolfAPIError.unauthorized
+            case .configurationUnavailable: throw GolfAPIError.missingDataServiceConfiguration
+            case .httpStatus(let status, _, _): throw GolfAPIError.httpStatus(status)
+            case .requestRejected: throw GolfAPIError.invalidResponse("The provider-data request exceeded service limits.")
+            case .transportUnavailable: throw GolfAPIError.httpStatus(503)
+            }
+        } catch { throw GolfAPIError.httpStatus(503) }
+
+        guard result.statusCode != 401 && result.statusCode != 403 else { throw GolfAPIError.unauthorized }
+        guard (200..<300).contains(result.statusCode) else { throw GolfAPIError.httpStatus(result.statusCode) }
+        return result.data
     }
 
     private static func decodeClubs(from data: Data) throws -> [GolfAPIClub] {

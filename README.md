@@ -42,14 +42,11 @@ xcodebuild -project fairwayvector-golfpintheory.xcodeproj \
 
 To compile the app and test bundles without executing tests, replace `build` with `build-for-testing`. Use Xcode's Test action only when test execution is authorized for the current development task.
 
-## API configuration and development safety
+## Provider data and development safety
 
-Golf API and GPXZ are **mocked by default** in both Debug and Release. Their tracked defaults are in `fairwayvector-golfpintheory/GolfAPI.xcconfig` and `fairwayvector-golfpintheory/GPXZ.xcconfig`. Each may optionally include a local, ignored configuration file:
+The app never calls GolfAPI or GPXZ directly and contains no provider API keys. In mock mode, course and terrain fixtures stay local. In live mode, the app sends authenticated requests to the project's `golf-data` Supabase Edge Function; that server function owns provider calls, cache/budget gates, and provider secrets. `GOLF_API_MODE` and `GPXZ_API_MODE` remain build-time `mock`/`live` switches only; `live` means Supabase Edge Function, not direct provider access.
 
-- `fairwayvector-golfpintheory/GolfAPI.local.xcconfig`
-- `fairwayvector-golfpintheory/GPXZ.local.xcconfig`
-
-Keep API keys in these local files or another approved secret store. Do not commit credentials, paste them into chat, or add them to tracked project settings. A key by itself does not enable a live provider: live access requires an explicit `GOLF_API_MODE = live` or `GPXZ_API_MODE = live` build-setting override. Confirm the intended provider mode in the app's Settings before testing. Return it to `mock` when live testing is complete.
+Store `GOLF_API_KEY` and `GPXZ_API_KEY` only as Supabase Edge Function secrets. The ignored file in the Supabase repo at `supabase/functions/.env.local` is a local-only transfer file for the Supabase CLI; it is not bundled into the iOS app or committed. Replace any rotated provider keys there, then apply them with the Supabase CLI `secrets set --env-file` option, targeting the intended project. Never paste key values into chat, source, GitHub workflow files, or Xcode build settings. Provider acquisition is separately disabled by default in the database and must be explicitly approved/enabled after reviewing licensing, budgets, and controls.
 
 Open-Meteo weather and Apple Maps are separate from these provider switches and may use network access. Mock terrain and demo course data are for development only; do not describe them as surveyed or official data.
 

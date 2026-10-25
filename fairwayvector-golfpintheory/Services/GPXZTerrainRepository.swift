@@ -266,7 +266,7 @@ actor GPXZTerrainRepository {
                 }
                 guard !ledgerBlocked else { throw TerrainError.ledgerUnavailable }
                 let span = TerrainGeometry.slice(initial.path, from: gap.lowerBound, to: gap.upperBound)
-                let (request, count) = try client.request(path: span)
+                let (request, count) = try client.request(path: span, courseID: courseID)
                 let fingerprint = SHA256.hash(data: request.httpBody ?? Data())
                     .map { String(format: "%02x", $0) }.joined()
                 try await ledger.checkFailure(fingerprint) // BEFORE another reservation.

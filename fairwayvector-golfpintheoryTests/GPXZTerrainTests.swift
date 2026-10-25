@@ -87,7 +87,7 @@ import Testing
 
     @Test func strictResponseValidationAndHonestLongSpacing() throws {
         let path = [a, point(600)]
-        let client = GPXZElevationClient(key: "OFFLINE_NOT_A_REAL_KEY", session: mockSession(), mode: .live)
+        let client = GPXZElevationClient(session: mockSession(), projectURL: URL(string: "https://edge.example.test"), mode: .live)
         let (request, count) = try client.request(path: path)
         #expect(count == 512)
         let body = try #require(request.httpBody)
@@ -107,11 +107,11 @@ import Testing
         #expect(throws: TerrainError.self) {
             try GPXZElevationClient.validate(data: invalid, path: path, count: count, datasetVersion: nil, fetchedAt: .now)
         }
-        #expect(!GPXZElevationClient(key: "$(GPXZ_API_KEY)", session: mockSession(), mode: .live).configured)
+        #expect(!GPXZElevationClient(session: mockSession(), projectURL: URL(string: "http://edge.example.test"), mode: .live).configured)
     }
 
     @Test func formSampleCountAndCoordinatesRoundTripAtBounds() throws {
-        let client = GPXZElevationClient(key: "OFFLINE_NOT_A_REAL_KEY", session: mockSession(), mode: .live)
+        let client = GPXZElevationClient(session: mockSession(), projectURL: URL(string: "https://edge.example.test"), mode: .live)
         for length in [0.1, 1.1, 100, 510, 511, 600] {
             let path = [a, point(length)]
             let (request, count) = try client.request(path: path)
@@ -123,6 +123,9 @@ import Testing
         let scientific = [GeoPoint(lat: -0.000001, lon: -82.22), GeoPoint(lat: 0.000001, lon: -82.27)]
         let form = try GPXZOfflineForm.decode(client.request(path: scientific).0)
         #expect(form["latlons"] == scientific.map { "\($0.lat),\($0.lon)" }.joined(separator: "|"))
+        let courseForm = try GPXZOfflineForm.decode(client.request(path: scientific, courseID: "golfapi:course-123").0)
+        #expect(courseForm["courseID"] == "course-123")
+        #expect(try GPXZOfflineForm.decode(client.request(path: scientific, courseID: "osm:123").0)["courseID"] == nil)
         #expect(throws: TerrainError.self) { try client.request(path: [a, a]) }
         #expect(throws: TerrainError.self) { try client.request(path: [a, GeoPoint(lat: .nan, lon: 12)]) }
     }
@@ -132,7 +135,7 @@ import Testing
         defer { try? FileManager.default.removeItem(at: root) }
         let url = root.appendingPathComponent("ledger.json")
         let repo = GPXZTerrainRepository(root: root,
-            client: GPXZElevationClient(key: "", session: mockSession(), mode: .live), ledgerURL: url)
+            client: GPXZElevationClient(session: mockSession(), projectURL: URL(string: "http://edge.example.test"), mode: .live), ledgerURL: url)
         let store = TerrainElevationStore(repository: repo)
         let request = TerrainRequest(courseID: identity, holeNumber: 1, path: [a, point(200)],
             flag: point(200), origin: point(20), target: point(100), usesPointOnlyGeometry: true, usesGPS: true)
@@ -156,17 +159,12 @@ import Testing
     }
 
     @Test func providerErrorsExposeOnlySanitizedDocumentedDetail() throws {
-        let detail = Data(#"{"status":"INVALID_REQUEST","error":"samples must be an integer between 2 and 512"}"#.utf8)
-        #expect(GPXZElevationClient.providerReason(data: detail, key: "OFFLINE") == "samples must be an integer between 2 and 512")
-        let unsafe = Data(#"{"error":"x-api-key: OFFLINE_SECRET https://example.invalid/?api_key=OFFLINE_SECRET"}"#.utf8)
-        let sanitized = try #require(GPXZElevationClient.providerReason(data: unsafe, key: "OFFLINE_SECRET"))
-        #expect(!sanitized.contains("OFFLINE_SECRET"))
-        #expect(!sanitized.contains("https://"))
-        #expect(!sanitized.contains("x-api-key"))
-        let echoed = Data(#"{"error":"rejected OFFLINE_SECRET at https://example.invalid/private"}"#.utf8)
-        #expect(GPXZElevationClient.providerReason(data: echoed, key: "OFFLINE_SECRET") == "rejected [redacted] at [redacted]")
-        #expect(GPXZElevationClient.providerReason(data: Data("<html>not JSON</html>".utf8), key: "OFFLINE") == nil)
-        #expect(GPXZElevationClient.providerReason(data: Data(repeating: 32, count: 65_537), key: "OFFLINE") == nil)
+        let detail = Data(#"{"error":{"code":"invalid_request","message":"Request rejected."}}"#.utf8)
+        #expect(GPXZElevationClient.edgeErrorMessage(data: detail) == "Request rejected.")
+        let unsafe = Data(#"{"error":{"code":"invalid_request","message":"x-api-key: secret https://example.invalid/private"}}"#.utf8)
+        #expect(GPXZElevationClient.edgeErrorMessage(data: unsafe) == nil)
+        #expect(GPXZElevationClient.edgeErrorMessage(data: Data("<html>not JSON</html>".utf8)) == nil)
+        #expect(GPXZElevationClient.edgeErrorMessage(data: Data(repeating: 32, count: 65_537)) == nil)
     }
 
     @Test func ledgerPersistsUncertainReservationsAndFailsClosed() async throws {
@@ -192,7 +190,7 @@ import Testing
         let directory = CourseDataStore.directory(courseID: identity, root: root)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         try JSONEncoder().encode(cache([record([a, point(200)])])).write(to: directory.appendingPathComponent("terrain-gpxz-v1.json"), options: .atomic)
-        let client = GPXZElevationClient(key: "", session: mockSession(), mode: .live)
+        let client = GPXZElevationClient(session: mockSession(), projectURL: URL(string: "http://edge.example.test"), mode: .live)
         for _ in 0..<2 {
             let repository = GPXZTerrainRepository(root: root, client: client, ledgerURL: root.appendingPathComponent("ledger.json"))
             let result = await repository.profile(courseID: identity, path: [point(150), point(50)], straight: true)
@@ -209,6 +207,7 @@ import Testing
     private func mockSession() -> URLSession {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [GPXZForbiddenNetworkProtocol.self]
+        configuration.connectionProxyDictionary = ["HTTPEnable": 1, "HTTPProxy": "127.0.0.1", "HTTPPort": 8080]
         return URLSession(configuration: configuration)
     }
 }

@@ -66,6 +66,9 @@ final class PinTheoryAccountSession: ObservableObject {
             projectHost = configuration.projectURL.host
             let service = PinTheoryAuthService(configuration: configuration)
             auth = service
+            if let providerConfiguration = try? service.accountSyncConfiguration() {
+                SupabaseProviderGateway.shared.configure(configuration: providerConfiguration, auth: service)
+            }
             subscription = service.$state.sink { [weak self] state in self?.apply(state) }
             busySubscription = service.$isBusy.sink { [weak self] busy in
                 guard !busy else { return }
