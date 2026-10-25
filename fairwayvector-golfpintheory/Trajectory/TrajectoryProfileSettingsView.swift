@@ -262,7 +262,7 @@ private struct ExpertProfileView: View {
 
 struct BagClubsView: View {
     @ObservedObject var profileStore: PlayerProfileStore
-    @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
+    @Binding var storedWedges: String
 
     var body: some View {
         List {

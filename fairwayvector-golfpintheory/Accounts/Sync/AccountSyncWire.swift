@@ -2,12 +2,15 @@ import Foundation
 
 /// Foundation DTOs only. No existing archive is approved for upload by these types.
 nonisolated enum AccountSyncError: Error, Sendable, Equatable, LocalizedError {
+    case rpcFailure(endpoint: String, httpStatus: Int, code: String)
     case invalidWire, invalidConfiguration, authenticationRequired, accountUnavailable
     case requestRejected, serverContractUnavailable, transportUnavailable, storageUnavailable, invalidJournal
     case mutationIDReused, recordBusy, staleOperation
 
     var errorDescription: String? {
         switch self {
+        case .rpcFailure(let endpoint, let httpStatus, let code):
+            "Cloud sync request failed (\(endpoint), HTTP \(httpStatus), code \(code))."
         case .authenticationRequired: "Sign in again to sync."
         case .accountUnavailable: "This account is unavailable for sync."
         case .serverContractUnavailable: "Cloud sync is not ready on this server yet. Your saved data remains on this device."

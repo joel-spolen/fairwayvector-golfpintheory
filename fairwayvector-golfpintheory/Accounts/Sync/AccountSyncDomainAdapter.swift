@@ -1,6 +1,12 @@
 import CryptoKit
 import Foundation
 
+private extension Array where Element: Hashable {
+    var nilIfDuplicates: [Element]? {
+        Set(self).count == count ? self : nil
+    }
+}
+
 /// Portable account-owned records. Preferences, active drafts, downloaded course catalogs,
 /// and course geometry are intentionally excluded.
 enum AccountSyncDomainAdapter {
@@ -34,6 +40,28 @@ enum AccountSyncDomainAdapter {
     private struct GolferProfilePayload: Codable {
         let name: String
         let lowHandicapIndex: Double?
+    }
+
+    private struct ClubOverridePayload: Codable {
+        let club: String
+        let carryDistanceM: Double?
+        let ballSpeedMps: Double?
+        let launchAngleDeg: Double?
+        let spinRateRpm: Double?
+        let spinAxisDeg: Double?
+    }
+
+    private struct ClubProfilePayload: Codable {
+        let clientUpdatedAt: String?
+        let schemaVersion: Int
+        let isSetupComplete: Bool
+        let detailLevel: String
+        let handicapBand: String
+        let exactHandicap: Double?
+        let driverCarryM: Double?
+        let sevenIronCarryM: Double?
+        let availableClubs: [String]
+        let clubOverrides: [ClubOverridePayload]
     }
 
     private struct ScorecardPayload: Codable {
@@ -85,6 +113,7 @@ enum AccountSyncDomainAdapter {
     }
 
     private struct WedgePayload: Codable {
+        let clientUpdatedAt: String?
         let name: String
         let brand: String
         let notes: String
@@ -124,6 +153,102 @@ enum AccountSyncDomainAdapter {
 
     static func golferProfileRecordID(ownerID: UUID) -> UUID {
         deterministicID(ownerID: ownerID, namespace: "golfer-profile-v1")
+    }
+
+    static func clubProfileRecordID(ownerID: UUID) -> UUID {
+        deterministicID(ownerID: ownerID, namespace: "trajectory-club-profile-v1")
+    }
+
+    static func clubProfileMutation(_ profile: TrajectoryPlayerProfile, ownerID: UUID,
+                                    modifiedAt: Date = Date()) throws -> AccountSyncMutation {
+        let overrides = profile.clubOverrides.keys.sorted { $0.rawValue < $1.rawValue }.compactMap { club -> ClubOverridePayload? in
+            guard let value = profile.clubOverrides[club], !value.isEmpty else { return nil }
+            return ClubOverridePayload(club: club.rawValue, carryDistanceM: value.carryDistanceM,
+                ballSpeedMps: value.ballSpeedMps, launchAngleDeg: value.launchAngleDeg,
+                spinRateRpm: value.spinRateRpm, spinAxisDeg: value.spinAxisDeg)
+        }
+        let payload = ClubProfilePayload(clientUpdatedAt: isoTimestamp(modifiedAt),
+            schemaVersion: profile.schemaVersion,
+            isSetupComplete: profile.isSetupComplete, detailLevel: profile.detailLevel.rawValue,
+            handicapBand: profile.handicapBand == .twentyFivePlus ? HandicapBand.twentyFiveToThirtyFive.rawValue : profile.handicapBand.rawValue,
+            exactHandicap: profile.exactHandicap, driverCarryM: profile.driverCarryM,
+            sevenIronCarryM: profile.sevenIronCarryM,
+            availableClubs: profile.availableClubs.map(\.rawValue).sorted(), clubOverrides: overrides)
+        try validateClubProfile(profile)
+        return try AccountSyncMutation(recordID: clubProfileRecordID(ownerID: ownerID),
+            kind: .clubProfile, expectedRevision: .zero, payload: encodePayload(payload))
+    }
+
+    static func isDefaultClubProfile(_ profile: TrajectoryPlayerProfile) -> Bool {
+        profile == TrajectoryPlayerProfile()
+    }
+
+    static func clubProfile(from record: AccountSyncLocalRecord) throws -> TrajectoryPlayerProfile {
+        guard record.kind == .clubProfile, !record.isDeleted else { throw AccountSyncError.invalidWire }
+        let payload = try decodePayload(ClubProfilePayload.self, from: record.payload)
+          let decodedClubs = payload.availableClubs.compactMap(TrajectoryGolfClub.init(rawValue:))
+        guard payload.schemaVersion == 1,
+              let detail = ProfileDetailLevel(rawValue: payload.detailLevel),
+              let band = HandicapBand(rawValue: payload.handicapBand),
+              decodedClubs.count == payload.availableClubs.count,
+              decodedClubs.nilIfDuplicates != nil,
+              payload.clubOverrides.map(\.club).nilIfDuplicates != nil else { throw AccountSyncError.invalidWire }
+        var overrides: [TrajectoryGolfClub: ClubLaunchOverride] = [:]
+        for item in payload.clubOverrides {
+            guard let club = TrajectoryGolfClub(rawValue: item.club) else { throw AccountSyncError.invalidWire }
+            overrides[club] = ClubLaunchOverride(carryDistanceM: item.carryDistanceM,
+                ballSpeedMps: item.ballSpeedMps, launchAngleDeg: item.launchAngleDeg,
+                spinRateRpm: item.spinRateRpm, spinAxisDeg: item.spinAxisDeg)
+        }
+        let profile = TrajectoryPlayerProfile(schemaVersion: payload.schemaVersion,
+            isSetupComplete: payload.isSetupComplete, detailLevel: detail, handicapBand: band,
+            exactHandicap: payload.exactHandicap, driverCarryM: payload.driverCarryM,
+            sevenIronCarryM: payload.sevenIronCarryM, clubOverrides: overrides,
+            availableClubs: Set(decodedClubs))
+        try validateClubProfile(profile)
+        return profile
+    }
+
+    static func clubProfileModifiedAt(from record: AccountSyncRecord) -> Date {
+        if let payload = try? decodePayload(ClubProfilePayload.self, from: record.payload),
+           let timestamp = payload.clientUpdatedAt, let date = parseDate(timestamp) {
+            return date
+        }
+        return parseDate(record.updatedAt) ?? .distantPast
+    }
+
+    static func clubProfileModifiedAt(in payload: [String: JSONValue]) -> Date? {
+        bagModifiedAt(in: payload)
+    }
+
+    static func bagModifiedAt(in payload: [String: JSONValue]) -> Date? {
+        guard case .string(let value)? = payload["clientUpdatedAt"] else { return nil }
+        return parseDate(value)
+    }
+
+    static func bagModifiedAt(from record: AccountSyncRecord) -> Date {
+        if let deletedAt = record.deletedAt, let date = parseDate(deletedAt) { return date }
+        if let payloadDate = bagModifiedAt(in: record.payload) { return payloadDate }
+        return parseDate(record.updatedAt) ?? .distantPast
+    }
+
+    private static func validateClubProfile(_ profile: TrajectoryPlayerProfile) throws {
+        let numbers = [profile.exactHandicap, profile.driverCarryM, profile.sevenIronCarryM]
+            .compactMap { $0 }
+        guard profile.schemaVersion == 1,
+              profile.exactHandicap.map({ $0.isFinite && (-5...40).contains($0) }) ?? true,
+              profile.driverCarryM.map({ $0.isFinite && (0...500).contains($0) }) ?? true,
+              profile.sevenIronCarryM.map({ $0.isFinite && (0...300).contains($0) }) ?? true,
+              numbers.allSatisfy(\.isFinite) else { throw AccountSyncError.invalidWire }
+        for override in profile.clubOverrides.values {
+            guard override.carryDistanceM.map({ $0.isFinite && (0...500).contains($0) }) ?? true,
+                  override.ballSpeedMps.map({ $0.isFinite && (0...150).contains($0) }) ?? true,
+                  override.launchAngleDeg.map({ $0.isFinite && (-20...60).contains($0) }) ?? true,
+                  override.spinRateRpm.map({ $0.isFinite && (0...20_000).contains($0) }) ?? true,
+                  override.spinAxisDeg.map({ $0.isFinite && (-180...180).contains($0) }) ?? true else {
+                throw AccountSyncError.invalidWire
+            }
+        }
     }
 
     static func customClubRecordID(ownerID: UUID, club: GolfClub) -> UUID {
@@ -231,12 +356,14 @@ enum AccountSyncDomainAdapter {
              value.courseRating, value.slopeRating, value.ratingSex, value.holePars, value.holeHandicapIndices))
     }
 
-    static func wedgeMutation(_ wedge: Wedge, ownerID: UUID) throws -> AccountSyncMutation {
+    static func wedgeMutation(_ wedge: Wedge, ownerID: UUID,
+                              modifiedAt: Date? = nil) throws -> AccountSyncMutation {
         guard wedge.fullCarry.isFinite, wedge.fullCarry >= 0,
               wedge.syncCarryOverrides.values.allSatisfy({ $0.isFinite && $0 >= 0 }) else {
             throw AccountSyncError.invalidWire
         }
-        let payload = WedgePayload(name: wedge.name, brand: wedge.brand, notes: wedge.notes,
+        let payload = WedgePayload(clientUpdatedAt: modifiedAt.map(isoTimestamp),
+            name: wedge.name, brand: wedge.brand, notes: wedge.notes,
             fullCarry: wedge.fullCarry, isInBag: wedge.isInBag,
             fullCarryUserProvided: wedge.fullCarryUserProvided, carryOverrides: wedge.syncCarryOverrides)
         return try AccountSyncMutation(recordID: wedgeRecordID(ownerID: ownerID, wedgeName: wedge.name),
@@ -440,6 +567,13 @@ enum AccountSyncDomainAdapter {
         if let date = fractional.date(from: value) { return date }
         let standard = ISO8601DateFormatter()
         return standard.date(from: value)
+    }
+
+    private static func isoTimestamp(_ date: Date) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter.string(from: date)
     }
 
     private static func normalized(_ value: String) -> String {

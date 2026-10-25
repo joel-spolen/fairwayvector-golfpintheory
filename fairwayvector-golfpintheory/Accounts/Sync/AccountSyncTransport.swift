@@ -67,7 +67,7 @@ nonisolated final class URLSessionAccountSyncTransport: AccountSyncTransport, Se
     func validateServerContract(accessToken: String) async throws {
         let capabilities: Capabilities = try await post("pintheory_sync_capabilities",
             body: EmptyRPCBody(), accessToken: accessToken)
-        guard capabilities.syncSchemaVersion == 1, capabilities.payloadValidationVersion == 1 else {
+            guard capabilities.syncSchemaVersion == 1, capabilities.payloadValidationVersion == 3 else {
             throw AccountSyncError.serverContractUnavailable
         }
     }
@@ -121,11 +121,17 @@ nonisolated final class URLSessionAccountSyncTransport: AccountSyncTransport, Se
             if code == "PGRST202" || code == "42883" {
                 throw AccountSyncError.serverContractUnavailable
             }
-            if code == "42501" || code == "23503" { throw AccountSyncError.accountUnavailable }
             if http.statusCode == 429 || http.statusCode >= 500 || code == "40001" || code == "40P01" {
                 throw AccountSyncError.transportUnavailable
             }
-            throw AccountSyncError.requestRejected
+            // Only protocol error identifiers are retained, never the server's
+            // message/detail/hint, which may contain account data or submitted fields.
+            let safeCode = code.flatMap { value -> String? in
+                guard (5...12).contains(value.utf8.count),
+                      value.utf8.allSatisfy({ (48...57).contains($0) || (65...90).contains($0) }) else { return nil }
+                return value
+            } ?? "UNKNOWN"
+            throw AccountSyncError.rpcFailure(endpoint: rpc, httpStatus: http.statusCode, code: safeCode)
         }
         do { return try JSONDecoder().decode(Response.self, from: data) }
         catch { throw AccountSyncError.invalidWire }

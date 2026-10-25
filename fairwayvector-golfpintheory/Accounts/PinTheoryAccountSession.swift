@@ -1,10 +1,12 @@
 import Combine
 import Foundation
+import OSLog
 import SwiftData
 
 /// One session owner for all windows. Account content is never opened before auth.
 @MainActor
 final class PinTheoryAccountSession: ObservableObject {
+    private let syncLogger = Logger(subsystem: "com.fairwayvector.app.pintheory", category: "CloudSync")
     let auth: PinTheoryAuthService?
     let browser = PinTheoryWebAuthenticationBroker()
     @Published private(set) var accountData: PinTheoryAccountData?
@@ -13,6 +15,7 @@ final class PinTheoryAccountSession: ObservableObject {
     @Published private(set) var accountDeletionNotice: String?
     @Published private(set) var isSyncingSavedData = false
     @Published private(set) var savedDataSyncMessage: String?
+    @Published private(set) var savedDataSyncFailure: String?
     @Published private(set) var savedDataSyncConflictCount = 0
     @Published private(set) var started = false
     private let projectHost: String?
@@ -24,6 +27,9 @@ final class PinTheoryAccountSession: ObservableObject {
     private var syncRequestedWhileBusy = false
 
     private static let syncOptInKey = "accountSync.savedRecordsOptIn.v1"
+    private static let restoreDeletedRecordsKey = "accountSync.restoreDeletedOnNextSync.v1"
+
+    func dismissSyncFailure() { savedDataSyncFailure = nil }
 
     var hasOptedIntoSavedDataSync: Bool {
         guard let defaults = accountData?.defaults else { return false }
@@ -31,10 +37,12 @@ final class PinTheoryAccountSession: ObservableObject {
     }
 
     func setSavedDataSyncEnabled(_ enabled: Bool, roundStore: PlayedRoundStore,
-                                 profile: PlayerProfile?, modelContext: ModelContext) {
+                                 profile: PlayerProfile?, trajectoryProfileStore: PlayerProfileStore,
+                                 modelContext: ModelContext) {
         guard let defaults = accountData?.defaults else { return }
         defaults.set(enabled, forKey: Self.syncOptInKey)
         guard enabled else {
+            syncLogger.info("Sync preference disabled")
             if let activeSyncCoordinator {
                 Task { await activeSyncCoordinator.invalidate() }
                 self.activeSyncCoordinator = nil
@@ -42,7 +50,10 @@ final class PinTheoryAccountSession: ObservableObject {
             savedDataSyncMessage = "Cloud sync is off. Saved data remains on this device."
             return
         }
-        Task { await enableAndSyncSavedData(roundStore: roundStore, profile: profile, modelContext: modelContext) }
+        syncLogger.info("Sync preference enabled; requesting sync")
+        defaults.set(true, forKey: Self.restoreDeletedRecordsKey)
+        Task { await enableAndSyncSavedData(roundStore: roundStore, profile: profile,
+            trajectoryProfileStore: trajectoryProfileStore, modelContext: modelContext) }
     }
 
     init() {
@@ -187,16 +198,25 @@ final class PinTheoryAccountSession: ObservableObject {
     /// Account-scoped sync for approved saved data. Enabled by default unless the
     /// user turns it off in Settings. Active drafts, preferences, catalogs and geometry stay local.
     func enableAndSyncSavedData(roundStore: PlayedRoundStore, profile: PlayerProfile?,
+                                trajectoryProfileStore: PlayerProfileStore,
                                 modelContext: ModelContext) async {
-        guard let accountData, let auth else { return }
+        guard let accountData, let auth else {
+            syncLogger.error("Sync skipped: account session unavailable")
+            return
+        }
         if isSyncingSavedData {
+            syncLogger.debug("Sync request coalesced while another run is active")
             syncRequestedWhileBusy = true
             return
         }
+        syncLogger.info("Sync run started")
         let wasAlreadyOptedIn = hasOptedIntoSavedDataSync
+        let restoreDeletedRecords = accountData.defaults.bool(forKey: Self.restoreDeletedRecordsKey)
         isSyncingSavedData = true
         accountData.defaults.set(true, forKey: Self.syncOptInKey)
+        savedDataSyncFailure = nil
         savedDataSyncMessage = "Preparing secure sync…"
+        var syncStage = "opening account sync storage"
         defer {
             isSyncingSavedData = false
             activeSyncCoordinator = nil
@@ -204,7 +224,7 @@ final class PinTheoryAccountSession: ObservableObject {
                 syncRequestedWhileBusy = false
                 Task { @MainActor [weak self] in
                     await self?.enableAndSyncSavedData(roundStore: roundStore, profile: profile,
-                                                       modelContext: modelContext)
+                        trajectoryProfileStore: trajectoryProfileStore, modelContext: modelContext)
                 }
             }
         }
@@ -212,6 +232,7 @@ final class PinTheoryAccountSession: ObservableObject {
         do {
             guard case .authenticated(let identity) = auth.state,
                   accountData.id.hasSuffix(identity.userID.uuidString.lowercased()) else {
+                                syncLogger.error("Sync stopped: authenticated identity unavailable")
                 throw AccountSyncError.authenticationRequired
             }
             let configuration = try auth.accountSyncConfiguration()
@@ -225,14 +246,32 @@ final class PinTheoryAccountSession: ObservableObject {
             // fresh device's default profile or same-ID local records from blindly
             // replacing existing cloud data during first-device bootstrap.
             let lastKnown = try journal.snapshot()
+            let clubProfileID = AccountSyncDomainAdapter.clubProfileRecordID(ownerID: identity.userID)
+            if trajectoryProfileStore.clubProfileModifiedAt == nil,
+               !AccountSyncDomainAdapter.isDefaultClubProfile(trajectoryProfileStore.profile) {
+                let prior = lastKnown.localRecords.first { $0.recordID == clubProfileID }
+                let priorProfile = prior.flatMap { record in
+                    record.isDeleted ? nil : try? AccountSyncDomainAdapter.clubProfile(from: record)
+                }
+                if prior == nil || priorProfile != trajectoryProfileStore.profile {
+                    // Preserve a local edit made before Save became explicit rather
+                    // than letting the old cloud snapshot replace it on upgrade.
+                    trajectoryProfileStore.markClubProfileSaved()
+                }
+            }
             savedDataSyncMessage = "Checking saved data in the cloud…"
+            syncStage = "verifying your sign-in"
             let accessToken = try await auth.authenticatedAccessToken(for: identity.userID)
-            // Refuse all sync traffic until the strict payload allowlist migration
-            // is installed. Older foundation-only deployments accept generic JSON.
+            // Refuse all sync traffic until strict payload validation and the
+            // timestamp-aware club-profile migration are installed.
+            syncStage = "checking the server sync version"
+            syncLogger.info("Checking server sync capabilities")
             try await transport.validateServerContract(accessToken: accessToken)
             try Task.checkCancellation()
             guard case .authenticated(let validatedIdentity) = auth.state,
                 validatedIdentity.userID == identity.userID else { throw AccountSyncError.staleOperation }
+            syncStage = "reading cloud records or retrying queued changes"
+            syncLogger.info("Reading remote journal and processing queued mutations")
             _ = try await coordinator.synchronize(ownerID: identity.userID, accessToken: accessToken)
             try Task.checkCancellation()
             guard case .authenticated(let afterPullIdentity) = auth.state,
@@ -255,14 +294,33 @@ final class PinTheoryAccountSession: ObservableObject {
                 guard !queuedIDs.contains(mutation.recordID) else { return }
                 let server = baseline.serverRecords.first { $0.recordID == mutation.recordID }
                 if let server, server.deletedAt == nil, server.payload == payload { return }
+                if mutation.kind == .clubProfile || mutation.kind == .wedge {
+                    guard let localModifiedAt = AccountSyncDomainAdapter.bagModifiedAt(in: payload) else { return }
+                    let serverModifiedAt = server.map(AccountSyncDomainAdapter.bagModifiedAt(from:)) ?? .distantPast
+                    guard localModifiedAt > serverModifiedAt else { return }
+                }
                 let oldServer = lastKnown.serverRecords.first { $0.recordID == mutation.recordID }
                 let oldLocal = lastKnown.localRecords.first { $0.recordID == mutation.recordID }
+                // An unchanged local value is not a new edit. Let the pulled
+                // version restore it instead of resubmitting stale device data.
+                if AccountSyncRestorePolicy.isUnchangedPut(mutation, previous: oldLocal) { return }
                 let hadMatchingBase = oldServer != nil && oldServer?.deletedAt == nil
                     && oldLocal == oldServer.map(AccountSyncLocalRecord.init(record:))
                 let wasPendingBeforePull = lastKnown.pending.contains { $0.recordID == mutation.recordID }
-                let expected = hadMatchingBase
-                    ? (wasPendingBeforePull ? (server?.revision ?? .zero) : (oldServer?.revision ?? .zero))
-                    : (mutation.operation == .delete && wasPendingBeforePull ? (server?.revision ?? .zero) : .zero)
+                let expected: AccountSyncRevision
+                if mutation.kind == .clubProfile || mutation.kind == .wedge {
+                    expected = server?.revision ?? .zero
+                } else if mutation.operation == .put, restoreDeletedRecords,
+                   let server, server.deletedAt != nil {
+                    // A deliberate off/on toggle is the user's explicit request
+                    // to restore surviving local records that the cloud tombstoned.
+                    expected = server.revision
+                } else if hadMatchingBase {
+                    expected = wasPendingBeforePull ? (server?.revision ?? .zero) : (oldServer?.revision ?? .zero)
+                } else {
+                    expected = mutation.operation == .delete && wasPendingBeforePull
+                        ? (server?.revision ?? .zero) : .zero
+                }
                 let prepared = try AccountSyncMutation(mutationID: mutation.mutationID,
                     recordID: mutation.recordID, kind: mutation.kind, expectedRevision: expected,
                     operation: mutation.operation, schemaVersion: mutation.schemaVersion, payload: mutation.payload)
@@ -271,6 +329,7 @@ final class PinTheoryAccountSession: ObservableObject {
                 queued += 1
             }
 
+            syncStage = "preparing saved data for upload"
             // First sync merges this device's saved scorecards into the account.
             // On a fresh device this list is empty and cloud data is pulled.
             for round in roundStore.saved {
@@ -292,14 +351,26 @@ final class PinTheoryAccountSession: ObservableObject {
                 try enqueue(mutation, payload: mutation.payload)
             }
 
+            let localClubProfile = trajectoryProfileStore.profile
+            if let modifiedAt = trajectoryProfileStore.clubProfileModifiedAt {
+                let mutation = try AccountSyncDomainAdapter.clubProfileMutation(localClubProfile,
+                    ownerID: identity.userID, modifiedAt: modifiedAt)
+                try enqueue(mutation, payload: mutation.payload)
+            }
+
             let storedWedgeSetup = accountData.defaults.string(forKey: "wedgeMatrix.wedges") ?? ""
             let hasStoredWedgeSetup = !storedWedgeSetup.isEmpty
             let localWedges = hasStoredWedgeSetup ? Wedge.catalog(from: storedWedgeSetup) : []
             var localWedgeIDs = Set<UUID>()
             for wedge in localWedges {
-                let mutation = try AccountSyncDomainAdapter.wedgeMutation(wedge, ownerID: identity.userID)
+                let modifiedAt = trajectoryProfileStore.wedgeModifiedAt(name: wedge.name)
+                let mutation = try AccountSyncDomainAdapter.wedgeMutation(wedge, ownerID: identity.userID,
+                    modifiedAt: modifiedAt)
                 localWedgeIDs.insert(mutation.recordID)
-                try enqueue(mutation, payload: mutation.payload)
+                let remote = baseline.serverRecords.first { $0.recordID == mutation.recordID }
+                if modifiedAt != nil || remote == nil {
+                    try enqueue(mutation, payload: mutation.payload)
+                }
             }
 
             var localHandicapIDs = Set<UUID>()
@@ -323,8 +394,12 @@ final class PinTheoryAccountSession: ObservableObject {
             if wasAlreadyOptedIn {
                 let currentIDs = Set(customRecords.mutations.map(\.recordID))
                     .union(hasStoredWedgeSetup ? localWedgeIDs : []).union(localHandicapIDs)
+                let materializedIDs = Set((accountData.defaults.stringArray(forKey: "accountSync.materializedIDs.v1") ?? [])
+                    .compactMap(UUID.init(uuidString:)))
                 let deletions = lastKnown.localRecords.filter { prior in
                     !prior.isDeleted
+                        && AccountSyncRestorePolicy.canInferDeletion(recordID: prior.recordID,
+                                                                    materializedIDs: materializedIDs)
                         && [.customClub, .customCourse, .customTee, .wedge, .handicapRound].contains(prior.kind)
                         && (prior.kind != .wedge || hasStoredWedgeSetup)
                         && !currentIDs.contains(prior.recordID)
@@ -371,8 +446,40 @@ final class PinTheoryAccountSession: ObservableObject {
             }
 
             accountData.defaults.set(true, forKey: Self.syncOptInKey)
+            func localSnapshot() throws -> [UUID: AccountSyncLocalRecord] {
+                var mutations = try roundStore.saved.map {
+                    try AccountSyncDomainAdapter.playedRoundMutation($0, expectedRevision: .zero)
+                }
+                mutations += try AccountSyncDomainAdapter.customMutations(ownerID: identity.userID,
+                    clubs: modelContext.fetch(FetchDescriptor<GolfClub>()),
+                    courses: modelContext.fetch(FetchDescriptor<GolfCourse>()),
+                    tees: modelContext.fetch(FetchDescriptor<TeeSet>())).mutations
+                for round in try modelContext.fetch(FetchDescriptor<GolfRound>()) {
+                    mutations.append(try AccountSyncDomainAdapter.handicapRoundMutation(round))
+                }
+                let wedgeJSON = accountData.defaults.string(forKey: "wedgeMatrix.wedges") ?? ""
+                if !wedgeJSON.isEmpty {
+                        for wedge in Wedge.catalog(from: wedgeJSON) {
+                        mutations.append(try AccountSyncDomainAdapter.wedgeMutation(wedge, ownerID: identity.userID,
+                            modifiedAt: trajectoryProfileStore.wedgeModifiedAt(name: wedge.name)))
+                    }
+                }
+                if let currentProfile = try modelContext.fetch(FetchDescriptor<PlayerProfile>()).first {
+                    mutations.append(try AccountSyncDomainAdapter.golferProfileMutation(currentProfile,
+                        ownerID: identity.userID, expectedRevision: .zero))
+                }
+                if let modifiedAt = trajectoryProfileStore.clubProfileModifiedAt {
+                    mutations.append(try AccountSyncDomainAdapter.clubProfileMutation(
+                        trajectoryProfileStore.profile, ownerID: identity.userID, modifiedAt: modifiedAt))
+                }
+                return Dictionary(mutations.map { ($0.recordID, AccountSyncLocalRecord(mutation: $0)) },
+                    uniquingKeysWith: { first, _ in first })
+            }
+            let beforePush = try localSnapshot()
             savedDataSyncMessage = queued > 0 || !baseline.pending.isEmpty
                 ? "Syncing saved records…" : "Checking for cloud updates…"
+            syncStage = "uploading saved changes and downloading updates"
+            syncLogger.info("Uploading local changes and downloading remote updates")
             _ = try await coordinator.synchronize(ownerID: identity.userID, accessToken: accessToken)
             try Task.checkCancellation()
             guard case .authenticated(let current) = auth.state, current.userID == identity.userID,
@@ -380,122 +487,59 @@ final class PinTheoryAccountSession: ObservableObject {
                 throw AccountSyncError.staleOperation
             }
 
-            // Local edits made while the first push was in flight must not be
-            // replaced by that older acknowledged snapshot. Queue the newer local
-            // snapshot against the now-current server revision before applying it.
-            let reconciled = try journal.snapshot()
-            let reconciledConflicts = Set(reconciled.conflicts.map { $0.local.recordID })
-            var followUpQueued = false
-            for round in roundStore.saved {
-                let template = try AccountSyncDomainAdapter.playedRoundMutation(round, expectedRevision: .zero)
-                guard !reconciledConflicts.contains(round.id),
-                      !reconciled.pending.contains(where: { $0.recordID == round.id }) else { continue }
-                guard let server = reconciled.serverRecords.first(where: { $0.recordID == round.id }),
-                      server.deletedAt == nil, server.payload != template.payload else { continue }
-                let update = try AccountSyncMutation(recordID: round.id, kind: .playedRound,
-                    expectedRevision: server.revision, payload: template.payload)
-                try journal.enqueue(update)
-                followUpQueued = true
+            let timestampState = try journal.snapshot()
+            let clubProfileConflicts = timestampState.conflicts.filter {
+                $0.local.kind == .clubProfile || $0.local.kind == .wedge
             }
-            for deletedID in roundStore.pendingCloudDeletions {
-                guard !reconciledConflicts.contains(deletedID),
-                      !reconciled.pending.contains(where: { $0.recordID == deletedID }),
-                      let server = reconciled.serverRecords.first(where: { $0.recordID == deletedID }),
-                      server.deletedAt == nil else { continue }
-                let deletion = try AccountSyncMutation(recordID: deletedID, kind: .playedRound,
-                    expectedRevision: server.revision, operation: .delete, payload: [:])
-                try journal.enqueue(deletion)
-                followUpQueued = true
+            for conflict in clubProfileConflicts {
+                guard let remote = timestampState.serverRecords.first(where: {
+                    $0.recordID == conflict.local.recordID
+                }) else { continue }
+                let localDate = AccountSyncDomainAdapter.bagModifiedAt(in: conflict.local.payload) ?? .distantPast
+                let remoteDate = AccountSyncDomainAdapter.bagModifiedAt(from: remote)
+                let localWins = localDate > remoteDate
+                let replacementOperation: AccountSyncOperation = localWins || remote.deletedAt == nil ? .put : .delete
+                let winningPayload = replacementOperation == .put
+                    ? (localWins ? conflict.local.payload : remote.payload) : [:]
+                let replacement = try AccountSyncMutation(recordID: conflict.local.recordID,
+                    kind: conflict.local.kind, expectedRevision: remote.revision,
+                    operation: replacementOperation, payload: winningPayload)
+                try journal.resolveConflict(mutationID: conflict.local.mutationID, with: replacement)
             }
-
-            let currentProfileID = AccountSyncDomainAdapter.golferProfileRecordID(ownerID: identity.userID)
-            if let profile, !reconciledConflicts.contains(currentProfileID),
-               !reconciled.pending.contains(where: { $0.recordID == currentProfileID }),
-               let server = reconciled.serverRecords.first(where: { $0.recordID == currentProfileID }),
-               server.deletedAt == nil {
-                let latestProfile = try AccountSyncDomainAdapter.golferProfileMutation(profile,
-                    ownerID: identity.userID, expectedRevision: .zero)
-                if server.payload != latestProfile.payload {
-                    let update = try AccountSyncMutation(recordID: currentProfileID, kind: .golferProfile,
-                        expectedRevision: server.revision, payload: latestProfile.payload)
-                    try journal.enqueue(update)
-                    followUpQueued = true
-                }
-            }
-            if followUpQueued {
-                savedDataSyncMessage = "Syncing your latest changes…"
+            if !clubProfileConflicts.isEmpty {
                 _ = try await coordinator.synchronize(ownerID: identity.userID, accessToken: accessToken)
                 try Task.checkCancellation()
-                guard case .authenticated(let latestIdentity) = auth.state,
-                      latestIdentity.userID == identity.userID else { throw AccountSyncError.staleOperation }
             }
 
-            // Reconcile newly discovered local deletions and local edits for the
-            // expanded record kinds against their pulled server revisions.
-            let latestSnapshot = try journal.snapshot()
-            let latestConflicts = Set(latestSnapshot.conflicts.map { $0.local.recordID })
-            let latestPendingIDs = Set(latestSnapshot.pending.map(\.recordID))
-            var domainFollowUpQueued = false
-
-            func enqueueDomainUpdate(_ mutation: AccountSyncMutation) throws {
-                guard !latestConflicts.contains(mutation.recordID),
-                      !latestPendingIDs.contains(mutation.recordID),
-                      let server = latestSnapshot.serverRecords.first(where: { $0.recordID == mutation.recordID }),
-                      server.deletedAt == nil, server.payload != mutation.payload else { return }
-                let update = try AccountSyncMutation(recordID: mutation.recordID, kind: mutation.kind,
-                    expectedRevision: server.revision, operation: mutation.operation, payload: mutation.payload)
-                try journal.enqueue(update)
-                domainFollowUpQueued = true
-            }
-
-            for mutation in customRecords.mutations { try enqueueDomainUpdate(mutation) }
-            let latestStoredWedgeSetup = accountData.defaults.string(forKey: "wedgeMatrix.wedges") ?? ""
-            let hasLatestWedgeSetup = !latestStoredWedgeSetup.isEmpty
-            for wedge in (hasLatestWedgeSetup ? Wedge.catalog(from: latestStoredWedgeSetup) : []) {
-                try enqueueDomainUpdate(AccountSyncDomainAdapter.wedgeMutation(wedge, ownerID: identity.userID))
-            }
-            for round in handicapRounds {
-                try enqueueDomainUpdate(AccountSyncDomainAdapter.handicapRoundMutation(round))
-            }
-            if wasAlreadyOptedIn {
-                let currentDomainIDs = Set(customRecords.mutations.map(\.recordID))
-                    .union(hasLatestWedgeSetup ? Set(Wedge.catalog(from: latestStoredWedgeSetup).map {
-                        AccountSyncDomainAdapter.wedgeRecordID(ownerID: identity.userID, wedgeName: $0.name)
-                    }) : []).union(localHandicapIDs)
-                let deletions = latestSnapshot.localRecords.filter { prior in
-                    !prior.isDeleted
-                        && [.customClub, .customCourse, .customTee, .wedge, .handicapRound].contains(prior.kind)
-                        && (prior.kind != .wedge || hasLatestWedgeSetup)
-                        && !currentDomainIDs.contains(prior.recordID)
-                        && !latestConflicts.contains(prior.recordID) && !latestPendingIDs.contains(prior.recordID)
-                }.sorted { deletionPriority($0.kind) < deletionPriority($1.kind) }
-                for prior in deletions {
-                    guard let server = latestSnapshot.serverRecords.first(where: { $0.recordID == prior.recordID }),
-                          server.deletedAt == nil else { continue }
-                    let deletion = try AccountSyncMutation(recordID: prior.recordID, kind: prior.kind,
-                        expectedRevision: server.revision, operation: .delete, payload: [:])
-                    try journal.enqueue(deletion)
-                    domainFollowUpQueued = true
-                }
-            }
-            if domainFollowUpQueued {
-                savedDataSyncMessage = "Syncing your latest changes…"
-                _ = try await coordinator.synchronize(ownerID: identity.userID, accessToken: accessToken)
-                try Task.checkCancellation()
-                guard case .authenticated(let latestIdentity) = auth.state,
-                      latestIdentity.userID == identity.userID else { throw AccountSyncError.staleOperation }
-            }
+            // Never rebase stale device values or infer deletes from newly pulled
+            // records. Those records have not yet been restored to the app stores.
 
             try Task.checkCancellation()
             guard case .authenticated(let completedIdentity) = auth.state,
                 completedIdentity.userID == identity.userID else { throw AccountSyncError.staleOperation }
 
             let final = try journal.snapshot()
-            let finalConflicts = Set(final.conflicts.map { $0.local.recordID })
+            syncStage = "restoring downloaded records on this device"
+            let activeCloudRecordCount = final.localRecords.filter { !$0.isDeleted }.count
+            let cloudTombstoneCount = final.localRecords.filter(\.isDeleted).count
+            let activeKinds = Dictionary(grouping: final.localRecords.filter { !$0.isDeleted }, by: \.kind)
+                .mapValues(\.count)
+            syncLogger.info("Cloud snapshot has active=\(activeCloudRecordCount), deleted=\(cloudTombstoneCount), kinds=\(String(describing: activeKinds), privacy: .public)")
+            syncLogger.info("Applying downloaded records to local stores")
+            let afterPush = try localSnapshot()
+            let changedDuringPush = Set(beforePush.keys).union(afterPush.keys).filter {
+                beforePush[$0] != afterPush[$0]
+            }
+            // Keep any edit/deletion made during the network await in the app's
+            // local store. A subsequent run submits it with the normal CAS rules.
+            if !changedDuringPush.isEmpty { syncRequestedWhileBusy = true }
+            let finalConflicts = Set(final.conflicts.map { $0.local.recordID }).union(changedDuringPush)
             let roundRecords = final.localRecords.filter { $0.kind == .playedRound }
             let remoteRounds = try roundRecords.filter { !$0.isDeleted && !finalConflicts.contains($0.recordID) }
                 .map(AccountSyncDomainAdapter.playedRound(from:))
-            let cloudDeletedRounds = Set(roundRecords.filter(\.isDeleted).map(\.recordID))
+            let cloudDeletedRounds = Set(roundRecords.filter {
+                $0.isDeleted && !finalConflicts.contains($0.recordID)
+            }.map(\.recordID))
             let appliedDeletions = Set(final.entries.compactMap { entry -> UUID? in
                 guard entry.mutation.kind == .playedRound, entry.mutation.operation == .delete,
                       case .applied = entry.result else { return nil }
@@ -524,16 +568,65 @@ final class PinTheoryAccountSession: ObservableObject {
                 try modelContext.save()
             }
 
+            if let clubProfileRecord = final.localRecords.first(where: {
+                $0.kind == .clubProfile && !$0.isDeleted && !finalConflicts.contains($0.recordID)
+            }) {
+                trajectoryProfileStore.profile = try AccountSyncDomainAdapter.clubProfile(from: clubProfileRecord)
+                if let remote = final.serverRecords.first(where: { $0.recordID == clubProfileRecord.recordID }) {
+                    trajectoryProfileStore.restoreClubProfileModifiedAt(
+                        AccountSyncDomainAdapter.clubProfileModifiedAt(from: remote))
+                }
+            }
+            for record in final.serverRecords where record.kind == .wedge {
+                if let wedge = try? AccountSyncDomainAdapter.wedge(from: AccountSyncLocalRecord(record: record),
+                                                                   ownerID: identity.userID) {
+                    trajectoryProfileStore.restoreWedgeModifiedAt(name: wedge.name,
+                        date: AccountSyncDomainAdapter.bagModifiedAt(from: record))
+                }
+            }
+
+            // Presence in the journal alone does not prove restoration succeeded.
+            // Only a fully applied local snapshot authorizes later absence-based deletes.
+            var materializedIDs = Set((accountData.defaults.stringArray(forKey: "accountSync.materializedIDs.v1") ?? [])
+                .compactMap(UUID.init(uuidString:)))
+            for record in final.localRecords where !finalConflicts.contains(record.recordID) {
+                if record.isDeleted { materializedIDs.remove(record.recordID) }
+                else { materializedIDs.insert(record.recordID) }
+            }
+            accountData.defaults.set(materializedIDs.map(\.uuidString).sorted(),
+                                     forKey: "accountSync.materializedIDs.v1")
+            if final.pending.isEmpty && final.conflicts.isEmpty {
+                accountData.defaults.set(false, forKey: Self.restoreDeletedRecordsKey)
+            }
+
             savedDataSyncConflictCount = final.conflicts.count
+            syncLogger.info("Sync run completed; pending=\(final.pending.count), conflicts=\(final.conflicts.count)")
             if !final.conflicts.isEmpty {
                 savedDataSyncMessage = "Sync completed with \(final.conflicts.count) conflict(s). Both versions are preserved; resolve these before retrying sync."
             } else if !final.pending.isEmpty {
                 savedDataSyncMessage = "Sync is incomplete: \(final.pending.count) saved change(s) remain queued. Tap Sync now to retry."
             } else {
                 savedDataSyncMessage = "Cloud sync complete. \(roundStore.saved.count) saved scorecards are available on this device."
+                if activeCloudRecordCount == 0 && cloudTombstoneCount > 0 {
+                    savedDataSyncFailure = "Cloud sync completed, but this account has no active records and \(cloudTombstoneCount) deleted record(s). If the original device still shows the missing entry, install this app update there, turn Sync across devices off and back on, then sync the iPad again."
+                }
             }
         } catch {
+            if let syncError = error as? AccountSyncError {
+                syncLogger.error("Sync failed during \(syncStage, privacy: .public): \(syncError.localizedDescription, privacy: .public)")
+            } else {
+                syncLogger.error("Sync failed during \(syncStage, privacy: .public) with an unexpected error")
+            }
             savedDataSyncMessage = error.localizedDescription
+            if !(error is CancellationError) {
+                let details: String
+                if error as? AccountSyncError == .staleOperation {
+                    details = "Your account or sign-in state changed during sync. Turn sync off and on again while connected."
+                } else {
+                    details = error.localizedDescription
+                }
+                savedDataSyncFailure = "Sync stopped while \(syncStage). \(details) Do not uninstall the app or clear its saved data."
+            }
         }
     }
 
@@ -686,6 +779,7 @@ final class PinTheoryAccountSession: ObservableObject {
                 message = "Your account storage could not be opened. Existing records have been preserved. Retry or sign out."
             }
         case .signedOut, .restoring, .passwordRecovery:
+            savedDataSyncFailure = nil
             if let activeSyncCoordinator {
                 Task { await activeSyncCoordinator.invalidate() }
                 self.activeSyncCoordinator = nil

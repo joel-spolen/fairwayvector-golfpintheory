@@ -1,5 +1,84 @@
 import SwiftUI
 
+private struct BagEditorSheet: View {
+    enum Editor: String {
+        case clubs
+        case clubProfile
+        case wedges
+    }
+
+    let editor: Editor
+    @ObservedObject private var profileStore: PlayerProfileStore
+    @ObservedObject private var unitPreferences: UnitPreferences
+    let onSave: () -> Void
+    @Environment(\.dismiss) private var dismiss
+    @StateObject private var draftProfileStore: PlayerProfileStore
+    @State private var draftWedgeSetup: String
+
+    init(editor: Editor, profileStore: PlayerProfileStore, unitPreferences: UnitPreferences,
+         onSave: @escaping () -> Void) {
+        self.editor = editor
+        self.profileStore = profileStore
+        self.unitPreferences = unitPreferences
+        self.onSave = onSave
+        let wedgeSetup = profileStore.storedWedgeSetup
+        _draftProfileStore = StateObject(wrappedValue: PlayerProfileStore(
+            draft: profileStore.profile, wedgeSetup: wedgeSetup))
+        _draftWedgeSetup = State(initialValue: wedgeSetup)
+    }
+
+    private var hasChanges: Bool {
+        draftProfileStore.profile != profileStore.profile || draftWedgeSetup != profileStore.storedWedgeSetup
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                switch editor {
+                case .clubs:
+                    BagClubsView(profileStore: draftProfileStore, storedWedges: $draftWedgeSetup)
+                        .navigationTitle("Clubs in my bag")
+                case .clubProfile:
+                    TrajectoryProfileSettingsView(profileStore: draftProfileStore,
+                        unitPreferences: unitPreferences)
+                        .navigationTitle("Club distances & launch")
+                case .wedges:
+                    WedgeBagSetupView(profileStore: draftProfileStore, storedWedges: $draftWedgeSetup)
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        let profileChanged = profileStore.profile != draftProfileStore.profile
+                        let oldWedges = Dictionary(Wedge.catalog(from: profileStore.storedWedgeSetup).map { ($0.name, $0) },
+                            uniquingKeysWith: { first, _ in first })
+                        let newWedges = Dictionary(Wedge.catalog(from: draftWedgeSetup).map { ($0.name, $0) },
+                            uniquingKeysWith: { first, _ in first })
+                        profileStore.profile = draftProfileStore.profile
+                        profileStore.storedWedgeSetup = draftWedgeSetup
+                        if profileChanged { profileStore.markClubProfileSaved() }
+                        for name in Set(oldWedges.keys).union(newWedges.keys)
+                            where oldWedges[name] != newWedges[name] {
+                            profileStore.markWedgeSaved(name: name)
+                        }
+                        dismiss()
+                        onSave()
+                    }
+                    .disabled(!hasChanges)
+                }
+            }
+        }
+        .tint(PureLineStyle.accent)
+        .preferredColorScheme(.light)
+    }
+}
+
 struct InTheBagView: View {
     private enum Editor: String, Identifiable {
         case clubs
@@ -11,6 +90,7 @@ struct InTheBagView: View {
 
     @ObservedObject var trajectoryModel: TrajectoryCalculatorViewModel
     var onHome: () -> Void = {}
+    var onSave: () -> Void = {}
     @State private var activeEditor: Editor?
 
     var body: some View {
@@ -73,34 +153,10 @@ struct InTheBagView: View {
         }
         .tint(PureLineStyle.accent)
         .sheet(item: $activeEditor) { editor in
-            NavigationStack {
-                Group {
-                    switch editor {
-                    case .clubs:
-                        BagClubsView(profileStore: trajectoryModel.playerProfileStore)
-                            .navigationTitle("Clubs in my bag")
-                    case .clubProfile:
-                        TrajectoryProfileSettingsView(
-                            profileStore: trajectoryModel.playerProfileStore,
-                            unitPreferences: trajectoryModel.unitPreferences,
-                            settingsViewModel: trajectoryModel
-                        )
-                        .navigationTitle("Club distances & launch")
-                    case .wedges:
-                        WedgeBagSetupView(profileStore: trajectoryModel.playerProfileStore)
-                    }
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
-                .toolbarBackground(.visible, for: .navigationBar)
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") { activeEditor = nil }
-                    }
-                }
-            }
-            .tint(PureLineStyle.accent)
-            .preferredColorScheme(.light)
+            BagEditorSheet(editor: BagEditorSheet.Editor(rawValue: editor.rawValue)!,
+                profileStore: trajectoryModel.playerProfileStore,
+                unitPreferences: trajectoryModel.unitPreferences,
+                onSave: onSave)
         }
     }
 

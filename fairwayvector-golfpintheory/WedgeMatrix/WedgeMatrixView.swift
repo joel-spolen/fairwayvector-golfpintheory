@@ -141,13 +141,14 @@ struct WedgeMatrixView: View {
 }
 
 struct WedgeBagSetupView: View {
-    @AppStorage("wedgeMatrix.wedges") private var storedWedges = ""
+    @Binding var storedWedges: String
     @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var selectedUnitRawValue = WedgeDistanceUnit.yards.rawValue
     @State private var wedges: [Wedge] = Wedge.defaults
     @ObservedObject var profileStore: PlayerProfileStore
 
-    init(profileStore: PlayerProfileStore) {
+    init(profileStore: PlayerProfileStore, storedWedges: Binding<String>) {
         self.profileStore = profileStore
+        _storedWedges = storedWedges
     }
 
     private var selectedUnit: WedgeDistanceUnit {

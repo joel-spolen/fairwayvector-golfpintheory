@@ -39,6 +39,37 @@ struct AccountSyncTests {
         #expect(try AccountSyncRevision("9007199254740992") < AccountSyncRevision("9007199254740993"))
     }
 
+    @Test func freshDeviceAndInterruptedRestoreNeverDeletePulledRecordsByAbsence() throws {
+        let id = UUID()
+        #expect(!AccountSyncRestorePolicy.canInferDeletion(recordID: id, materializedIDs: []))
+        #expect(!AccountSyncRestorePolicy.canInferDeletion(recordID: id, materializedIDs: [UUID()]))
+        #expect(AccountSyncRestorePolicy.canInferDeletion(recordID: id, materializedIDs: [id]))
+    }
+
+    @Test func unchangedDeviceValueDoesNotOverwritePulledEdit() throws {
+        let original = try mutation(recordID: UUID(), label: "previously restored")
+        let previous = AccountSyncLocalRecord(mutation: original)
+        let unchanged = try mutation(recordID: original.recordID, label: "previously restored")
+        #expect(AccountSyncRestorePolicy.isUnchangedPut(unchanged, previous: previous))
+        let edited = try mutation(recordID: original.recordID, label: "new local edit")
+        #expect(!AccountSyncRestorePolicy.isUnchangedPut(edited, previous: previous))
+        #expect(!AccountSyncRestorePolicy.isUnchangedPut(unchanged, previous: nil))
+    }
+
+    @Test func explicitSyncToggleCanRestoreLocallyPresentCloudTombstone() throws {
+        let recordID = UUID()
+        let mutation = try AccountSyncMutation(recordID: recordID, kind: .handicapRound,
+            expectedRevision: .zero, payload: ["label": .string("local surviving score")])
+        let tombstone = AccountSyncRecord(recordID: recordID, kind: .handicapRound, schemaVersion: 1,
+            payload: ["label": .string("old cloud score")], revision: try AccountSyncRevision("7"),
+            createdAt: "2026-10-23T12:00:00Z", updatedAt: "2026-10-23T12:01:00Z",
+            deletedAt: "2026-10-23T12:01:00Z")
+        #expect(AccountSyncRestorePolicy.expectedRevision(for: mutation, serverRecord: tombstone,
+            restoreDeleted: true) == (try AccountSyncRevision("7")))
+        #expect(AccountSyncRestorePolicy.expectedRevision(for: mutation, serverRecord: tombstone,
+            restoreDeleted: false) == .zero)
+    }
+
     @Test func rpcKeysAndNullThroughMatchContract() throws {
         let input = try mutation(recordID: UUID(), expected: "9007199254740993")
         let object = try #require(JSONSerialization.jsonObject(with: JSONEncoder().encode(input)) as? [String: Any])
@@ -70,6 +101,27 @@ struct AccountSyncTests {
         #expect(AccountSyncDomainAdapter.golferProfileRecordID(ownerID: owner) == recordID)
         #expect(Set(mutation.payload.keys) == Set(["name", "lowHandicapIndex"]))
         #expect(try AccountSyncDomainAdapter.golferProfile(from: AccountSyncLocalRecord(mutation: mutation)).name == "Ada")
+    }
+
+    @Test func trajectoryClubProfileSyncPreservesBagAndLaunchOverrides() throws {
+        let owner = UUID()
+        var profile = TrajectoryPlayerProfile(isSetupComplete: true, detailLevel: .expert,
+            handicapBand: .fiveToTen, exactHandicap: 7.4, driverCarryM: 220,
+            sevenIronCarryM: 145, availableClubs: [.driver, .sevenIron, .fiveHybrid])
+        profile.setOverride(ClubLaunchOverride(carryDistanceM: 145, ballSpeedMps: 48,
+            launchAngleDeg: 17.5, spinRateRpm: 5200, spinAxisDeg: -2), for: .sevenIron)
+        let modifiedAt = Date(timeIntervalSince1970: 1_790_000_000)
+        let mutation = try AccountSyncDomainAdapter.clubProfileMutation(profile, ownerID: owner,
+            modifiedAt: modifiedAt)
+        #expect(mutation.kind == .clubProfile)
+        #expect(mutation.recordID == AccountSyncDomainAdapter.clubProfileRecordID(ownerID: owner))
+        let restored = try AccountSyncDomainAdapter.clubProfile(from: AccountSyncLocalRecord(mutation: mutation))
+        #expect(restored == profile)
+        #expect(restored.availableClubs == [.driver, .sevenIron, .fiveHybrid])
+        #expect(restored.override(for: .sevenIron).spinRateRpm == 5200)
+        #expect(AccountSyncDomainAdapter.clubProfileModifiedAt(in: mutation.payload) == modifiedAt)
+        #expect(!AccountSyncDomainAdapter.isDefaultClubProfile(restored))
+        #expect(AccountSyncDomainAdapter.isDefaultClubProfile(TrajectoryPlayerProfile()))
     }
 
     @Test func customCourseHierarchyUsesStableLinkedIDsAndRoundTrips() throws {

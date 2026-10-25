@@ -1,7 +1,8 @@
 import SwiftData
+import OSLog
 import SwiftUI
 
-private struct SyncableLocalDataFingerprint: Encodable {
+struct SyncableLocalDataFingerprint: Encodable {
     struct Golfer: Encodable {
         let name: String
         let lowHandicapIndex: Double?
@@ -54,7 +55,6 @@ private struct SyncableLocalDataFingerprint: Encodable {
     let courses: [Course]
     let tees: [Tee]
     let handicapRounds: [HandicapRound]
-    let wedgeSetup: String
 }
 
 /// Observes only account-owned fields approved for sync; unrelated preferences
@@ -68,8 +68,6 @@ private struct SyncableLocalDataMonitor: View {
     @Query private var courses: [GolfCourse]
     @Query private var tees: [TeeSet]
     @Query private var rounds: [GolfRound]
-    @AppStorage("wedgeMatrix.wedges") private var wedgeSetup = ""
-
     private var fingerprint: Data {
         let snapshot = SyncableLocalDataFingerprint(
             golfer: profiles.first.map { .init(name: $0.name, lowHandicapIndex: $0.lowHandicapIndex) },
@@ -93,8 +91,7 @@ private struct SyncableLocalDataMonitor: View {
                 courseRating: $0.courseRating, slopeRating: $0.slopeRating, pcc: $0.pcc,
                 notes: $0.notes, holeScores: $0.holeScoresData, holePars: $0.holeParsData,
                 holeHandicapIndices: $0.holeHandicapIndicesData, sourceSavedRoundID: $0.sourceSavedRoundID) }
-                .sorted { ($0.syncID?.uuidString ?? "") < ($1.syncID?.uuidString ?? "") },
-            wedgeSetup: wedgeSetup)
+                .sorted { ($0.syncID?.uuidString ?? "") < ($1.syncID?.uuidString ?? "") })
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
         return (try? encoder.encode(snapshot)) ?? Data()
@@ -110,6 +107,7 @@ private struct SyncableLocalDataMonitor: View {
 }
 
 struct ContentView: View {
+    private let syncLogger = Logger(subsystem: "com.fairwayvector.app.pintheory", category: "CloudSync")
     let accountData: PinTheoryAccountData
     @EnvironmentObject private var accountSession: PinTheoryAccountSession
 
@@ -174,6 +172,7 @@ struct ContentView: View {
             SyncableLocalDataMonitor(isEnabled: accountSession.hasOptedIntoSavedDataSync) {
                 scheduleAutomaticSync()
             }
+            .modelContainer(accountData.modelContainer)
             .frame(width: 0, height: 0)
         }
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
@@ -216,7 +215,9 @@ struct ContentView: View {
         case .statistics:
             RoundStatisticsView()
         case .bag:
-            InTheBagView(trajectoryModel: trajectoryModel, onHome: { destination = nil })
+            InTheBagView(trajectoryModel: trajectoryModel, onHome: { destination = nil }, onSave: {
+                Task { @MainActor in await syncSavedDataIfEnabled() }
+            })
         case .account:
             PinTheoryAccountView(onHome: { destination = nil })
         }
@@ -224,21 +225,29 @@ struct ContentView: View {
 
     @MainActor
     private func syncSavedDataIfEnabled() async {
-        guard accountSession.hasOptedIntoSavedDataSync else { return }
+        guard accountSession.hasOptedIntoSavedDataSync else {
+            syncLogger.debug("Startup sync skipped: disabled in Settings")
+            return
+        }
+        syncLogger.info("Startup sync requested")
         let context = accountData.modelContainer.mainContext
         let profile = (try? context.fetch(FetchDescriptor<PlayerProfile>()))?.first
         await accountSession.enableAndSyncSavedData(roundStore: roundStore, profile: profile,
-                                                    modelContext: context)
+            trajectoryProfileStore: trajectoryModel.playerProfileStore, modelContext: context)
     }
 
     @MainActor
     private func scheduleAutomaticSync() {
         guard accountSession.hasOptedIntoSavedDataSync else { return }
+        syncLogger.info("Saved syncable data changed; scheduling sync")
         automaticSyncTask?.cancel()
         automaticSyncTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: 500_000_000)
             guard !Task.isCancelled else { return }
-            await syncSavedDataIfEnabled()
+            // This task owns only the debounce timer. A later save must not
+            // cancel an upload/pull already in progress.
+            automaticSyncTask = nil
+            Task { @MainActor in await syncSavedDataIfEnabled() }
         }
     }
 

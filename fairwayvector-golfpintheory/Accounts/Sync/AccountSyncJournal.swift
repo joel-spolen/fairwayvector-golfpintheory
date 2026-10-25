@@ -1,6 +1,26 @@
 import Foundation
 import Darwin
 
+/// Downloading a record into the journal is not the same as restoring it into
+/// the app's stores. A new or interrupted device must never delete by absence.
+nonisolated enum AccountSyncRestorePolicy {
+    static func canInferDeletion(recordID: UUID, materializedIDs: Set<UUID>) -> Bool {
+        materializedIDs.contains(recordID)
+    }
+
+    static func isUnchangedPut(_ mutation: AccountSyncMutation, previous: AccountSyncLocalRecord?) -> Bool {
+        mutation.operation == .put && previous == AccountSyncLocalRecord(mutation: mutation)
+    }
+
+    static func expectedRevision(for mutation: AccountSyncMutation, serverRecord: AccountSyncRecord?,
+                                 restoreDeleted: Bool) -> AccountSyncRevision {
+        if mutation.operation == .put, restoreDeleted, let serverRecord, serverRecord.deletedAt != nil {
+            return serverRecord.revision
+        }
+        return .zero
+    }
+}
+
 /// This snapshot IS the foundation's local data, not a snapshot of any existing app store.
 nonisolated struct AccountSyncLocalRecord: Codable, Sendable, Equatable {
     let recordID: UUID

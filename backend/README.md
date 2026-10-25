@@ -85,6 +85,36 @@ network requests, builds, or test execution were performed for that fix.
 
 ## Security / concurrency design review
 
+### Optional server admin account metrics (source only)
+
+`migrations/202610240001_admin_account_metrics.sql` is a separate, forward-only
+fourth migration, **not deployed or database-tested** here. After all three prior
+migrations, it adds a private aggregate counter, Auth insert/conversion/deletion
+trigger, and service-role-only `public.pintheory_admin_account_metrics()` RPC.
+Keep `pintheory_admin` unexposed and Realtime disabled. No API role can directly
+read/write its tables or invoke its private trigger function. The RPC returns
+counts and byte totals only, not user identities or payloads.
+
+Registration history starts with existing non-anonymous Auth rows and continues
+through later deletion; accounts physically deleted before installation are
+unknown, so totals are lower bounds. Current accounts exclude anonymous and
+soft-deleted identities. Activity is **Auth sign-in recency (30 days)**, not app
+usage or refreshed sessions. Logical current-user JSONB sizes include records,
+tombstones, event history and receipts; shared physical sync tables and whole
+database size are separate. Object-storage bytes are unknown. Do not interpret
+payload sums as billed storage, or add logical and physical values together.
+
+Before any production approval, execute the rollback-contained
+`tests/admin_account_metrics_regression.sql` in disposable staging as postgres,
+verify ACLs through real PostgREST service/anon/user credentials, and rehearse
+signup/conversion/soft-delete/hard-delete plus the existing purge workflow.
+The installation locks Auth writes briefly to serialize baseline and trigger
+creation; later lifecycle increments serialize on one counter row. Counter
+failure aborts Auth DML, so this needs operational review and monitoring.
+Do not run the test against production or rewrite previously applied migrations.
+Configure privileged Supabase credentials only on the separate home data server;
+its README describes the optional dashboard setup. No iOS change is required.
+
 ### Account deletion source workflow
 
 Deploy the SQL migrations above before deploying

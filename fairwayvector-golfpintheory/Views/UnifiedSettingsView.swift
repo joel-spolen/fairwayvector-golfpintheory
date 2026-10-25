@@ -11,6 +11,7 @@ struct UnifiedSettingsView: View {
     @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var wedgeUnit = WedgeDistanceUnit.yards.rawValue
     @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
     @State private var aboutSheet: AboutSheet?
+    @State private var showingSyncFailure = false
 
     private enum AboutSheet: String, Identifiable {
         case company
@@ -98,7 +99,8 @@ struct UnifiedSettingsView: View {
                         get: { accountSession.hasOptedIntoSavedDataSync },
                         set: { enabled in
                             accountSession.setSavedDataSyncEnabled(enabled, roundStore: playedRoundStore,
-                                profile: profile, modelContext: modelContext)
+                                profile: profile, trajectoryProfileStore: trajectoryModel.playerProfileStore,
+                                modelContext: modelContext)
                         }
                     ))
                     .disabled(accountSession.isSyncingSavedData)
@@ -132,6 +134,21 @@ struct UnifiedSettingsView: View {
             }
         }
         .tint(PureLineStyle.accent)
+        .alert("Cloud sync could not finish", isPresented: Binding(
+            get: { showingSyncFailure && accountSession.savedDataSyncFailure != nil },
+            set: { showingSyncFailure = $0 }
+        )) {
+            Button("OK", role: .cancel) {
+                showingSyncFailure = false
+                accountSession.dismissSyncFailure()
+            }
+        } message: {
+            Text(accountSession.savedDataSyncFailure ?? "")
+        }
+        .onAppear { showingSyncFailure = accountSession.savedDataSyncFailure != nil }
+        .onChange(of: accountSession.savedDataSyncFailure) { _, failure in
+            showingSyncFailure = failure != nil
+        }
         .sheet(item: $aboutSheet) { destination in
             NavigationStack {
                 Group {
