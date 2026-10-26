@@ -25,6 +25,31 @@ private final class GolfAPIStubProtocol: URLProtocol, @unchecked Sendable {
 @MainActor
 @Suite(.serialized)
 struct GolfAPITests {
+    @Test func courseSearchInputLimitsTypedAndPastedTextToTwentyCharacters() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let client = makeClient(directory: directory) { request in
+            let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
+            let query = items.first { $0.name == "name" }?.value
+            #expect(query == String(repeating: "Å", count: 20))
+            return (200, Data(#"{"clubs":[]}"#.utf8))
+        }
+        for purpose in [GolfAPICourseSelectionModel.Purpose.map, .handicap] {
+            let model = GolfAPICourseSelectionModel(client: client, purpose: purpose)
+            model.searchText = "Short search"
+            #expect(model.searchText == "Short search")
+            model.searchText = String(repeating: "Å", count: 25)
+            #expect(model.searchText == String(repeating: "Å", count: 20))
+            await model.search()
+            model.searchText = String(repeating: "👩🏽‍💻", count: 21)
+            #expect(model.searchText == String(repeating: "👩🏽‍💻", count: 20))
+            model.searchText = ""
+            #expect(model.searchText.isEmpty)
+        }
+        #expect(GolfAPIStubProtocol.requestCount == 1)
+        GolfAPIStubProtocol.handler = nil
+    }
+
     @Test func coverageRegionCountryCountsMatchPublishedCoverageList() {
         let counts = Dictionary(uniqueKeysWithValues: GolfAPICoverage.regions.map { ($0.name, $0.countries.count) })
         #expect(counts["North America"] == 24)
@@ -197,6 +222,81 @@ struct GolfAPITests {
         #expect(first == second)
         #expect(first.first?.clubName == "Åre Golfklubb")
         #expect(GolfAPIStubProtocol.requestCount == 1)
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func emptySearchIsCachedAcrossReopenAndDistinctSpellingsDoNotCollide() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let empty = Data(#"{"clubs":[],"numClubs":0}"#.utf8)
+        let client = makeClient(directory: directory) { _ in (200, empty) }
+        #expect(try await client.searchClubs(named: "  Typo?  ", country: "Sweden").isEmpty)
+        #expect(try await client.searchClubs(named: "Typo?", country: "Sweden").isEmpty)
+        #expect(GolfAPIStubProtocol.requestCount == 1)
+        let reopened = GolfAPIClient(cache: GolfAPICache(directoryURL: directory),
+            projectURL: URL(string: "https://edge.example.test"), mode: .live)
+        // Reopened client has no test transport; this must be entirely local.
+        #expect(try await reopened.searchClubs(named: "Typo?", country: "Sweden").isEmpty)
+        #expect(try await client.searchClubs(named: "Typo!", country: "Sweden").isEmpty)
+        #expect(try await client.searchClubs(named: "Typo-", country: "Sweden").isEmpty)
+        #expect(GolfAPIStubProtocol.requestCount == 3)
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func searchCacheUsesNFCWithoutConflatingDistinctFilters() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = GolfAPICache(directoryURL: directory)
+        let empty = Data(#"{"clubs":[]}"#.utf8)
+        cache.writeSearch(empty, query: " A\u{030A}re ", country: "Sweden", region: "")
+        #expect(cache.readSearch(query: "Åre", country: "Sweden", region: "") == empty)
+        #expect(cache.readSearch(query: "Are", country: "Sweden", region: "") == nil)
+        #expect(cache.readSearch(query: "Åre", country: "Norway", region: "") == nil)
+    }
+
+    @Test func selectingMapCourseDownloadsDetailsAndCoordinatesThenReopensOffline() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let detailData = Data(courseDetailJSON.utf8)
+        let coordinateData = Data(coordinatesJSON.utf8)
+        let client = makeClient(directory: directory) { request in
+            switch request.url?.path {
+            case "/functions/v1/golf-data/api/v1/golf/courses/course-123": (200, detailData)
+            case "/functions/v1/golf-data/api/v1/golf/coordinates/course-123": (200, coordinateData)
+            default: (404, Data())
+            }
+        }
+        let course = GolfAPICourseSummary(courseID: "course-123", courseName: "Åre GK",
+            numHoles: 2, hasGPS: true, timestampUpdated: nil)
+        let club = GolfAPIClub(clubID: "club-1", clubName: "Åre Golfklubb", city: "Åre",
+            state: "Jämtland", country: "Sweden", courses: [course])
+        let model = GolfAPICourseSelectionModel(client: client)
+        model.selectClub(club)
+        await model.selectCourse(course)
+        #expect(model.errorMessage == nil)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
+        #expect(model.selection != nil)
+        let reopened = GolfAPIClient(cache: GolfAPICache(directoryURL: directory),
+            projectURL: URL(string: "https://edge.example.test"), mode: .live, bundledSavedCourses: nil)
+        #expect(reopened.cachedPayload(id: "course-123")?.coordinates.count == 10)
+        let offlineModel = GolfAPICourseSelectionModel(client: reopened)
+        offlineModel.selectClub(club)
+        await offlineModel.selectCourse(course)
+        #expect(offlineModel.errorMessage == nil)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func downloadReportsLocalStorageFailure() async throws {
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try Data("not a directory".utf8).write(to: file)
+        defer { try? FileManager.default.removeItem(at: file) }
+        let detailData = Data(courseDetailJSON.utf8)
+        let client = makeClient(directory: file) { _ in (200, detailData) }
+        do {
+            _ = try await client.loadCourseDetail(id: "course-123")
+            Issue.record("A failed local save must not report a completed course download")
+        } catch { #expect(error as? GolfAPIError == .localStorageUnavailable) }
         GolfAPIStubProtocol.handler = nil
     }
 

@@ -4,6 +4,7 @@ import Observation
 @MainActor
 @Observable
 final class GolfAPICourseSelectionModel {
+    static let maximumSearchLength = 20
     enum Purpose { case map, handicap }
     private let client: GolfAPIClient
     let purpose: Purpose
@@ -12,7 +13,11 @@ final class GolfAPICourseSelectionModel {
 
     var selectedRegion = "Europe"
     var selectedCountry = "Sweden"
-    var searchText = ""
+    private var limitedSearchText = ""
+    var searchText: String {
+        get { limitedSearchText }
+        set { limitedSearchText = String(newValue.prefix(Self.maximumSearchLength)) }
+    }
     private(set) var clubs: [GolfAPIClub] = []
     private(set) var selectedClubID: String?
     private(set) var selectedCourseID: String?
@@ -29,7 +34,7 @@ final class GolfAPICourseSelectionModel {
         self.client = resolved
         self.purpose = purpose
         self.selectedSex = sex
-        savedCourses = purpose == .map && resolved.mode == .mock ? resolved.savedReferences : []
+        savedCourses = purpose == .map ? resolved.savedReferences : []
     }
 
     var isConfigured: Bool { client.isConfigured }
@@ -80,6 +85,7 @@ final class GolfAPICourseSelectionModel {
     }
 
     func search(forceRefresh: Bool = false) async {
+        guard !isSearching else { return }
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !selectedCountry.isEmpty || !query.isEmpty else {
             errorMessage = "Select a region and country, or enter a club name to search."
@@ -154,7 +160,15 @@ final class GolfAPICourseSelectionModel {
         errorMessage = nil
         defer { isLoadingCourse = false }
         do {
-            let details = try await client.loadCourseDetail(id: course.courseID)
+            let details: GolfAPICourseDetail
+            if purpose == .map {
+                // A map selection downloads both ratings and GPS geometry now,
+                // not later when opening the map. Search alone downloads neither.
+                details = try await client.loadCourse(id: course.courseID).detail
+            } else {
+                // Handicap selection needs ratings only, never paid GPS data.
+                details = try await client.loadCourseDetail(id: course.courseID)
+            }
             guard selectedCourseID == course.courseID, !Task.isCancelled else { return }
             courseDetail = details
             apiRequestsLeft = nil

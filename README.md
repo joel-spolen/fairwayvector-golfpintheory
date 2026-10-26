@@ -46,6 +46,19 @@ To compile the app and test bundles without executing tests, replace `build` wit
 
 The app never calls GolfAPI or GPXZ directly and contains no provider API keys. In mock mode, course and terrain fixtures stay local. In live mode, the app sends authenticated requests to the project's `golf-data` Supabase Edge Function; that server function owns provider calls, cache/budget gates, and provider secrets. `GOLF_API_MODE` and `GPXZ_API_MODE` remain build-time `mock`/`live` switches only; `live` means Supabase Edge Function, not direct provider access.
 
+GolfAPI search/download is now set to `live`; elevation remains `mock`.
+Apply the Supabase forward migration `202610260001_enable_golf_data.sql` to enable
+GolfAPI acquisition without enabling GPXZ or changing existing daily limits.
+Ordinary searches (including valid zero-result responses) are cached on Supabase
+across all users with no automatic expiry, and cached locally on the phone. Only
+trimmed/NFC-equivalent strings share a key: different spellings, punctuation,
+case, filters and page numbers remain distinct, so a typo cannot hide a valid
+query. Unique typo searches each need one first lookup; server quotas still apply.
+Errors are not cached as successful empty results. Search alone downloads no GPS
+geometry. Selecting a map course downloads and saves its details and coordinates
+before displaying tee choices; reopening reuses those files offline. Handicap
+selection downloads only ratings/details, not GPS coordinates.
+
 Store `GOLF_API_KEY` and `GPXZ_API_KEY` only as Supabase Edge Function secrets. The ignored file in the Supabase repo at `supabase/functions/.env.local` is a local-only transfer file for the Supabase CLI; it is not bundled into the iOS app or committed. Replace any rotated provider keys there, then apply them with the Supabase CLI `secrets set --env-file` option, targeting the intended project. Never paste key values into chat, source, GitHub workflow files, or Xcode build settings. Provider acquisition is separately disabled by default in the database and must be explicitly approved/enabled after reviewing licensing, budgets, and controls.
 
 Open-Meteo weather and Apple Maps are separate from these provider switches and may use network access. Mock terrain and demo course data are for development only; do not describe them as surveyed or official data.

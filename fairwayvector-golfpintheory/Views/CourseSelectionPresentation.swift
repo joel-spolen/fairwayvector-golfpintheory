@@ -58,6 +58,7 @@ struct CourseSearchControls: View {
                     .submitLabel(.search)
                     .onSubmit { Task { await model.search() } }
                     .accessibilityIdentifier("golf-club-search-field")
+                    .accessibilityHint("Maximum 20 characters")
                 Button {
                     Task { await model.search() }
                 } label: {
@@ -77,6 +78,9 @@ struct CourseSearchControls: View {
             .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(PureLineStyle.line, lineWidth: 1))
 
+            Text("\(model.searchText.count)/\(GolfAPICourseSelectionModel.maximumSearchLength) characters")
+                .font(.caption)
+                .foregroundStyle(PureLineStyle.muted)
         }
     }
 }

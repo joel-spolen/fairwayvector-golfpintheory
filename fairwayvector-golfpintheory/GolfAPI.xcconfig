@@ -1,4 +1,5 @@
-// Safe in Debug AND Release, regardless of an existing key. Live requires explicit opt-in.
-GOLF_API_MODE = mock
+// Course search/downloads use the authenticated Supabase Edge Function.
+// GPXZ remains independently mocked until elevation acquisition is enabled.
+GOLF_API_MODE = live
 #include "GPXZ.xcconfig"
 #include "Accounts.xcconfig"

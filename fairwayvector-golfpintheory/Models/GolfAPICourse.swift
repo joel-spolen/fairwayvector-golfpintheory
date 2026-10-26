@@ -245,6 +245,7 @@ struct GolfAPICourseSelection: Hashable, Identifiable {
 
 enum GolfAPIError: LocalizedError, Equatable {
     case missingDataServiceConfiguration
+    case localStorageUnavailable
     case unauthorized
     case httpStatus(Int)
     case invalidResponse(String)
@@ -254,6 +255,8 @@ enum GolfAPIError: LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
+        case .localStorageUnavailable:
+            return "The course could not be saved on this device. Free up storage and select it again; the server copy remains cached."
         case .missingDataServiceConfiguration:
             return "Supabase provider data is not configured in this app build."
         case .unauthorized:

@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 struct GolfAPICoursePayload {
@@ -39,9 +40,9 @@ struct GolfAPIClient {
         forceRefresh: Bool = false,
         requiresGPS: Bool = true
     ) async throws -> [GolfAPIClub] {
-        let normalizedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        let normalizedCountry = country.trimmingCharacters(in: .whitespacesAndNewlines)
-        let normalizedRegion = region.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedQuery = Self.normalizedSearchTerm(query)
+        let normalizedCountry = Self.normalizedSearchTerm(country)
+        let normalizedRegion = Self.normalizedSearchTerm(region)
         guard !normalizedQuery.isEmpty || !normalizedCountry.isEmpty || !normalizedRegion.isEmpty else { return [] }
         if mode == .mock {
             // Read-only, including force refresh. Only complete downloaded courses are selectable.
@@ -90,7 +91,7 @@ struct GolfAPIClient {
         guard detail.courseID == id else {
             throw GolfAPIError.invalidResponse("The returned course ID does not match the requested course.")
         }
-        if mode == .live { cache.writeCourseDetail(data, id: id) }
+        if mode == .live { try cache.persistCourseDetail(data, id: id) }
         return detail
     }
 
@@ -107,14 +108,20 @@ struct GolfAPIClient {
           if mode == .mock, id != DevelopmentGolfAPIFixtures.courseID { throw GolfAPIError.savedCourseUnavailable(id) }
         let data = try await get("/golf/coordinates/\(id)")
         let coordinates = try Self.decodeCoordinates(from: data, expectedCourseID: id)
-        if mode == .live { cache.writeCoordinates(data, id: id) }
+        if mode == .live { try cache.persistCoordinates(data, id: id) }
         return coordinates
     }
 
     func loadCourse(id: String) async throws -> GolfAPICoursePayload {
-        async let detail = loadCourseDetail(id: id)
-        async let coordinates = loadCoordinates(id: id)
-        return try await GolfAPICoursePayload(detail: detail, coordinates: coordinates)
+        // The account auth service serializes token verification. Complete each
+        // download before starting the next, and persist both before success.
+        let detail = try await loadCourseDetail(id: id)
+        let coordinates = try await loadCoordinates(id: id)
+        return GolfAPICoursePayload(detail: detail, coordinates: coordinates)
+    }
+
+    static func normalizedSearchTerm(_ value: String) -> String {
+        value.trimmingCharacters(in: .whitespacesAndNewlines).precomposedStringWithCanonicalMapping
     }
 
     func refreshCourse(id: String) async throws -> GolfAPICoursePayload {
@@ -357,15 +364,42 @@ struct GolfAPICache {
     }
 
     func readSearch(query: String, country: String, region: String) -> Data? {
-        read(named: "search-\(safeKey(country))-\(safeKey(region))-\(safeKey(query)).json")
+        read(named: searchFilename(query: query, country: country, region: region))
     }
     func writeSearch(_ data: Data, query: String, country: String, region: String) {
-        write(data, named: "search-\(safeKey(country))-\(safeKey(region))-\(safeKey(query)).json")
+        write(data, named: searchFilename(query: query, country: country, region: region))
     }
     func readCourseDetail(id: String) -> Data? { read(named: "course-\(safeKey(id))-detail.json") }
     func writeCourseDetail(_ data: Data, id: String) { write(data, named: "course-\(safeKey(id))-detail.json") }
     func readCoordinates(id: String) -> Data? { read(named: "course-\(safeKey(id))-coordinates.json") }
     func writeCoordinates(_ data: Data, id: String) { write(data, named: "course-\(safeKey(id))-coordinates.json") }
+
+    func persistCourseDetail(_ data: Data, id: String) throws {
+        try writeRequired(data, named: "course-\(safeKey(id))-detail.json")
+    }
+
+    func persistCoordinates(_ data: Data, id: String) throws {
+        try writeRequired(data, named: "course-\(safeKey(id))-coordinates.json")
+    }
+
+    private func searchFilename(query: String, country: String, region: String) -> String {
+        // Punctuation, case and different filters must never alias an unrelated
+        // (possibly empty) search. Only trim + NFC are equivalent to the server.
+        // Do not trust legacy lossy filenames; the shared server cache still
+        // prevents a new provider call for previously cached requests.
+        let fields = [country, region, query].map(GolfAPIClient.normalizedSearchTerm)
+        let bytes = (try? JSONEncoder().encode(fields)) ?? Data()
+        let digest = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
+        return "search-v2-\(digest).json"
+    }
+
+    private func writeRequired(_ data: Data, named name: String) throws {
+        guard let rootURL else { throw GolfAPIError.localStorageUnavailable }
+        do {
+            try FileManager.default.createDirectory(at: rootURL, withIntermediateDirectories: true)
+            try data.write(to: rootURL.appending(path: name), options: .atomic)
+        } catch { throw GolfAPIError.localStorageUnavailable }
+    }
 
     func courseDetailData() -> [Data] {
         cachedData(prefix: "course-", suffix: "-detail.json")
