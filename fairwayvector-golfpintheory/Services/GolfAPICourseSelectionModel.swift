@@ -70,7 +70,12 @@ final class GolfAPICourseSelectionModel {
     }
 
     var selectedTee: GolfAPITee? {
-        ratedTees.first { $0.teeID == selectedTeeID }
+        selectableTees.first { $0.teeID == selectedTeeID }
+    }
+
+    /// Ratings are required for Handicap, not for browsing downloaded GPS holes.
+    var selectableTees: [GolfAPITee] {
+        purpose == .map ? (courseDetail?.tees ?? []) : ratedTees
     }
 
     var selection: GolfAPICourseSelection? {
@@ -145,19 +150,20 @@ final class GolfAPICourseSelectionModel {
 
     func selectCourse(_ course: GolfAPICourseSummary) async {
         guard !isLoadingCourse else { return }
+        // A rejected selection must not leave the previous course/tee active.
+        selectedCourseID = course.courseID
+        courseDetail = nil
+        selectedTeeID = nil
+        errorMessage = nil
         guard purpose != .handicap || !DevelopmentAPIConfiguration.isDemoCourse(course.courseID) else {
             errorMessage = "This course cannot be used for Handicap. Choose a rated course or an explicitly custom course."
             return
         }
         guard purpose != .map || course.hasGPS else {
-            errorMessage = "\(course.courseName) has no GPS data in Golf API."
+            errorMessage = "\(course.courseName): GPS data not available. GolfAPI lists this course without map coordinates, so it cannot be explored. No download was requested."
             return
         }
-        selectedCourseID = course.courseID
-        courseDetail = nil
-        selectedTeeID = nil
         isLoadingCourse = true
-        errorMessage = nil
         defer { isLoadingCourse = false }
         do {
             let details: GolfAPICourseDetail
@@ -172,13 +178,13 @@ final class GolfAPICourseSelectionModel {
             guard selectedCourseID == course.courseID, !Task.isCancelled else { return }
             courseDetail = details
             apiRequestsLeft = nil
-            if ratedTees.isEmpty {
+            if selectableTees.isEmpty {
                 errorMessage = purpose == .handicap
                     ? "No eligible \(selectedSex == "female" ? "Women" : "Men") tees with valid ratings and complete hole pars. Use Custom course or an official differential."
-                    : "No rated tee sets were returned for this course."
+                    : "Course data was downloaded, but the provider returned no tee sets. A tee is needed to open this course."
             } else {
                 // Map keeps its default; Handicap requires explicit tee confirmation.
-                selectedTeeID = purpose == .map ? ratedTees.first?.teeID : nil
+                selectedTeeID = purpose == .map ? (ratedTees.first ?? selectableTees.first)?.teeID : nil
             }
         } catch {
             errorMessage = error.localizedDescription

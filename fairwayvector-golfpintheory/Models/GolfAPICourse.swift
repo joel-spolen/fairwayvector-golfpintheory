@@ -248,6 +248,7 @@ enum GolfAPIError: LocalizedError, Equatable {
     case localStorageUnavailable
     case unauthorized
     case httpStatus(Int)
+    case dataService(status: Int, code: String, stage: String)
     case invalidResponse(String)
     case noGPSData(String)
     case noRatedTees(String)
@@ -263,6 +264,31 @@ enum GolfAPIError: LocalizedError, Equatable {
             return "Supabase could not authorize this provider-data request. Sign in again and retry."
         case .httpStatus(let status):
             return "Supabase provider-data request returned HTTP \(status). Try again shortly."
+        case .dataService(let status, let code, let stage):
+            let reason: String
+            switch code {
+            case "provider_disabled":
+                reason = "New GolfAPI downloads are disabled on Supabase. The GolfAPI activation migration must be applied."
+            case "provider_not_configured":
+                reason = "The deployed Edge Function cannot find its GolfAPI key. Check the GOLF_API_KEY secret on the same project."
+            case "daily_budget_exceeded":
+                reason = "The server's daily GolfAPI request budget has been reached. Cached courses remain available."
+            case "request_pending":
+                reason = "A server request for this data is already in progress. Wait before selecting the course again."
+            case "provider_cooldown":
+                reason = "Supabase has paused requests after an earlier provider failure or rate limit. Check the provider status before retrying."
+            case "ambiguous_attempt":
+                reason = "An earlier download has an uncertain outcome. Server-side review is required before another paid request is allowed."
+            case "cache_write_rejected":
+                reason = "Supabase could not save the provider response. Check the server cache before retrying."
+            case "rate_limit":
+                reason = "The server request limit has been reached. Wait before trying again."
+            case "provider_unavailable", "invalid_provider_response":
+                reason = "GolfAPI could not supply usable data. Check the server's provider status."
+            default:
+                reason = "The Edge Function or its database could not complete this request. Check the golf-data function logs."
+            }
+            return "Could not download \(stage) (HTTP \(status), \(code)). \(reason)"
         case .invalidResponse(let detail):
             return "Supabase returned incomplete course data: \(detail)"
         case .noGPSData(let course):

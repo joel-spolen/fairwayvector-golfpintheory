@@ -25,6 +25,7 @@ struct CourseSelectionView: View {
 
     @State private var model = GolfAPICourseSelectionModel()
     @AppStorage("map.recentCourseReference") private var recentCourseData = Data()
+    @AppStorage("hcp.provider.recentCourseReference.v1") private var hcpRecentCourseData = Data()
     @AppStorage("map.development.recentCourseReference.v1") private var demoRecentCourseData = Data()
     private var isMock: Bool { DevelopmentAPIConfiguration.current.golfAPI == .mock }
 
@@ -83,20 +84,24 @@ struct CourseSelectionView: View {
 
                     if let selection = model.selection {
                         CourseSelectionSummaryCard(selection: selection)
-                        Button {
-                            startCourse(selection.reference)
-                        } label: {
-                            Label("View Course", systemImage: "map.fill")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .frame(height: 52)
-                        }
-                        .buttonStyle(PureLinePrimaryButtonStyle())
-                        .tint(PureLineStyle.accent)
-                        .accessibilityIdentifier("view-course-button")
-                        if let onStartRound {
-                            Button("Start round", systemImage: "flag.checkered") { onStartRound(selection.reference) }
+                        if isStartRoundFlow {
+                            if let onStartRound {
+                                Button("Start round", systemImage: "flag.checkered") { onStartRound(selection.reference) }
+                                    .buttonStyle(PureLinePrimaryButtonStyle())
+                                    .accessibilityIdentifier("start-round-button")
+                            }
+                        } else {
+                            Button {
+                                startCourse(selection.reference)
+                            } label: {
+                                Label("View Course", systemImage: "map.fill")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 52)
+                            }
                                 .buttonStyle(PureLinePrimaryButtonStyle())
+                                .tint(PureLineStyle.accent)
+                                .accessibilityIdentifier("view-course-button")
                         }
                     }
 
@@ -127,12 +132,15 @@ struct CourseSelectionView: View {
             let live = try? JSONDecoder().decode(CourseReference.self, from: recentCourseData)
             // A usable live recent takes precedence over any previous demo shortcut.
             if let live, model.hasSavedCourse(live) { return live }
+            let handicap = try? JSONDecoder().decode(CourseReference.self, from: hcpRecentCourseData)
+            if let handicap, model.hasSavedCourse(handicap) { return handicap }
             let paused = try? JSONDecoder().decode(CourseReference.self, from: demoRecentCourseData)
             if let paused, model.hasSavedCourse(paused) { return paused }
-            return live ?? paused
+            return live ?? handicap ?? paused
         }
-        let saved = try? JSONDecoder().decode(CourseReference.self, from: recentCourseData)
-        return saved.flatMap { DevelopmentAPIConfiguration.isDemoCourse($0.golfAPICourseID ?? "") ? nil : $0 }
+        let references = [recentCourseData, hcpRecentCourseData]
+            .compactMap { try? JSONDecoder().decode(CourseReference.self, from: $0) }
+        return references.first { !DevelopmentAPIConfiguration.isDemoCourse($0.golfAPICourseID ?? "") }
     }
 
     private func startCourse(_ reference: CourseReference) {

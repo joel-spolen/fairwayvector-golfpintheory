@@ -143,7 +143,7 @@ struct CourseResultCards: View {
                             Text(course.courseName).font(.subheadline.weight(.semibold)).foregroundStyle(PureLineStyle.ink)
                             Text(model.purpose == .handicap
                                  ? "\(course.numHoles) holes · GPS not required"
-                                 : "\(course.numHoles) holes · \(course.hasGPS ? "GPS available" : "No GPS data")")
+                                 : "\(course.numHoles) holes\(course.hasGPS ? "" : " · GPS data not available")")
                                 .font(.caption).foregroundStyle(PureLineStyle.muted)
                         }
                         Spacer()
@@ -159,7 +159,17 @@ struct CourseResultCards: View {
                     .contentShape(RoundedRectangle(cornerRadius: 18))
                 }
                 .buttonStyle(.plain)
-                .disabled((model.purpose == .map && !course.hasGPS) || model.isLoadingCourse)
+                // Let a tap explain why a listed course is unavailable instead
+                // of silently ignoring it. The model rejects missing GPS before
+                // downloading anything or spending a provider request.
+                .disabled(model.isLoadingCourse)
+                if model.selectedCourseID == course.id, let error = model.errorMessage {
+                    Label(error, systemImage: "exclamationmark.triangle")
+                        .font(.footnote)
+                        .foregroundStyle(PureLineStyle.muted)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("selected-course-error")
+                }
             }
         }
     }
@@ -201,7 +211,9 @@ struct CourseTeeSelectionCard: View {
                     Text("Women").tag("female")
                 }
                 .pickerStyle(.segmented)
-                .onChange(of: model.selectedSex) { model.selectedTeeID = model.ratedTees.first?.teeID }
+                .onChange(of: model.selectedSex) {
+                    model.selectedTeeID = (model.ratedTees.first ?? model.selectableTees.first)?.teeID
+                }
                 .accessibilityIdentifier("golf-rating-category-picker")
             }
             Picker("Tee", selection: Binding(
@@ -209,8 +221,8 @@ struct CourseTeeSelectionCard: View {
                 set: { model.selectedTeeID = $0.isEmpty ? nil : $0 }
             )) {
                 Text("Select tee").tag("")
-                ForEach(model.ratedTees) { tee in
-                    Text("\(tee.teeName) · CR \(tee.rating(for: model.selectedSex).map { String(format: "%.1f", $0) } ?? "–") · Slope \(tee.slope(for: model.selectedSex) ?? 0)")
+                ForEach(model.selectableTees) { tee in
+                    Text("\(tee.teeName) · CR \(tee.rating(for: model.selectedSex).map { String(format: "%.1f", $0) } ?? "–") · Slope \(tee.slope(for: model.selectedSex).map(String.init) ?? "–")")
                         .tag(tee.teeID)
                 }
             }
@@ -221,8 +233,13 @@ struct CourseTeeSelectionCard: View {
 
             Text(model.purpose == .handicap
                   ? "\(detail.numHoles) holes"
-                 : "\(detail.numHoles) holes · \(detail.hasGPS ? "GPS data available" : "GPS data unavailable")")
+                 : "\(detail.numHoles) holes\(detail.hasGPS ? "" : " · GPS data not available")")
                 .font(.caption).foregroundStyle(PureLineStyle.muted)
+            if model.purpose == .map, let tee = model.selectedTee,
+               tee.rating(for: model.selectedSex) == nil || tee.slope(for: model.selectedSex) == nil {
+                Text("Ratings are unavailable for this tee and category. You can explore the course; net scoring and Handicap calculations require valid ratings.")
+                    .font(.caption).foregroundStyle(PureLineStyle.muted)
+            }
         }
         .pureLineCard()
     }

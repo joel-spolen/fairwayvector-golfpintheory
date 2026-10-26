@@ -205,6 +205,112 @@ struct GolfAPITests {
         GolfAPIStubProtocol.handler = nil
     }
 
+    @Test func server503ExplainsSafeFailureCodeAndDownloadStageWithoutRetry() async throws {
+        for code in ["provider_disabled", "provider_not_configured", "daily_budget_exceeded",
+                     "provider_cooldown", "request_pending", "ambiguous_attempt", "cache_write_rejected"] {
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+            defer { try? FileManager.default.removeItem(at: directory) }
+            let body = try JSONSerialization.data(withJSONObject: [
+                "error": ["code": code, "message": "PRIVATE_CREDENTIAL_DO_NOT_DISPLAY"]
+            ])
+            let client = makeClient(directory: directory) { _ in (503, body) }
+            do {
+                _ = try await client.loadCoordinates(id: "course-123")
+                Issue.record("A service failure must not be treated as a downloaded course")
+            } catch {
+                #expect(error as? GolfAPIError == .dataService(status: 503, code: code,
+                    stage: "course GPS coordinates"))
+                #expect(!error.localizedDescription.contains("PRIVATE_CREDENTIAL"))
+            }
+            #expect(GolfAPIStubProtocol.requestCount == 1)
+            GolfAPIStubProtocol.handler = nil
+        }
+    }
+
+    @Test func unknown503ErrorCodeAndRawMessageAreNotDisplayed() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let body = Data(#"{"error":{"code":"PRIVATE_SECRET","message":"private credentials"}}"#.utf8)
+        let client = makeClient(directory: directory) { _ in (503, body) }
+        do {
+            _ = try await client.loadCourseDetail(id: "course-123")
+            Issue.record("Expected a service error")
+        } catch {
+            #expect(error as? GolfAPIError == .dataService(status: 503,
+                code: "service_unavailable", stage: "course details and tees"))
+            #expect(!error.localizedDescription.contains("PRIVATE_SECRET"))
+        }
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func unavailableGPSSelectionClearsPreviousCourseWithoutRequestingDownload() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let detailData = Data(courseDetailJSON.utf8)
+        let coordinateData = Data(coordinatesJSON.utf8)
+        let client = makeClient(directory: directory) { request in
+            request.url?.path.contains("/coordinates/") == true ? (200, coordinateData) : (200, detailData)
+        }
+        let available = GolfAPICourseSummary(courseID: "course-123", courseName: "Available",
+            numHoles: 2, hasGPS: true, timestampUpdated: nil)
+        let unavailable = GolfAPICourseSummary(courseID: "unavailable-course", courseName: "Unavailable",
+            numHoles: 9, hasGPS: false, timestampUpdated: nil)
+        let model = GolfAPICourseSelectionModel(client: client)
+        model.selectClub(GolfAPIClub(clubID: "club-1", clubName: "Club", city: nil, state: nil,
+            country: "Sweden", courses: [available, unavailable]))
+        await model.selectCourse(available)
+        #expect(model.selection != nil)
+        let count = GolfAPIStubProtocol.requestCount
+        await model.selectCourse(unavailable)
+        #expect(model.selectedCourseID == unavailable.courseID)
+        #expect(model.selection == nil)
+        #expect(model.courseDetail == nil)
+        #expect(model.errorMessage?.contains("GPS data not available") == true)
+        #expect(GolfAPIStubProtocol.requestCount == count)
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func unratedDownloadedCourseCanBeExploredButCannotEnterHandicap() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        var object = try #require(JSONSerialization.jsonObject(with: Data(courseDetailJSON.utf8)) as? [String: Any])
+        var tees = try #require(object["tees"] as? [[String: Any]])
+        for index in tees.indices {
+            for key in ["courseRatingMen", "slopeMen", "courseRatingWomen", "slopeWomen"] {
+                tees[index].removeValue(forKey: key)
+            }
+        }
+        object["tees"] = tees
+        let cache = GolfAPICache(directoryURL: directory)
+        try cache.persistCourseDetail(JSONSerialization.data(withJSONObject: object), id: "course-123")
+        try cache.persistCoordinates(Data(coordinatesJSON.utf8), id: "course-123")
+        let client = GolfAPIClient(cache: cache, projectURL: URL(string: "https://edge.example.test"),
+            mode: .live, bundledSavedCourses: nil)
+        let summary = GolfAPICourseSummary(courseID: "course-123", courseName: "Unrated GPS course",
+            numHoles: 2, hasGPS: true, timestampUpdated: nil)
+        let club = GolfAPIClub(clubID: "club-1", clubName: "Club", city: nil, state: nil,
+            country: "Sweden", courses: [summary])
+        let map = GolfAPICourseSelectionModel(client: client)
+        map.selectClub(club)
+        await map.selectCourse(summary)
+        #expect(map.errorMessage == nil)
+        #expect(map.ratedTees.isEmpty)
+        #expect(map.selectableTees.count == 2)
+        let selection = try #require(map.selection)
+        let payload = try #require(client.cachedPayload(id: summary.courseID))
+        #expect(try GolfAPICourseBuilder.build(reference: selection.reference, payload: payload).holes.count == 2)
+        #expect(selection.tee.rating(for: selection.sex) == nil)
+        #expect(throws: (any Error).self) {
+            try HCPProviderCourse.convert(detail: selection.details, tee: selection.tee, sex: selection.sex)
+        }
+        let handicap = GolfAPICourseSelectionModel(client: client, purpose: .handicap)
+        handicap.selectClub(club)
+        await handicap.selectCourse(summary)
+        #expect(handicap.selectableTees.isEmpty)
+        #expect(handicap.selection == nil)
+        #expect(handicap.errorMessage != nil)
+    }
+
     @Test func clubSearchIsCachedForRepeatedQuery() async throws {
         let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -283,6 +389,45 @@ struct GolfAPITests {
         offlineModel.selectClub(club)
         await offlineModel.selectCourse(course)
         #expect(offlineModel.errorMessage == nil)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func handicapDetailsAreReusedWhenMapAndPlayNeedCoordinates() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let detailData = Data(courseDetailJSON.utf8)
+        let coordinateData = Data(coordinatesJSON.utf8)
+        let client = makeClient(directory: directory) { request in
+            switch request.url?.path {
+            case "/functions/v1/golf-data/api/v1/golf/courses/course-123": (200, detailData)
+            case "/functions/v1/golf-data/api/v1/golf/coordinates/course-123": (200, coordinateData)
+            default: (404, Data())
+            }
+        }
+        let course = GolfAPICourseSummary(courseID: "course-123", courseName: "Åre GK",
+            numHoles: 2, hasGPS: true, timestampUpdated: nil)
+        let club = GolfAPIClub(clubID: "club-1", clubName: "Åre Golfklubb", city: "Åre",
+            state: "Jämtland", country: "Sweden", courses: [course])
+
+        // HCP first needs ratings/detail only: one Edge request, no coordinates.
+        let handicapDetails = try await client.loadCourseDetail(id: course.courseID)
+        #expect(handicapDetails.tees.first?.teeID == "tee-blue")
+        #expect(GolfAPIStubProtocol.requestCount == 1)
+
+        // Explore reuses that cached detail and downloads the missing map geometry.
+        let explore = GolfAPICourseSelectionModel(client: client, purpose: .map)
+        explore.selectClub(club)
+        await explore.selectCourse(course)
+        #expect(explore.selection != nil)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
+
+        // Play's CourseStore uses the same client cache, so it needs no third fetch.
+        let store = CourseStore(reference: try #require(explore.selection).reference,
+            golfAPIClient: client)
+        await store.load()
+        #expect(store.course?.holes.count == 2)
+        #expect(store.errorMessage == nil)
         #expect(GolfAPIStubProtocol.requestCount == 2)
         GolfAPIStubProtocol.handler = nil
     }

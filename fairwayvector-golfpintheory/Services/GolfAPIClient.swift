@@ -268,7 +268,23 @@ struct GolfAPIClient {
         } catch { throw GolfAPIError.httpStatus(503) }
 
         guard result.statusCode != 401 && result.statusCode != 403 else { throw GolfAPIError.unauthorized }
-        guard (200..<300).contains(result.statusCode) else { throw GolfAPIError.httpStatus(result.statusCode) }
+        guard (200..<300).contains(result.statusCode) else {
+            // Never echo server messages: only known protocol codes select local
+            // fixed text. Raw errors can contain keys, URLs or submitted values.
+            struct Envelope: Decodable {
+                struct Failure: Decodable { let code: String }
+                let error: Failure
+            }
+            let allowed = Set(["provider_disabled", "provider_not_configured", "daily_budget_exceeded",
+                "request_pending", "provider_cooldown", "ambiguous_attempt", "cache_write_rejected",
+                "rate_limit", "provider_unavailable", "invalid_provider_response", "service_unavailable"])
+            let decoded = result.data.count <= 65_536
+                ? (try? JSONDecoder().decode(Envelope.self, from: result.data).error.code) : nil
+            let code = decoded.flatMap { allowed.contains($0) ? $0 : nil } ?? "service_unavailable"
+            let stage = path.hasPrefix("/golf/coordinates/") ? "course GPS coordinates"
+                : path.hasPrefix("/golf/courses/") ? "course details and tees" : "course search results"
+            throw GolfAPIError.dataService(status: result.statusCode, code: code, stage: stage)
+        }
         return result.data
     }
 
