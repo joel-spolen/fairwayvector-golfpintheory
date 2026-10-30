@@ -38,6 +38,7 @@ final class GolfAPICourseSelectionModel {
     private var activeSearchCountries: [String] = []
     private var activeSearchState = ""
     private var activeDatasetVersion: String?
+    private var searchGeneration = UUID()
 
     init(client: GolfAPIClient? = nil, purpose: Purpose = .map, sex: String = "male", pageSize: Int = 50) {
         let resolved = client ?? .shared
@@ -49,6 +50,17 @@ final class GolfAPICourseSelectionModel {
     }
 
     var isConfigured: Bool { client.isConfigured }
+
+    func beginSearchSession(preferredCountry: String?) {
+        searchGeneration = UUID()
+        isSearching = false
+        isLoadingMore = false
+        selectedCountry = GolfAPICoverage.preferredCountry(saved: preferredCountry)
+        selectedRegion = GolfAPICoverage.region(for: selectedCountry)
+        searchText = ""
+        hasSearched = false
+        clearSearchResults()
+    }
 
     func hasSavedCourse(_ reference: CourseReference) -> Bool {
         if CourseDataStore.readCourse(reference: reference) != nil { return true }
@@ -121,9 +133,10 @@ final class GolfAPICourseSelectionModel {
             return
         }
         isSearching = true
+        let generation = searchGeneration
         hasSearched = true
         errorMessage = nil
-        defer { isSearching = false }
+        defer { if generation == searchGeneration { isSearching = false } }
         activeSearchQuery = query
         activeSearchCountry = selectedCountry
         activeSearchCountries = []
@@ -141,6 +154,7 @@ final class GolfAPICourseSelectionModel {
             let result = try await client.searchCatalogClubs(named: query, country: selectedCountry,
                 countries: activeSearchCountries, state: activeSearchState,
                 page: 1, pageSize: pageSize)
+            guard generation == searchGeneration else { return }
             clubs = eligibleClubs(result.clubs)
             currentPage = result.page
             totalClubCount = result.numAllClubs
@@ -152,6 +166,7 @@ final class GolfAPICourseSelectionModel {
                 errorMessage = "No golf clubs matched \"\(terms)\"."
             }
         } catch {
+            guard generation == searchGeneration else { return }
             errorMessage = error.localizedDescription
         }
     }
@@ -159,14 +174,16 @@ final class GolfAPICourseSelectionModel {
     func loadMoreClubs() async {
         guard hasMoreClubs, !isSearching, !isLoadingMore else { return }
         isLoadingMore = true
+        let generation = searchGeneration
         errorMessage = nil
-        defer { isLoadingMore = false }
+        defer { if generation == searchGeneration { isLoadingMore = false } }
         do {
             let nextPage = currentPage + 1
             let result = try await client.searchCatalogClubs(named: activeSearchQuery,
                 country: activeSearchCountry, countries: activeSearchCountries,
                 state: activeSearchState,
                 page: nextPage, pageSize: pageSize)
+            guard generation == searchGeneration else { return }
             guard result.page == nextPage else {
                 throw GolfAPIError.invalidResponse("The course catalog returned an unexpected page.")
             }
@@ -183,6 +200,7 @@ final class GolfAPICourseSelectionModel {
             totalClubCount = result.numAllClubs
             hasMoreClubs = result.hasMore
         } catch {
+            guard generation == searchGeneration else { return }
             errorMessage = error.localizedDescription
         }
     }

@@ -22,7 +22,7 @@ struct UnifiedSettingsView: View {
     private var profile: PlayerProfile? { profiles.first }
     private var countries: [String] {
         let apiCountries = Set(GolfAPICoverage.regions.flatMap(\.countries))
-        return Array(apiCountries.union([profile?.countryOrDefault ?? "Sweden"])).sorted()
+        return Array(apiCountries.union([profile?.countryOrDefault ?? GolfAPICoverage.preferredCountry()])).sorted()
     }
 
     var body: some View {
@@ -65,7 +65,7 @@ struct UnifiedSettingsView: View {
 
                 Section("Country / Region") {
                     Picker("Country / Region", selection: Binding(
-                        get: { profile?.countryOrDefault ?? "Sweden" },
+                        get: { profile?.countryOrDefault ?? GolfAPICoverage.preferredCountry() },
                         set: { country in updateProfile { $0.selectedCountry = country } }
                     )) {
                         ForEach(countries, id: \.self) { country in

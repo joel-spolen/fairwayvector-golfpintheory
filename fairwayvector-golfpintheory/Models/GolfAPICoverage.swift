@@ -8,6 +8,29 @@ struct GolfAPICoverageRegion: Identifiable, Hashable {
 }
 
 enum GolfAPICoverage {
+    /// Device region is a suggestion, not a location lookup. Saved preferences win.
+    static func preferredCountry(saved: String? = nil, locale: Locale = .current) -> String {
+        let countries = regions.flatMap(\.countries)
+        func canonical(_ value: String) -> String? {
+            let value = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            return countries.first { $0.caseInsensitiveCompare(value) == .orderedSame }
+        }
+        if let saved, let country = canonical(saved) { return country }
+        let aliases = ["US": "USA", "GB": "UK", "TR": "Türkiye", "SZ": "Swaziland",
+                       "CD": "Congo, Democratic Republic", "CG": "Congo, Republic",
+                       "CI": "Cote d'Ivoire", "CV": "Cap Verde", "CZ": "Czech Republic",
+                       "VC": "St.Vincent & Grenadines", "MO": "Macau"]
+        if let code = locale.region?.identifier {
+            let name = aliases[code] ?? Locale(identifier: "en_US").localizedString(forRegionCode: code) ?? ""
+            if let country = canonical(name) { return country }
+        }
+        return "Sweden"
+    }
+
+    static func region(for country: String) -> String {
+        regions.first { $0.countries.contains(country) }?.name ?? "Europe"
+    }
+
     static let regions: [GolfAPICoverageRegion] = [
         GolfAPICoverageRegion(name: "North America", countries: [
             "USA", "Canada", "Mexico", "Dominican Republic", "Puerto Rico", "Jamaica", "Bermuda", "Bahamas",

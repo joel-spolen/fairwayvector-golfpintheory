@@ -32,21 +32,21 @@ final class PlayerProfile {
     init(
         name: String,
         lowHandicapIndex: Double? = nil,
-        selectedCountry: String? = "Sweden",
+        selectedCountry: String? = nil,
         defaultInputModeRawValue: String? = RoundInputMode.adjustedGrossScore.rawValue,
         sexRawValue: String? = PlayerSex.male.rawValue,
         createdAt: Date = .now
     ) {
         self.name = name
         self.lowHandicapIndex = lowHandicapIndex
-        self.selectedCountry = selectedCountry
+        self.selectedCountry = selectedCountry ?? GolfAPICoverage.preferredCountry()
         self.defaultInputModeRawValue = defaultInputModeRawValue
         self.sexRawValue = sexRawValue
         self.createdAt = createdAt
     }
 
     var countryOrDefault: String {
-        selectedCountry ?? "Sweden"
+        GolfAPICoverage.preferredCountry(saved: selectedCountry)
     }
 
     var defaultInputMode: RoundInputMode {

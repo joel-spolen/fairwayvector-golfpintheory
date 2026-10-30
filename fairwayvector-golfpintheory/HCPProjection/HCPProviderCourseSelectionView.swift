@@ -6,6 +6,8 @@ import SwiftData
 struct HCPProviderCourseSelectionView: View {
     @State private var model: GolfAPICourseSelectionModel
     @State private var isClubPagePresented = false
+    @State private var needsSearchDefaults = true
+    let defaultCountry: String
     @AppStorage(RecentProviderCourseStore.key) private var recentProviderCoursesData = Data()
     @AppStorage("map.recentCourseReference") private var mapRecent = Data()
     @AppStorage("map.development.recentCourseReference.v1") private var pausedRecent = Data()
@@ -32,13 +34,8 @@ struct HCPProviderCourseSelectionView: View {
          onSelect: @escaping (HCPProviderCourse) -> Void) {
         let sex = profile?.sexOrDefault ?? .male
         let model = GolfAPICourseSelectionModel(purpose: .handicap, sex: sex.rawValue)
-        model.selectedRegion = model.coverageRegions.first { region in
-            region.countries.contains { HCPCustomCourseSearch.normalizedCountry($0) == HCPCustomCourseSearch.normalizedCountry(country) }
-        }?.name ?? "Europe"
-        let matchedCountry = model.availableCountries.first {
-            HCPCustomCourseSearch.normalizedCountry($0) == HCPCustomCourseSearch.normalizedCountry(country)
-        }
-        model.selectCountry(matchedCountry ?? "")
+        model.beginSearchSession(preferredCountry: country)
+        defaultCountry = country
         _model = State(initialValue: model)
         self.profile = profile
         self.clubs = clubs
@@ -125,6 +122,20 @@ struct HCPProviderCourseSelectionView: View {
                 // Avoid Form/List automatic button behavior applying an entire row action.
                 .buttonStyle(.borderless)
                 .tint(PureLineStyle.accent)
+                .onAppear {
+                    if needsSearchDefaults {
+                        model.beginSearchSession(preferredCountry: defaultCountry)
+                        needsSearchDefaults = false
+                    }
+                }
+                .onDisappear {
+                    if !isClubPagePresented { needsSearchDefaults = true }
+                }
+                .onChange(of: defaultCountry) {
+                    if !isClubPagePresented {
+                        model.beginSearchSession(preferredCountry: defaultCountry)
+                    }
+                }
                 .onChange(of: profile?.sexOrDefault ?? .male) { _, newSex in
                     model.selectedSex = newSex.rawValue
                     model.selectedTeeID = nil

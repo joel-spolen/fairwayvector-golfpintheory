@@ -25,6 +25,51 @@ private final class GolfAPIStubProtocol: URLProtocol, @unchecked Sendable {
 @MainActor
 @Suite(.serialized)
 struct GolfAPITests {
+    @Test func deviceRegionMapsToCatalogCountriesWithoutLocationRequests() {
+        for (code, country, region) in [
+            ("SE", "Sweden", "Europe"), ("US", "USA", "North America"),
+            ("GB", "UK", "Europe"), ("CA", "Canada", "North America"),
+            ("TR", "Türkiye", "Europe"), ("DE", "Germany", "Europe"),
+            ("AU", "Australia", "Australia/Oceania"), ("JP", "Japan", "Asia"),
+            ("ZA", "South Africa", "Africa"), ("AR", "Argentina", "Latin America and the Caribbean")
+        ] {
+            let result = GolfAPICoverage.preferredCountry(locale: Locale(identifier: "en_\(code)"))
+            #expect(result == country)
+            #expect(GolfAPICoverage.region(for: result) == region)
+        }
+        #expect(GolfAPICoverage.preferredCountry(locale: Locale(identifier: "en_AQ")) == "Sweden")
+        #expect(GolfAPICoverage.preferredCountry(locale: Locale(identifier: "en")) == "Sweden")
+        #expect(GolfAPICoverage.preferredCountry(saved: " canada ", locale: Locale(identifier: "sv_SE")) == "Canada")
+        #expect(GolfAPICoverage.preferredCountry(saved: "Sweden", locale: Locale(identifier: "en_US")) == "Sweden")
+        #expect(GolfAPICoverage.preferredCountry(saved: " ", locale: Locale(identifier: "en_US")) == "USA")
+        let profile = PlayerProfile(name: "Fixture", selectedCountry: "Canada")
+        #expect(profile.countryOrDefault == "Canada")
+        profile.selectedCountry = "Sweden"
+        #expect(profile.countryOrDefault == "Sweden")
+        #expect(PlayerProfile(name: "New fixture").selectedCountry == GolfAPICoverage.preferredCountry())
+    }
+
+    @Test func freshSearchSessionsRestorePreferenceWithoutChangingSavedCountry() {
+        let profile = PlayerProfile(name: "Fixture", selectedCountry: "Canada")
+        for purpose in [GolfAPICourseSelectionModel.Purpose.map, .handicap] {
+            let model = GolfAPICourseSelectionModel(purpose: purpose)
+            model.beginSearchSession(preferredCountry: profile.countryOrDefault)
+            #expect(model.selectedCountry == "Canada" && model.selectedRegion == "North America")
+            model.selectRegion("Europe")
+            model.selectCountry("Germany")
+            model.searchText = "Temporary search"
+            #expect(profile.selectedCountry == "Canada")
+            model.beginSearchSession(preferredCountry: profile.countryOrDefault)
+            #expect(model.selectedCountry == "Canada" && model.selectedRegion == "North America")
+            #expect(model.searchText.isEmpty && model.clubs.isEmpty && !model.hasSearched)
+            #expect(model.errorMessage == nil && model.searchValidationMessage == nil)
+            profile.selectedCountry = "Japan"
+            model.beginSearchSession(preferredCountry: profile.countryOrDefault)
+            #expect(model.selectedCountry == "Japan" && model.selectedRegion == "Asia")
+            profile.selectedCountry = "Canada"
+        }
+    }
+
     @Test func courseSearchRejectsInvalidLengthsWithoutNetworkRequests() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }

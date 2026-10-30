@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct CourseSelectionView: View {
     let onStartCourse: (CourseReference) -> Void
@@ -9,6 +10,8 @@ struct CourseSelectionView: View {
     var onHome: () -> Void = {}
     @Environment(PlayedRoundStore.self) private var roundStore
     @State private var confirmDiscardRound = false
+    @Query private var profiles: [PlayerProfile]
+    @State private var needsSearchDefaults = true
 
     init(showsRoundInProgress: Bool = false, isStartRoundFlow: Bool = false,
          onStartRound: ((CourseReference) -> Void)? = nil,
@@ -99,6 +102,20 @@ struct CourseSelectionView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .tint(PureLineStyle.accent)
+        .onAppear {
+            if needsSearchDefaults {
+                model.beginSearchSession(preferredCountry: profiles.first?.countryOrDefault)
+                needsSearchDefaults = false
+            }
+        }
+        .onDisappear {
+            if !isClubPagePresented { needsSearchDefaults = true }
+        }
+        .onChange(of: profiles.first?.countryOrDefault) {
+            if !isClubPagePresented {
+                model.beginSearchSession(preferredCountry: profiles.first?.countryOrDefault)
+            }
+        }
         .confirmationDialog("Discard the unsaved round?", isPresented: $confirmDiscardRound, titleVisibility: .visible) {
             Button("Discard round", role: .destructive) {
                 do { try roundStore.discardDraft() } catch { roundStore.errorMessage = error.localizedDescription }

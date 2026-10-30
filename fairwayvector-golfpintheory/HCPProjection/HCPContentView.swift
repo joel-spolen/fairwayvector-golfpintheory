@@ -845,7 +845,7 @@ private struct TargetCalculatorView: View {
     @State private var projectionHandicap: Double?
 
     private var activeCountry: String {
-        profile?.countryOrDefault ?? "Sweden"
+        profile?.countryOrDefault ?? GolfAPICoverage.preferredCountry()
     }
 
     private var selectedTee: CourseTeeInfo? {
@@ -1207,7 +1207,7 @@ private struct NewRoundView: View {
     @State private var holeScores: [Int] = Array(repeating: 4, count: 18)
 
     private var activeCountry: String {
-        profile?.countryOrDefault ?? "Sweden"
+        profile?.countryOrDefault ?? GolfAPICoverage.preferredCountry()
     }
 
     private var selectedTee: CourseTeeInfo? {
