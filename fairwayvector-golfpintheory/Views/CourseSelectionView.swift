@@ -24,6 +24,8 @@ struct CourseSelectionView: View {
     }
 
     @State private var model = GolfAPICourseSelectionModel()
+    @State private var isClubPagePresented = false
+    @AppStorage(RecentProviderCourseStore.key) private var recentProviderCoursesData = Data()
     @AppStorage("map.recentCourseReference") private var recentCourseData = Data()
     @AppStorage("hcp.provider.recentCourseReference.v1") private var hcpRecentCourseData = Data()
     @AppStorage("map.development.recentCourseReference.v1") private var demoRecentCourseData = Data()
@@ -60,53 +62,20 @@ struct CourseSelectionView: View {
                     }
                     CourseSearchControls(model: model)
 
-                    if let recentCourse {
-                        recentCourseShortcut(recentCourse)
+                    if !model.hasSearched, !recentProviderCourses.isEmpty {
+                        recentCoursesSection(recentProviderCourses)
                     }
 
                     CourseSelectionStatus(model: model)
 
                     if !model.clubs.isEmpty {
                         CourseClubCards(clubs: model.clubs, selectedClubID: model.selectedClubID,
-                                        title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)", onSelect: model.selectClub)
+                                        title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)", onSelect: { club in
+                                            model.selectClub(club)
+                                            isClubPagePresented = true
+                                        })
                         if model.hasMoreClubs { CourseCatalogMoreButton(model: model) }
                     }
-
-                    if let club = model.selectedClub {
-                        CourseResultCards(model: model, club: club)
-                    }
-
-                    if model.isLoadingCourse {
-                        CourseSelectionLoading()
-                    }
-
-                    if let detail = model.courseDetail {
-                        CourseTeeSelectionCard(model: model, detail: detail)
-                    }
-
-                    if let selection = model.selection {
-                        CourseSelectionSummaryCard(selection: selection)
-                        if isStartRoundFlow {
-                            if let onStartRound {
-                                Button("Start round", systemImage: "flag.checkered") { onStartRound(selection.reference) }
-                                    .buttonStyle(PureLinePrimaryButtonStyle())
-                                    .accessibilityIdentifier("start-round-button")
-                            }
-                        } else {
-                            Button {
-                                startCourse(selection.reference)
-                            } label: {
-                                Label("View Course", systemImage: "map.fill")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 52)
-                            }
-                                .buttonStyle(PureLinePrimaryButtonStyle())
-                                .tint(PureLineStyle.accent)
-                                .accessibilityIdentifier("view-course-button")
-                        }
-                    }
-
                 }
                 .foregroundStyle(PureLineStyle.ink)
                 .padding(.horizontal, 20)
@@ -117,6 +86,14 @@ struct CourseSelectionView: View {
                 }
             }
             .background(PureLineStyle.canvas)
+            .navigationDestination(isPresented: $isClubPagePresented) {
+                if let club = model.selectedClub {
+                    CourseClubSelectionPage(model: model, club: club,
+                        isStartRoundFlow: isStartRoundFlow,
+                        onStartCourse: { startCourse($0) },
+                        onStartRound: { startRound($0) })
+                }
+            }
             .navigationTitle("Choose Course")
             .toolbar(.hidden, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
@@ -131,50 +108,54 @@ struct CourseSelectionView: View {
         }
     }
 
-    private var recentCourse: CourseReference? {
-        if isMock {
-            let live = try? JSONDecoder().decode(CourseReference.self, from: recentCourseData)
-            // A usable live recent takes precedence over any previous demo shortcut.
-            if let live, model.hasSavedCourse(live) { return live }
-            let handicap = try? JSONDecoder().decode(CourseReference.self, from: hcpRecentCourseData)
-            if let handicap, model.hasSavedCourse(handicap) { return handicap }
-            let paused = try? JSONDecoder().decode(CourseReference.self, from: demoRecentCourseData)
-            if let paused, model.hasSavedCourse(paused) { return paused }
-            return live ?? handicap ?? paused
+    private var recentProviderCourses: [CourseReference] {
+        var saved = RecentProviderCourseStore.decode(recentProviderCoursesData)
+        if saved.isEmpty {
+            let legacy = [recentCourseData, hcpRecentCourseData]
+                .compactMap { try? JSONDecoder().decode(CourseReference.self, from: $0) }
+            if let paused = try? JSONDecoder().decode(CourseReference.self, from: demoRecentCourseData) {
+                saved.append(paused)
+            }
+            saved = RecentProviderCourseStore.decode(RecentProviderCourseStore.merging(legacy, into: Data()))
+            if !saved.isEmpty {
+                recentProviderCoursesData = (try? JSONEncoder().encode(saved)) ?? Data()
+            }
         }
-        let references = [recentCourseData, hcpRecentCourseData]
-            .compactMap { try? JSONDecoder().decode(CourseReference.self, from: $0) }
-        return references.first { !DevelopmentAPIConfiguration.isDemoCourse($0.golfAPICourseID ?? "") }
+        return saved
     }
 
     private func startCourse(_ reference: CourseReference) {
         if let data = try? JSONEncoder().encode(reference) {
             if isMock { demoRecentCourseData = data } else { recentCourseData = data }
+            if !DevelopmentAPIConfiguration.isDemoCourse(reference.golfAPICourseID ?? "") {
+                recentProviderCoursesData = RecentProviderCourseStore.recording(reference, in: recentProviderCoursesData)
+            }
         }
         onStartCourse(reference)
     }
 
-    private func recentCourseShortcut(_ reference: CourseReference, title: String = "RECENTLY SELECTED") -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .tracking(1)
-                .foregroundStyle(PureLineStyle.muted)
+    private func startRound(_ reference: CourseReference) {
+        recentProviderCoursesData = RecentProviderCourseStore.recording(reference, in: recentProviderCoursesData)
+        onStartRound?(reference)
+    }
 
-            Button {
-                if isStartRoundFlow, let onStartRound {
-                    onStartRound(reference)
-                } else {
-                    startCourse(reference)
+    private func recentCoursesSection(_ references: [CourseReference]) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            CourseSelectionHeading(title: "RECENTLY SELECTED")
+            ForEach(references, id: \.golfAPICourseID) { reference in
+                Button {
+                    if isStartRoundFlow {
+                        startRound(reference)
+                    } else {
+                        startCourse(reference)
+                    }
+                } label: {
+                    CourseRecentCard(reference: reference, status: nil)
                 }
-            } label: {
-                CourseRecentCard(reference: reference, status: nil)
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("recent-course-button-\(reference.golfAPICourseID ?? "course")")
             }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("recent-course-button")
-            .accessibilityHint(isStartRoundFlow
-                ? "Continues to round setup for this course and tee"
-                : "Opens this course with your previously selected tee set")
         }
     }
+
 }

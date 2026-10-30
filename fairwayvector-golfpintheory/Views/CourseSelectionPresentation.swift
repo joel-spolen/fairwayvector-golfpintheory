@@ -175,7 +175,7 @@ struct CourseResultCards: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(course.courseName).font(.subheadline.weight(.semibold)).foregroundStyle(PureLineStyle.ink)
                             Text(model.purpose == .handicap
-                                 ? "\(course.numHoles) holes · GPS not required"
+                                   ? "\(course.numHoles) holes"
                                  : "\(course.numHoles) holes\(course.hasGPS ? "" : " · GPS data not available")")
                                 .font(.caption).foregroundStyle(PureLineStyle.muted)
                         }

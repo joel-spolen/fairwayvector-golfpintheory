@@ -126,6 +126,7 @@ final class PinTheoryAccountData: Identifiable {
             "wedgeMatrix.wedges": "",
             "customFlagPositions": "",
             "map.recentCourseReference": Data(),
+            RecentProviderCourseStore.key: Data(),
             "map.development.recentCourseReference.v1": Data(),
             "hcp.provider.recentCourseReference.v1": Data(),
         ]

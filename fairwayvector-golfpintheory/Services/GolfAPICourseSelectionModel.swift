@@ -4,7 +4,7 @@ import Observation
 @MainActor
 @Observable
 final class GolfAPICourseSelectionModel {
-    static let catalogPageSize = 50
+    static let catalogPageSize = 10
     enum Purpose { case map, handicap }
     private let client: GolfAPIClient
     private let pageSize: Int
@@ -22,6 +22,7 @@ final class GolfAPICourseSelectionModel {
     var selectedSex = "male"
     var selectedTeeID: String?
     private(set) var isSearching = false
+    private(set) var hasSearched = false
     private(set) var isLoadingMore = false
     private(set) var hasMoreClubs = false
     private(set) var totalClubCount = 0
@@ -104,6 +105,7 @@ final class GolfAPICourseSelectionModel {
             return
         }
         isSearching = true
+        hasSearched = true
         errorMessage = nil
         defer { isSearching = false }
         activeSearchQuery = query

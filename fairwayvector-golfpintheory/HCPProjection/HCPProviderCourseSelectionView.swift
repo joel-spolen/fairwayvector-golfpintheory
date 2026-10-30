@@ -5,6 +5,8 @@ import SwiftData
 /// No map, location manager, scorecard, draft or terrain side effects.
 struct HCPProviderCourseSelectionView: View {
     @State private var model: GolfAPICourseSelectionModel
+    @State private var isClubPagePresented = false
+    @AppStorage(RecentProviderCourseStore.key) private var recentProviderCoursesData = Data()
     @AppStorage("map.recentCourseReference") private var mapRecent = Data()
     @AppStorage("map.development.recentCourseReference.v1") private var pausedRecent = Data()
     @AppStorage("hcp.provider.recentCourseReference.v1") private var hcpRecent = Data()
@@ -60,15 +62,17 @@ struct HCPProviderCourseSelectionView: View {
         return HCPCustomCourseSearch.availableTees(tees, club: match.club, courseName: customCourseName, sex: sex)
     }
 
-    private var recent: CourseReference? {
-        [hcpRecent, mapRecent, pausedRecent].compactMap { try? JSONDecoder().decode(CourseReference.self, from: $0) }
-            .first { $0.golfAPICourseID != nil && !DevelopmentAPIConfiguration.isDemoCourse($0.golfAPICourseID ?? "") }
-    }
-
-    private var converted: HCPProviderCourse? {
-        guard let selection = model.selection else { return nil }
-        return try? HCPProviderCourse.convert(detail: selection.details, tee: selection.tee,
-            sex: selection.sex, clubName: selection.club.clubName)
+    private var recentProviderCourses: [CourseReference] {
+        let saved = RecentProviderCourseStore.decode(recentProviderCoursesData)
+        guard saved.isEmpty else { return saved }
+        let legacy = [hcpRecent, mapRecent, pausedRecent]
+            .compactMap { try? JSONDecoder().decode(CourseReference.self, from: $0) }
+            .filter { !DevelopmentAPIConfiguration.isDemoCourse($0.golfAPICourseID ?? "") }
+        let migrated = RecentProviderCourseStore.decode(RecentProviderCourseStore.merging(legacy, into: Data()))
+        if !migrated.isEmpty {
+            recentProviderCoursesData = (try? JSONEncoder().encode(migrated)) ?? Data()
+        }
+        return migrated
     }
 
     var body: some View {
@@ -91,54 +95,27 @@ struct HCPProviderCourseSelectionView: View {
 
                     customResults
 
-                    if model.selectedClubID == nil, customMatch == nil, let recent {
+                    if !model.hasSearched, model.selectedClubID == nil, customMatch == nil,
+                       !recentProviderCourses.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
                             CourseSelectionHeading(title: "RECENTLY SELECTED")
-                            Button {
-                                clearCustomDraft()
-                                Task { await model.selectReference(recent) }
-                            } label: {
-                                CourseRecentCard(reference: recent, status: nil, showsTeeAndRating: false)
+                            ForEach(recentProviderCourses, id: \.golfAPICourseID) { reference in
+                                Button {
+                                    clearCustomDraft()
+                                    Task {
+                                        await model.selectReference(reference)
+                                        if model.courseDetail != nil { isClubPagePresented = true }
+                                    }
+                                } label: {
+                                    CourseRecentCard(reference: reference, status: nil, showsTeeAndRating: false)
+                                }
+                                .buttonStyle(.plain).disabled(model.isLoadingCourse)
+                                .accessibilityIdentifier("recent-course-button-\(reference.golfAPICourseID ?? "course")")
                             }
-                            .buttonStyle(.plain).disabled(model.isLoadingCourse)
-                            .accessibilityIdentifier("recent-course-button")
-                            .accessibilityHint("Revalidates this course and tee for the selected rating category")
                         }
                     }
                     CourseSelectionStatus(model: model, suppressNoMatches: !customMatches.isEmpty)
-                    if !model.clubs.isEmpty {
-                        CourseClubCards(clubs: model.clubs, selectedClubID: model.selectedClubID,
-                                        title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)", onSelect: { club in
-                                            clearCustomDraft()
-                                            model.selectClub(club)
-                                        },
-                                        isDisabled: model.isLoadingCourse)
-                        if model.hasMoreClubs { CourseCatalogMoreButton(model: model) }
-                    }
-                    if customMatch == nil, let club = model.selectedClub {
-                        CourseResultCards(model: model, club: club)
-                    }
-                    if model.isLoadingCourse { CourseSelectionLoading() }
-                    if customMatch == nil, let detail = model.courseDetail {
-                        CourseTeeSelectionCard(model: model, detail: detail)
-                    }
-                    if customMatch == nil, let selection = model.selection, let converted {
-                        if confirmedCourseID != converted.id {
-                            CourseSelectionSummaryCard(selection: selection)
-                        }
-                        if converted.tee.holeHandicapIndicesData == nil {
-                            Text("Provider stroke indices unavailable or invalid. Hole-by-hole scoring is disabled; no indices are invented.")
-                                .font(.caption).foregroundStyle(PureLineStyle.muted)
-                        }
-                        Button("Use tee") {
-                            guard let selection = model.selection else { return }
-                            confirmedCustomTeeID = nil
-                            hcpRecent = (try? JSONEncoder().encode(selection.reference)) ?? Data()
-                            onSelect(converted)
-                        }
-                        .buttonStyle(PureLinePrimaryButtonStyle())
-                    }
-
+                    providerClubResults
                 }
                 .foregroundStyle(PureLineStyle.ink)
                 .padding(.vertical, 12)
@@ -153,6 +130,40 @@ struct HCPProviderCourseSelectionView: View {
                 .onChange(of: model.searchText) { clearCustomDraft() }
                 .onChange(of: model.selectedCountry) { clearCustomDraft() }
                 .onChange(of: model.selectedRegion) { clearCustomDraft() }
+                .navigationDestination(isPresented: $isClubPagePresented, destination: clubPage)
+    }
+
+    @ViewBuilder
+    private var providerClubResults: some View {
+        if !model.clubs.isEmpty {
+            CourseClubCards(clubs: model.clubs, selectedClubID: model.selectedClubID,
+                title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)",
+                onSelect: selectProviderClub, isDisabled: model.isLoadingCourse)
+            if model.hasMoreClubs { CourseCatalogMoreButton(model: model) }
+        }
+    }
+
+    private func selectProviderClub(_ club: GolfAPIClub) {
+        clearCustomDraft()
+        model.selectClub(club)
+        isClubPagePresented = true
+    }
+
+    @ViewBuilder
+    private func clubPage() -> some View {
+        if let club = model.selectedClub {
+            CourseClubSelectionPage(model: model, club: club, isStartRoundFlow: false,
+                onUseHandicapTee: confirmProviderTee)
+        }
+    }
+
+    private func confirmProviderTee(_ selection: HCPProviderCourse) {
+        confirmedCustomTeeID = nil
+        if let reference = model.selection?.reference {
+            hcpRecent = (try? JSONEncoder().encode(reference)) ?? Data()
+            recentProviderCoursesData = RecentProviderCourseStore.recording(reference, in: recentProviderCoursesData)
+        }
+        onSelect(selection)
     }
 
     private func clearCustomDraft() {

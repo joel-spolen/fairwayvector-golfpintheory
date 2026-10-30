@@ -363,6 +363,7 @@ struct GolfAPITests {
     }
 
     @Test func catalogSearchPagesStayInMemoryAndLoadMoreDoesNotCallGolfAPI() async throws {
+        #expect(GolfAPICourseSelectionModel.catalogPageSize == 10)
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         let first = Data(#"{"datasetVersion":"catalog-v1","numClubs":2,"numAllClubs":3,"page":1,"pageSize":2,"hasMore":true,"clubs":[{"clubID":"club-1","clubName":"One","country":"Sweden","courses":[]},{"clubID":"club-2","clubName":"Two","country":"Sweden","courses":[]}] }"#.utf8)
@@ -397,9 +398,9 @@ struct GolfAPITests {
             let query = items.first { $0.name == "q" }?.value
             let countries = items.first { $0.name == "countries" }?.value?.split(separator: "|").map(String.init) ?? []
             #expect(query == "Pebble Be")
-            #expect(countries == GolfAPICoverage.regions.first { $0.name == "North America" }?.countries)
+            #expect(countries == GolfAPICoverage.regions.first { $0.name == "North America" }?.countries.sorted())
             #expect(items.first { $0.name == "country" } == nil)
-            return (200, Data(#"{"datasetVersion":"catalog-v1","numClubs":0,"numAllClubs":0,"page":1,"pageSize":50,"hasMore":false,"clubs":[]}"#.utf8))
+            return (200, Data(#"{"datasetVersion":"catalog-v1","numClubs":0,"numAllClubs":0,"page":1,"pageSize":10,"hasMore":false,"clubs":[]}"#.utf8))
         }
         let model = GolfAPICourseSelectionModel(client: client)
         model.selectRegion("North America")
