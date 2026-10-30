@@ -33,7 +33,8 @@ struct CourseSelectionView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 PureLineHomeButton(onHome: onHome)
-                ScrollView {
+                GeometryReader { geometry in
+                ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: 24) {
                     PureLinePageHeader(title: isStartRoundFlow ? "Start a round" : "Explore a course",
                         subtitle: "Choose your course and tee.")
@@ -110,8 +111,10 @@ struct CourseSelectionView: View {
                 .foregroundStyle(PureLineStyle.ink)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 24)
+                .frame(width: geometry.size.width, alignment: .leading)
                 }
                 .background(PureLineStyle.canvas)
+                }
             }
             .background(PureLineStyle.canvas)
             .navigationTitle("Choose Course")

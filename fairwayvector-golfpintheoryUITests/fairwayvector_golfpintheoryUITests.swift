@@ -110,6 +110,7 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         returnHome(in: app)
     }
 
+
     @MainActor
     func testWedgeToolsAndWedgeBagUseHomeRoutes() {
         let app = launchAtHome()

@@ -338,12 +338,12 @@ struct GolfAPITests {
         let legacy = GolfAPICache(directoryURL: directory)
         legacy.writeSearch(Data(#"{"clubs":[{"clubID":"stale","clubName":"Old cache","courses":[]}]}"#.utf8),
             query: "Åre", country: "Sweden", region: "")
-        let response = Data(#"{"datasetVersion":"catalog-v1","numClubs":1,"numAllClubs":1,"page":1,"pageSize":50,"hasMore":false,"clubs":[{"clubID":"club-1","clubName":"Åre Golfklubb","city":"Åre","state":"Jämtland","country":"Sweden","courses":[{"courseID":"course-1","courseName":"Åre GK","numHoles":18,"hasGPS":1}]}]}"#.utf8)
+        let response = Data(#"{"datasetVersion":"catalog-v1","numClubs":1,"numAllClubs":1,"page":1,"pageSize":50,"hasMore":false,"clubs":[{"clubID":"club-1","clubName":"Pebble Links","city":"Pebble Beach","state":"CA","country":"USA","courses":[{"courseID":"course-1","courseName":"Pebble Beach","numHoles":18,"hasGPS":1}]}]}"#.utf8)
         let client = makeClient(directory: directory) { request in
             #expect(request.url?.path == "/functions/v1/golf-data/api/v1/catalog/clubs")
             let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
-            #expect(items.first { $0.name == "q" }?.value == "Åre")
-            #expect(items.first { $0.name == "country" }?.value == "Sweden")
+            #expect(items.first { $0.name == "q" }?.value == "Pebble Be")
+            #expect(items.first { $0.name == "country" }?.value == "USA")
             #expect(items.first { $0.name == "page" }?.value == "1")
             #expect(request.url?.host == "edge.example.test")
             #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
@@ -351,11 +351,11 @@ struct GolfAPITests {
             return (200, response)
         }
 
-        let first = try await client.searchCatalogClubs(named: "Åre", country: "Sweden", page: 1)
-        let second = try await client.searchCatalogClubs(named: "Åre", country: "Sweden", page: 1)
+        let first = try await client.searchCatalogClubs(named: "Pebble Be", country: "USA", page: 1)
+        let second = try await client.searchCatalogClubs(named: "Pebble Be", country: "USA", page: 1)
         #expect(first.clubs == second.clubs)
-        #expect(first.clubs.first?.clubName == "Åre Golfklubb")
-        #expect(first.clubs.first?.courses.first?.courseID == "course-1")
+        #expect(first.clubs.first?.clubName == "Pebble Links")
+        #expect(first.clubs.first?.courses.first?.courseName == "Pebble Beach")
         #expect(first.numAllClubs == 1 && !first.hasMore)
         #expect(GolfAPICache(directoryURL: directory).readSearch(query: "Åre", country: "Sweden", region: "") == nil)
         #expect(GolfAPIStubProtocol.requestCount == 2)
@@ -386,6 +386,27 @@ struct GolfAPITests {
         #expect(model.totalClubCount == 3 && !model.hasMoreClubs)
         #expect(GolfAPICache(directoryURL: directory).searchData().isEmpty)
         #expect(GolfAPIStubProtocol.requestCount == 2)
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func regionSearchSendsExactSelectedCountriesAndSearchPhrase() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let client = makeClient(directory: directory) { request in
+            let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
+            let query = items.first { $0.name == "q" }?.value
+            let countries = items.first { $0.name == "countries" }?.value?.split(separator: "|").map(String.init) ?? []
+            #expect(query == "Pebble Be")
+            #expect(countries == GolfAPICoverage.regions.first { $0.name == "North America" }?.countries)
+            #expect(items.first { $0.name == "country" } == nil)
+            return (200, Data(#"{"datasetVersion":"catalog-v1","numClubs":0,"numAllClubs":0,"page":1,"pageSize":50,"hasMore":false,"clubs":[]}"#.utf8))
+        }
+        let model = GolfAPICourseSelectionModel(client: client)
+        model.selectRegion("North America")
+        model.searchText = "Pebble Be"
+        await model.search()
+        #expect(model.errorMessage?.contains("No golf clubs matched") == true)
+        #expect(GolfAPIStubProtocol.requestCount == 1)
         GolfAPIStubProtocol.handler = nil
     }
 

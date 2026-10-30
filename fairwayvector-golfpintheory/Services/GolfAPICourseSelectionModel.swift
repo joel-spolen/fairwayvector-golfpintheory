@@ -31,6 +31,7 @@ final class GolfAPICourseSelectionModel {
     private var currentPage = 0
     private var activeSearchQuery = ""
     private var activeSearchCountry = ""
+    private var activeSearchCountries: [String] = []
     private var activeSearchState = ""
     private var activeDatasetVersion: String?
 
@@ -98,7 +99,7 @@ final class GolfAPICourseSelectionModel {
     func search(forceRefresh: Bool = false) async {
         guard !isSearching else { return }
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !selectedCountry.isEmpty || !query.isEmpty else {
+        guard !selectedCountry.isEmpty || !availableCountries.isEmpty || !query.isEmpty else {
             errorMessage = "Select a region and country, or enter a club name to search."
             return
         }
@@ -107,8 +108,7 @@ final class GolfAPICourseSelectionModel {
         defer { isSearching = false }
         activeSearchQuery = query
         activeSearchCountry = selectedCountry
-        // The coverage region only scopes the country picker. It is not a
-        // provider state filter when a query is entered without a country.
+        activeSearchCountries = selectedCountry.isEmpty ? availableCountries : []
         activeSearchState = ""
         activeDatasetVersion = nil
         clubs = []
@@ -121,7 +121,8 @@ final class GolfAPICourseSelectionModel {
         selectedTeeID = nil
         do {
             let result = try await client.searchCatalogClubs(named: query, country: selectedCountry,
-                state: activeSearchState, page: 1, pageSize: pageSize)
+                countries: activeSearchCountries, state: activeSearchState,
+                page: 1, pageSize: pageSize)
             clubs = eligibleClubs(result.clubs)
             currentPage = result.page
             totalClubCount = result.numAllClubs
@@ -145,7 +146,8 @@ final class GolfAPICourseSelectionModel {
         do {
             let nextPage = currentPage + 1
             let result = try await client.searchCatalogClubs(named: activeSearchQuery,
-                country: activeSearchCountry, state: activeSearchState,
+                country: activeSearchCountry, countries: activeSearchCountries,
+                state: activeSearchState,
                 page: nextPage, pageSize: pageSize)
             guard result.page == nextPage else {
                 throw GolfAPIError.invalidResponse("The course catalog returned an unexpected page.")
@@ -177,6 +179,24 @@ final class GolfAPICourseSelectionModel {
         }
     }
 
+    func selectCountry(_ country: String) {
+        selectedCountry = country
+        clearSearchResults()
+    }
+
+    private func clearSearchResults() {
+        clubs = []
+        selectedClubID = nil
+        selectedCourseID = nil
+        courseDetail = nil
+        selectedTeeID = nil
+        currentPage = 0
+        totalClubCount = 0
+        hasMoreClubs = false
+        activeDatasetVersion = nil
+        errorMessage = nil
+    }
+
     func selectClub(_ club: GolfAPIClub) {
         if let index = clubs.firstIndex(where: { $0.clubID == club.clubID }) {
             clubs[index] = club
@@ -193,16 +213,7 @@ final class GolfAPICourseSelectionModel {
     func selectRegion(_ region: String) {
         selectedRegion = region
         selectedCountry = ""
-        clubs = []
-        selectedClubID = nil
-        selectedCourseID = nil
-        courseDetail = nil
-        selectedTeeID = nil
-        hasMoreClubs = false
-        totalClubCount = 0
-        currentPage = 0
-        activeDatasetVersion = nil
-        errorMessage = nil
+        clearSearchResults()
     }
 
     func selectCourse(_ course: GolfAPICourseSummary) async {

@@ -73,18 +73,22 @@ struct GolfAPIClient {
         return []
     }
 
-    func searchCatalogClubs(named query: String, country: String, state: String = "",
+    func searchCatalogClubs(named query: String, country: String, countries: [String] = [], state: String = "",
                             page: Int, pageSize: Int = 50) async throws -> GolfAPICatalogPage {
         let normalizedQuery = Self.normalizedSearchTerm(query)
         let normalizedCountry = Self.normalizedSearchTerm(country)
         let normalizedState = Self.normalizedSearchTerm(state)
-        guard page >= 1, page <= 1000, pageSize >= 1, pageSize <= 50,
-              !normalizedQuery.isEmpty || !normalizedCountry.isEmpty || !normalizedState.isEmpty else {
+          let normalizedCountries = Array(Set(countries.map(Self.normalizedSearchTerm))).sorted()
+          guard page >= 1, page <= 1000, pageSize >= 1, pageSize <= 50,
+              !normalizedQuery.isEmpty || !normalizedCountry.isEmpty || !normalizedState.isEmpty
+                || !normalizedCountries.isEmpty else {
             throw GolfAPIError.invalidResponse("A valid catalog query or location and page are required.")
         }
         if mode == .mock {
-            let clubs = try await searchClubs(named: normalizedQuery, country: normalizedCountry,
+            let candidates = try await searchClubs(named: normalizedQuery, country: normalizedCountry,
                 region: normalizedState, requiresGPS: false)
+            let countrySet = Set(normalizedCountries.map { $0.lowercased() })
+            let clubs = countrySet.isEmpty ? candidates : candidates.filter { countrySet.contains($0.country.lowercased()) }
             let start = min(clubs.count, (page - 1) * pageSize)
             let values = Array(clubs.dropFirst(start).prefix(pageSize))
             return GolfAPICatalogPage(clubs: values, numClubs: values.count, numAllClubs: clubs.count,
@@ -95,9 +99,10 @@ struct GolfAPIClient {
             URLQueryItem(name: "q", value: normalizedQuery),
             URLQueryItem(name: "country", value: normalizedCountry),
             URLQueryItem(name: "state", value: normalizedState),
+            URLQueryItem(name: "countries", value: normalizedCountries.joined(separator: "|")),
             URLQueryItem(name: "page", value: String(page)),
             URLQueryItem(name: "pageSize", value: String(pageSize))
-        ].filter { !($0.name == "q" || $0.name == "country" || $0.name == "state") || !($0.value ?? "").isEmpty }
+        ].filter { !($0.name == "q" || $0.name == "country" || $0.name == "state" || $0.name == "countries") || !($0.value ?? "").isEmpty }
         let data = try await get("/catalog/clubs", queryItems: items)
         let object = try Self.jsonObject(data)
         guard let version = Self.string(object["datasetVersion"]),

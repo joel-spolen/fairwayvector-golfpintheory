@@ -5,7 +5,8 @@ struct CourseSearchControls: View {
     @Bindable var model: GolfAPICourseSelectionModel
 
     private var searchDisabled: Bool {
-        model.isSearching || model.selectedCountry.isEmpty
+        model.isSearching || (model.selectedCountry.isEmpty && model.availableCountries.isEmpty
+            && model.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             || (model.purpose == .handicap && model.isLoadingCourse)
     }
 
@@ -27,12 +28,13 @@ struct CourseSearchControls: View {
                         .accessibilityAddTraits(.isButton)
                 }
                 .accessibilityIdentifier("golf-coverage-region-picker")
+                .disabled(model.isSearching)
 
                 Rectangle().fill(PureLineStyle.line).frame(width: 1, height: 24).accessibilityHidden(true)
 
                 Menu {
                     ForEach(model.availableCountries, id: \.self) { country in
-                        Button(country) { model.selectedCountry = country }
+                        Button(country) { model.selectCountry(country) }
                     }
                 } label: {
                     Label(model.selectedCountry.isEmpty ? "Country" : model.selectedCountry, systemImage: "mappin.and.ellipse")
@@ -43,7 +45,7 @@ struct CourseSearchControls: View {
                         .accessibilityLabel(model.selectedCountry.isEmpty ? "Country" : model.selectedCountry)
                         .accessibilityAddTraits(.isButton)
                 }
-                .disabled(model.selectedRegion.isEmpty)
+                .disabled(model.selectedRegion.isEmpty || model.isSearching)
                 .accessibilityIdentifier("golf-country-picker")
             }
             .padding(.horizontal, 14)
@@ -56,8 +58,11 @@ struct CourseSearchControls: View {
                     .textInputAutocapitalization(.words)
                     .autocorrectionDisabled()
                     .submitLabel(.search)
+                    .frame(maxWidth: .infinity)
+                    .layoutPriority(1)
                     .onSubmit { Task { await model.search() } }
                     .accessibilityIdentifier("golf-club-search-field")
+                    .disabled(model.isSearching)
                 Button {
                     Task { await model.search() }
                 } label: {
@@ -76,7 +81,12 @@ struct CourseSearchControls: View {
             .padding(.vertical, 6)
             .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(PureLineStyle.line, lineWidth: 1))
-
+            if model.isSearching {
+                ProgressView()
+                    .progressViewStyle(.linear)
+                    .accessibilityLabel("Searching courses")
+                    .accessibilityIdentifier("course-search-progress")
+            }
         }
     }
 }
