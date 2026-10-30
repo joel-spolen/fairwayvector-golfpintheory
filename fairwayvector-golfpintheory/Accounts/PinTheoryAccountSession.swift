@@ -140,6 +140,7 @@ final class PinTheoryAccountSession: ObservableObject {
         }
         isSyncingSavedData = false
         accountData = nil
+        AccountCourseStorage.configure(accountDirectory: nil)
         accountDetails = nil
         message = nil
         do { try auth?.signOut() }
@@ -159,6 +160,7 @@ final class PinTheoryAccountSession: ObservableObject {
         // Backend deletion succeeded. Never restore this identity locally even if
         // device cleanup reports an error; surface that partial-cleanup result.
         accountData = nil
+        AccountCourseStorage.configure(accountDirectory: nil)
         var localCleanupFailed = false
         if let existingData {
             do { try existingData.eraseLocalContent() }
@@ -771,17 +773,24 @@ final class PinTheoryAccountSession: ObservableObject {
             do {
                 if accountData?.id.hasSuffix(identity.userID.uuidString.lowercased()) == true { return }
                 accountData = nil
+                AccountCourseStorage.configure(accountDirectory: nil)
                 accountData = try PinTheoryAccountData(projectHost: projectHost, userID: identity.userID)
                 if accountData?.defaults.object(forKey: Self.syncOptInKey) == nil {
                     accountData?.defaults.set(true, forKey: Self.syncOptInKey)
                 }
+                AccountCourseStorage.configure(accountDirectory: accountData?.directory)
+                GolfAPICache().clearSearches()
+                GolfAPICache().clearLegacyUnscopedCourseFiles()
+                CourseDataStore.clearLegacyUnscopedProviderCourses()
                 accountDetails = accountData?.loadAccountProfile()
                 message = nil
             } catch {
                 accountData = nil
+                AccountCourseStorage.configure(accountDirectory: nil)
                 message = "Your account storage could not be opened. Existing records have been preserved. Retry or sign out."
             }
         case .signedOut, .restoring, .passwordRecovery:
+            AccountCourseStorage.configure(accountDirectory: nil)
             savedDataSyncFailure = nil
             if let activeSyncCoordinator {
                 Task { await activeSyncCoordinator.invalidate() }

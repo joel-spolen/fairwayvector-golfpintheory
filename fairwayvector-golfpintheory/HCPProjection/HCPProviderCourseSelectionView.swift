@@ -108,11 +108,12 @@ struct HCPProviderCourseSelectionView: View {
                     CourseSelectionStatus(model: model, suppressNoMatches: !customMatches.isEmpty)
                     if !model.clubs.isEmpty {
                         CourseClubCards(clubs: model.clubs, selectedClubID: model.selectedClubID,
-                                        title: "CLUBS · \(model.clubs.count)", onSelect: { club in
+                                        title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)", onSelect: { club in
                                             clearCustomDraft()
                                             model.selectClub(club)
                                         },
                                         isDisabled: model.isLoadingCourse)
+                        if model.hasMoreClubs { CourseCatalogMoreButton(model: model) }
                     }
                     if customMatch == nil, let club = model.selectedClub {
                         CourseResultCards(model: model, club: club)

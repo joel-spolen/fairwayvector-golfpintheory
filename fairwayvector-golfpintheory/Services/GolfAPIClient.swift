@@ -27,6 +27,13 @@ struct GolfAPIClient {
         self.mode = mode
         self.bundledSavedCourses = bundledSavedCourses
         edgeBaseURL = SupabaseProviderEndpoint.functionBase(projectURL: projectURL)
+        if mode == .live {
+            cache.clearSearches()
+            if cache.usesDefaultDirectory {
+                cache.clearLegacyUnscopedCourseFiles()
+                CourseDataStore.clearLegacyUnscopedProviderCourses()
+            }
+        }
     }
 
     var isConfigured: Bool {
@@ -44,6 +51,10 @@ struct GolfAPIClient {
         let normalizedCountry = Self.normalizedSearchTerm(country)
         let normalizedRegion = Self.normalizedSearchTerm(region)
         guard !normalizedQuery.isEmpty || !normalizedCountry.isEmpty || !normalizedRegion.isEmpty else { return [] }
+        if mode == .live {
+            return try await searchCatalogClubs(named: normalizedQuery, country: normalizedCountry,
+                state: normalizedRegion, page: 1).clubs
+        }
         if mode == .mock {
             // Read-only, including force refresh. Only complete downloaded courses are selectable.
             let saved = cachedClubs(requiresGPS: requiresGPS).filter {
@@ -59,24 +70,59 @@ struct GolfAPIClient {
             ]))
             return saved + demo
         }
-        if mode == .live, !forceRefresh, let cached = cache.readSearch(query: normalizedQuery, country: normalizedCountry, region: normalizedRegion) {
-            return try Self.decodeClubs(from: cached)
-        }
+        return []
+    }
 
-        var queryItems = [URLQueryItem(name: "page", value: "1")]
-        if !normalizedCountry.isEmpty { queryItems.append(URLQueryItem(name: "country", value: normalizedCountry)) }
-        if !normalizedRegion.isEmpty { queryItems.append(URLQueryItem(name: "state", value: normalizedRegion)) }
-        if !normalizedQuery.isEmpty { queryItems.append(URLQueryItem(name: "name", value: normalizedQuery)) }
-        let data = try await get("/golf/clubs", queryItems: queryItems)
-        _ = try Self.decodeClubs(from: data)
-        if mode == .live { cache.writeSearch(data, query: normalizedQuery, country: normalizedCountry, region: normalizedRegion) }
-        return try Self.decodeClubs(from: data)
+    func searchCatalogClubs(named query: String, country: String, state: String = "",
+                            page: Int, pageSize: Int = 50) async throws -> GolfAPICatalogPage {
+        let normalizedQuery = Self.normalizedSearchTerm(query)
+        let normalizedCountry = Self.normalizedSearchTerm(country)
+        let normalizedState = Self.normalizedSearchTerm(state)
+        guard page >= 1, page <= 1000, pageSize >= 1, pageSize <= 50,
+              !normalizedQuery.isEmpty || !normalizedCountry.isEmpty || !normalizedState.isEmpty else {
+            throw GolfAPIError.invalidResponse("A valid catalog query or location and page are required.")
+        }
+        if mode == .mock {
+            let clubs = try await searchClubs(named: normalizedQuery, country: normalizedCountry,
+                region: normalizedState, requiresGPS: false)
+            let start = min(clubs.count, (page - 1) * pageSize)
+            let values = Array(clubs.dropFirst(start).prefix(pageSize))
+            return GolfAPICatalogPage(clubs: values, numClubs: values.count, numAllClubs: clubs.count,
+                page: page, pageSize: pageSize, hasMore: start + values.count < clubs.count,
+                datasetVersion: "mock-catalog-v1")
+        }
+        let items = [
+            URLQueryItem(name: "q", value: normalizedQuery),
+            URLQueryItem(name: "country", value: normalizedCountry),
+            URLQueryItem(name: "state", value: normalizedState),
+            URLQueryItem(name: "page", value: String(page)),
+            URLQueryItem(name: "pageSize", value: String(pageSize))
+        ].filter { !($0.name == "q" || $0.name == "country" || $0.name == "state") || !($0.value ?? "").isEmpty }
+        let data = try await get("/catalog/clubs", queryItems: items)
+        let object = try Self.jsonObject(data)
+        guard let version = Self.string(object["datasetVersion"]),
+              let numClubs = Self.int(object["numClubs"]),
+              let numAllClubs = Self.int(object["numAllClubs"]),
+              let returnedPage = Self.int(object["page"]),
+              let returnedPageSize = Self.int(object["pageSize"]),
+              let hasMore = Self.bool(object["hasMore"]),
+              returnedPage == page, returnedPageSize == pageSize,
+              numClubs >= 0, numClubs <= pageSize, numAllClubs >= numClubs else {
+            throw GolfAPIError.invalidResponse("The course catalog returned invalid paging metadata.")
+        }
+        let clubs = try Self.decodeClubs(from: data)
+        guard clubs.count == numClubs else {
+            throw GolfAPIError.invalidResponse("The course catalog count does not match its results.")
+        }
+        return GolfAPICatalogPage(clubs: clubs, numClubs: numClubs, numAllClubs: numAllClubs,
+            page: page, pageSize: pageSize, hasMore: hasMore, datasetVersion: version)
     }
 
     func loadCourseDetail(id: String, forceRefresh: Bool = false) async throws -> GolfAPICourseDetail {
         if mode == .live, !forceRefresh, let cached = cache.readCourseDetail(id: id) {
             let detail = try Self.decodeDetail(from: cached)
             guard detail.courseID == id else { throw GolfAPIError.invalidResponse("Saved detail course ID mismatch.") }
+            await retainSelectedCourse(id)
             return detail
         }
         if (mode == .mock || !forceRefresh), let cached = cache.readCourseDetail(id: id),
@@ -91,8 +137,18 @@ struct GolfAPIClient {
         guard detail.courseID == id else {
             throw GolfAPIError.invalidResponse("The returned course ID does not match the requested course.")
         }
-        if mode == .live { try cache.persistCourseDetail(data, id: id) }
+        if mode == .live {
+            try cache.persistCourseDetail(data, id: id)
+            await retainSelectedCourse(id)
+        }
         return detail
+    }
+
+    @MainActor private func retainSelectedCourse(_ id: String) {
+        for evictedID in CourseDataStore.retainRecentCourse(id: id, maximum: 5) {
+            cache.removeCourse(id: evictedID)
+            CourseDataStore.removeCourseData(id: evictedID)
+        }
     }
 
     func loadCoordinates(id: String, forceRefresh: Bool = false) async throws -> [GolfAPICoordinate] {
@@ -126,27 +182,13 @@ struct GolfAPIClient {
 
     func refreshCourse(id: String) async throws -> GolfAPICoursePayload {
         if mode == .mock { return try await loadCourse(id: id) }
-        let currentDetail = try await loadCourseDetail(id: id)
-        if try await checkForUpdates(to: currentDetail) {
-            async let detail = loadCourseDetail(id: id, forceRefresh: true)
-            async let coordinates = loadCoordinates(id: id, forceRefresh: true)
-            return try await GolfAPICoursePayload(detail: detail, coordinates: coordinates)
-        }
-        return try await loadCourse(id: id)
+        async let detail = loadCourseDetail(id: id, forceRefresh: true)
+        async let coordinates = loadCoordinates(id: id, forceRefresh: true)
+        return try await GolfAPICoursePayload(detail: detail, coordinates: coordinates)
     }
 
     func checkForUpdates(to detail: GolfAPICourseDetail) async throws -> Bool {
-        guard mode == .live else { return false }
-        guard let timestamp = detail.timestampUpdated, !timestamp.isEmpty else { return false }
-        let data = try await get("/golf/courses", queryItems: [
-            URLQueryItem(name: "country", value: "Sweden"),
-            URLQueryItem(name: "name", value: detail.clubName),
-            URLQueryItem(name: "timestampUpdated", value: timestamp),
-            URLQueryItem(name: "page", value: "1")
-        ])
-        let object = try Self.jsonObject(data)
-        let courses = object["courses"] as? [[String: Any]] ?? []
-        return courses.contains { Self.string($0["courseID"]) == detail.courseID }
+        false // The provider update probe was a paid search request; refresh now uses detail/coordinate endpoints only.
     }
 
     /// No writes, migrations, update checks, credentials or transport.
@@ -372,11 +414,20 @@ struct GolfAPIClient {
 }
 
 struct GolfAPICache {
-    private let rootURL: URL?
+    private let directoryOverride: URL?
 
     init(directoryURL: URL? = nil, fileManager: FileManager = .default) {
-        rootURL = directoryURL ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
-            .appending(path: "GolfAPI", directoryHint: .isDirectory)
+        directoryOverride = directoryURL
+        self.fileManager = fileManager
+    }
+
+    private let fileManager: FileManager
+    var usesDefaultDirectory: Bool { directoryOverride == nil }
+    private var rootURL: URL? {
+        directoryOverride
+            ?? AccountCourseStorage.accountDirectory?.appendingPathComponent("GolfAPI", isDirectory: true)
+            ?? fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
+                .appending(path: "GolfAPI", directoryHint: .isDirectory)
     }
 
     func readSearch(query: String, country: String, region: String) -> Data? {
@@ -385,10 +436,42 @@ struct GolfAPICache {
     func writeSearch(_ data: Data, query: String, country: String, region: String) {
         write(data, named: searchFilename(query: query, country: country, region: region))
     }
+    func clearSearches() {
+        guard let rootURL, let files = try? FileManager.default.contentsOfDirectory(
+            at: rootURL, includingPropertiesForKeys: nil) else { return }
+        for file in files where file.lastPathComponent.hasPrefix("search-") && file.pathExtension == "json" {
+            try? FileManager.default.removeItem(at: file)
+        }
+        guard directoryOverride == nil,
+              let legacyRoot = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
+                .appending(path: "GolfAPI", directoryHint: .isDirectory),
+              legacyRoot != rootURL,
+              let legacyFiles = try? fileManager.contentsOfDirectory(at: legacyRoot, includingPropertiesForKeys: nil) else { return }
+        for file in legacyFiles where file.lastPathComponent.hasPrefix("search-") && file.pathExtension == "json" {
+            try? fileManager.removeItem(at: file)
+        }
+    }
     func readCourseDetail(id: String) -> Data? { read(named: "course-\(safeKey(id))-detail.json") }
     func writeCourseDetail(_ data: Data, id: String) { write(data, named: "course-\(safeKey(id))-detail.json") }
     func readCoordinates(id: String) -> Data? { read(named: "course-\(safeKey(id))-coordinates.json") }
     func writeCoordinates(_ data: Data, id: String) { write(data, named: "course-\(safeKey(id))-coordinates.json") }
+
+    func removeCourse(id: String) {
+        guard let rootURL else { return }
+        try? fileManager.removeItem(at: rootURL.appending(path: "course-\(safeKey(id))-detail.json"))
+        try? fileManager.removeItem(at: rootURL.appending(path: "course-\(safeKey(id))-coordinates.json"))
+    }
+
+    func clearLegacyUnscopedCourseFiles() {
+        guard let legacyRoot = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
+            .appending(path: "GolfAPI", directoryHint: .isDirectory),
+              legacyRoot != rootURL,
+              let files = try? fileManager.contentsOfDirectory(at: legacyRoot, includingPropertiesForKeys: nil) else { return }
+        for file in files where file.lastPathComponent.hasPrefix("course-")
+            && (file.lastPathComponent.hasSuffix("-detail.json") || file.lastPathComponent.hasSuffix("-coordinates.json")) {
+            try? fileManager.removeItem(at: file)
+        }
+    }
 
     func persistCourseDetail(_ data: Data, id: String) throws {
         try writeRequired(data, named: "course-\(safeKey(id))-detail.json")

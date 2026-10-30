@@ -21,6 +21,16 @@ struct GolfAPICourseSummary: Decodable, Hashable, Identifiable {
     var id: String { courseID }
 }
 
+struct GolfAPICatalogPage: Hashable {
+    let clubs: [GolfAPIClub]
+    let numClubs: Int
+    let numAllClubs: Int
+    let page: Int
+    let pageSize: Int
+    let hasMore: Bool
+    let datasetVersion: String
+}
+
 struct GolfAPICourseDetail: Decodable, Hashable {
     let courseID: String
     let clubID: String

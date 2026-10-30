@@ -4,20 +4,17 @@ import Observation
 @MainActor
 @Observable
 final class GolfAPICourseSelectionModel {
-    static let maximumSearchLength = 20
+    static let catalogPageSize = 50
     enum Purpose { case map, handicap }
     private let client: GolfAPIClient
+    private let pageSize: Int
     let purpose: Purpose
     let savedCourses: [CourseReference]
     var savedClubs: [GolfAPIClub] { client.cachedClubs(requiresGPS: purpose == .map) }
 
     var selectedRegion = "Europe"
     var selectedCountry = "Sweden"
-    private var limitedSearchText = ""
-    var searchText: String {
-        get { limitedSearchText }
-        set { limitedSearchText = String(newValue.prefix(Self.maximumSearchLength)) }
-    }
+    var searchText = ""
     private(set) var clubs: [GolfAPIClub] = []
     private(set) var selectedClubID: String?
     private(set) var selectedCourseID: String?
@@ -25,13 +22,22 @@ final class GolfAPICourseSelectionModel {
     var selectedSex = "male"
     var selectedTeeID: String?
     private(set) var isSearching = false
+    private(set) var isLoadingMore = false
+    private(set) var hasMoreClubs = false
+    private(set) var totalClubCount = 0
     private(set) var isLoadingCourse = false
     private(set) var errorMessage: String?
     private(set) var apiRequestsLeft: String?
+    private var currentPage = 0
+    private var activeSearchQuery = ""
+    private var activeSearchCountry = ""
+    private var activeSearchState = ""
+    private var activeDatasetVersion: String?
 
-    init(client: GolfAPIClient? = nil, purpose: Purpose = .map, sex: String = "male") {
+    init(client: GolfAPIClient? = nil, purpose: Purpose = .map, sex: String = "male", pageSize: Int = 50) {
         let resolved = client ?? .shared
         self.client = resolved
+        self.pageSize = min(max(pageSize, 1), Self.catalogPageSize)
         self.purpose = purpose
         self.selectedSex = sex
         savedCourses = purpose == .map ? resolved.savedReferences : []
@@ -99,28 +105,75 @@ final class GolfAPICourseSelectionModel {
         isSearching = true
         errorMessage = nil
         defer { isSearching = false }
+        activeSearchQuery = query
+        activeSearchCountry = selectedCountry
+        // The coverage region only scopes the country picker. It is not a
+        // provider state filter when a query is entered without a country.
+        activeSearchState = ""
+        activeDatasetVersion = nil
+        clubs = []
+        currentPage = 0
+        totalClubCount = 0
+        hasMoreClubs = false
+        selectedClubID = nil
+        selectedCourseID = nil
+        courseDetail = nil
+        selectedTeeID = nil
         do {
-            clubs = try await client.searchClubs(named: query, country: selectedCountry, forceRefresh: forceRefresh,
-                                               requiresGPS: purpose == .map)
-            if purpose == .handicap {
-                clubs = clubs.compactMap { club in
-                    let courses = club.courses.filter { !DevelopmentAPIConfiguration.isDemoCourse($0.courseID) }
-                    guard !courses.isEmpty else { return nil }
-                    return GolfAPIClub(clubID: club.clubID, clubName: club.clubName, city: club.city,
-                                       state: club.state, country: club.country, courses: courses)
-                }
-            }
+            let result = try await client.searchCatalogClubs(named: query, country: selectedCountry,
+                state: activeSearchState, page: 1, pageSize: pageSize)
+            clubs = eligibleClubs(result.clubs)
+            currentPage = result.page
+            totalClubCount = result.numAllClubs
+            hasMoreClubs = result.hasMore
+            activeDatasetVersion = result.datasetVersion
             apiRequestsLeft = nil
-            selectedClubID = nil
-            selectedCourseID = nil
-            courseDetail = nil
-            selectedTeeID = nil
-            if clubs.isEmpty {
+            if clubs.isEmpty && !hasMoreClubs {
                 let terms = [selectedCountry, query].filter { !$0.isEmpty }.joined(separator: " · ")
                 errorMessage = "No golf clubs matched \"\(terms)\"."
             }
         } catch {
             errorMessage = error.localizedDescription
+        }
+    }
+
+    func loadMoreClubs() async {
+        guard hasMoreClubs, !isSearching, !isLoadingMore else { return }
+        isLoadingMore = true
+        errorMessage = nil
+        defer { isLoadingMore = false }
+        do {
+            let nextPage = currentPage + 1
+            let result = try await client.searchCatalogClubs(named: activeSearchQuery,
+                country: activeSearchCountry, state: activeSearchState,
+                page: nextPage, pageSize: pageSize)
+            guard result.page == nextPage else {
+                throw GolfAPIError.invalidResponse("The course catalog returned an unexpected page.")
+            }
+            guard result.datasetVersion == activeDatasetVersion else {
+                clubs = []
+                currentPage = 0
+                hasMoreClubs = false
+                totalClubCount = 0
+                throw GolfAPIError.invalidResponse("The course catalog changed while loading results. Search again.")
+            }
+            let existing = Set(clubs.map(\.id))
+            clubs.append(contentsOf: eligibleClubs(result.clubs).filter { !existing.contains($0.id) })
+            currentPage = result.page
+            totalClubCount = result.numAllClubs
+            hasMoreClubs = result.hasMore
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    private func eligibleClubs(_ values: [GolfAPIClub]) -> [GolfAPIClub] {
+        guard purpose == .handicap else { return values }
+        return values.compactMap { club in
+            let courses = club.courses.filter { !DevelopmentAPIConfiguration.isDemoCourse($0.courseID) }
+            guard !courses.isEmpty else { return nil }
+            return GolfAPIClub(clubID: club.clubID, clubName: club.clubName, city: club.city,
+                state: club.state, country: club.country, courses: courses)
         }
     }
 
@@ -145,6 +198,10 @@ final class GolfAPICourseSelectionModel {
         selectedCourseID = nil
         courseDetail = nil
         selectedTeeID = nil
+        hasMoreClubs = false
+        totalClubCount = 0
+        currentPage = 0
+        activeDatasetVersion = nil
         errorMessage = nil
     }
 

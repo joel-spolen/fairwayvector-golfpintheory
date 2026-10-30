@@ -25,28 +25,28 @@ private final class GolfAPIStubProtocol: URLProtocol, @unchecked Sendable {
 @MainActor
 @Suite(.serialized)
 struct GolfAPITests {
-    @Test func courseSearchInputLimitsTypedAndPastedTextToTwentyCharacters() async throws {
+    @Test func courseSearchAcceptsLongTypedAndPastedText() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         let client = makeClient(directory: directory) { request in
             let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
-            let query = items.first { $0.name == "name" }?.value
-            #expect(query == String(repeating: "Å", count: 20))
+            let query = items.first { $0.name == "q" }?.value
+            #expect(query == String(repeating: "Å", count: 75))
             return (200, Data(#"{"clubs":[]}"#.utf8))
         }
         for purpose in [GolfAPICourseSelectionModel.Purpose.map, .handicap] {
             let model = GolfAPICourseSelectionModel(client: client, purpose: purpose)
             model.searchText = "Short search"
             #expect(model.searchText == "Short search")
-            model.searchText = String(repeating: "Å", count: 25)
-            #expect(model.searchText == String(repeating: "Å", count: 20))
+            model.searchText = String(repeating: "Å", count: 75)
+            #expect(model.searchText == String(repeating: "Å", count: 75))
             await model.search()
             model.searchText = String(repeating: "👩🏽‍💻", count: 21)
-            #expect(model.searchText == String(repeating: "👩🏽‍💻", count: 20))
+            #expect(model.searchText == String(repeating: "👩🏽‍💻", count: 21))
             model.searchText = ""
             #expect(model.searchText.isEmpty)
         }
-        #expect(GolfAPIStubProtocol.requestCount == 1)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
         GolfAPIStubProtocol.handler = nil
     }
 
@@ -205,6 +205,27 @@ struct GolfAPITests {
         GolfAPIStubProtocol.handler = nil
     }
 
+    @Test func refreshingCourseUsesOnlyDetailAndCoordinateEndpointsNotSearch() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let client = makeClient(directory: directory) { request in
+            switch request.url?.path {
+            case "/functions/v1/golf-data/api/v1/golf/courses/course-123":
+                return (200, Data(courseDetailJSON.utf8))
+            case "/functions/v1/golf-data/api/v1/golf/coordinates/course-123":
+                return (200, Data(coordinatesJSON.utf8))
+            default:
+                Issue.record("Course refresh must not call GolfAPI search endpoints")
+                return (404, Data())
+            }
+        }
+        let refreshed = try await client.refreshCourse(id: "course-123")
+        #expect(refreshed.detail.courseID == "course-123")
+        #expect(refreshed.coordinates.count == 10)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
+        GolfAPIStubProtocol.handler = nil
+    }
+
     @Test func server503ExplainsSafeFailureCodeAndDownloadStageWithoutRetry() async throws {
         for code in ["provider_disabled", "provider_not_configured", "daily_budget_exceeded",
                      "provider_cooldown", "request_pending", "ambiguous_attempt", "cache_write_rejected"] {
@@ -311,42 +332,136 @@ struct GolfAPITests {
         #expect(handicap.errorMessage != nil)
     }
 
-    @Test func clubSearchIsCachedForRepeatedQuery() async throws {
+    @Test func catalogSearchUsesSupabaseAndDoesNotPersistSearchResults() async throws {
         let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
         defer { try? FileManager.default.removeItem(at: directory) }
-        let response = Data(#"{"apiRequestsLeft":"99.9","numClubs":1,"clubs":[{"clubID":"club-1","clubName":"Åre Golfklubb","city":"Åre","state":"Jämtland","country":"Sweden","courses":[] }]}"#.utf8)
+        let legacy = GolfAPICache(directoryURL: directory)
+        legacy.writeSearch(Data(#"{"clubs":[{"clubID":"stale","clubName":"Old cache","courses":[]}]}"#.utf8),
+            query: "Åre", country: "Sweden", region: "")
+        let response = Data(#"{"datasetVersion":"catalog-v1","numClubs":1,"numAllClubs":1,"page":1,"pageSize":50,"hasMore":false,"clubs":[{"clubID":"club-1","clubName":"Åre Golfklubb","city":"Åre","state":"Jämtland","country":"Sweden","courses":[{"courseID":"course-1","courseName":"Åre GK","numHoles":18,"hasGPS":1}]}]}"#.utf8)
         let client = makeClient(directory: directory) { request in
-            #expect(request.url?.query?.contains("country=Sweden") == true)
+            #expect(request.url?.path == "/functions/v1/golf-data/api/v1/catalog/clubs")
+            let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
+            #expect(items.first { $0.name == "q" }?.value == "Åre")
+            #expect(items.first { $0.name == "country" }?.value == "Sweden")
+            #expect(items.first { $0.name == "page" }?.value == "1")
             #expect(request.url?.host == "edge.example.test")
             #expect(request.value(forHTTPHeaderField: "Authorization") == nil)
             #expect(request.value(forHTTPHeaderField: "x-api-key") == nil)
             return (200, response)
         }
 
-        let first = try await client.searchClubs(named: "Åre", country: "Sweden", region: "Jämtland")
-        let second = try await client.searchClubs(named: "Åre", country: "Sweden", region: "Jämtland")
-        #expect(first == second)
-        #expect(first.first?.clubName == "Åre Golfklubb")
-        #expect(GolfAPIStubProtocol.requestCount == 1)
+        let first = try await client.searchCatalogClubs(named: "Åre", country: "Sweden", page: 1)
+        let second = try await client.searchCatalogClubs(named: "Åre", country: "Sweden", page: 1)
+        #expect(first.clubs == second.clubs)
+        #expect(first.clubs.first?.clubName == "Åre Golfklubb")
+        #expect(first.clubs.first?.courses.first?.courseID == "course-1")
+        #expect(first.numAllClubs == 1 && !first.hasMore)
+        #expect(GolfAPICache(directoryURL: directory).readSearch(query: "Åre", country: "Sweden", region: "") == nil)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
         GolfAPIStubProtocol.handler = nil
     }
 
-    @Test func emptySearchIsCachedAcrossReopenAndDistinctSpellingsDoNotCollide() async throws {
+    @Test func catalogSearchPagesStayInMemoryAndLoadMoreDoesNotCallGolfAPI() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
-        let empty = Data(#"{"clubs":[],"numClubs":0}"#.utf8)
-        let client = makeClient(directory: directory) { _ in (200, empty) }
-        #expect(try await client.searchClubs(named: "  Typo?  ", country: "Sweden").isEmpty)
-        #expect(try await client.searchClubs(named: "Typo?", country: "Sweden").isEmpty)
-        #expect(GolfAPIStubProtocol.requestCount == 1)
-        let reopened = GolfAPIClient(cache: GolfAPICache(directoryURL: directory),
-            projectURL: URL(string: "https://edge.example.test"), mode: .live)
-        // Reopened client has no test transport; this must be entirely local.
-        #expect(try await reopened.searchClubs(named: "Typo?", country: "Sweden").isEmpty)
-        #expect(try await client.searchClubs(named: "Typo!", country: "Sweden").isEmpty)
-        #expect(try await client.searchClubs(named: "Typo-", country: "Sweden").isEmpty)
-        #expect(GolfAPIStubProtocol.requestCount == 3)
+        let first = Data(#"{"datasetVersion":"catalog-v1","numClubs":2,"numAllClubs":3,"page":1,"pageSize":2,"hasMore":true,"clubs":[{"clubID":"club-1","clubName":"One","country":"Sweden","courses":[]},{"clubID":"club-2","clubName":"Two","country":"Sweden","courses":[]}] }"#.utf8)
+        let second = Data(#"{"datasetVersion":"catalog-v1","numClubs":1,"numAllClubs":3,"page":2,"pageSize":2,"hasMore":false,"clubs":[{"clubID":"club-3","clubName":"Three","country":"Sweden","courses":[]}] }"#.utf8)
+        let client = makeClient(directory: directory) { request in
+            let page = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems?
+                .first { $0.name == "page" }?.value
+            #expect(request.url?.path.hasSuffix("/catalog/clubs") == true)
+            return page == "1" ? (200, first) : (200, second)
+        }
+        let model = GolfAPICourseSelectionModel(client: client, purpose: .map, pageSize: 2)
+        model.selectedCountry = "Sweden"
+        model.searchText = ""
+        await model.search()
+        #expect(model.errorMessage == nil)
+        #expect(model.clubs.map(\.clubID) == ["club-1", "club-2"])
+        #expect(model.totalClubCount == 3 && model.hasMoreClubs)
+        await model.loadMoreClubs()
+        #expect(model.errorMessage == nil)
+        #expect(model.clubs.map(\.clubID) == ["club-1", "club-2", "club-3"])
+        #expect(model.totalClubCount == 3 && !model.hasMoreClubs)
+        #expect(GolfAPICache(directoryURL: directory).searchData().isEmpty)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
         GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func liveCatalogClientDeletesLegacySearchFilesButKeepsCourseFiles() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let cache = GolfAPICache(directoryURL: directory)
+        cache.writeSearch(Data(#"{"clubs":[]}"#.utf8), query: "Legacy", country: "Sweden", region: "")
+        cache.writeCourseDetail(Data(courseDetailJSON.utf8), id: "course-123")
+        cache.writeCoordinates(Data(coordinatesJSON.utf8), id: "course-123")
+        #expect(!cache.searchData().isEmpty)
+        #expect(cache.readCourseDetail(id: "course-123") != nil)
+        #expect(cache.readCoordinates(id: "course-123") != nil)
+
+        _ = GolfAPIClient(cache: cache, projectURL: URL(string: "https://edge.example.test"),
+            mode: .live, bundledSavedCourses: nil)
+        #expect(cache.searchData().isEmpty)
+        #expect(cache.readCourseDetail(id: "course-123") != nil)
+        #expect(cache.readCoordinates(id: "course-123") != nil)
+    }
+
+    @Test func accountCourseCacheKeepsOnlyFiveRecentSelectedCourses() async throws {
+        let accountDirectory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: accountDirectory) }
+        let previousDirectory = AccountCourseStorage.accountDirectory
+        AccountCourseStorage.configure(accountDirectory: accountDirectory)
+        defer { AccountCourseStorage.configure(accountDirectory: previousDirectory) }
+
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [GolfAPIStubProtocol.self]
+        GolfAPIStubProtocol.requestCount = 0
+        GolfAPIStubProtocol.handler = { request in
+            let id = String(request.url!.lastPathComponent)
+            let payload = courseDetailJSON.replacingOccurrences(of: "course-123", with: id)
+            return (200, Data(payload.utf8))
+        }
+        let client = GolfAPIClient(session: URLSession(configuration: configuration), cache: GolfAPICache(),
+            projectURL: URL(string: "https://edge.example.test"), mode: .live, bundledSavedCourses: nil)
+        let cacheDirectory = accountDirectory.appendingPathComponent("GolfAPI", isDirectory: true)
+        let firstGeometry = CourseDataStore.directory(courseID: "golfapi:course-1")
+        try FileManager.default.createDirectory(at: firstGeometry, withIntermediateDirectories: true)
+        try Data("fixture geometry".utf8).write(to: firstGeometry.appendingPathComponent("course.json"))
+
+        for number in 1...6 {
+            let id = "course-\(number)"
+            #expect(try await client.loadCourseDetail(id: id).courseID == id)
+        }
+        #expect(CourseDataStore.savedProviderCourseIDs() == Set((2...6).map { "course-\($0)" }))
+        let persistedCache = GolfAPICache(directoryURL: cacheDirectory)
+        #expect(persistedCache.readCourseDetail(id: "course-1") == nil)
+        #expect(persistedCache.readCourseDetail(id: "course-6") != nil)
+        #expect(!FileManager.default.fileExists(atPath: firstGeometry.path))
+        GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func accountSwitchUsesSeparatePersistentCourseCacheRoots() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let original = AccountCourseStorage.accountDirectory
+        defer { AccountCourseStorage.configure(accountDirectory: original) }
+        let first = root.appendingPathComponent("account-one", isDirectory: true)
+        let second = root.appendingPathComponent("account-two", isDirectory: true)
+
+        AccountCourseStorage.configure(accountDirectory: first)
+        GolfAPICache().writeCourseDetail(Data(courseDetailJSON.utf8), id: "course-123")
+        #expect(GolfAPICache().readCourseDetail(id: "course-123") != nil)
+        let firstGeometry = CourseDataStore.directory(courseID: "golfapi:course-123")
+
+        AccountCourseStorage.configure(accountDirectory: second)
+        #expect(GolfAPICache().readCourseDetail(id: "course-123") == nil)
+        let secondGeometry = CourseDataStore.directory(courseID: "golfapi:course-123")
+        #expect(firstGeometry != secondGeometry)
+        #expect(firstGeometry.path.hasPrefix(first.path))
+        #expect(secondGeometry.path.hasPrefix(second.path))
+        AccountCourseStorage.configure(accountDirectory: first)
+        #expect(GolfAPICache().readCourseDetail(id: "course-123") != nil)
     }
 
     @Test func searchCacheUsesNFCWithoutConflatingDistinctFilters() throws {
@@ -445,7 +560,7 @@ struct GolfAPITests {
         GolfAPIStubProtocol.handler = nil
     }
 
-    @Test func courseSearchSendsCountryAndRegionFilters() async throws {
+    @Test func courseSearchUsesCatalogFiltersAndNeverGolfAPISearchEndpoint() async throws {
         let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
         defer { try? FileManager.default.removeItem(at: directory) }
         let client = makeClient(directory: directory) { request in
@@ -453,9 +568,10 @@ struct GolfAPITests {
             let query = Dictionary(uniqueKeysWithValues: (components.queryItems ?? []).map { ($0.name, $0.value ?? "") })
             #expect(query["country"] == "Sweden")
             #expect(query["state"] == "Jämtland")
-            #expect(query["name"] == "Åre")
-            #expect(request.url?.path == "/functions/v1/golf-data/api/v1/golf/clubs")
-            return (200, Data(#"{"apiRequestsLeft":"99.9","numClubs":0,"clubs":[]}"#.utf8))
+            #expect(query["q"] == "Åre")
+            #expect(query["page"] == "1")
+            #expect(request.url?.path == "/functions/v1/golf-data/api/v1/catalog/clubs")
+            return (200, Data(#"{"datasetVersion":"catalog-v1","numClubs":0,"numAllClubs":0,"page":1,"pageSize":50,"hasMore":false,"clubs":[]}"#.utf8))
         }
 
         _ = try await client.searchClubs(named: "Åre", country: "Sweden", region: "Jämtland")

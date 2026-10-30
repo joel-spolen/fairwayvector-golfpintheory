@@ -58,7 +58,6 @@ struct CourseSearchControls: View {
                     .submitLabel(.search)
                     .onSubmit { Task { await model.search() } }
                     .accessibilityIdentifier("golf-club-search-field")
-                    .accessibilityHint("Maximum 20 characters")
                 Button {
                     Task { await model.search() }
                 } label: {
@@ -78,9 +77,6 @@ struct CourseSearchControls: View {
             .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(PureLineStyle.line, lineWidth: 1))
 
-            Text("\(model.searchText.count)/\(GolfAPICourseSelectionModel.maximumSearchLength) characters")
-                .font(.caption)
-                .foregroundStyle(PureLineStyle.muted)
         }
     }
 }
@@ -126,6 +122,33 @@ struct CourseClubCards: View {
                 .disabled(isDisabled)
             }
         }
+    }
+}
+
+struct CourseCatalogMoreButton: View {
+    let model: GolfAPICourseSelectionModel
+
+    var body: some View {
+        Button {
+            Task { await model.loadMoreClubs() }
+        } label: {
+            HStack {
+                Spacer()
+                if model.isLoadingMore {
+                    ProgressView().padding(.trailing, 8)
+                    Text("Loading clubs…")
+                } else {
+                    Text("Load more clubs")
+                    Image(systemName: "chevron.down")
+                }
+                Spacer()
+            }
+            .font(.subheadline.weight(.medium))
+            .frame(minHeight: 44)
+        }
+        .buttonStyle(.plain)
+        .disabled(model.isLoadingMore)
+        .accessibilityIdentifier("load-more-clubs-button")
     }
 }
 

@@ -67,7 +67,8 @@ struct CourseSelectionView: View {
 
                     if !model.clubs.isEmpty {
                         CourseClubCards(clubs: model.clubs, selectedClubID: model.selectedClubID,
-                                        title: "CLUBS · \(model.clubs.count)", onSelect: model.selectClub)
+                                        title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)", onSelect: model.selectClub)
+                        if model.hasMoreClubs { CourseCatalogMoreButton(model: model) }
                     }
 
                     if let club = model.selectedClub {
