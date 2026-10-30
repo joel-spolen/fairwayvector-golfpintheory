@@ -32,10 +32,13 @@ struct HCPProviderCourseSelectionView: View {
          onSelect: @escaping (HCPProviderCourse) -> Void) {
         let sex = profile?.sexOrDefault ?? .male
         let model = GolfAPICourseSelectionModel(purpose: .handicap, sex: sex.rawValue)
-        model.selectedCountry = country
         model.selectedRegion = model.coverageRegions.first { region in
             region.countries.contains { HCPCustomCourseSearch.normalizedCountry($0) == HCPCustomCourseSearch.normalizedCountry(country) }
         }?.name ?? "Europe"
+        let matchedCountry = model.availableCountries.first {
+            HCPCustomCourseSearch.normalizedCountry($0) == HCPCustomCourseSearch.normalizedCountry(country)
+        }
+        model.selectCountry(matchedCountry ?? "")
         _model = State(initialValue: model)
         self.profile = profile
         self.clubs = clubs

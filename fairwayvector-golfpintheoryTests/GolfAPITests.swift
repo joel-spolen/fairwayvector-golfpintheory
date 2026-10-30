@@ -25,35 +25,64 @@ private final class GolfAPIStubProtocol: URLProtocol, @unchecked Sendable {
 @MainActor
 @Suite(.serialized)
 struct GolfAPITests {
-    @Test func courseSearchAcceptsLongTypedAndPastedText() async throws {
+    @Test func courseSearchRejectsInvalidLengthsWithoutNetworkRequests() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
-        let client = makeClient(directory: directory) { request in
-            let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
-            let query = items.first { $0.name == "q" }?.value
-            #expect(query == String(repeating: "Å", count: 75))
-            return (200, Data(#"{"clubs":[]}"#.utf8))
+        let client = makeClient(directory: directory) { _ in
+            Issue.record("Invalid searches must not send a request")
+            return (500, Data())
         }
+        defer { GolfAPIStubProtocol.handler = nil }
         for purpose in [GolfAPICourseSelectionModel.Purpose.map, .handicap] {
             let model = GolfAPICourseSelectionModel(client: client, purpose: purpose)
-            model.searchText = "Short search"
-            #expect(model.searchText == "Short search")
-            model.searchText = String(repeating: "Å", count: 75)
-            #expect(model.searchText == String(repeating: "Å", count: 75))
-            await model.search()
-            model.searchText = String(repeating: "👩🏽‍💻", count: 21)
-            #expect(model.searchText == String(repeating: "👩🏽‍💻", count: 21))
-            model.searchText = ""
-            #expect(model.searchText.isEmpty)
+            #expect(model.errorMessage == nil)
+            for query in ["", " ", "A", " A ", String(repeating: "Å", count: 31),
+                          String(repeating: "👩🏽‍💻", count: 31), String(repeating: "A", count: 200)] {
+                model.searchText = query
+                await model.search()
+                #expect(model.searchText == query)
+                #expect(model.errorMessage == (query.trimmingCharacters(in: .whitespacesAndNewlines).count < 2
+                    ? "Enter at least 2 characters to search for a club."
+                    : "Use no more than 30 characters to search for a club."))
+                #expect(model.searchValidationMessage == model.errorMessage)
+                #expect(!model.isSearching && !model.hasSearched && !model.hasMoreClubs)
+            }
         }
-        #expect(GolfAPIStubProtocol.requestCount == 2)
-        GolfAPIStubProtocol.handler = nil
+        #expect(GolfAPIStubProtocol.requestCount == 0)
+    }
+
+    @Test func courseSearchAcceptsTrimmedBoundaryLengthsForBothPurposes() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        var expectedQuery = ""
+        let client = makeClient(directory: directory) { request in
+            let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
+            #expect(items.first { $0.name == "q" }?.value == expectedQuery)
+            #expect(items.first { $0.name == "country" }?.value == "Sweden")
+            return (200, Data(#"{"datasetVersion":"v1","numClubs":0,"numAllClubs":0,"page":1,"pageSize":10,"hasMore":false,"clubs":[]}"#.utf8))
+        }
+        defer { GolfAPIStubProtocol.handler = nil }
+        for purpose in [GolfAPICourseSelectionModel.Purpose.map, .handicap] {
+            let model = GolfAPICourseSelectionModel(client: client, purpose: purpose)
+            for query in [" År ", String(repeating: "Å", count: 30), String(repeating: "👩🏽‍💻", count: 30)] {
+                expectedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+                model.searchText = query
+                await model.search()
+                #expect(model.hasSearched)
+                #expect(model.searchValidationMessage == nil)
+                #expect(model.errorMessage?.contains("No golf clubs matched") == true)
+            }
+        }
+        #expect(GolfAPIStubProtocol.requestCount == 6)
     }
 
     @Test func coverageRegionCountryCountsMatchPublishedCoverageList() {
         let counts = Dictionary(uniqueKeysWithValues: GolfAPICoverage.regions.map { ($0.name, $0.countries.count) })
         #expect(counts["North America"] == 24)
-        #expect(counts["USA + Canada"] == 2)
+        #expect(counts["USA + Canada"] == nil)
+        let northAmerica = GolfAPICoverage.regions.first { $0.name == "North America" }
+        #expect(northAmerica?.countries.contains("USA") == true)
+        #expect(northAmerica?.countries.contains("Canada") == true)
         #expect(counts["Europe"] == 40)
         #expect(counts["Asia"] == 41)
         #expect(counts["Australia/Oceania"] == 8)
@@ -405,7 +434,7 @@ struct GolfAPITests {
         }
         let model = GolfAPICourseSelectionModel(client: client, purpose: .map, pageSize: 2)
         model.selectedCountry = "Sweden"
-        model.searchText = ""
+        model.searchText = "Golf"
         await model.search()
         #expect(model.errorMessage == nil)
         #expect(model.clubs.map(\.clubID) == ["club-1", "club-2"])
@@ -419,24 +448,33 @@ struct GolfAPITests {
         GolfAPIStubProtocol.handler = nil
     }
 
-    @Test func regionSearchSendsExactSelectedCountriesAndSearchPhrase() async throws {
+    @Test func regionSearchDefaultsToFirstCountryAndNeverSearchesEntireRegion() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         let client = makeClient(directory: directory) { request in
             let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems ?? []
             let query = items.first { $0.name == "q" }?.value
-            let countries = items.first { $0.name == "countries" }?.value?.split(separator: "|").map(String.init) ?? []
             #expect(query == "Pebble Be")
-            #expect(countries == GolfAPICoverage.regions.first { $0.name == "North America" }?.countries.sorted())
-            #expect(items.first { $0.name == "country" } == nil)
+            #expect(items.first { $0.name == "countries" } == nil)
+            #expect(items.first { $0.name == "country" }?.value
+                == GolfAPICoverage.regions.first { $0.name == "North America" }?.countries.first)
             return (200, Data(#"{"datasetVersion":"catalog-v1","numClubs":0,"numAllClubs":0,"page":1,"pageSize":10,"hasMore":false,"clubs":[]}"#.utf8))
         }
         let model = GolfAPICourseSelectionModel(client: client)
         model.selectRegion("North America")
+        #expect(model.selectedCountry == model.availableCountries.first)
         model.searchText = "Pebble Be"
         await model.search()
         #expect(model.errorMessage?.contains("No golf clubs matched") == true)
-        #expect(GolfAPIStubProtocol.requestCount == 1)
+        model.selectedCountry = ""
+        await model.search()
+        #expect(model.selectedCountry == model.availableCountries.first)
+        model.selectCountry("")
+        #expect(model.selectedCountry == model.availableCountries.first)
+        model.selectRegion("Unknown region")
+        await model.search()
+        #expect(model.errorMessage == "Select a region and country to search for a club.")
+        #expect(GolfAPIStubProtocol.requestCount == 2)
         GolfAPIStubProtocol.handler = nil
     }
 

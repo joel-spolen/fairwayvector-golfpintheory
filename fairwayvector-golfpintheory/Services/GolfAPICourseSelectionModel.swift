@@ -27,7 +27,10 @@ final class GolfAPICourseSelectionModel {
     private(set) var hasMoreClubs = false
     private(set) var totalClubCount = 0
     private(set) var isLoadingCourse = false
-    private(set) var errorMessage: String?
+    private(set) var errorMessage: String? {
+        didSet { searchValidationMessage = nil }
+    }
+    private(set) var searchValidationMessage: String?
     private(set) var apiRequestsLeft: String?
     private var currentPage = 0
     private var activeSearchQuery = ""
@@ -100,8 +103,21 @@ final class GolfAPICourseSelectionModel {
     func search(forceRefresh: Bool = false) async {
         guard !isSearching else { return }
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !selectedCountry.isEmpty || !availableCountries.isEmpty || !query.isEmpty else {
-            errorMessage = "Select a region and country, or enter a club name to search."
+        guard (2...30).contains(query.count) else {
+            clearSearchResults()
+            errorMessage = query.count < 2
+                ? "Enter at least 2 characters to search for a club."
+                : "Use no more than 30 characters to search for a club."
+            searchValidationMessage = errorMessage
+            return
+        }
+        if !availableCountries.contains(selectedCountry) {
+            selectedCountry = availableCountries.first ?? ""
+        }
+        guard !selectedCountry.isEmpty else {
+            clearSearchResults()
+            errorMessage = "Select a region and country to search for a club."
+            searchValidationMessage = errorMessage
             return
         }
         isSearching = true
@@ -110,7 +126,7 @@ final class GolfAPICourseSelectionModel {
         defer { isSearching = false }
         activeSearchQuery = query
         activeSearchCountry = selectedCountry
-        activeSearchCountries = selectedCountry.isEmpty ? availableCountries : []
+        activeSearchCountries = []
         activeSearchState = ""
         activeDatasetVersion = nil
         clubs = []
@@ -182,7 +198,7 @@ final class GolfAPICourseSelectionModel {
     }
 
     func selectCountry(_ country: String) {
-        selectedCountry = country
+        selectedCountry = availableCountries.contains(country) ? country : availableCountries.first ?? ""
         clearSearchResults()
     }
 
@@ -214,7 +230,7 @@ final class GolfAPICourseSelectionModel {
 
     func selectRegion(_ region: String) {
         selectedRegion = region
-        selectedCountry = ""
+        selectedCountry = availableCountries.first ?? ""
         clearSearchResults()
     }
 

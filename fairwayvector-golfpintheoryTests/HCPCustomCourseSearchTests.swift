@@ -23,7 +23,7 @@ struct HCPCustomCourseSearchTests {
         #expect(matches(clubs, country: "Swed").isEmpty)
         #expect(matches(clubs, region: "North America").isEmpty)
         #expect(matches(clubs, region: "Unknown").isEmpty)
-        #expect(matches(clubs, country: "USA", region: "USA + Canada").map(\.id) == [usa.persistentModelID])
+        #expect(matches(clubs, country: "USA", region: "USA + Canada").isEmpty)
         #expect(matches(clubs, country: "USA", region: "North America").map(\.id) == [usa.persistentModelID])
     }
 

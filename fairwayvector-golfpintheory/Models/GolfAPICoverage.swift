@@ -15,7 +15,6 @@ enum GolfAPICoverage {
             "Cayman Islands", "Cuba", "St.Vincent & Grenadines", "Honduras", "Saint Lucia", "Saint Kitts and Nevis",
             "Nicaragua", "Belize"
         ]),
-        GolfAPICoverageRegion(name: "USA + Canada", countries: ["USA", "Canada"]),
         GolfAPICoverageRegion(name: "Europe", countries: [
             "UK", "Germany", "France", "Sweden", "Spain", "Italy", "Netherlands", "Ireland", "Denmark", "Austria",
             "Finland", "Czech Republic", "Norway", "Belgium", "Switzerland", "Portugal", "Iceland", "Poland", "Slovakia",

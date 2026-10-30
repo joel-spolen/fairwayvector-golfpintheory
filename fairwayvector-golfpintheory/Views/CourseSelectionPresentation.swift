@@ -5,8 +5,7 @@ struct CourseSearchControls: View {
     @Bindable var model: GolfAPICourseSelectionModel
 
     private var searchDisabled: Bool {
-        model.isSearching || (model.selectedCountry.isEmpty && model.availableCountries.isEmpty
-            && model.searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        model.isSearching
             || (model.purpose == .handicap && model.isLoadingCourse)
     }
 
@@ -81,6 +80,13 @@ struct CourseSearchControls: View {
             .padding(.vertical, 6)
             .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 12))
             .overlay(RoundedRectangle(cornerRadius: 12).stroke(PureLineStyle.line, lineWidth: 1))
+            if let message = model.searchValidationMessage {
+                Label(message, systemImage: "exclamationmark.triangle")
+                    .font(.footnote)
+                    .foregroundStyle(PureLineStyle.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("course-search-message")
+            }
             if model.isSearching {
                 ProgressView()
                     .progressViewStyle(.linear)
@@ -318,6 +324,7 @@ struct CourseSelectionStatus: View {
             message("Supabase provider data is not configured in this app build.", image: "key.horizontal")
         }
         if let error = model.errorMessage,
+              model.searchValidationMessage == nil,
            !(suppressNoMatches && error.hasPrefix("No golf clubs matched")) {
             message(error, image: "exclamationmark.triangle").accessibilityIdentifier("course-search-message")
         }
