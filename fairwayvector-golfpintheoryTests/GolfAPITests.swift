@@ -134,6 +134,30 @@ struct GolfAPITests {
         #expect(detail.tees.first?.lengthsMeters[0] == 380 * 0.9144)
     }
 
+    @Test func unnamedCourseDetailsUseDisplayFallbackAndRemainCached() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        var object = try #require(JSONSerialization.jsonObject(with: Data(courseDetailJSON.utf8)) as? [String: Any])
+        let id = "012141519740780123824"
+        object["courseID"] = id
+        object["courseName"] = ""
+        let response = try JSONSerialization.data(withJSONObject: object)
+        let client = makeClient(directory: directory) { _ in (200, response) }
+        defer { GolfAPIStubProtocol.handler = nil }
+        for _ in 0..<2 {
+            let detail = try await client.loadCourseDetail(id: id)
+            #expect(detail.courseID == id)
+            #expect(detail.courseName == "Åre Golfklubb")
+            #expect(detail.tees.count == 2)
+        }
+        #expect(GolfAPIStubProtocol.requestCount == 1)
+        object["clubName"] = " "
+        object["numHoles"] = "18"
+        #expect(try GolfAPICourseDetail(json: object).courseName == "18-hole course")
+        object["courseName"] = "Named course"
+        #expect(try GolfAPICourseDetail(json: object).courseName == "Named course")
+    }
+
     @Test func providerDataEndpointsAreFixedToSupabaseEdgeFunction() throws {
         let project = URL(string: "https://project.example.test")!
         let golf = try #require(SupabaseProviderEndpoint.dataURL(projectURL: project, route: "/golf/clubs"))
@@ -242,6 +266,11 @@ struct GolfAPITests {
                 #expect(error as? GolfAPIError == .dataService(status: 503, code: code,
                     stage: "course GPS coordinates"))
                 #expect(!error.localizedDescription.contains("PRIVATE_CREDENTIAL"))
+                #expect(!error.localizedDescription.contains("HTTP 503"))
+                #expect(!error.localizedDescription.contains(code))
+                if code == "provider_cooldown" {
+                    #expect(error.localizedDescription == "We couldn't load this course just now. Please wait a few minutes, then try again.")
+                }
             }
             #expect(GolfAPIStubProtocol.requestCount == 1)
             GolfAPIStubProtocol.handler = nil

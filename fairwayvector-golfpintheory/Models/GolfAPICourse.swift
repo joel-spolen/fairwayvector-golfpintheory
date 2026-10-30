@@ -53,13 +53,17 @@ struct GolfAPICourseDetail: Decodable, Hashable {
 
     init(json: [String: Any]) throws {
         guard let courseID = Self.string(json["courseID"]),
-              let courseName = Self.string(json["courseName"]) else {
+              let rawCourseName = json["courseName"] as? String else {
             throw GolfAPIError.invalidResponse("Course detail is missing its course ID or name.")
         }
         self.courseID = courseID
         clubID = Self.string(json["clubID"]) ?? ""
         clubName = Self.string(json["clubName"]) ?? ""
-        self.courseName = courseName
+        let name = rawCourseName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let club = clubName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let holes = Self.int(json["numHoles"]) ?? 0
+        courseName = !name.isEmpty ? rawCourseName : !club.isEmpty ? club
+            : holes > 0 ? "\(holes)-hole course" : "Course"
         city = Self.string(json["city"])
         state = Self.string(json["state"])
         country = Self.string(json["country"]) ?? ""
@@ -269,40 +273,38 @@ enum GolfAPIError: LocalizedError, Equatable {
         case .localStorageUnavailable:
             return "The course could not be saved on this device. Free up storage and select it again; the server copy remains cached."
         case .missingDataServiceConfiguration:
-            return "Supabase provider data is not configured in this app build."
+            return "Course information is temporarily unavailable. Please try again later."
         case .unauthorized:
-            return "Supabase could not authorize this provider-data request. Sign in again and retry."
-        case .httpStatus(let status):
-            return "Supabase provider-data request returned HTTP \(status). Try again shortly."
-        case .dataService(let status, let code, let stage):
-            let reason: String
+            return "Please sign in again to load this course."
+        case .httpStatus:
+            return "We couldn't load this course right now. Check your connection and try again."
+        case .dataService(_, let code, _):
             switch code {
             case "provider_disabled":
-                reason = "New GolfAPI downloads are disabled on Supabase. The GolfAPI activation migration must be applied."
+                return "Course information is temporarily unavailable. Please try again later."
             case "provider_not_configured":
-                reason = "The deployed Edge Function cannot find its GolfAPI key. Check the GOLF_API_KEY secret on the same project."
+                return "Course information is temporarily unavailable. Please try again later."
             case "daily_budget_exceeded":
-                reason = "The server's daily GolfAPI request budget has been reached. Cached courses remain available."
+                return "Course downloads are busy right now. Please try again later."
             case "request_pending":
-                reason = "A server request for this data is already in progress. Wait before selecting the course again."
+                return "We're already loading this course. Please wait a moment and try again."
             case "provider_cooldown":
-                reason = "Supabase has paused requests after an earlier provider failure or rate limit. Check the provider status before retrying."
+                return "We couldn't load this course just now. Please wait a few minutes, then try again."
             case "ambiguous_attempt":
-                reason = "An earlier download has an uncertain outcome. Server-side review is required before another paid request is allowed."
+                return "This course is temporarily unavailable. Please try another course or come back later."
             case "cache_write_rejected":
-                reason = "Supabase could not save the provider response. Check the server cache before retrying."
+                return "We couldn't save this course just now. Please try again later."
             case "rate_limit":
-                reason = "The server request limit has been reached. Wait before trying again."
+                return "Too many course requests were made. Please wait a little and try again."
             case "provider_unavailable", "invalid_provider_response":
-                reason = "GolfAPI could not supply usable data. Check the server's provider status."
+                return "Course information couldn't be loaded. Please try again later."
             default:
-                reason = "The Edge Function or its database could not complete this request. Check the golf-data function logs."
+                return "We couldn't load this course right now. Please try again later."
             }
-            return "Could not download \(stage) (HTTP \(status), \(code)). \(reason)"
         case .invalidResponse(let detail):
-            return "Supabase returned incomplete course data: \(detail)"
+            return "The course information appears incomplete. Please try again later."
         case .noGPSData(let course):
-            return "\(course) has no GPS coordinates in Golf API."
+            return "Map data isn't available for \(course). You can still use it for Handicap."
         case .noRatedTees(let course):
             return "No rated tee sets were found for \(course)."
         case .savedCourseUnavailable(let course):
