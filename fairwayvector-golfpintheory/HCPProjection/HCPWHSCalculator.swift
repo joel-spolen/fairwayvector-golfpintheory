@@ -187,7 +187,7 @@ enum WHSCalculator {
                 scoreDifferential: differential,
                 projectedHandicapIndex: projected,
                 change: change,
-                adjustmentNotes: exceptionalAdjustment(for: differential, currentHandicapIndex: currentHandicap).map { ["Exceptional score \($0.formatted(.number.precision(.fractionLength(1))))"] } ?? []
+                adjustmentNotes: exceptionalAdjustment(for: differential, currentHandicapIndex: currentHandicap).map { [L("Exceptional score %@", "\($0.formatted(.number.precision(.fractionLength(1))))")] } ?? []
             )
         }
     }

@@ -10,15 +10,15 @@ nonisolated enum HybridPredictorError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingResource(let name):
-            return "Missing bundled ML resource: \(name)"
+            return L("Missing bundled ML resource: %@", "\(name)")
         case .invalidManifest(let reason):
-            return "Bundled ML manifest is invalid: \(reason)"
+            return L("Bundled ML manifest is invalid: %@", "\(reason)")
         case .nonFiniteOutput(let reason):
-            return "Prediction produced a non-finite value: \(reason)"
+            return L("Prediction produced a non-finite value: %@", "\(reason)")
         case .targetElevationExceedsApex(let targetM, let apexM):
-            return String(format: "The target is %.1f m above the launch point, but this shot peaks at %.1f m. Lower the elevation change or increase the launch conditions.", targetM, apexM)
+            return String(format: L("The target is %.1f m above the launch point, but this shot peaks at %.1f m. Lower the elevation change or increase the launch conditions."), targetM, apexM)
         case .noClubCanReachTargetElevation(let targetM, let highestApexM):
-            return String(format: "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions.", targetM, highestApexM)
+            return String(format: L("No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions."), targetM, highestApexM)
         }
     }
 }

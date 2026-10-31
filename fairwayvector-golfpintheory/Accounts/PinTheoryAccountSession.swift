@@ -47,7 +47,7 @@ final class PinTheoryAccountSession: ObservableObject {
                 Task { await activeSyncCoordinator.invalidate() }
                 self.activeSyncCoordinator = nil
             }
-            savedDataSyncMessage = "Cloud sync is off. Saved data remains on this device."
+            savedDataSyncMessage = L("Cloud sync is off. Saved data remains on this device.")
             return
         }
         syncLogger.info("Sync preference enabled; requesting sync")
@@ -60,7 +60,7 @@ final class PinTheoryAccountSession: ObservableObject {
         do {
             guard let configuration = try PinTheoryAuthConfiguration.load() else {
                 auth = nil; projectHost = nil
-                message = "Account sign-in is not configured in this build."
+                message = L("Account sign-in is not configured in this build.")
                 return
             }
             projectHost = configuration.projectURL.host
@@ -76,7 +76,7 @@ final class PinTheoryAccountSession: ObservableObject {
             }
         } catch {
             auth = nil; projectHost = nil
-            message = "Account configuration is unavailable. Please contact the developer."
+            message = L("Account configuration is unavailable. Please contact the developer.")
         }
     }
 
@@ -144,7 +144,7 @@ final class PinTheoryAccountSession: ObservableObject {
         accountDetails = nil
         message = nil
         do { try auth?.signOut() }
-        catch { message = "Secure sign-out could not finish. Please retry before using another account." }
+        catch { message = L("Secure sign-out could not finish. Please retry before using another account.") }
     }
 
     func deleteAccount() async throws {
@@ -167,8 +167,8 @@ final class PinTheoryAccountSession: ObservableObject {
             catch { localCleanupFailed = true }
         }
         accountDeletionNotice = localCleanupFailed
-            ? "Your account was deleted, but some records remain on this device. Remove Golf PinTheory from this device or contact support."
-            : "Your Golf PinTheory account was deleted."
+            ? L("Your account was deleted, but some records remain on this device. Remove Golf PinTheory from this device or contact support.")
+            : L("Your Golf PinTheory account was deleted.")
     }
 
     func loadAccountDetails() async throws -> PinTheoryAccountDetails {
@@ -220,8 +220,8 @@ final class PinTheoryAccountSession: ObservableObject {
         isSyncingSavedData = true
         accountData.defaults.set(true, forKey: Self.syncOptInKey)
         savedDataSyncFailure = nil
-        savedDataSyncMessage = "Preparing secure sync…"
-        var syncStage = "opening account sync storage"
+        savedDataSyncMessage = L("Preparing secure sync…")
+        var syncStage = L("opening account sync storage")
         defer {
             isSyncingSavedData = false
             activeSyncCoordinator = nil
@@ -264,18 +264,18 @@ final class PinTheoryAccountSession: ObservableObject {
                     trajectoryProfileStore.markClubProfileSaved()
                 }
             }
-            savedDataSyncMessage = "Checking saved data in the cloud…"
-            syncStage = "verifying your sign-in"
+            savedDataSyncMessage = L("Checking saved data in the cloud…")
+            syncStage = L("verifying your sign-in")
             let accessToken = try await auth.authenticatedAccessToken(for: identity.userID)
             // Refuse all sync traffic until strict payload validation and the
             // timestamp-aware club-profile migration are installed.
-            syncStage = "checking the server sync version"
+            syncStage = L("checking the server sync version")
             syncLogger.info("Checking server sync capabilities")
             try await transport.validateServerContract(accessToken: accessToken)
             try Task.checkCancellation()
             guard case .authenticated(let validatedIdentity) = auth.state,
                 validatedIdentity.userID == identity.userID else { throw AccountSyncError.staleOperation }
-            syncStage = "reading cloud records or retrying queued changes"
+            syncStage = L("reading cloud records or retrying queued changes")
             syncLogger.info("Reading remote journal and processing queued mutations")
             _ = try await coordinator.synchronize(ownerID: identity.userID, accessToken: accessToken)
             try Task.checkCancellation()
@@ -334,7 +334,7 @@ final class PinTheoryAccountSession: ObservableObject {
                 queued += 1
             }
 
-            syncStage = "preparing saved data for upload"
+            syncStage = L("preparing saved data for upload")
             // First sync merges this device's saved scorecards into the account.
             // On a fresh device this list is empty and cloud data is pulled.
             for round in roundStore.saved {
@@ -482,8 +482,8 @@ final class PinTheoryAccountSession: ObservableObject {
             }
             let beforePush = try localSnapshot()
             savedDataSyncMessage = queued > 0 || !baseline.pending.isEmpty
-                ? "Syncing saved records…" : "Checking for cloud updates…"
-            syncStage = "uploading saved changes and downloading updates"
+                ? L("Syncing saved records…") : L("Checking for cloud updates…")
+            syncStage = L("uploading saved changes and downloading updates")
             syncLogger.info("Uploading local changes and downloading remote updates")
             _ = try await coordinator.synchronize(ownerID: identity.userID, accessToken: accessToken)
             try Task.checkCancellation()
@@ -524,7 +524,7 @@ final class PinTheoryAccountSession: ObservableObject {
                 completedIdentity.userID == identity.userID else { throw AccountSyncError.staleOperation }
 
             let final = try journal.snapshot()
-            syncStage = "restoring downloaded records on this device"
+            syncStage = L("restoring downloaded records on this device")
             let activeCloudRecordCount = final.localRecords.filter { !$0.isDeleted }.count
             let cloudTombstoneCount = final.localRecords.filter(\.isDeleted).count
             let activeKinds = Dictionary(grouping: final.localRecords.filter { !$0.isDeleted }, by: \.kind)
@@ -607,13 +607,13 @@ final class PinTheoryAccountSession: ObservableObject {
             savedDataSyncConflictCount = final.conflicts.count
             syncLogger.info("Sync run completed; pending=\(final.pending.count), conflicts=\(final.conflicts.count)")
             if !final.conflicts.isEmpty {
-                savedDataSyncMessage = "Sync completed with \(final.conflicts.count) conflict(s). Both versions are preserved; resolve these before retrying sync."
+                savedDataSyncMessage = L("Sync completed with %@ conflict(s). Both versions are preserved; resolve these before retrying sync.", "\(final.conflicts.count)")
             } else if !final.pending.isEmpty {
-                savedDataSyncMessage = "Sync is incomplete: \(final.pending.count) saved change(s) remain queued. Tap Sync now to retry."
+                savedDataSyncMessage = L("Sync is incomplete: %@ saved change(s) remain queued. Tap Sync now to retry.", "\(final.pending.count)")
             } else {
-                savedDataSyncMessage = "Cloud sync complete. \(roundStore.saved.count) saved scorecards are available on this device."
+                savedDataSyncMessage = L("Cloud sync complete. %@ saved scorecards are available on this device.", "\(roundStore.saved.count)")
                 if activeCloudRecordCount == 0 && cloudTombstoneCount > 0 {
-                    savedDataSyncFailure = "Cloud sync completed, but this account has no active records and \(cloudTombstoneCount) deleted record(s). If the original device still shows the missing entry, install this app update there, turn Sync across devices off and back on, then sync the iPad again."
+                    savedDataSyncFailure = L("Cloud sync completed, but this account has no active records and %@ deleted record(s). If the original device still shows the missing entry, install this app update there, turn Sync across devices off and back on, then sync the iPad again.", "\(cloudTombstoneCount)")
                 }
             }
         } catch {
@@ -626,11 +626,11 @@ final class PinTheoryAccountSession: ObservableObject {
             if !(error is CancellationError) {
                 let details: String
                 if error as? AccountSyncError == .staleOperation {
-                    details = "Your account or sign-in state changed during sync. Turn sync off and on again while connected."
+                    details = L("Your account or sign-in state changed during sync. Turn sync off and on again while connected.")
                 } else {
                     details = error.localizedDescription
                 }
-                savedDataSyncFailure = "Sync stopped while \(syncStage). \(details) Do not uninstall the app or clear its saved data."
+                savedDataSyncFailure = L("Sync stopped while %@. %@ Do not uninstall the app or clear its saved data.", "\(syncStage)", "\(details)")
             }
         }
     }
@@ -787,7 +787,7 @@ final class PinTheoryAccountSession: ObservableObject {
             } catch {
                 accountData = nil
                 AccountCourseStorage.configure(accountDirectory: nil)
-                message = "Your account storage could not be opened. Existing records have been preserved. Retry or sign out."
+                message = L("Your account storage could not be opened. Existing records have been preserved. Retry or sign out.")
             }
         case .signedOut, .restoring, .passwordRecovery:
             AccountCourseStorage.configure(accountDirectory: nil)
@@ -800,8 +800,8 @@ final class PinTheoryAccountSession: ObservableObject {
             isSyncingSavedData = false
             accountData = nil
             accountDetails = nil
-                if message?.hasPrefix("Your Golf PinTheory account was deleted") != true,
-                    message?.hasPrefix("Your account was deleted") != true {
+                if message?.hasPrefix(L("Your Golf PinTheory account was deleted")) != true,
+                    message?.hasPrefix(L("Your account was deleted")) != true {
                 message = nil
             }
         }

@@ -15,9 +15,9 @@ struct TrajectoryRootView: View {
 
         var title: String {
             switch self {
-            case .home: "Overview"
-            case .calculator: "Trajectory"
-            case .club: "Club Selector"
+            case .home: L("Overview")
+            case .calculator: L("Trajectory")
+            case .club: L("Club Selector")
             }
         }
     }

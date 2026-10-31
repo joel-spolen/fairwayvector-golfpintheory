@@ -156,7 +156,7 @@ final class TerrainElevationStore {
         targetInteractionActive = false
         interactionGate.setActive(true)
         shotPending = false
-        shotMessage = "Target movement cancelled. Tap the map and release a target to commit its terrain."
+        shotMessage = L("Target movement cancelled. Tap the map and release a target to commit its terrain.")
     }
 
     /// Invalidate obsolete shot state without changing the hole pipeline or interaction gate.
@@ -170,7 +170,7 @@ final class TerrainElevationStore {
         isShotLoading = false
         // Invalidating cached advice (hole change/deactivation) is not a held gesture.
         shotPending = targetInteractionActive
-        shotMessage = targetInteractionActive ? "Target is being moved. Release to load its terrain." : nil
+        shotMessage = targetInteractionActive ? L("Target is being moved. Release to load its terrain.") : nil
     }
 
     func commitShot(_ request: TerrainRequest, selectShot: Bool = true, allowPaid: Bool = true) {
@@ -187,8 +187,8 @@ final class TerrainElevationStore {
         shotMessage = nil
         plannedCalls = 0
         guard let origin = request.origin, let target = request.target else {
-            shotMessage = allowPaid ? "No committed shot origin or target is available."
-                : "Showing saved terrain only. Tap the course map and release a target to load missing shot terrain."
+            shotMessage = allowPaid ? L("No committed shot origin or target is available.")
+                : L("Showing saved terrain only. Tap the course map and release a target to load missing shot terrain.")
             return
         }
         isShotLoading = true

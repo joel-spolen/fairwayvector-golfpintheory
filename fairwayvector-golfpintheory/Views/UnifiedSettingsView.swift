@@ -9,6 +9,8 @@ struct UnifiedSettingsView: View {
     @Query private var profiles: [PlayerProfile]
     @AppStorage("distanceUnit", store: .standard) private var mapUnit: DistanceUnit = .meters
     @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var wedgeUnit = WedgeDistanceUnit.yards.rawValue
+    @AppStorage(AppLanguage.preferenceKey, store: .standard)
+    private var languagePreference = AppLanguage.followSystemValue
     @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
     @State private var aboutSheet: AboutSheet?
     @State private var showingSyncFailure = false
@@ -28,20 +30,31 @@ struct UnifiedSettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Tee played from") {
-                    Picker("Tee rating", selection: Binding(
+                Section(AppLanguage.localized("Language")) {
+                    Picker(AppLanguage.localized("App language"), selection: $languagePreference) {
+                        Text(AppLanguage.localized("Follow iPhone language")).tag(AppLanguage.followSystemValue)
+                        ForEach(AppLanguage.allCases) { language in
+                            Text(language.displayName).tag(language.rawValue)
+                        }
+                    }
+                    .accessibilityIdentifier("app-language-picker")
+                }
+                .listRowBackground(PureLineStyle.surface)
+
+                Section(AppLanguage.localized("Tee played from")) {
+                    Picker(AppLanguage.localized("Tee rating"), selection: Binding(
                         get: { profile?.sexOrDefault ?? .male },
                         set: { sex in updateProfile { $0.sexOrDefault = sex } }
                     )) {
-                        Text("Men").tag(PlayerSex.male)
-                        Text("Women").tag(PlayerSex.female)
+                        Text(AppLanguage.localized("Men")).tag(PlayerSex.male)
+                        Text(AppLanguage.localized("Women")).tag(PlayerSex.female)
                     }
                     .pickerStyle(.segmented)
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("Distance units") {
-                    Picker("Distance", selection: Binding(
+                Section(AppLanguage.localized("Distance units")) {
+                    Picker(AppLanguage.localized("Distance"), selection: Binding(
                         get: { mapUnit },
                         set: { unit in
                             mapUnit = unit
@@ -54,17 +67,17 @@ struct UnifiedSettingsView: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                    Text("Applies to course distances, wedge carries, and trajectory defaults.")
+                    Text(AppLanguage.localized("Applies to course distances, wedge carries, and trajectory defaults."))
                         .font(.footnote)
                         .foregroundStyle(PureLineStyle.muted)
-                    NavigationLink("Advanced settings") {
+                    NavigationLink(AppLanguage.localized("Advanced settings")) {
                         TrajectoryUnitSettingsView(unitPreferences: trajectoryModel.unitPreferences)
                     }
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("Country / Region") {
-                    Picker("Country / Region", selection: Binding(
+                Section(AppLanguage.localized("Country / Region")) {
+                    Picker(AppLanguage.localized("Country / Region"), selection: Binding(
                         get: { profile?.countryOrDefault ?? GolfAPICoverage.preferredCountry() },
                         set: { country in updateProfile { $0.selectedCountry = country } }
                     )) {
@@ -75,8 +88,8 @@ struct UnifiedSettingsView: View {
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("Handicap rounds") {
-                    Picker("Default scoring", selection: Binding(
+                Section(AppLanguage.localized("Handicap rounds")) {
+                    Picker(AppLanguage.localized("Default scoring"), selection: Binding(
                         get: { profile?.defaultInputMode ?? .adjustedGrossScore },
                         set: { mode in updateProfile { $0.defaultInputMode = mode } }
                     )) {
@@ -87,15 +100,15 @@ struct UnifiedSettingsView: View {
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("Custom course") {
-                    NavigationLink("Courses") {
+                Section(AppLanguage.localized("Custom course")) {
+                    NavigationLink(AppLanguage.localized("Courses")) {
                         HCPCustomCoursesEntryView()
                     }
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("Cloud sync") {
-                    Toggle("Sync across devices", isOn: Binding(
+                Section(AppLanguage.localized("Cloud sync")) {
+                    Toggle(AppLanguage.localized("Sync across devices"), isOn: Binding(
                         get: { accountSession.hasOptedIntoSavedDataSync },
                         set: { enabled in
                             accountSession.setSavedDataSyncEnabled(enabled, roundStore: playedRoundStore,
@@ -108,14 +121,14 @@ struct UnifiedSettingsView: View {
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("About") {
+                Section(AppLanguage.localized("About")) {
                     Button {
                         aboutSheet = .company
                     } label: {
                         Label("Golf PinTheory", systemImage: "info.circle")
                     }
                     Link(destination: URL(string: "https://golfpintheory.com/privacy-policy/")!) {
-                        Label("Privacy policy", systemImage: "hand.raised")
+                        Label(AppLanguage.localized("Privacy policy"), systemImage: "hand.raised")
                     }
                 }
                 .listRowBackground(PureLineStyle.surface)
@@ -123,13 +136,13 @@ struct UnifiedSettingsView: View {
             .scrollContentBackground(.hidden)
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
-            .navigationTitle("Settings")
+            .navigationTitle(AppLanguage.localized("Settings"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                    Button(AppLanguage.localized("Done")) { dismiss() }
                 }
             }
         }
@@ -235,12 +248,12 @@ private struct FairwayVectorPrivacyPolicyView: View {
                         .padding(.top, 8)
                 }
 
-                policySection("Data Collection", text: "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind.")
-                policySection("Data Storage", text: "The information the app saves, including player profiles, course data, rounds, and preferences, is stored locally on your device via Apple’s standard SwiftData and system storage mechanisms. This information never leaves your device.")
-                policySection("Third-Party Services", text: "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks.")
-                policySection("Children’s Privacy", text: "Since no data is collected from any user, this app is safe for use by individuals of all ages.")
-                policySection("Changes to This Policy", text: "If this policy changes in the future, an updated version will be posted with a revised ‘Last updated’ date.")
-                policySection("Contact", text: "Questions about this policy can be directed to the developer via the support contact listed on the app’s App Store page.")
+                policySection(L("Data Collection"), text: L("fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind."))
+                policySection(L("Data Storage"), text: L("The information the app saves, including player profiles, course data, rounds, and preferences, is stored locally on your device via Apple’s standard SwiftData and system storage mechanisms. This information never leaves your device."))
+                policySection(L("Third-Party Services"), text: L("fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks."))
+                policySection(L("Children’s Privacy"), text: L("Since no data is collected from any user, this app is safe for use by individuals of all ages."))
+                policySection(L("Changes to This Policy"), text: L("If this policy changes in the future, an updated version will be posted with a revised ‘Last updated’ date."))
+                policySection(L("Contact"), text: L("Questions about this policy can be directed to the developer via the support contact listed on the app’s App Store page."))
 
                 Text("© 2026 Fairway Vector")
                     .font(.caption)

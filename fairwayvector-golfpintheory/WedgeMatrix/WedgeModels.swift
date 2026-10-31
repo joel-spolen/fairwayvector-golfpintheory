@@ -113,7 +113,7 @@ enum SwingLength: String, CaseIterable, Identifiable {
         switch self {
         case .half: "50%"
         case .threeQuarter: "75%"
-        case .full: "Full"
+        case .full: L("Full")
         }
     }
 
@@ -155,25 +155,25 @@ enum FlagPosition: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .short: "Short Green"
-        case .middle: "Middle Green"
-        case .long: "Long Green"
+        case .short: L("Short Green")
+        case .middle: L("Middle Green")
+        case .long: L("Long Green")
         }
     }
 
     var shortTitle: String {
         switch self {
-        case .short: "Short"
-        case .middle: "Middle"
-        case .long: "Long"
+        case .short: L("Short")
+        case .middle: L("Middle")
+        case .long: L("Long")
         }
     }
 
     var metricTitle: String {
         switch self {
-        case .short: "Short Flag"
-        case .middle: "Middle Flag"
-        case .long: "Long Flag"
+        case .short: L("Short Flag")
+        case .middle: L("Middle Flag")
+        case .long: L("Long Flag")
         }
     }
 
@@ -211,9 +211,9 @@ enum WedgeTrajectory: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .knockdown: "Low"
-        case .stock: "Stock"
-        case .high: "High"
+        case .knockdown: L("Low")
+        case .stock: L("Stock")
+        case .high: L("High")
         }
     }
 
@@ -227,9 +227,9 @@ enum WedgeTrajectory: String, CaseIterable, Identifiable {
 
     var ballPositionDescription: String {
         switch self {
-        case .knockdown: "Low flight: play the ball just back of center."
-        case .stock: "Mid flight: play the ball in the center of your stance."
-        case .high: "High flight: play the ball just forward of center."
+        case .knockdown: L("Low flight: play the ball just back of center.")
+        case .stock: L("Mid flight: play the ball in the center of your stance.")
+        case .high: L("High flight: play the ball just forward of center.")
         }
     }
 
@@ -259,8 +259,8 @@ enum WedgeDistanceUnit: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .yards: "Imperial"
-        case .meters: "Metric"
+        case .yards: L("Imperial")
+        case .meters: L("Metric")
         }
     }
 
@@ -315,10 +315,10 @@ enum ClubSelector {
 
     static func elevationLabel(meters: Double, unit: WedgeDistanceUnit) -> String {
         let magnitude = abs(meters)
-        if magnitude < 0.2 { return "Flat" }
+        if magnitude < 0.2 { return L("Flat") }
         let value = unit == .yards ? magnitude / 0.3048 : magnitude
         let suffix = unit == .yards ? "ft" : "m"
-        let direction = meters > 0 ? "uphill" : "downhill"
+        let direction = meters > 0 ? L("uphill") : L("downhill")
         let formatted = unit == .yards
             ? String(format: "%.0f", value.rounded())
             : String(format: value == value.rounded() ? "%.0f" : "%.1f", value)

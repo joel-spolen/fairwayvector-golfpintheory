@@ -6,8 +6,8 @@ enum PracticeDestination: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .trajectory: "Trajectory"
-        case .wedge: "Wedge Matrix"
+        case .trajectory: L("Trajectory")
+        case .wedge: L("Wedge Matrix")
         }
     }
 }

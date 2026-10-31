@@ -27,7 +27,7 @@ struct HCPProviderCourseSelectionView: View {
     let onSelectCustom: (CourseTeeInfo) -> Void
 
     init(profile: PlayerProfile?, clubs: [GolfClub], courses: [GolfCourse], tees: [TeeSet],
-         country: String, confirmedCourseID: String? = nil, title: String = "Where to?",
+         country: String, confirmedCourseID: String? = nil, title: String = L("Where to?"),
          onAddCustom: ((String, String) -> Void)? = nil,
          confirmedCustomTeeID: Binding<PersistentIdentifier?>,
          onSelectCustom: @escaping (CourseTeeInfo) -> Void,
@@ -98,7 +98,7 @@ struct HCPProviderCourseSelectionView: View {
                     if !model.hasSearched, model.selectedClubID == nil, customMatch == nil,
                        !recentProviderCourses.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
-                            CourseSelectionHeading(title: "RECENTLY SELECTED")
+                            CourseSelectionHeading(title: L("RECENTLY SELECTED"))
                             ForEach(recentProviderCourses, id: \.golfAPICourseID) { reference in
                                 Button {
                                     clearCustomDraft()
@@ -151,7 +151,7 @@ struct HCPProviderCourseSelectionView: View {
     private var providerClubResults: some View {
         if !model.clubs.isEmpty {
             CourseClubCards(clubs: model.clubs, selectedClubID: model.selectedClubID,
-                title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)",
+                title: L("CLUBS · %@ OF %@", "\(model.clubs.count)", "\(model.totalClubCount)"),
                 onSelect: selectProviderClub, isDisabled: model.isLoadingCourse)
             if model.hasMoreClubs { CourseCatalogMoreButton(model: model) }
         }
@@ -190,7 +190,7 @@ struct HCPProviderCourseSelectionView: View {
     private var customResults: some View {
         if !customMatches.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
-                CourseSelectionHeading(title: "CUSTOM · \(customMatches.count)")
+                CourseSelectionHeading(title: L("CUSTOM · %@", "\(customMatches.count)"))
                 ForEach(customMatches) { match in
                     Button {
                         customClubID = match.id
@@ -202,7 +202,7 @@ struct HCPProviderCourseSelectionView: View {
                             Image(systemName: "flag").foregroundStyle(PureLineStyle.accent)
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(match.club.name).font(.subheadline.weight(.semibold))
-                                Text([match.club.city, match.club.country, "Custom"].filter { !$0.isEmpty }.joined(separator: " · "))
+                                Text([match.club.city, match.club.country, L("Custom")].filter { !$0.isEmpty }.joined(separator: " · "))
                                     .font(.caption).foregroundStyle(PureLineStyle.muted)
                                 Text(match.courseNames.joined(separator: " · "))
                                     .font(.caption).foregroundStyle(PureLineStyle.muted)
@@ -233,8 +233,8 @@ struct HCPProviderCourseSelectionView: View {
                             }
                             if customTees.isEmpty {
                                   Text(onAddCustom == nil
-                                      ? "No saved tees are available for your profile rating category."
-                                      : "No saved tees are available for your profile rating category. Add a custom course or tee.")
+                                      ? L("No saved tees are available for your profile rating category.")
+                                      : L("No saved tees are available for your profile rating category. Add a custom course or tee."))
                                     .font(.caption).foregroundStyle(PureLineStyle.muted)
                             }
                         }

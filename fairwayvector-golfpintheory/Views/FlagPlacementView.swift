@@ -22,8 +22,8 @@ struct FlagPlacementView: View {
         NavigationStack {
             VStack(spacing: 0) {
                 Text(hole.green.count >= 3
-                     ? "Tap the green or drag the flag to move it."
-                     : "Tap near the mapped green center or drag the flag to move it.")
+                     ? L("Tap the green or drag the flag to move it.")
+                     : L("Tap near the mapped green center or drag the flag to move it."))
                     .font(.subheadline)
                     .foregroundStyle(PureLineStyle.muted)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -37,7 +37,7 @@ struct FlagPlacementView: View {
                                 .stroke(PureLineStyle.accent, lineWidth: 2)
                         }
 
-                        Annotation("Flag", coordinate: flag.coordinate, anchor: .bottom) {
+                        Annotation(L("Flag"), coordinate: flag.coordinate, anchor: .bottom) {
                             Image(systemName: "flag.fill")
                                 .font(.system(size: 48, weight: .semibold))
                                 .foregroundStyle(PureLineStyle.accent)

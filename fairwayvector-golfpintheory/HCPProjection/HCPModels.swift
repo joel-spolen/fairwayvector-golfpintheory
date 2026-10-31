@@ -14,8 +14,8 @@ nonisolated enum PlayerSex: String, CaseIterable, Identifiable, Codable, Sendabl
 
     var label: String {
         switch self {
-        case .male: "Male"
-        case .female: "Female"
+        case .male: L("Male")
+        case .female: L("Female")
         }
     }
 }
@@ -268,18 +268,18 @@ final class GolfRound {
         var parts: [String] = []
 
         if let handicapDifferential {
-            parts.append("HCP score: \(WHSCalculator.formatHCPScore(handicapDifferential))")
+            parts.append(L("HCP score: %@", "\(WHSCalculator.formatHCPScore(handicapDifferential))"))
         }
 
         if let adjustedGrossScore {
-            parts.append("Score: \(adjustedGrossScore)")
+            parts.append(L("Score: %@", "\(adjustedGrossScore)"))
         }
 
         if let stablefordPoints {
-            parts.append("Stableford: \(stablefordPoints)")
+            parts.append(L("Stableford: %@", "\(stablefordPoints)"))
         }
 
-        return parts.isEmpty ? "Score: —" : parts.joined(separator: " · ")
+        return parts.isEmpty ? L("Score: —") : parts.joined(separator: " · ")
     }
 }
 
@@ -293,11 +293,11 @@ enum RoundInputMode: String, CaseIterable, Identifiable, Codable {
     var title: String {
         switch self {
         case .adjustedGrossScore:
-            "Total Score"
+            AppLanguage.localized("Total Score")
         case .stablefordPoints:
-            "Points"
+            AppLanguage.localized("Points")
         case .holeByHole:
-            "Hole by Hole"
+            AppLanguage.localized("Hole by Hole")
         }
     }
 }

@@ -44,7 +44,7 @@ final class PlayedRoundStore {
 
     func load() {
         guard !draftNeedsRetry else {
-            errorMessage = "The latest draft is still in memory. Retry saving it before reloading; reloading must not erase unsaved edits."
+            errorMessage = L("The latest draft is still in memory. Retry saving it before reloading; reloading must not erase unsaved edits.")
             return
         }
         do {
@@ -67,7 +67,7 @@ final class PlayedRoundStore {
             loadFailed = false; errorMessage = nil
         } catch {
             loadFailed = true
-            errorMessage = "Round storage could not be read. Existing files are preserved; no overwrite is allowed. Retry loading after restoring storage."
+            errorMessage = L("Round storage could not be read. Existing files are preserved; no overwrite is allowed. Retry loading after restoring storage.")
         }
     }
 
@@ -114,7 +114,7 @@ final class PlayedRoundStore {
             draftNeedsRetry = false; errorMessage = nil
         } catch {
             draftNeedsRetry = true
-            errorMessage = "Draft storage failed. Latest edits are retained in memory only; retry saving before quitting the app. The prior disk archive is preserved."
+            errorMessage = L("Draft storage failed. Latest edits are retained in memory only; retry saving before quitting the app. The prior disk archive is preserved.")
             throw error
         }
     }
@@ -190,10 +190,10 @@ enum RoundStorageError: LocalizedError {
     case invalidArchive, activeDraft, incomplete, unavailableHandicap
     var errorDescription: String? {
         switch self {
-        case .invalidArchive: "Round data is unavailable or invalid. Existing storage has not been replaced."
-        case .activeDraft: "Resume or discard your existing round before starting another."
-        case .incomplete: "Record valid strokes for every player on every hole before finishing."
-        case .unavailableHandicap: "HCP import needs a completed, genuinely rated 9- or 18-hole round, a Handicap Index, par and all stroke indexes. Demo rounds cannot enter handicap history."
+        case .invalidArchive: L("Round data is unavailable or invalid. Existing storage has not been replaced.")
+        case .activeDraft: L("Resume or discard your existing round before starting another.")
+        case .incomplete: L("Record valid strokes for every player on every hole before finishing.")
+        case .unavailableHandicap: L("HCP import needs a completed, genuinely rated 9- or 18-hole round, a Handicap Index, par and all stroke indexes. Demo rounds cannot enter handicap history.")
         }
     }
 }

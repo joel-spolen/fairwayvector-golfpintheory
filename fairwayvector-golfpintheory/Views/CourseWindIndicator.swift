@@ -16,8 +16,8 @@ struct CourseWindIndicator: View {
     }
 
     private var destination: String {
-        guard let bearing = windToBearing else { return "Unknown" }
-        let points = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+        guard let bearing = windToBearing else { return L("Unknown") }
+        let points = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"].map { L($0) }
         return points[Int((bearing / 45).rounded()) % points.count]
     }
 
@@ -45,7 +45,7 @@ struct CourseWindIndicator: View {
             }
             .frame(width: 26, height: 26)
             if !compact {
-                Text(isCalm ? "Calm" : "\(speedText) → \(destination)")
+                Text(isCalm ? L("Calm") : "\(speedText) → \(destination)")
                     .font(.caption.monospacedDigit())
             }
         }
@@ -54,6 +54,6 @@ struct CourseWindIndicator: View {
         .allowsHitTesting(false)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Course wind")
-        .accessibilityValue(isCalm ? "Calm, \(speedText)" : "Blowing toward \(destination), \(speedText)")
+        .accessibilityValue(isCalm ? L("Calm, %@", "\(speedText)") : L("Blowing toward %@, %@", "\(destination)", "\(speedText)"))
     }
 }

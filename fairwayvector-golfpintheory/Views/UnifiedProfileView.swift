@@ -71,7 +71,7 @@ struct UnifiedProfileView: View {
                     Text("Men").tag(PlayerSex.male)
                     Text("Women").tag(PlayerSex.female)
                 }
-                LabeledContent("Handicap Index", value: handicapIndex.map { WHSCalculator.formatHCPScore($0) } ?? "Not yet calculated")
+                LabeledContent("Handicap Index", value: handicapIndex.map { WHSCalculator.formatHCPScore($0) } ?? L("Not yet calculated"))
                 LabeledContent("Rounds", value: "\(rounds.count)")
             }
             .listRowBackground(PureLineStyle.surface)

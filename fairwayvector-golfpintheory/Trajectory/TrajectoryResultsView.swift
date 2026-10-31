@@ -13,28 +13,28 @@ struct TrajectoryResultsView: View {
                 .foregroundStyle(PureLineStyle.ink)
 
             ResultCard(
-                title: "Carry Distance",
+                title: L("Carry Distance"),
                 value: Units.formattedDistance(meters: prediction.hybrid["carry_m"] ?? 0, system: unitPreferences.unitSystem(for: .distance)),
                 prominence: .primary
             )
             .accessibilityLabel("Carry distance")
 
             ResultCard(
-                title: "Apex",
+                title: L("Apex"),
                 value: Units.formattedHeight(meters: prediction.hybrid["apex_m"] ?? 0, system: unitPreferences.unitSystem(for: .distance)),
                 prominence: .secondary
             )
             .accessibilityLabel("Apex height")
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ResultCard(title: "Flight Time", value: String(format: "%.2f s", prediction.hybrid["flight_time_s"] ?? 0), prominence: .compact)
-                ResultCard(title: "Landing Angle", value: String(format: "%.1f\u{00B0}", prediction.hybrid["landing_angle_deg"] ?? 0), prominence: .compact)
-                ResultCard(title: "Landing Speed", value: Units.formattedSpeed(mps: prediction.hybrid["landing_speed_mps"] ?? 0, system: unitPreferences.unitSystem(for: .landingSpeed)), prominence: .compact)
+                ResultCard(title: L("Flight Time"), value: String(format: "%.2f s", prediction.hybrid["flight_time_s"] ?? 0), prominence: .compact)
+                ResultCard(title: L("Landing Angle"), value: String(format: "%.1f\u{00B0}", prediction.hybrid["landing_angle_deg"] ?? 0), prominence: .compact)
+                ResultCard(title: L("Landing Speed"), value: Units.formattedSpeed(mps: prediction.hybrid["landing_speed_mps"] ?? 0, system: unitPreferences.unitSystem(for: .landingSpeed)), prominence: .compact)
             }
 
             if showsEstimationInfo {
                 Label(
-                    "Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary.",
+                    L("Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary."),
                     systemImage: "info.circle"
                 )
                 .font(.caption)

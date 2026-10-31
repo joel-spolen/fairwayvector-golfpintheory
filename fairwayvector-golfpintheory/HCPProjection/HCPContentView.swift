@@ -66,8 +66,8 @@ private struct HCPNineHoleNotice: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(PureLineStyle.accent)
             Text(currentHandicap == nil
-                 ? "The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential."
-                 : "The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider.")
+                 ? L("The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential.")
+                 : L("The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider."))
                 .font(.caption)
                 .foregroundStyle(PureLineStyle.ink)
                 .fixedSize(horizontal: false, vertical: true)
@@ -85,25 +85,25 @@ struct HCPProjectionRootView: View {
 
         var title: String {
             switch self {
-            case .home: "Overview"
-            case .predict: "Predict"
-            case .round: "Add round"
+            case .home: AppLanguage.localized("Overview")
+            case .predict: AppLanguage.localized("Predict")
+            case .round: AppLanguage.localized("Add round")
             }
         }
 
         var pageTitle: String {
             switch self {
-            case .home: "Your handicap"
-            case .predict: "Plan your next round"
-            case .round: "Record a round"
+            case .home: AppLanguage.localized("Your handicap")
+            case .predict: AppLanguage.localized("Plan your next round")
+            case .round: AppLanguage.localized("Record a round")
             }
         }
 
         var pageSubtitle: String {
             switch self {
-            case .home: "Track your rounds. Plan your next score."
-            case .predict: "Choose a course and tee to see how your score could move your Handicap Index."
-            case .round: "Select your course and tee, or enter an official HCP score without a course."
+            case .home: AppLanguage.localized("Track your rounds. Plan your next score.")
+            case .predict: AppLanguage.localized("Choose a course and tee to see how your score could move your Handicap Index.")
+            case .round: AppLanguage.localized("Select your course and tee, or enter an official HCP score without a course.")
             }
         }
     }
@@ -156,7 +156,7 @@ struct HCPProjectionRootView: View {
             .padding(.vertical, 10)
             .background(PureLineStyle.canvas)
             .accessibilityElement(children: .contain)
-            .accessibilityLabel("Handicap tools")
+                    .accessibilityLabel(AppLanguage.localized("Handicap tools"))
 
             Group {
                 switch selectedTab {
@@ -192,8 +192,8 @@ private struct HomeView: View {
     var tees: [TeeSet]
     let onAddRound: () -> Void
     var onPredict: (() -> Void)? = nil
-    var pageTitle = "Your handicap"
-    var pageSubtitle = "Track your rounds. Plan your next score."
+    var pageTitle = L("Your handicap")
+    var pageSubtitle = L("Track your rounds. Plan your next score.")
     var onHome: () -> Void = {}
 
     private var entries: [ScoringRecordEntry] {
@@ -288,7 +288,7 @@ private struct HomeView: View {
     @ViewBuilder
     private var metricLinks: some View {
         NavigationLink(destination: HandicapRoundsView(rounds: handicapRounds, handicapIndex: handicapIndex)) {
-            MetricCard(title: "Current Handicap Index", value: handicapIndexText, systemImage: "number", subtitle: "View counting rounds")
+            MetricCard(title: L("Current Handicap Index"), value: handicapIndexText, systemImage: "number", subtitle: L("View counting rounds"))
         }
         .buttonStyle(.plain)
         .accessibilityHint("View the rounds counting toward your Handicap Index")
@@ -397,8 +397,8 @@ private struct HCPTrendGraphCard: View {
                 Chart {
                     ForEach(visibleTrendPoints) { point in
                         AreaMark(
-                            x: .value("Round", point.roundIndex),
-                            y: .value("HCP", point.handicapIndex)
+                            x: .value(L("Round"), point.roundIndex),
+                            y: .value(L("HCP"), point.handicapIndex)
                         )
                         .foregroundStyle(
                             LinearGradient(
@@ -410,16 +410,16 @@ private struct HCPTrendGraphCard: View {
                         .interpolationMethod(.linear)
 
                         LineMark(
-                            x: .value("Round", point.roundIndex),
-                            y: .value("HCP", point.handicapIndex)
+                            x: .value(L("Round"), point.roundIndex),
+                            y: .value(L("HCP"), point.handicapIndex)
                         )
                         .foregroundStyle(PureLineStyle.accent)
                         .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
                         .interpolationMethod(.linear)
 
                         PointMark(
-                            x: .value("Round", point.roundIndex),
-                            y: .value("HCP", point.handicapIndex)
+                            x: .value(L("Round"), point.roundIndex),
+                            y: .value(L("HCP"), point.handicapIndex)
                         )
                         .foregroundStyle(PureLineStyle.accent)
                         .symbolSize(point.id == visibleTrendPoints.last?.id ? 45 : 18)
@@ -484,19 +484,19 @@ private struct HCPTrendGraphCard: View {
 
     private func trendText(diff: Double) -> String {
         if diff < 0 {
-            return "Improved by \(abs(diff).formatted(.number.precision(.fractionLength(1))))"
+            return L("Improved by %@", "\(abs(diff).formatted(.number.precision(.fractionLength(1))))")
         } else if diff > 0 {
-            return "Increased by \(diff.formatted(.number.precision(.fractionLength(1))))"
+            return L("Increased by %@", "\(diff.formatted(.number.precision(.fractionLength(1))))")
         } else {
-            return "No change"
+            return L("No change")
         }
     }
 
     private var trendAccessibilityValue: String {
         let latest = visibleTrendPoints.last.map { WHSCalculator.formatHCPScore($0.handicapIndex) } ?? "unavailable"
         let lowest = visibleTrendPoints.map(\.handicapIndex).min().map { WHSCalculator.formatHCPScore($0) } ?? "unavailable"
-        let change = trendDifference.map { trendText(diff: $0) } ?? "no trend yet"
-        return "Latest handicap \(latest), lowest \(lowest), \(change), across \(visibleTrendPoints.count) trend points"
+        let change = trendDifference.map { trendText(diff: $0) } ?? L("no trend yet")
+        return L("Latest handicap %@, lowest %@, %@, across %@ trend points", "\(latest)", "\(lowest)", "\(change)", "\(visibleTrendPoints.count)")
     }
 }
 
@@ -532,7 +532,7 @@ private struct HandicapRoundsView: View {
 
     private var countingRuleSummary: String {
         guard scoreCount >= 3 else {
-            return "At least three scores are required to calculate a Handicap Index."
+            return L("At least three scores are required to calculate a Handicap Index.")
         }
         let rule = WHSCalculator.bestDifferentialRule(for: min(scoreCount, 20))
         let adjustment = rule.adjustment == 0 ? "" : " with a \(Int(rule.adjustment)) adjustment"
@@ -615,7 +615,7 @@ private struct HandicapRoundRow: View {
                 : AnyLayout(HStackLayout(alignment: .top, spacing: 12))
             layout {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(round.courseName.isEmpty ? "No Course" : round.courseName)
+                    Text(round.courseName.isEmpty ? L("No Course") : round.courseName)
                         .font(.body.weight(.semibold))
                         .foregroundStyle(PureLineStyle.ink)
                     if !round.clubName.isEmpty || !round.teeName.isEmpty {
@@ -825,8 +825,8 @@ private struct TargetCalculatorView: View {
     var tees: [TeeSet]
     var rounds: [GolfRound]
     var profile: PlayerProfile?
-    var pageTitle = "Plan your next round"
-    var pageSubtitle = "Choose a course and tee to see how your score could move your Handicap Index."
+    var pageTitle = L("Plan your next round")
+    var pageSubtitle = L("Choose a course and tee to see how your score could move your Handicap Index.")
     var onHome: () -> Void = {}
 
     @State private var searchText = ""
@@ -861,7 +861,7 @@ private struct TargetCalculatorView: View {
     private var selectedTeeSummary: String {
         guard let selectedTee else { return "" }
         let rating = selectedTee.courseRating.formatted(.number.precision(.fractionLength(1)))
-        return "Par \(selectedTee.par) • CR \(rating) • Slope \(selectedTee.slopeRating)"
+        return L("Par %@ • CR %@ • Slope %@", "\(selectedTee.par)", "\(rating)", "\(selectedTee.slopeRating)")
     }
 
     private var hasHoleByHoleData: Bool {
@@ -1079,7 +1079,7 @@ private struct TargetCalculatorView: View {
                                     TargetResultRow(result: result)
                                 }
                                 if worseningResults.count > 6 {
-                                    Button(showMoreWorsening ? "Show fewer" : "Show all \(worseningResults.count) worsening outcomes") {
+                                    Button(showMoreWorsening ? L("Show fewer") : L("Show all %@ worsening outcomes", "\(worseningResults.count)")) {
                                         showMoreWorsening.toggle()
                                     }
                                 }
@@ -1182,8 +1182,8 @@ private struct NewRoundView: View {
     var tees: [TeeSet]
     var rounds: [GolfRound]
     var profile: PlayerProfile?
-    var pageTitle = "Record a round"
-    var pageSubtitle = "Select your course and tee, or enter an official HCP score without a course."
+    var pageTitle = L("Record a round")
+    var pageSubtitle = L("Select your course and tee, or enter an official HCP score without a course.")
     var onHome: () -> Void = {}
 
     @State private var searchText = ""
@@ -1223,7 +1223,7 @@ private struct NewRoundView: View {
     private var selectedTeeSummary: String {
         guard let selectedTee else { return "" }
         let rating = selectedTee.courseRating.formatted(.number.precision(.fractionLength(1)))
-        return "Par \(selectedTee.par) • CR \(rating) • Slope \(selectedTee.slopeRating)"
+        return L("Par %@ • CR %@ • Slope %@", "\(selectedTee.par)", "\(rating)", "\(selectedTee.slopeRating)")
     }
 
     private var hasHoleByHoleData: Bool {
@@ -1261,7 +1261,7 @@ private struct NewRoundView: View {
                 if !isManualDifferential {
                     Section {
                         HCPProviderCourseSelectionView(profile: profile, clubs: clubs, courses: courses, tees: tees,
-                            country: activeCountry, confirmedCourseID: providerCourse?.id, title: "What did you play?",
+                            country: activeCountry, confirmedCourseID: providerCourse?.id, title: L("What did you play?"),
                             onAddCustom: { query, country in
                                 searchText = query
                                 addCourseCountry = country
@@ -1470,8 +1470,8 @@ private struct NewRoundView: View {
                             if inputMode == .adjustedGrossScore {
                                 VStack(alignment: .leading, spacing: 12) {
                                     InfoLabel(
-                                        title: "Adjusted Gross Score",
-                                        explanation: "Adjusted Gross Score is the total strokes you took after WHS maximums are applied on any hole. It is used to calculate your handicap differential and removes the effect of a few unusually bad holes."
+                                        title: L("Adjusted Gross Score"),
+                                        explanation: L("Adjusted Gross Score is the total strokes you took after WHS maximums are applied on any hole. It is used to calculate your handicap differential and removes the effect of a few unusually bad holes.")
                                     )
                                     HStack {
                                         Text("\(strokes)")
@@ -1492,8 +1492,8 @@ private struct NewRoundView: View {
                     Section("Conditions & Notes") {
                         HStack {
                             InfoLabel(
-                                title: "PCC",
-                                explanation: "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal."
+                                title: L("PCC"),
+                                explanation: L("Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal.")
                             )
                             Spacer()
                             Text(pcc.formatted(.number.precision(.fractionLength(1))))
@@ -1871,18 +1871,18 @@ private struct CustomCoursesView: View {
             if filteredCourses.isEmpty {
                 Section {
                     ContentUnavailableView(
-                        searchQuery.isEmpty ? "No Custom Courses" : "No Matches",
+                        searchQuery.isEmpty ? L("No Custom Courses") : L("No Matches"),
                         systemImage: searchQuery.isEmpty ? "flag.badge.ellipsis" : "magnifyingglass",
                         description: Text(searchQuery.isEmpty
-                            ? "Add a custom course to see it listed here."
-                            : "No courses match \"\(searchQuery)\".")
+                            ? L("Add a custom course to see it listed here.")
+                            : L("No courses match \"%@\".", "\(searchQuery)"))
                     )
                 }
                 .listRowBackground(PureLineStyle.surface)
             }
 
             if !filteredCourses.isEmpty {
-                Section(searchQuery.isEmpty ? "All Courses" : "Matching Courses") {
+                Section(searchQuery.isEmpty ? L("All Courses") : L("Matching Courses")) {
                     ForEach(filteredCourses) { result in
                         NavigationLink {
                             CustomCourseSummaryView(courseName: result.courseName, club: result.club,
@@ -1953,7 +1953,7 @@ private struct CustomCourseSummaryView: View {
             region.countries.contains {
                 HCPCustomCourseSearch.normalizedCountry($0) == HCPCustomCourseSearch.normalizedCountry(club.country)
             }
-        }?.name ?? "Other"
+        }?.name ?? L("Other")
     }
 
     var body: some View {
@@ -1980,7 +1980,7 @@ private struct CustomCourseSummaryView: View {
                             Text(tee.name)
                                 .font(.headline)
                                 .foregroundStyle(PureLineStyle.ink)
-                            Text("\(tee.ratingSex?.label ?? "Universal") · Par \(tee.par) · CR \(tee.courseRating.formatted(.number.precision(.fractionLength(1)))) · Slope \(tee.slopeRating)")
+                            Text("\(tee.ratingSex?.label ?? L("Universal")) · Par \(tee.par) · CR \(tee.courseRating.formatted(.number.precision(.fractionLength(1)))) · Slope \(tee.slopeRating)")
                                 .font(.caption)
                                 .foregroundStyle(PureLineStyle.muted)
                         }
@@ -2156,7 +2156,7 @@ private struct AddCourseView: View {
         NavigationStack {
             Form {
                 Section {
-                    HCPPureLineIntro(title: "Add a custom course", subtitle: "Use the published ratings for your course, tee and rating category.")
+                    HCPPureLineIntro(title: L("Add a custom course"), subtitle: L("Use the published ratings for your course, tee and rating category."))
                 }
 
                 Section("Location · Required") {
@@ -2171,7 +2171,7 @@ private struct AddCourseView: View {
                                 }
                             }
                         } label: {
-                            Label(selectedRegion.isEmpty ? "Region" : selectedRegion, systemImage: "globe")
+                            Label(selectedRegion.isEmpty ? L("Region") : selectedRegion, systemImage: "globe")
                                 .font(.subheadline.weight(.medium))
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
@@ -2189,7 +2189,7 @@ private struct AddCourseView: View {
                                 Button(countryOption) { country = countryOption }
                             }
                         } label: {
-                            Label(country.isEmpty ? "Country" : country, systemImage: "mappin.and.ellipse")
+                            Label(country.isEmpty ? L("Country") : country, systemImage: "mappin.and.ellipse")
                                 .font(.subheadline.weight(.medium))
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
@@ -2241,15 +2241,15 @@ private struct AddCourseView: View {
                 Section("WHS Ratings · Required") {
                     Picker("Tee Rating Category", selection: $selectedRatingSex) {
                         ForEach(PlayerSex.allCases) { sex in
-                            Text(sex == .male ? "Men" : "Women").tag(sex)
+                            Text(sex == .male ? L("Men") : L("Women")).tag(sex)
                         }
                     }
                     .pickerStyle(.segmented)
 
                     HStack {
                         InfoLabel(
-                            title: "Par",
-                            explanation: "Par is the expected number of strokes for a scratch golfer on this course or tee. Enter the total par across the selected 9 or 18 holes."
+                            title: L("Par"),
+                            explanation: L("Par is the expected number of strokes for a scratch golfer on this course or tee. Enter the total par across the selected 9 or 18 holes.")
                         )
                         Spacer()
                         TextField("Par", value: $par, format: .number)
@@ -2261,8 +2261,8 @@ private struct AddCourseView: View {
                     .opacity(addHoleDetails ? 0.45 : 1)
                     HStack {
                         InfoLabel(
-                            title: "Course Rating",
-                            explanation: "Course Rating estimates the score a scratch golfer is expected to make on this tee under normal playing conditions. Lower values represent easier courses for a scratch golfer; higher values represent harder ones."
+                            title: L("Course Rating"),
+                            explanation: L("Course Rating estimates the score a scratch golfer is expected to make on this tee under normal playing conditions. Lower values represent easier courses for a scratch golfer; higher values represent harder ones.")
                         )
                         Spacer()
                         TextField("Course Rating", value: $courseRating, format: .number.precision(.fractionLength(1)))
@@ -2272,8 +2272,8 @@ private struct AddCourseView: View {
                     }
                     HStack {
                         InfoLabel(
-                            title: "Slope Rating",
-                            explanation: "Slope Rating describes how much more difficult this tee is for a bogey golfer than for a scratch golfer. It is used with Course Rating to adjust the course handicap for different playing abilities."
+                            title: L("Slope Rating"),
+                            explanation: L("Slope Rating describes how much more difficult this tee is for a bogey golfer than for a scratch golfer. It is used with Course Rating to adjust the course handicap for different playing abilities.")
                         )
                         Spacer()
                         TextField("Slope Rating", value: $slopeRating, format: .number)
@@ -2411,7 +2411,7 @@ private struct AddCourseView: View {
     private func holeParStepper(at index: Int) -> some View {
         if holePars.indices.contains(index) {
             Stepper(
-                "Par \(holePars[index])",
+                L("Par %@", "\(holePars[index])"),
                 value: Binding(
                     get: { holePars[index] },
                     set: { updateHolePar(at: index, to: $0) }
@@ -2425,7 +2425,7 @@ private struct AddCourseView: View {
     private func holeHandicapStepper(at index: Int) -> some View {
         if holeHandicapIndices.indices.contains(index) {
             Stepper(
-                "HCP \(holeHandicapIndices[index])",
+                L("HCP %@", "\(holeHandicapIndices[index])"),
                 value: Binding(
                     get: { holeHandicapIndices[index] },
                     set: { holeHandicapIndices[index] = min(max($0, 1), 18) }
@@ -2606,7 +2606,7 @@ private struct HCPSettingsView: View {
                 Section("Player") {
                     Picker("Tee Rating Category", selection: $selectedSex) {
                         ForEach(PlayerSex.allCases) { sex in
-                            Text(sex == .male ? "Men" : "Women").tag(sex)
+                            Text(sex == .male ? L("Men") : L("Women")).tag(sex)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -2713,7 +2713,7 @@ private struct HCPSettingsView: View {
             }
             #if DEBUG
             .confirmationDialog(
-                "Replace all data with the bundled test data?",
+                L("Replace all data with the bundled test data?"),
                 isPresented: $showTestDataImportConfirm,
                 titleVisibility: .visible
             ) {
@@ -2822,9 +2822,9 @@ struct RoundDetailView: View {
 
     var body: some View {
         List {
-            Section(isNoCourseRound ? "Round" : "Course & Tee") {
+            Section(isNoCourseRound ? L("Round") : L("Course & Tee")) {
                 if isNoCourseRound {
-                    LabeledContent("Course", value: "No Course")
+                    LabeledContent("Course", value: L("No Course"))
                 } else {
                     LabeledContent("Course", value: round.courseName)
                     LabeledContent("Club", value: round.clubName)
@@ -2862,8 +2862,8 @@ struct RoundDetailView: View {
                         Text(round.pcc.formatted(.number.precision(.fractionLength(1))))
                     } label: {
                         InfoLabel(
-                            title: "PCC Adjustment",
-                            explanation: "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions."
+                            title: L("PCC Adjustment"),
+                            explanation: L("Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions.")
                         )
                     }
                 }
@@ -2878,13 +2878,13 @@ struct RoundDetailView: View {
                             .monospacedDigit()
                     } label: {
                         InfoLabel(
-                            title: "Adjusted Gross Score",
-                            explanation: "Adjusted Gross Score is the adjusted total for handicap purposes. It reflects your actual score after WHS limits are applied to unusually high hole scores, so it is the number used in handicap calculation."
+                            title: L("Adjusted Gross Score"),
+                            explanation: L("Adjusted Gross Score is the adjusted total for handicap purposes. It reflects your actual score after WHS limits are applied to unusually high hole scores, so it is the number used in handicap calculation.")
                         )
                     }
                 }
                 if let points = round.stablefordPoints {
-                    LabeledContent("Stableford Points", value: "\(points) pts")
+                    LabeledContent("Stableford Points", value: L("%@ pts", "\(points)"))
                 }
                 if !userNotes.isEmpty {
                     LabeledContent("Notes", value: userNotes)
@@ -3000,7 +3000,7 @@ private struct RoundRow: View {
                         ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
                         : AnyLayout(HStackLayout(spacing: 6))
                     titleLayout {
-                        Text(round.courseName.isEmpty ? "No Course" : round.courseName)
+                        Text(round.courseName.isEmpty ? L("No Course") : round.courseName)
                             .font(.body.weight(.semibold))
                             .foregroundStyle(PureLineStyle.ink)
                         if isCountingRound {
@@ -3098,15 +3098,15 @@ private struct TargetResultRow: View {
     private var primaryText: String {
         switch result.inputMode {
         case .adjustedGrossScore, .holeByHole:
-            "Score \(result.value)"
+            L("Score %@", "\(result.value)")
         case .stablefordPoints:
-            "\(result.value) points"
+            L("%@ points", "\(result.value)")
         }
     }
 
     private var changeText: String {
         if result.change == 0 {
-            return "±0.0 (Score not used)"
+            return L("±0.0 (Score not used)")
         }
         let prefix = result.change > 0 ? "+" : ""
         return "\(prefix)\(result.change.formatted(.number.precision(.fractionLength(1))))"

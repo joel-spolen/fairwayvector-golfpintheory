@@ -22,7 +22,7 @@ enum RoundFairway: String, Codable, CaseIterable, Identifiable {
     case short = "Short"
     case notApplicable = "N/A"
     var id: String { rawValue }
-    var label: String { self == .hit ? "Fairway" : rawValue }
+    var label: String { L(self == .hit ? "Fairway" : rawValue) }
 }
 
 struct RoundPlayer: Codable, Identifiable, Equatable {

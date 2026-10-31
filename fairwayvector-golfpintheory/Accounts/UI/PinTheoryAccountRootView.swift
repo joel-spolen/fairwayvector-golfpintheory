@@ -3,6 +3,8 @@ import SwiftUI
 struct PinTheoryAccountRootView: View {
     @ObservedObject var session: PinTheoryAccountSession
     @AppStorage("map.hasSeenSplash", store: .standard) private var hasSeenSplash = false
+    @AppStorage(AppLanguage.preferenceKey, store: .standard)
+    private var languagePreference = AppLanguage.followSystemValue
     @State private var showingSplash = true
 
     var body: some View {
@@ -11,7 +13,7 @@ struct PinTheoryAccountRootView: View {
                 PinTheoryAuthenticatedGate(session: session, auth: auth)
             } else {
                 ContentUnavailableView("Sign-in unavailable", systemImage: "person.crop.circle.badge.exclamationmark",
-                    description: Text(session.message ?? "Account configuration is unavailable."))
+                    description: Text(session.message ?? L("Account configuration is unavailable.")))
             }
         }
         .environmentObject(session)
@@ -28,6 +30,8 @@ struct PinTheoryAccountRootView: View {
             }
         }
         .preferredColorScheme(.light)
+        .environment(\.locale, AppLanguage.locale(preference: languagePreference))
+        .id(languagePreference)
         .onAppear { session.start() }
         .onOpenURL { url in Task { await session.handle(url) } }
     }
@@ -49,7 +53,7 @@ private struct PinTheoryAuthenticatedGate: View {
                     ContentUnavailableView {
                         Label("Secure account storage unavailable", systemImage: "lock.shield")
                     } description: {
-                        Text(session.message ?? "Unlock this device and retry. Existing credentials have been preserved where possible.")
+                        Text(session.message ?? L("Unlock this device and retry. Existing credentials have been preserved where possible."))
                     } actions: {
                         Button("Retry secure storage") { Task { await session.retrySecureStorage() } }
                         Button("Clear sign-in and retry", role: .destructive) { confirmingReset = true }
@@ -68,7 +72,7 @@ private struct PinTheoryAuthenticatedGate: View {
                     ContentUnavailableView {
                         Label("Account storage unavailable", systemImage: "externaldrive.badge.exclamationmark")
                     } description: {
-                        Text(session.message ?? "Existing records have been preserved.")
+                        Text(session.message ?? L("Existing records have been preserved."))
                     } actions: {
                         Button("Retry") { session.openAccountAgain() }
                         Button("Sign out") { session.signOut() }

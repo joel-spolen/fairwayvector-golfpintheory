@@ -27,11 +27,11 @@ struct HoleElevationProfileView: View {
     }
 
     private var startLabel: String {
-        mode == .hole ? "Tee" : "Position"
+        mode == .hole ? L("Tee") : L("Position")
     }
 
     private var endLabel: String {
-        mode == .hole ? "Hole endpoint" : "Target"
+        mode == .hole ? L("Hole endpoint") : L("Target")
     }
 
     var body: some View {
@@ -40,7 +40,7 @@ struct HoleElevationProfileView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Picker("Profile", selection: Binding(get: { store.mode }, set: { store.mode = $0 })) {
                         ForEach(TerrainProfileMode.allCases) { option in
-                            Text(option.rawValue).tag(option)
+                            Text(L(option.rawValue)).tag(option)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -59,7 +59,7 @@ struct HoleElevationProfileView: View {
                         ContentUnavailableView {
                             Label("Terrain unavailable", systemImage: "mountain.2")
                         } description: {
-                            Text(store.statusMessage ?? "No terrain elevations are available for this \(mode.rawValue.lowercased()) profile.")
+                            Text(store.statusMessage ?? L("No terrain elevations are available for this %@ profile.", L(mode.rawValue).lowercased()))
                         }
                     }
 
@@ -195,20 +195,20 @@ struct HoleElevationProfileView: View {
     }
 
     private func heightText(_ meters: Double?) -> String {
-        guard let meters, meters.isFinite else { return "Unavailable" }
+        guard let meters, meters.isFinite else { return L("Unavailable") }
         return "\(displayValue(meters).formatted(.number.precision(.fractionLength(1)))) \(unit.symbol)"
     }
 
     private func deltaText(_ meters: Double?) -> String {
-        guard let meters, meters.isFinite else { return "Unavailable" }
-        let direction = meters > 0 ? "uphill" : (meters < 0 ? "downhill" : "level")
+        guard let meters, meters.isFinite else { return L("Unavailable") }
+        let direction = meters > 0 ? L("uphill") : (meters < 0 ? L("downhill") : L("level"))
         let sign = meters > 0 ? "+" : (meters < 0 ? "−" : "")
         return "\(sign)\(heightText(abs(meters))) · \(direction)"
     }
 
     private func chartSummary(_ profile: TerrainProfile) -> String {
         let available = profile.samples.filter { validElevation($0) != nil }.count
-        return "Horizontal distance \(unit.format(profile.distanceMeters)). \(startLabel) elevation \(heightText(profile.samples.first?.elevationMeters)). \(endLabel) elevation \(heightText(profile.samples.last?.elevationMeters)). Elevation change \(deltaText(profile.elevationChangeMeters)). \(available) of \(profile.samples.count) samples available. Missing terrain is shown as gaps. Vertical and horizontal scales differ."
+        return L("Horizontal distance %@. %@ elevation %@. %@ elevation %@. Elevation change %@. %@ of %@ samples available. Missing terrain is shown as gaps. Vertical and horizontal scales differ.", "\(unit.format(profile.distanceMeters))", "\(startLabel)", "\(heightText(profile.samples.first?.elevationMeters))", "\(endLabel)", "\(heightText(profile.samples.last?.elevationMeters))", "\(deltaText(profile.elevationChangeMeters))", "\(available)", "\(profile.samples.count)")
     }
 
     private func resetInspection() {

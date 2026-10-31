@@ -7,9 +7,9 @@ struct WedgeMatrixView: View {
 
         var title: String {
             switch self {
-            case .overview: "Overview"
-            case .selector: "Selector"
-            case .matrix: "Matrix"
+            case .overview: L("Overview")
+            case .selector: L("Selector")
+            case .matrix: L("Matrix")
             }
         }
     }
@@ -75,7 +75,7 @@ struct WedgeMatrixView: View {
                     NavigationStack {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 18) {
-                                WedgePageHeader(title: "Your wedge setup", subtitle: "Review your carry numbers and the wedges currently in your bag.", horizontalInset: 0)
+                                WedgePageHeader(title: L("Your wedge setup"), subtitle: L("Review your carry numbers and the wedges currently in your bag."), horizontalInset: 0)
                                 WedgeHomeOverviewCard(wedges: wedges, bagWedges: bagWedges)
                                 WedgeCurrentBagCard(wedges: bagWedges, unit: selectedUnit)
                                 WedgeBagNotesCard()
@@ -97,8 +97,8 @@ struct WedgeMatrixView: View {
                             targetDistance: $targetDistance,
                             elevationMeters: $selectorElevationMeters,
                             pinFraction: $selectorPinFraction,
-                            pageTitle: "Choose a wedge",
-                            pageSubtitle: "Set the distance, green elevation and pin position to find a club and swing."
+                            pageTitle: L("Choose a wedge"),
+                            pageSubtitle: L("Set the distance, green elevation and pin position to find a club and swing.")
                         )
                         .background(PureLineStyle.canvas)
                         .toolbar(.hidden, for: .navigationBar)
@@ -109,7 +109,7 @@ struct WedgeMatrixView: View {
                     NavigationStack {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 18) {
-                                WedgePageHeader(title: "Wedge matrix", subtitle: "Compare carry distances across swing lengths and trajectories.", horizontalInset: 0)
+                                WedgePageHeader(title: L("Wedge matrix"), subtitle: L("Compare carry distances across swing lengths and trajectories."), horizontalInset: 0)
                                 WedgeTrajectoryPicker(selectedTrajectory: $selectedTrajectory)
                                 WedgeMatrixCard(wedges: bagWedges, trajectory: selectedTrajectory, unit: selectedUnit)
                             }
@@ -212,8 +212,8 @@ private struct WedgeHomeOverviewCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
-                WedgeMetricCard(title: "Wedges", value: "\(wedges.count)", systemImage: "list.bullet")
-                WedgeMetricCard(title: "In Bag", value: "\(bagWedges.count)", systemImage: "bag")
+                WedgeMetricCard(title: L("Wedges"), value: "\(wedges.count)", systemImage: "list.bullet")
+                WedgeMetricCard(title: L("In Bag"), value: "\(bagWedges.count)", systemImage: "bag")
             }
         }
         .pureLineCard()
@@ -270,9 +270,9 @@ private struct WedgeBagNotesCard: View {
                 .font(.headline)
                 .foregroundStyle(PureLineStyle.ink)
             VStack(alignment: .leading, spacing: 10) {
-                WedgeNoteRow(value: "50%", text: "Clock-face or waist-high swings")
-                WedgeNoteRow(value: "75%", text: "Controlled three-quarter tempo")
-                WedgeNoteRow(value: "Full", text: "Stock full carry, not total distance")
+                WedgeNoteRow(value: "50%", text: L("Clock-face or waist-high swings"))
+                WedgeNoteRow(value: "75%", text: L("Controlled three-quarter tempo"))
+                WedgeNoteRow(value: L("Full"), text: L("Stock full carry, not total distance"))
             }
         }
         .pureLineCard()
@@ -435,8 +435,8 @@ private struct WedgeBagManagementList: View {
         List {
             Section {
                 WedgePageHeader(
-                    title: "Your wedge bag",
-                    subtitle: "Manage the clubs you carry. Tap a club to edit its distances."
+                    title: L("Your wedge bag"),
+                    subtitle: L("Manage the clubs you carry. Tap a club to edit its distances.")
                 )
                 .listRowInsets(EdgeInsets())
                 .listRowBackground(PureLineStyle.canvas)
@@ -534,7 +534,7 @@ private struct WedgeClubDetailView: View {
             .padding()
         }
         .background(PureLineStyle.canvas)
-        .navigationTitle(draft.name.isEmpty ? "Club" : draft.name)
+        .navigationTitle(draft.name.isEmpty ? L("Club") : draft.name)
         .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
@@ -649,7 +649,7 @@ private struct WedgeDoneAccessoryNumberField: UIViewRepresentable {
         toolbar.sizeToFit()
         toolbar.items = [
             UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(title: "Done", style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
+            UIBarButtonItem(title: L("Done"), style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
         ]
         textField.inputAccessoryView = toolbar
         return textField

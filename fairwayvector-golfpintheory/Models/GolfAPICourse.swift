@@ -52,16 +52,16 @@ struct GolfAPICourseDetail: Decodable, Hashable {
     let tees: [GolfAPITee]
 
     init(json: [String: Any]) throws {
-        guard let courseID = Self.string(json["courseID"]),
-              let rawCourseName = json["courseName"] as? String else {
+        guard let courseID = Self.string(json[L("courseID")]),
+              let rawCourseName = json[L("courseName")] as? String else {
             throw GolfAPIError.invalidResponse("Course detail is missing its course ID or name.")
         }
         self.courseID = courseID
-        clubID = Self.string(json["clubID"]) ?? ""
-        clubName = Self.string(json["clubName"]) ?? ""
+        clubID = Self.string(json[L("clubID")]) ?? ""
+        clubName = Self.string(json[L("clubName")]) ?? ""
         let name = rawCourseName.trimmingCharacters(in: .whitespacesAndNewlines)
         let club = clubName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let holes = Self.int(json["numHoles"]) ?? 0
+        let holes = Self.int(json[L("numHoles")]) ?? 0
         courseName = !name.isEmpty ? rawCourseName : !club.isEmpty ? club
             : holes > 0 ? "\(holes)-hole course" : "Course"
         city = Self.string(json["city"])
@@ -69,15 +69,15 @@ struct GolfAPICourseDetail: Decodable, Hashable {
         country = Self.string(json["country"]) ?? ""
         latitude = Self.double(json["latitude"])
         longitude = Self.double(json["longitude"])
-        numHoles = Self.int(json["numHoles"]) ?? 0
+        numHoles = Self.int(json[L("numHoles")]) ?? 0
         let measureUnit = Self.string(json["measure"]) ?? "y"
         measure = measureUnit
-        timestampUpdated = Self.string(json["timestampUpdated"])
-        hasGPS = Self.bool(json["hasGPS"]) ?? false
-        parsMen = Self.intArray(json["parsMen"])
-        indexesMen = Self.intArray(json["indexesMen"])
-        parsWomen = Self.intArray(json["parsWomen"])
-        indexesWomen = Self.intArray(json["indexesWomen"])
+        timestampUpdated = Self.string(json[L("timestampUpdated")])
+        hasGPS = Self.bool(json[L("hasGPS")]) ?? false
+        parsMen = Self.intArray(json[L("parsMen")])
+        indexesMen = Self.intArray(json[L("indexesMen")])
+        parsWomen = Self.intArray(json[L("parsWomen")])
+        indexesWomen = Self.intArray(json[L("indexesWomen")])
         var decodedTees: [GolfAPITee] = []
         for teeJSON in json["tees"] as? [[String: Any]] ?? [] {
             if let tee = GolfAPITee(json: teeJSON, measure: measureUnit) {
@@ -137,23 +137,23 @@ struct GolfAPITee: Decodable, Hashable, Identifiable {
     var id: String { teeID }
 
     init?(json: [String: Any], measure: String) {
-        guard let teeID = Self.string(json["teeID"]),
-              let teeName = Self.string(json["teeName"]) else { return nil }
+        guard let teeID = Self.string(json[L("teeID")]),
+              let teeName = Self.string(json[L("teeName")]) else { return nil }
         self.teeID = teeID
         self.teeName = teeName
-        teeColor = Self.string(json["teeColor"])
-        courseRatingMen = Self.double(json["courseRatingMen"])
-        slopeMen = Self.int(json["slopeMen"])
-        courseRatingWomen = Self.double(json["courseRatingWomen"])
-        slopeWomen = Self.int(json["slopeWomen"])
+        teeColor = Self.string(json[L("teeColor")])
+        courseRatingMen = Self.double(json[L("courseRatingMen")])
+        slopeMen = Self.int(json[L("slopeMen")])
+        courseRatingWomen = Self.double(json[L("courseRatingWomen")])
+        slopeWomen = Self.int(json[L("slopeWomen")])
         lengthsMeters = (1...18).map { hole in
             guard let length = Self.double(json["length\(hole)"]) else { return nil }
             return length * (measure == "m" ? 1 : 0.9144)
         }
         parsMen = Self.intArray(json["pars"])
         indexesMen = Self.intArray(json["indexes"])
-        parsWomen = Self.intArray(json["parsWomen"])
-        indexesWomen = Self.intArray(json["indexesWomen"])
+        parsWomen = Self.intArray(json[L("parsWomen")])
+        indexesWomen = Self.intArray(json[L("indexesWomen")])
     }
 
     func rating(for sex: String) -> Double? {
@@ -224,7 +224,7 @@ struct GolfAPICoordinate: Decodable, Hashable, Identifiable {
               let longitude = Self.double(json["longitude"]) else { return nil }
         self.poi = poi
         location = Self.int(json["location"])
-        sideFW = Self.int(json["sideFW"])
+        sideFW = Self.int(json[L("sideFW")])
         self.hole = hole
         self.latitude = latitude
         self.longitude = longitude
@@ -271,44 +271,46 @@ enum GolfAPIError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .localStorageUnavailable:
-            return "The course could not be saved on this device. Free up storage and select it again; the server copy remains cached."
+            return AppLanguage.localized("The course could not be saved on this device. Free up storage and select it again; the server copy remains cached.")
         case .missingDataServiceConfiguration:
-            return "Course information is temporarily unavailable. Please try again later."
+            return AppLanguage.localized("Course information is temporarily unavailable. Please try again later.")
         case .unauthorized:
-            return "Please sign in again to load this course."
+            return AppLanguage.localized("Please sign in again to load this course.")
         case .httpStatus:
-            return "We couldn't load this course right now. Check your connection and try again."
+            return AppLanguage.localized("We couldn't load this course right now. Check your connection and try again.")
         case .dataService(_, let code, _):
             switch code {
             case "provider_disabled":
-                return "Course information is temporarily unavailable. Please try again later."
+                return AppLanguage.localized("Course information is temporarily unavailable. Please try again later.")
             case "provider_not_configured":
-                return "Course information is temporarily unavailable. Please try again later."
+                return AppLanguage.localized("Course information is temporarily unavailable. Please try again later.")
             case "daily_budget_exceeded":
-                return "Course downloads are busy right now. Please try again later."
+                return AppLanguage.localized("Course downloads are busy right now. Please try again later.")
             case "request_pending":
-                return "We're already loading this course. Please wait a moment and try again."
+                return AppLanguage.localized("We're already loading this course. Please wait a moment and try again.")
             case "provider_cooldown":
-                return "We couldn't load this course just now. Please wait a few minutes, then try again."
+                return AppLanguage.localized("We couldn't load this course just now. Please wait a few minutes, then try again.")
             case "ambiguous_attempt":
-                return "This course is temporarily unavailable. Please try another course or come back later."
+                return AppLanguage.localized("This course is temporarily unavailable. Please try another course or come back later.")
             case "cache_write_rejected":
-                return "We couldn't save this course just now. Please try again later."
+                return AppLanguage.localized("We couldn't save this course just now. Please try again later.")
             case "rate_limit":
-                return "Too many course requests were made. Please wait a little and try again."
+                return AppLanguage.localized("Too many course requests were made. Please wait a little and try again.")
             case "provider_unavailable", "invalid_provider_response":
-                return "Course information couldn't be loaded. Please try again later."
+                return AppLanguage.localized("Course information couldn't be loaded. Please try again later.")
             default:
-                return "We couldn't load this course right now. Please try again later."
+                return AppLanguage.localized("We couldn't load this course right now. Please try again later.")
             }
-        case .invalidResponse(let detail):
-            return "The course information appears incomplete. Please try again later."
+        case .invalidResponse:
+            return AppLanguage.localized("The course information appears incomplete. Please try again later.")
         case .noGPSData(let course):
-            return "Map data isn't available for \(course). You can still use it for Handicap."
+            return AppLanguage.localized("Map data isn't available for %@. You can still use it for Handicap.",
+                arguments: [course])
         case .noRatedTees(let course):
-            return "No rated tee sets were found for \(course)."
+            return AppLanguage.localized("No rated tee sets were found for %@.", arguments: [course])
         case .savedCourseUnavailable(let course):
-            return "Previously downloaded course data for \(course) is not available on this device. Your course selection has been preserved."
+            return AppLanguage.localized("Previously downloaded course data for %@ is not available on this device. Your course selection has been preserved.",
+                arguments: [course])
         }
     }
 }

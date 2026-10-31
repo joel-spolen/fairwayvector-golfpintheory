@@ -12,8 +12,8 @@ enum PressureInputMode: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .pressure: return "Pressure"
-        case .elevation: return "Site Elevation"
+        case .pressure: return L("Pressure")
+        case .elevation: return L("Site Elevation")
         }
     }
 }
@@ -290,15 +290,15 @@ final class TrajectoryCalculatorViewModel: ObservableObject {
         guard !isCalculating else { return }
         errorMessage = nil
         guard let predictor else {
-            errorMessage = loadError?.localizedDescription ?? "Prediction models failed to load."
+            errorMessage = loadError?.localizedDescription ?? L("Prediction models failed to load.")
             return
         }
         guard ballSpeedMps > 0 else {
-            errorMessage = "Ball speed must be greater than zero."
+            errorMessage = L("Ball speed must be greater than zero.")
             return
         }
         guard spinRateRpm >= 0 else {
-            errorMessage = "Spin rate cannot be negative."
+            errorMessage = L("Spin rate cannot be negative.")
             return
         }
 

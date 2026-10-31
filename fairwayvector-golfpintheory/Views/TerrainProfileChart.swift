@@ -29,32 +29,32 @@ struct TerrainProfileChart: View {
             ForEach(Array(runs.enumerated()), id: \.offset) { index, run in
                 ForEach(run) { sample in
                     if let elevation = sample.elevationMeters {
-                        AreaMark(x: .value("Distance", value(sample.distanceMeters)),
-                                 yStart: .value("Baseline", domain.lowerBound),
-                                 yEnd: .value("Elevation", value(elevation)), series: .value("Run", index))
+                        AreaMark(x: .value(L("Distance"), value(sample.distanceMeters)),
+                                 yStart: .value(L("Baseline"), domain.lowerBound),
+                                 yEnd: .value(L("Elevation"), value(elevation)), series: .value(L("Run"), index))
                             .foregroundStyle(PureLineStyle.accent.opacity(0.12))
                             .interpolationMethod(.linear)
-                        LineMark(x: .value("Distance", value(sample.distanceMeters)),
-                                 y: .value("Elevation", value(elevation)), series: .value("Run", index))
+                        LineMark(x: .value(L("Distance"), value(sample.distanceMeters)),
+                                 y: .value(L("Elevation"), value(elevation)), series: .value(L("Run"), index))
                             .foregroundStyle(PureLineStyle.accent)
                             .interpolationMethod(.linear)
                         if run.count == 1 {
-                            PointMark(x: .value("Distance", value(sample.distanceMeters)), y: .value("Elevation", value(elevation)))
+                            PointMark(x: .value(L("Distance"), value(sample.distanceMeters)), y: .value(L("Elevation"), value(elevation)))
                                 .foregroundStyle(PureLineStyle.accent)
                         }
                     }
                 }
             }
             if let selectedDistance {
-                RuleMark(x: .value("Inspection", selectedDistance))
+                RuleMark(x: .value(L("Inspection"), selectedDistance))
                     .foregroundStyle(PureLineStyle.ink)
             }
         }
         .chartXScale(domain: 0...max(value(profile.distanceMeters), value(1)))
         .chartYScale(domain: domain)
         .chartLegend(.hidden)
-        .chartXAxisLabel(height > 100 ? "Horizontal distance (\(unit.symbol))" : "")
-        .chartYAxisLabel(height > 100 ? "Terrain elevation (\(unit.symbol))" : "")
+        .chartXAxisLabel(height > 100 ? L("Horizontal distance (%@)", "\(unit.symbol)") : "")
+        .chartYAxisLabel(height > 100 ? L("Terrain elevation (%@)", "\(unit.symbol)") : "")
         .chartXSelection(value: $selectedDistance)
         .frame(height: height)
         .accessibilityLabel("Terrain profile; independently fitted vertical scale, gaps are unavailable heights")

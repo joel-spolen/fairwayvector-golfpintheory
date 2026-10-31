@@ -9,8 +9,8 @@ struct TrajectoryCalculatorView: View {
 
         var label: String {
             switch self {
-            case .simple: return "Simple"
-            case .advanced: return "Advanced"
+            case .simple: return L("Simple")
+            case .advanced: return L("Advanced")
             }
         }
     }
@@ -23,8 +23,8 @@ struct TrajectoryCalculatorView: View {
 
         var label: String {
             switch self {
-            case .club: return "Club"
-            case .custom: return "Custom"
+            case .club: return L("Club")
+            case .custom: return L("Custom")
             }
         }
     }
@@ -42,8 +42,8 @@ struct TrajectoryCalculatorView: View {
                 ScrollView {
                     VStack(spacing: 20) {
                         TrajectoryPageHeader(
-                            title: "Plan your shot",
-                            subtitle: "Enter launch conditions and course factors to estimate carry and flight.",
+                            title: L("Plan your shot"),
+                            subtitle: L("Enter launch conditions and course factors to estimate carry and flight."),
                             onReset: { viewModel.resetInputs() }
                         )
                         launchConditionsCard
@@ -173,8 +173,8 @@ struct TrajectoryCalculatorView: View {
     private var customLaunchFields: some View {
         Group {
             TrajectoryMeasurementField(
-                title: "Ball Speed",
-                explanation: "Speed of the ball immediately after impact.",
+                title: L("Ball Speed"),
+                explanation: L("Speed of the ball immediately after impact."),
                 diagram: .ballSpeed,
                 metricValue: $viewModel.ballSpeedMps,
                 kind: .speed,
@@ -183,8 +183,8 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 1
             )
             TrajectoryMeasurementField(
-                title: "Launch Angle",
-                explanation: "The ball's initial upward angle.",
+                title: L("Launch Angle"),
+                explanation: L("The ball's initial upward angle."),
                 diagram: .launchAngle,
                 metricValue: $viewModel.launchAngleDeg,
                 kind: .angle,
@@ -193,8 +193,8 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 1
             )
             TrajectoryMeasurementField(
-                title: "Launch Direction",
-                explanation: "Horizontal angle relative to the target line. Negative is left and positive is right.",
+                title: L("Launch Direction"),
+                explanation: L("Horizontal angle relative to the target line. Negative is left and positive is right."),
                 diagram: .launchDirection,
                 metricValue: $viewModel.launchDirectionDeg,
                 kind: .angle,
@@ -203,8 +203,8 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 1
             )
             TrajectoryMeasurementField(
-                title: "Spin Rate",
-                explanation: "Backspin rate in revolutions per minute.",
+                title: L("Spin Rate"),
+                explanation: L("Backspin rate in revolutions per minute."),
                 diagram: .spinRate,
                 metricValue: $viewModel.spinRateRpm,
                 kind: .spin,
@@ -212,8 +212,8 @@ struct TrajectoryCalculatorView: View {
                 metricRange: 500...10000
             )
             TrajectoryMeasurementField(
-                title: "Spin Axis",
-                explanation: "Tilt of the spin axis. Zero is pure backspin; positive values curve right.",
+                title: L("Spin Axis"),
+                explanation: L("Tilt of the spin axis. Zero is pure backspin; positive values curve right."),
                 diagram: .spinAxis,
                 metricValue: $viewModel.spinAxisDeg,
                 kind: .angle,
@@ -275,8 +275,8 @@ struct TrajectoryCalculatorView: View {
     private var simpleConditionFields: some View {
         Group {
             TrajectoryMeasurementField(
-                title: "Tailwind (headwind is negative)",
-                explanation: "Wind along the target line. Positive pushes the ball toward the target; negative is a headwind.",
+                title: L("Tailwind (headwind is negative)"),
+                explanation: L("Wind along the target line. Positive pushes the ball toward the target; negative is a headwind."),
                 diagram: .tailwind,
                 metricValue: $viewModel.tailwindMps,
                 kind: .speed,
@@ -285,8 +285,8 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 0
             )
             TrajectoryMeasurementField(
-                title: "Elevation Change",
-                explanation: "Height difference between the launch point and the landing surface. This is separate from site elevation.",
+                title: L("Elevation Change"),
+                explanation: L("Height difference between the launch point and the landing surface. This is separate from site elevation."),
                 diagram: .elevationChange,
                 metricValue: $viewModel.elevationDeltaM,
                 kind: .distance,
@@ -299,8 +299,8 @@ struct TrajectoryCalculatorView: View {
     private var advancedConditionFields: some View {
         Group {
                     TrajectoryMeasurementField(
-                        title: "Temperature",
-                        explanation: "Air temperature at the location of the shot.",
+                        title: L("Temperature"),
+                        explanation: L("Air temperature at the location of the shot."),
                         diagram: .temperature,
                         metricValue: $viewModel.temperatureC,
                         kind: .temperature,
@@ -316,8 +316,8 @@ struct TrajectoryCalculatorView: View {
                     )
 
                     TrajectoryMeasurementField(
-                        title: "Humidity",
-                        explanation: "Relative humidity of the air, expressed as a percentage.",
+                        title: L("Humidity"),
+                        explanation: L("Relative humidity of the air, expressed as a percentage."),
                         diagram: .humidity,
                         metricValue: $viewModel.humidityPct,
                         kind: .percent,
@@ -325,8 +325,8 @@ struct TrajectoryCalculatorView: View {
                         metricRange: 0...100
                     )
                     TrajectoryMeasurementField(
-                        title: "Tailwind (headwind is negative)",
-                        explanation: "Wind along the target line. Positive pushes the ball toward the target; negative is a headwind.",
+                        title: L("Tailwind (headwind is negative)"),
+                        explanation: L("Wind along the target line. Positive pushes the ball toward the target; negative is a headwind."),
                         diagram: .tailwind,
                         metricValue: $viewModel.tailwindMps,
                         kind: .speed,
@@ -335,8 +335,8 @@ struct TrajectoryCalculatorView: View {
                         decimalPlaces: 0
                     )
                     TrajectoryMeasurementField(
-                        title: "Crosswind (right is positive)",
-                        explanation: "Wind perpendicular to the target line. Positive blows toward the right side of the target line.",
+                        title: L("Crosswind (right is positive)"),
+                        explanation: L("Wind perpendicular to the target line. Positive blows toward the right side of the target line."),
                         diagram: .crosswind,
                         metricValue: $viewModel.crosswindMps,
                         kind: .speed,
@@ -345,8 +345,8 @@ struct TrajectoryCalculatorView: View {
                         decimalPlaces: 0
                     )
                     TrajectoryMeasurementField(
-                        title: "Elevation Change",
-                        explanation: "Height difference between the launch point and the landing surface. This is separate from site elevation.",
+                        title: L("Elevation Change"),
+                        explanation: L("Height difference between the launch point and the landing surface. This is separate from site elevation."),
                         diagram: .elevationChange,
                         metricValue: $viewModel.elevationDeltaM,
                         kind: .distance,
@@ -565,7 +565,7 @@ private struct AtmosphereField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(pressureInputMode == .elevation ? "Site Elevation" : "Pressure")
+                Text(pressureInputMode == .elevation ? L("Site Elevation") : L("Pressure"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Button {
@@ -597,7 +597,7 @@ private struct AtmosphereField: View {
             NavigationStack {
                 InfoImagePanel(
                     imageName: "pressure",
-                    explanation: "Pressure is the weight of the air around the ball. Site elevation is the height of the course above sea level. Air pressure generally decreases as site elevation increases."
+                    explanation: L("Pressure is the weight of the air around the ball. Site elevation is the height of the course above sea level. Air pressure generally decreases as site elevation increases.")
                 )
                     .padding()
                     .background(PureLineStyle.canvas.ignoresSafeArea())
@@ -623,7 +623,7 @@ private struct AtmosphereField: View {
             return String(format: "%.0f %@", value, suffix)
         case .pressure:
             guard let pressure = try? Atmosphere.standardPressureHpa(fromAltitudeM: siteElevationM) else {
-                return "Unavailable"
+                return L("Unavailable")
             }
             return Units.formattedPressure(hpa: pressure, system: pressureSystem)
         }

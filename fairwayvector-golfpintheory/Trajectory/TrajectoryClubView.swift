@@ -110,8 +110,8 @@ struct TrajectoryClubView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         TrajectoryPageHeader(
-                            title: "Find your club",
-                            subtitle: "Set a target and conditions to see the best-matching club and flight.",
+                            title: L("Find your club"),
+                            subtitle: L("Set a target and conditions to see the best-matching club and flight."),
                             onReset: resetInputs
                         )
                         selectorCard
@@ -259,8 +259,8 @@ struct TrajectoryClubView: View {
     private var advancedConditions: some View {
         VStack(alignment: .leading, spacing: 16) {
             TrajectoryMeasurementField(
-                title: "Temperature",
-                explanation: "Air temperature at the location of the shot.",
+                title: L("Temperature"),
+                explanation: L("Air temperature at the location of the shot."),
                 diagram: .temperature,
                 metricValue: $clubConditions.temperatureC,
                 kind: .temperature,
@@ -274,8 +274,8 @@ struct TrajectoryClubView: View {
                 unitPreferences: viewModel.unitPreferences
             )
             TrajectoryMeasurementField(
-                title: "Humidity",
-                explanation: "Relative humidity of the air, expressed as a percentage.",
+                title: L("Humidity"),
+                explanation: L("Relative humidity of the air, expressed as a percentage."),
                 diagram: .humidity,
                 metricValue: $clubConditions.humidityPct,
                 kind: .percent,
@@ -283,8 +283,8 @@ struct TrajectoryClubView: View {
                 metricRange: 0...100
             )
             TrajectoryMeasurementField(
-                title: "Tailwind (headwind is negative)",
-                explanation: "Wind along the target line. Positive pushes the ball toward the target; negative is a headwind.",
+                title: L("Tailwind (headwind is negative)"),
+                explanation: L("Wind along the target line. Positive pushes the ball toward the target; negative is a headwind."),
                 diagram: .tailwind,
                 metricValue: $clubConditions.tailwindMps,
                 kind: .speed,
@@ -293,8 +293,8 @@ struct TrajectoryClubView: View {
                 decimalPlaces: 0
             )
             TrajectoryMeasurementField(
-                title: "Crosswind (right is positive)",
-                explanation: "Wind perpendicular to the target line. Positive blows toward the right.",
+                title: L("Crosswind (right is positive)"),
+                explanation: L("Wind perpendicular to the target line. Positive blows toward the right."),
                 diagram: .crosswind,
                 metricValue: $clubConditions.crosswindMps,
                 kind: .speed,
@@ -361,12 +361,12 @@ struct TrajectoryClubView: View {
                     trajectoryMark(point)
                 }
 
-                RuleMark(x: .value("Target", targetCarryMeters))
+                RuleMark(x: .value(L("Target"), targetCarryMeters))
                     .foregroundStyle(.green)
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
             }
-            .chartXAxisLabel("Carry (\(distanceUnit))")
-            .chartYAxisLabel("Height (\(distanceUnit))")
+            .chartXAxisLabel(L("Carry (%@)", "\(distanceUnit)"))
+            .chartYAxisLabel(L("Height (%@)", "\(distanceUnit)"))
             .frame(height: 250)
             .accessibilityLabel("Club trajectory comparison")
             .accessibilityHint("Shows the recommended club and closest alternatives with the target marked by a green line.")
@@ -379,12 +379,12 @@ struct TrajectoryClubView: View {
                 ForEach(lateralChartPoints) { point in
                     lateralTrajectoryMark(point)
                 }
-                RuleMark(y: .value("Target Line", 0))
+                RuleMark(y: .value(L("Target Line"), 0))
                     .foregroundStyle(.green)
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
             }
-            .chartXAxisLabel("Downrange (\(distanceUnit))")
-            .chartYAxisLabel("Lateral (\(distanceUnit))")
+            .chartXAxisLabel(L("Downrange (%@)", "\(distanceUnit)"))
+            .chartYAxisLabel(L("Lateral (%@)", "\(distanceUnit)"))
             .frame(height: 180)
             .accessibilityLabel("Top-down club trajectory comparison")
             .accessibilityHint("Shows club curvature relative to the target line.")
@@ -455,17 +455,17 @@ struct TrajectoryClubView: View {
     @ChartContentBuilder
     private func trajectoryMark(_ point: TrajectoryChartPoint) -> some ChartContent {
         LineMark(
-            x: .value("Distance", point.distanceM),
-            y: .value("Height", point.heightM),
-            series: .value("Club", point.clubLabel)
+            x: .value(L("Distance"), point.distanceM),
+            y: .value(L("Height"), point.heightM),
+            series: .value(L("Club"), point.clubLabel)
         )
         .interpolationMethod(.catmullRom)
         .foregroundStyle(point.color)
 
         if point.isLastPoint {
             PointMark(
-                x: .value("Distance", point.distanceM),
-                y: .value("Height", point.heightM)
+                x: .value(L("Distance"), point.distanceM),
+                y: .value(L("Height"), point.heightM)
             )
             .foregroundStyle(point.color)
         }
@@ -474,9 +474,9 @@ struct TrajectoryClubView: View {
     @ChartContentBuilder
     private func lateralTrajectoryMark(_ point: LateralChartPoint) -> some ChartContent {
         LineMark(
-            x: .value("Distance", point.distanceM),
-            y: .value("Lateral", point.lateralM),
-            series: .value("Club", point.clubLabel)
+            x: .value(L("Distance"), point.distanceM),
+            y: .value(L("Lateral"), point.lateralM),
+            series: .value(L("Club"), point.clubLabel)
         )
         .interpolationMethod(.catmullRom)
         .foregroundStyle(point.color)
@@ -565,22 +565,22 @@ struct TrajectoryClubView: View {
             ($0.trajectory.xM.last ?? 0) + 0.1 >= targetCarryMeters
         }
         guard !hasClubWithinPracticalRange, !hasFlightReachingTarget else { return nil }
-        return "No modeled flight reaches the target distance. Closest estimate: \(formattedDistance(closest.estimatedCarryM)) for a \(formattedDistance(targetCarryMeters)) target."
+        return L("No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target.", "\(formattedDistance(closest.estimatedCarryM))", "\(formattedDistance(targetCarryMeters))")
     }
 
     private func elevationWarning(for recommendation: ClubRecommendation) -> String? {
         guard recommendation.targetElevationM > 0 else { return nil }
         guard let heightAtTarget = recommendation.heightAtTargetDistanceM else { return nil }
         guard heightAtTarget + 0.1 < recommendation.targetElevationM else { return nil }
-        return "Below target elevation at target distance (\(formattedHeight(heightAtTarget)) vs \(formattedHeight(recommendation.targetElevationM)))"
+        return L("Below target elevation at target distance (%@ vs %@)", "\(formattedHeight(heightAtTarget))", "\(formattedHeight(recommendation.targetElevationM))")
     }
 
     private func aimAdvice(for recommendation: ClubRecommendation) -> String {
         guard let lateral = recommendation.lateralAtTargetDistanceM, abs(lateral) >= 0.5 else {
-            return "Aim at target"
+            return L("Aim at target")
         }
         let aimDistance = formattedDistance(abs(lateral))
-        return lateral > 0 ? "Aim \(aimDistance) left" : "Aim \(aimDistance) right"
+        return lateral > 0 ? L("Aim %@ left", "\(aimDistance)") : L("Aim %@ right", "\(aimDistance)")
     }
 
     private func invalidateRecommendation() {
@@ -603,7 +603,7 @@ struct TrajectoryClubView: View {
         let captured = recommendationInput
         let generation = recommendationGeneration
         guard captured.targetCarryM.isFinite, captured.targetCarryM > 0 else {
-            errorMessage = "Set a target carry distance greater than zero."
+            errorMessage = L("Set a target carry distance greater than zero.")
             return
         }
         isCalculating = true
@@ -744,7 +744,7 @@ private struct ClubElevationGraphic: View {
     private var formattedElevation: String {
         let value = unitSystem == .imperial ? Units.feetFromMeters(elevationMeters) : elevationMeters
         let suffix = unitSystem == .imperial ? "ft" : "m"
-        return String(format: "Elevation %+.0f %@", value, suffix)
+        return String(format: L("Elevation %+.0f %@"), value, suffix)
     }
 
     private func elevationGesture(travel: CGFloat) -> some Gesture {
@@ -937,7 +937,7 @@ private struct ClubWindGraphic: View {
 
         private var windSummary: String {
             let magnitude = sqrt(tailwindMps * tailwindMps + crosswindMps * crosswindMps)
-            return "Wind \(displaySpeed(magnitude))"
+            return L("Wind %@", "\(displaySpeed(magnitude))")
         }
 
         private func displaySpeed(_ metersPerSecond: Double) -> String {
@@ -976,7 +976,7 @@ private struct ClubDoneAccessoryNumberField: UIViewRepresentable {
         toolbar.sizeToFit()
         toolbar.items = [
             UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(title: "Done", style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
+            UIBarButtonItem(title: L("Done"), style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
         ]
         textField.inputAccessoryView = toolbar
         return textField
@@ -1042,7 +1042,7 @@ private struct ClubAtmosphereField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(pressureInputMode == .elevation ? "Site Elevation" : "Pressure")
+                Text(pressureInputMode == .elevation ? L("Site Elevation") : L("Pressure"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -1069,7 +1069,7 @@ private struct ClubAtmosphereField: View {
             return String(format: "%.0f %@", value, suffix)
         case .pressure:
             guard let pressure = try? Atmosphere.standardPressureHpa(fromAltitudeM: siteElevationM) else {
-                return "Unavailable"
+                return L("Unavailable")
             }
             return Units.formattedPressure(hpa: pressure, system: pressureSystem)
         }

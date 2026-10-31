@@ -231,7 +231,7 @@ actor GPXZTerrainRepository {
                 guard !DevelopmentAPIConfiguration.isDemoCourse(courseID),
                             !courseID.hasPrefix(DevelopmentAPIConfiguration.terrainNamespace) else {
                         return TerrainFetchResult(profile: nil,
-                                message: "Demo course: live terrain requests are blocked. Select a real course for live testing.", quota: nil, plannedCalls: 0)
+                                message: L("Demo course: live terrain requests are blocked. Select a real course for live testing."), quota: nil, plannedCalls: 0)
                 }
         var cache: TerrainCourseCache?
         var plan: TerrainCoveragePlan?
@@ -248,7 +248,7 @@ actor GPXZTerrainRepository {
                 // initializes the ledger, reserves calls, or schedules paid hole resumption.
                 let profile = initial.profile(cache: current, straight: straight)
                 let message = initial.uncovered.isEmpty && profile.samples.contains(where: { $0.elevationMeters != nil })
-                    ? nil : "Showing saved terrain only. Tap the course map and release a target to load missing shot terrain."
+                    ? nil : L("Showing saved terrain only. Tap the course map and release a target to load missing shot terrain.")
                 return TerrainFetchResult(profile: profile, message: message,
                     quota: try? await ledger.quota(readOnly: true), plannedCalls: 0,
                     remainingCalls: initial.uncovered.count)
@@ -260,7 +260,7 @@ actor GPXZTerrainRepository {
                                               message: nil, quota: before, plannedCalls: planned))
             for gap in initial.uncovered {
                 guard maySend() else {
-                    message = "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain."
+                    message = L("Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain.")
                     paused = true
                     break
                 }
@@ -303,7 +303,7 @@ actor GPXZTerrainRepository {
             cache = current
             plan = try TerrainCoveragePlan(path: initial.path, cache: current)
             if initial.path.count == 1, current.pointSample(initial.path[0], distance: 0) == nil {
-                message = "No saved height at this zero-length path. No height was invented or requested."
+                message = L("No saved height at this zero-length path. No height was invented or requested.")
             }
         } catch {
             paused = false // Storage/provider/budget failures never become release-triggered retries.
@@ -356,7 +356,7 @@ actor GPXZTerrainRepository {
             return result
         } catch {
             let profile = cache.flatMap { cache in (try? TerrainCoveragePlan(path: path, cache: cache))?.profile(cache: cache, straight: straight) }
-            return TerrainFetchResult(profile: profile, message: "Demo terrain storage: \(error.localizedDescription)", quota: nil, plannedCalls: 0)
+            return TerrainFetchResult(profile: profile, message: L("Demo terrain storage: %@", error.localizedDescription), quota: nil, plannedCalls: 0)
         }
     }
 }

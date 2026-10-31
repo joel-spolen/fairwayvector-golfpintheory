@@ -54,7 +54,7 @@ struct CourseWeatherCard: View {
                         .foregroundStyle(PureLineStyle.muted)
                 }
             } else {
-                Text(store.isLoading ? "Loading" : "Weather")
+                Text(store.isLoading ? L("Loading") : L("Weather"))
                     .font(.caption2.weight(.medium))
                     .foregroundStyle(PureLineStyle.ink)
             }
@@ -74,7 +74,7 @@ struct CourseWeatherCard: View {
                         .accessibilityLabel("Cached weather; see details")
                 }
             } else {
-                Text(store.isLoading ? "Loading weather…" : "Weather unavailable · tap to retry")
+                Text(store.isLoading ? L("Loading weather…") : L("Weather unavailable · tap to retry"))
                 Spacer(minLength: 0)
             }
             if store.isLoading { ProgressView().controlSize(.mini) }
@@ -92,18 +92,18 @@ struct CourseWeatherCard: View {
     }
 
     private func compactWindSpeed(_ weather: CourseWeather) -> String {
-        guard let speed = weather.windSpeedMps else { return "Wind" }
+        guard let speed = weather.windSpeedMps else { return L("Wind") }
         return String(format: "%.0f m/s", speed)
     }
 
     private var accessibilitySummary: String {
         guard let weather = store.weather(for: location) else {
-            return store.isLoading ? "Loading weather" : "Weather unavailable"
+            return store.isLoading ? L("Loading weather") : L("Weather unavailable")
         }
-        let temperature = weather.temperatureC.map { String(format: "%.0f degrees Celsius", $0) } ?? "Temperature unavailable"
-        let wind = weather.windSpeedMps.map { String(format: "%.1f metres per second", $0) } ?? "unavailable"
-        let direction = weather.windDirectionDegrees.map { String(format: "from %.0f degrees true north", $0) } ?? "direction unavailable"
-        return "\(temperature), wind \(wind), \(direction). \(store.isStale || store.errorMessage != nil ? "Cached conditions; review details." : "")"
+        let temperature = weather.temperatureC.map { String(format: L("%.0f degrees Celsius"), $0) } ?? L("Temperature unavailable")
+        let wind = weather.windSpeedMps.map { String(format: L("%.1f metres per second"), $0) } ?? L("unavailable")
+        let direction = weather.windDirectionDegrees.map { String(format: L("from %.0f degrees true north"), $0) } ?? L("direction unavailable")
+        return L("%@, wind %@, %@. %@", temperature, wind, direction, store.isStale || store.errorMessage != nil ? L("Cached conditions; review details.") : "")
     }
 }
 
@@ -117,14 +117,14 @@ private struct CourseWeatherDetail: View {
             Form {
                 Section("Current course conditions") {
                     if let weather = store.weather(for: location) {
-                        metric("Temperature", weather.temperatureC, "°C")
-                        metric("Relative humidity", weather.relativeHumidityPercent, "%")
-                        metric("Course weather elevation", weather.elevationMeters, "m")
-                        metric("Surface pressure", weather.surfacePressureHpa, "hPa")
-                        metric("Sea-level pressure", weather.seaLevelPressureHpa, "hPa")
-                        metric("Wind speed (10 m)", weather.windSpeedMps, "m/s")
-                        metric("Wind FROM (true north)", weather.windDirectionDegrees, "°")
-                        metric("Wind gusts", weather.windGustsMps, "m/s")
+                        metric(L("Temperature"), weather.temperatureC, "°C")
+                        metric(L("Relative humidity"), weather.relativeHumidityPercent, "%")
+                        metric(L("Course weather elevation"), weather.elevationMeters, "m")
+                        metric(L("Surface pressure"), weather.surfacePressureHpa, L("hPa"))
+                        metric(L("Sea-level pressure"), weather.seaLevelPressureHpa, L("hPa"))
+                        metric(L("Wind speed (10 m)"), weather.windSpeedMps, "m/s")
+                        metric(L("Wind FROM (true north)"), weather.windDirectionDegrees, "°")
+                        metric(L("Wind gusts"), weather.windGustsMps, "m/s")
                     } else {
                         Text("Weather unavailable. Refresh manually to try again.")
                     }
@@ -135,7 +135,7 @@ private struct CourseWeatherDetail: View {
                         Label(error, systemImage: "exclamationmark.triangle")
                         Text("Any displayed cached conditions are retained; no automatic retry.")
                     }
-                    Button(store.errorMessage == nil ? "Refresh course weather" : "Retry course weather", systemImage: "arrow.clockwise") {
+                    Button(store.errorMessage == nil ? L("Refresh course weather") : L("Retry course weather"), systemImage: "arrow.clockwise") {
                         Task { await store.load(for: location, forceRefresh: true) }
                     }
                     .disabled(store.isLoading)
@@ -149,6 +149,6 @@ private struct CourseWeatherDetail: View {
     }
 
     private func metric(_ title: String, _ value: Double?, _ unit: String) -> some View {
-        LabeledContent(title, value: value.map { String(format: "%.1f %@", $0, unit) } ?? "Not supplied")
+        LabeledContent(title, value: value.map { String(format: "%.1f %@", $0, unit) } ?? L("Not supplied"))
     }
 }

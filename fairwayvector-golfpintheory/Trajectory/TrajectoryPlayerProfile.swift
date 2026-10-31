@@ -61,17 +61,17 @@ enum ProfileDetailLevel: String, CaseIterable, Codable, Identifiable {
 
     var label: String {
         switch self {
-        case .easy: return "Simple"
-        case .medium: return "Medium"
-        case .expert: return "Advanced"
+        case .easy: return L("Simple")
+        case .medium: return L("Medium")
+        case .expert: return L("Advanced")
         }
     }
 
     var description: String {
         switch self {
-        case .easy: return "Use your handicap range."
-        case .medium: return "Use driver and 7 iron carry distances."
-        case .expert: return "Use per-club carry and launch data."
+        case .easy: return L("Use your handicap range.")
+        case .medium: return L("Use driver and 7 iron carry distances.")
+        case .expert: return L("Use per-club carry and launch data.")
         }
     }
 }
@@ -109,33 +109,33 @@ nonisolated enum TrajectoryGolfClub: String, CaseIterable, Codable, Identifiable
 
     var label: String {
         switch self {
-        case .driver: return "Driver"
-        case .threeWood: return "3 Wood"
-        case .fourWood: return "4 Wood"
-        case .fiveWood: return "5 Wood"
-        case .sixWood: return "6 Wood"
-        case .sevenWood: return "7 Wood"
-        case .eightWood: return "8 Wood"
-        case .nineWood: return "9 Wood"
-        case .threeHybrid: return "3 Hybrid"
-        case .fourHybrid: return "4 Hybrid"
-        case .fiveHybrid: return "5 Hybrid"
-        case .twoIron: return "2 Iron"
-        case .threeIron: return "3 Iron"
-        case .fourIron: return "4 Iron"
-        case .fiveIron: return "5 Iron"
-        case .sixIron: return "6 Iron"
-        case .sevenIron: return "7 Iron"
-        case .eightIron: return "8 Iron"
-        case .nineIron: return "9 Iron"
-        case .pitchingWedge: return "PW"
-        case .approachWedge: return "AW · 48° Wedge"
-        case .gapWedge: return "GW · 50° Wedge"
-        case .fiftyTwoWedge: return "52° Wedge"
-        case .fiftySixWedge: return "56° Wedge"
-        case .fiftyEightWedge: return "58° Wedge"
-        case .sandWedge: return "54° Wedge"
-        case .lobWedge: return "60° Wedge"
+        case .driver: return L("Driver")
+        case .threeWood: return L("3 Wood")
+        case .fourWood: return L("4 Wood")
+        case .fiveWood: return L("5 Wood")
+        case .sixWood: return L("6 Wood")
+        case .sevenWood: return L("7 Wood")
+        case .eightWood: return L("8 Wood")
+        case .nineWood: return L("9 Wood")
+        case .threeHybrid: return L("3 Hybrid")
+        case .fourHybrid: return L("4 Hybrid")
+        case .fiveHybrid: return L("5 Hybrid")
+        case .twoIron: return L("2 Iron")
+        case .threeIron: return L("3 Iron")
+        case .fourIron: return L("4 Iron")
+        case .fiveIron: return L("5 Iron")
+        case .sixIron: return L("6 Iron")
+        case .sevenIron: return L("7 Iron")
+        case .eightIron: return L("8 Iron")
+        case .nineIron: return L("9 Iron")
+        case .pitchingWedge: return L("PW")
+        case .approachWedge: return L("AW · 48° Wedge")
+        case .gapWedge: return L("GW · 50° Wedge")
+        case .fiftyTwoWedge: return L("52° Wedge")
+        case .fiftySixWedge: return L("56° Wedge")
+        case .fiftyEightWedge: return L("58° Wedge")
+        case .sandWedge: return L("54° Wedge")
+        case .lobWedge: return L("60° Wedge")
         }
     }
 

@@ -15,8 +15,8 @@ struct TrajectoryHomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     TrajectoryPageHeader(
-                        title: "Know which club to hit.",
-                        subtitle: "Personalized club recommendations and realistic shot trajectories for your game."
+                        title: L("Know which club to hit."),
+                        subtitle: L("Personalized club recommendations and realistic shot trajectories for your game.")
                     )
                     primaryActions
 
@@ -91,7 +91,7 @@ struct TrajectoryHomeView: View {
             .frame(height: 170)
             .padding()
             .pureLineCard()
-            .accessibilityLabel(viewModel.prediction == nil ? "Example flight path" : "Latest flight path")
+            .accessibilityLabel(viewModel.prediction == nil ? L("Example flight path") : L("Latest flight path"))
     }
 
     private func lastCalculation(prediction: HybridPrediction) -> some View {
@@ -235,10 +235,10 @@ struct HowItWorksView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    explanationRow(icon: "person.crop.circle", title: "Set your profile", text: "Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data.")
-                    explanationRow(icon: "slider.horizontal.3", title: "Enter your shot", text: "Choose a club profile or adjust ball speed, launch, spin, wind, and course conditions manually.")
-                    explanationRow(icon: "function", title: "Calculate the flight", text: "fairwayvector-trajectory combines a flight simulation with calibrated corrections.")
-                    explanationRow(icon: "chart.xyaxis.line", title: "Read the result", text: "Review carry, apex, landing data, and the side and top-down flight paths.")
+                    explanationRow(icon: "person.crop.circle", title: L("Set your profile"), text: L("Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data."))
+                    explanationRow(icon: "slider.horizontal.3", title: L("Enter your shot"), text: L("Choose a club profile or adjust ball speed, launch, spin, wind, and course conditions manually."))
+                    explanationRow(icon: "function", title: L("Calculate the flight"), text: L("fairwayvector-trajectory combines a flight simulation with calibrated corrections."))
+                    explanationRow(icon: "chart.xyaxis.line", title: L("Read the result"), text: L("Review carry, apex, landing data, and the side and top-down flight paths."))
                 }
                 .padding()
             }

@@ -98,8 +98,8 @@ struct InTheBagView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     PureLinePageHeader(
-                        title: "Build your bag",
-                        subtitle: "Choose the clubs you carry and set up your club and wedge distances."
+                        title: L("Build your bag"),
+                        subtitle: L("Choose the clubs you carry and set up your club and wedge distances.")
                     )
                     .padding(.vertical, 18)
 
@@ -111,15 +111,15 @@ struct InTheBagView: View {
                             .font(.caption)
                             .foregroundStyle(PureLineStyle.muted)
                         setupRow(
-                            title: "Clubs in my bag",
-                            detail: "Choose which clubs are available",
+                            title: L("Clubs in my bag"),
+                            detail: L("Choose which clubs are available"),
                             symbol: "figure.golf",
                             editor: .clubs
                         )
                         Divider().overlay(PureLineStyle.line)
                         setupRow(
-                            title: "Club distances & launch",
-                            detail: "Set personal club profiles",
+                            title: L("Club distances & launch"),
+                            detail: L("Set personal club profiles"),
                             symbol: "slider.horizontal.3",
                             editor: .clubProfile
                         )
@@ -134,8 +134,8 @@ struct InTheBagView: View {
                             .font(.caption)
                             .foregroundStyle(PureLineStyle.muted)
                         setupRow(
-                            title: "Wedge bag",
-                            detail: "Add, edit, and select wedges in your bag",
+                            title: L("Wedge bag"),
+                            detail: L("Add, edit, and select wedges in your bag"),
                             symbol: "square.grid.3x3",
                             editor: .wedges
                         )

@@ -228,8 +228,8 @@ enum DistanceUnit: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .meters: "Meters"
-        case .yards: "Yards"
+        case .meters: AppLanguage.localized("Meters")
+        case .yards: AppLanguage.localized("Yards")
         }
     }
 

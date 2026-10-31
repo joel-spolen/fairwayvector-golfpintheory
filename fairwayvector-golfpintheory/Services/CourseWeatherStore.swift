@@ -26,9 +26,9 @@ enum CourseWeatherError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidResponse: "The weather service returned an unreadable response."
-        case .missingCurrentConditions: "Current weather is not available for this course."
-        case .httpStatus(let status): "The weather service returned HTTP \(status)."
+        case .invalidResponse: L("The weather service returned an unreadable response.")
+        case .missingCurrentConditions: L("Current weather is not available for this course.")
+        case .httpStatus(let status): L("The weather service returned HTTP %@.", "\(status)")
         }
     }
 }

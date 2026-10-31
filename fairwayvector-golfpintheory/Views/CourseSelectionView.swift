@@ -41,8 +41,8 @@ struct CourseSelectionView: View {
                 GeometryReader { geometry in
                 ScrollView(.vertical) {
                 VStack(alignment: .leading, spacing: 24) {
-                    PureLinePageHeader(title: isStartRoundFlow ? "Start a round" : "Explore a course",
-                        subtitle: "Choose your course and tee.")
+                    PureLinePageHeader(title: isStartRoundFlow ? L("Start a round") : L("Explore a course"),
+                        subtitle: L("Choose your course and tee."))
                     if showsRoundInProgress, let round = roundStore.active {
                         VStack(alignment: .leading, spacing: 14) {
                             Label("Round in progress", systemImage: "flag.checkered").font(.headline)
@@ -73,7 +73,7 @@ struct CourseSelectionView: View {
 
                     if !model.clubs.isEmpty {
                         CourseClubCards(clubs: model.clubs, selectedClubID: model.selectedClubID,
-                                        title: "CLUBS · \(model.clubs.count) OF \(model.totalClubCount)", onSelect: { club in
+                                        title: L("CLUBS · %@ OF %@", "\(model.clubs.count)", "\(model.totalClubCount)"), onSelect: { club in
                                             model.selectClub(club)
                                             isClubPagePresented = true
                                         })
@@ -158,7 +158,7 @@ struct CourseSelectionView: View {
 
     private func recentCoursesSection(_ references: [CourseReference]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            CourseSelectionHeading(title: "RECENTLY SELECTED")
+            CourseSelectionHeading(title: L("RECENTLY SELECTED"))
             ForEach(references, id: \.golfAPICourseID) { reference in
                 Button {
                     if isStartRoundFlow {

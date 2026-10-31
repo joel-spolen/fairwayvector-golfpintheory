@@ -44,7 +44,7 @@ struct RoundSetupView: View {
 
     private func binding(for playerID: UUID) -> Binding<RoundPlayer> {
         Binding(
-            get: { players.first(where: { $0.id == playerID }) ?? RoundPlayer(name: "Player", isOwner: false, handicapIndex: nil) },
+            get: { players.first(where: { $0.id == playerID }) ?? RoundPlayer(name: L("Player"), isOwner: false, handicapIndex: nil) },
             set: { updated in
                 guard let index = players.firstIndex(where: { $0.id == playerID }) else { return }
                 players[index] = updated
@@ -92,7 +92,7 @@ struct RoundSetupView: View {
                     Text("Your round").font(.headline)
                     Text("Game").font(.subheadline.weight(.medium))
                     Picker("Game", selection: $game) {
-                        ForEach(RoundGame.allCases) { Text($0.rawValue).tag($0) }
+                        ForEach(RoundGame.allCases) { Text(L($0.rawValue)).tag($0) }
                     }.pickerStyle(.segmented)
                     Text("Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties.")
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
@@ -114,7 +114,7 @@ struct RoundSetupView: View {
                 ForEach(players) { player in
                     let playerBinding = binding(for: player.id)
                     VStack(alignment: .leading, spacing: 14) {
-                        Label(player.isOwner ? "You · personal statistics" : "Additional player", systemImage: "person")
+                        Label(player.isOwner ? L("You · personal statistics") : L("Additional player"), systemImage: "person")
                             .font(.headline)
                         if !player.isOwner {
                             TextField("Player name", text: playerBinding.name)
@@ -161,7 +161,7 @@ struct RoundSetupView: View {
                     .pureLineCard()
                 }
                     Button("Add player · \(players.count - 1)/3", systemImage: "person.badge.plus") {
-                        players.append(RoundPlayer(name: "Player \(players.count + 1)", isOwner: false,
+                        players.append(RoundPlayer(name: L("Player %@", "\(players.count + 1)"), isOwner: false,
                                                    handicapIndex: nil, keepsDetailedScore: true))
                     }
                     .font(.subheadline.weight(.semibold))
@@ -196,7 +196,7 @@ struct RoundSetupView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button(dismissOnCompletion ? "Cancel" : "Back") {
+                    Button(dismissOnCompletion ? L("Cancel") : L("Back")) {
                         onCancel()
                         if dismissOnCompletion { dismiss() }
                     }
@@ -284,7 +284,7 @@ struct RoundHoleEntryView: View {
                     Text("Par \(hole?.par.map(String.init) ?? "—") · HCP \(hole?.strokeIndex.map(String.init) ?? "—")")
                         .font(.title2.weight(.semibold))
                     Label(
-                        roundStore.draftNeedsRetry ? "Save pending" : allPlayersScored ? "Score saved" : hasSavedScore ? "Partly scored" : "No score yet",
+                        roundStore.draftNeedsRetry ? L("Save pending") : allPlayersScored ? L("Score saved") : hasSavedScore ? L("Partly scored") : L("No score yet"),
                         systemImage: roundStore.draftNeedsRetry ? "exclamationmark.circle" : allPlayersScored ? "checkmark.circle.fill" : "circle"
                     )
                     .font(.caption.weight(.medium))
@@ -315,7 +315,7 @@ struct RoundHoleEntryView: View {
                                 }
                             }
                             Spacer(minLength: 0)
-                            Label(player.isOwner ? "You" : player.name, systemImage: "person")
+                            Label(player.isOwner ? L("You") : player.name, systemImage: "person")
                                 .font(.headline)
                         }
                         Stepper(value: score.strokes, in: 1...30) {
@@ -329,14 +329,14 @@ struct RoundHoleEntryView: View {
                         }
                         if round.recordsDetailedScore(for: player) {
                             Divider().overlay(PureLineStyle.line)
-                            detailCount("Putts", value: score.putts, maximum: score.wrappedValue.strokes)
+                            detailCount(L("Putts"), value: score.putts, maximum: score.wrappedValue.strokes)
                             if hole?.par == 3 {
-                                LabeledContent("Fairway", value: "N/A · par 3")
+                                LabeledContent("Fairway", value: L("N/A · par 3"))
                             } else {
                                 fairwaySelector(score.fairway)
                             }
-                            detailCount("Bunker shots", value: score.bunkerShots, maximum: score.wrappedValue.strokes)
-                            detailCount("Penalty strokes", value: score.penalties, maximum: score.wrappedValue.strokes)
+                            detailCount(L("Bunker shots"), value: score.bunkerShots, maximum: score.wrappedValue.strokes)
+                            detailCount(L("Penalty strokes"), value: score.penalties, maximum: score.wrappedValue.strokes)
                             if let putts = score.wrappedValue.putts, let par = hole?.par {
                                 HStack {
                                     Text("GIR")
@@ -349,7 +349,7 @@ struct RoundHoleEntryView: View {
                                     .foregroundStyle(PureLineStyle.accent)
                                     .accessibilityLabel("About GIR and its calculation")
                                     Spacer()
-                                    Text(score.wrappedValue.strokes - putts <= par - 2 ? "Yes" : "No")
+                                    Text(score.wrappedValue.strokes - putts <= par - 2 ? L("Yes") : L("No"))
                                         .foregroundStyle(PureLineStyle.muted)
                                 }
                             }
@@ -384,7 +384,7 @@ struct RoundHoleEntryView: View {
                                 onNavigateHole(round.holes[holePosition + 1].number)
                             }
                         }
-                        catch { self.error = "Score could not be saved: \(error.localizedDescription)" }
+                        catch { self.error = L("Score could not be saved: %@", "\(error.localizedDescription)") }
                     } label: {
                         Label("Save hole", systemImage: "checkmark")
                             .font(.subheadline.weight(.semibold))
@@ -454,17 +454,17 @@ struct RoundHoleEntryView: View {
 
     private func scoreName(strokes: Int, par: Int) -> String {
         switch strokes - par {
-        case -4: "Condor"
-        case -3: "Albatross"
-        case -2: "Eagle"
-        case -1: "Birdie"
-        case 0: "Par"
-        case 1: "Bogey"
-        case 2: "Double bogey"
-        case 3: "Triple bogey"
-        case 4: "Quadruple bogey"
-        case let difference where difference < 0: "\(-difference) under par"
-        case let difference: "\(difference) over par"
+        case -4: L("Condor")
+        case -3: L("Albatross")
+        case -2: L("Eagle")
+        case -1: L("Birdie")
+        case 0: L("Par")
+        case 1: L("Bogey")
+        case 2: L("Double bogey")
+        case 3: L("Triple bogey")
+        case 4: L("Quadruple bogey")
+        case let difference where difference < 0: L("%@ under par", "\(-difference)")
+        case let difference: L("%@ over par", "\(difference)")
         }
     }
 
@@ -500,7 +500,7 @@ struct RoundHoleEntryView: View {
 
     private func fairwayButton(_ outcome: RoundFairway, icon: String, selection: Binding<RoundFairway>) -> some View {
         let selected = outcome == .missed ? isFairwayMiss(selection.wrappedValue) : selection.wrappedValue == outcome
-        let title = outcome == .hit ? "FIR" : outcome == .missed ? "Missed FIR" : outcome.label
+        let title = outcome == .hit ? L("FIR") : outcome == .missed ? L("Missed FIR") : outcome.label
         return Button {
             // Tapping a selected direction clears only that optional detail.
             if outcome != .hit && outcome != .missed && selection.wrappedValue == outcome {
@@ -522,7 +522,7 @@ struct RoundHoleEntryView: View {
             .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(PureLineStyle.line, lineWidth: selected ? 0 : 1) }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(outcome == .hit ? "Fairway hit" : outcome == .missed ? "Fairway missed" : "Fairway miss: \(outcome.label)")
+        .accessibilityLabel(outcome == .hit ? L("Fairway hit") : outcome == .missed ? L("Fairway missed") : L("Fairway miss: %@", "\(outcome.label)"))
         .accessibilityAddTraits(selected ? .isSelected : [])
     }
 }
@@ -572,15 +572,15 @@ struct RoundScorecardView: View {
         for (index, hole) in orderedHoles.enumerated() {
             result.append(.hole(hole))
             if round.holes.count == 18, index == 8 {
-                result.append(.subtotal(title: "OUT", holes: Array(orderedHoles[..<9]), key: "out"))
+                result.append(.subtotal(title: L("OUT"), holes: Array(orderedHoles[..<9]), key: "out"))
             } else if round.holes.count == 18, index == 17 {
-                result.append(.subtotal(title: "IN", holes: Array(orderedHoles[9...]), key: "in"))
+                result.append(.subtotal(title: L("IN"), holes: Array(orderedHoles[9...]), key: "in"))
             } else if round.holes.count == 9, index == 8 {
-                result.append(.subtotal(title: "TOTAL", holes: orderedHoles, key: "total"))
+                result.append(.subtotal(title: L("TOTAL"), holes: orderedHoles, key: "total"))
             }
         }
         if round.holes.count == 18 {
-            result.append(.subtotal(title: "TOTAL", holes: orderedHoles, key: "total"))
+            result.append(.subtotal(title: L("TOTAL"), holes: orderedHoles, key: "total"))
         }
         return result
     }
@@ -604,7 +604,7 @@ struct RoundScorecardView: View {
             let rowScale = max(1, scorecardHeight / CGFloat(naturalHeight))
             ScrollView(.vertical) {
                 VStack(spacing: 0) {
-                        row(label: "HOLE", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
+                        row(label: L("HOLE"), columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
                             if let hole = column.hole, let onViewHole {
                                 Button { onViewHole(hole.number) } label: {
                                     Text(String(hole.number))
@@ -615,19 +615,19 @@ struct RoundScorecardView: View {
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("View hole \(hole.number) on course map")
                             } else {
-                                Text(column.hole.map { String($0.number) } ?? (column.title == "TOTAL" ? "TOT" : column.title) ?? "—")
+                                Text(column.hole.map { String($0.number) } ?? (column.title == L("TOTAL") ? L("TOT") : column.title) ?? "—")
                                     .font(.system(size: 11, weight: .bold).monospacedDigit())
                             }
                         }
-                        row(label: "PAR", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
+                        row(label: L("PAR"), columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
                             scorecardText(parValue(for: column), emphasized: true)
                         }
-                        row(label: "HCP", columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
+                        row(label: L("HCP"), columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
                             scorecardText(column.hole?.strokeIndex.map(String.init) ?? "—")
                         }
 
                         ForEach(round.players) { player in
-                            row(label: round.players.count == 1 ? "Score" : player.isOwner ? "You" : player.name,
+                            row(label: round.players.count == 1 ? L("Score") : player.isOwner ? L("You") : player.name,
                                 columnWidth: columnWidth, rowInsets: rowInsets, isEditable: !isSaved, height: 42 * rowScale) { column in
                                 if let hole = column.hole {
                                     scoreValue(round.score(player: player.id, hole: hole.number), hole: hole)
@@ -636,19 +636,19 @@ struct RoundScorecardView: View {
                                 }
                             }
                             if round.recordsDetailedScore(for: player) {
-                                row(label: "Putts", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
+                                row(label: L("Putts"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.putts))
                                 }
-                                row(label: "FIR", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
+                                row(label: L("FIR"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     fairwayCell(player: player, column: column)
                                 }
-                                row(label: "GIR", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
+                                row(label: L("GIR"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     greenCell(player: player, column: column)
                                 }
-                                row(label: "Sand", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
+                                row(label: L("Sand"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.bunkerShots))
                                 }
-                                row(label: "Penalties", columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
+                                row(label: L("Penalties"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.penalties))
                                 }
                             }
@@ -823,13 +823,13 @@ struct RoundScorecardView: View {
     private func scoreDescription(_ score: PlayedHoleScore, par: Int?) -> String {
         guard let par else { return "" }
         switch score.strokes - par {
-        case ...(-3): return "\(par - score.strokes) under par"
-        case -2: return "Eagle"
-        case -1: return "Birdie"
-        case 0: return "Par"
-        case 1: return "Bogey"
-        case 2: return "Double bogey"
-        default: return "\(score.strokes - par) over par"
+        case ...(-3): return L("%@ under par", "\(par - score.strokes)")
+        case -2: return L("Eagle")
+        case -1: return L("Birdie")
+        case 0: return L("Par")
+        case 1: return L("Bogey")
+        case 2: return L("Double bogey")
+        default: return L("%@ over par", "\(score.strokes - par)")
         }
     }
 
@@ -851,7 +851,7 @@ struct RoundScorecardView: View {
             } else {
                 scoreDetail("—")
             }
-        } else if column.title == "OUT" || column.title == "IN" || column.title == "TOTAL" {
+        } else if column.title == L("OUT") || column.title == L("IN") || column.title == L("TOTAL") {
             let result = aggregateFairways(player: player, holes: column.holes)
             if result == "—" { scoreDetail("—") }
             else { coloredMark(result, color: .red) }
@@ -870,7 +870,7 @@ struct RoundScorecardView: View {
             } else {
                 scoreDetail("—")
             }
-        } else if column.title == "OUT" || column.title == "IN" || column.title == "TOTAL" {
+        } else if column.title == L("OUT") || column.title == L("IN") || column.title == L("TOTAL") {
             let result = aggregateGreens(player: player, holes: column.holes)
             if result == "—" { scoreDetail("—") }
             else { coloredMark(result, color: .green) }
@@ -964,13 +964,13 @@ struct RoundReviewView: View {
                     LabeledContent("Par", value: String(round.reference.totalPar))
                     LabeledContent("Course rating", value: round.reference.courseRating.formatted(.number.precision(.fractionLength(1))))
                     LabeledContent("Slope rating", value: String(round.reference.slopeRating))
-                    LabeledContent("Format", value: round.game.rawValue)
+                    LabeledContent("Format", value: L(round.game.rawValue))
                     LabeledContent("Date") {
                         Text(round.date, format: .dateTime.day().month().year())
                     }
                     if round.players.count > 1 {
                         Picker("Player", selection: Binding(get: { player?.id ?? round.players[0].id }, set: { playerID = $0 })) {
-                            ForEach(round.players) { Text($0.isOwner ? "You" : $0.name).tag($0.id) }
+                            ForEach(round.players) { Text($0.isOwner ? L("You") : $0.name).tag($0.id) }
                         }
                     }
                 }
@@ -1026,7 +1026,7 @@ struct RoundReviewView: View {
             .onChange(of: hcpEligible) {
                 if !hcpEligible { includeInHandicap = false }
             }
-            .navigationTitle(isHistoryDetail ? "Round details" : "Round summary")
+            .navigationTitle(isHistoryDetail ? L("Round details") : L("Round summary"))
             .toolbar(.visible, for: .navigationBar)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
@@ -1063,15 +1063,15 @@ struct RoundReviewView: View {
             .navigationBarBackButtonHidden(isHistoryDetail)
             .confirmationDialog("Save this round?", isPresented: $confirmingSave, titleVisibility: .visible) {
                 Button(includeInHandicap && !PlayedRoundHandicapBridge.isEligible(round)
-                       ? "Save without HCP" : "Save round anyway") {
+                       ? L("Save without HCP") : L("Save round anyway")) {
                     saveRound()
                 }
                 Button("Keep editing", role: .cancel) { }
             } message: {
-                Text((round.isComplete ? "" : "Some holes have not been played or recorded. Missing scores will remain empty. ")
+                Text((round.isComplete ? "" : L("Some holes have not been played or recorded. Missing scores will remain empty. "))
                      + (includeInHandicap && !PlayedRoundHandicapBridge.isEligible(round)
-                        ? "This round is not eligible for HCP and will be saved to Statistics only."
-                        : "The round will be saved to Statistics."))
+                        ? L("This round is not eligible for HCP and will be saved to Statistics only.")
+                        : L("The round will be saved to Statistics.")))
             }
     }
 
@@ -1098,26 +1098,26 @@ struct RoundReviewView: View {
         ScrollView(.horizontal) {
             VStack(spacing: 0) {
                 HStack(spacing: 0) {
-                    scorecardLabelCell("HOLE", header: true)
+                    scorecardLabelCell(L("HOLE"), header: true)
                     ForEach(round.holes) { hole in
                         scorecardCell(String(hole.number), header: true)
                     }
                 }
                 HStack(spacing: 0) {
-                    scorecardLabelCell("PAR", header: true)
+                    scorecardLabelCell(L("PAR"), header: true)
                     ForEach(round.holes) { hole in
                         scorecardCell(hole.par.map(String.init) ?? "—")
                     }
                 }
                 HStack(spacing: 0) {
-                    scorecardLabelCell("HCP", header: true)
+                    scorecardLabelCell(L("HCP"), header: true)
                     ForEach(round.holes) { hole in
                         scorecardCell(hole.strokeIndex.map(String.init) ?? "—")
                     }
                 }
                 ForEach(round.players) { player in
                     HStack(spacing: 0) {
-                        scorecardLabelCell(player.isOwner ? "You" : player.name, header: true)
+                        scorecardLabelCell(player.isOwner ? L("You") : player.name, header: true)
                         ForEach(round.holes) { hole in
                             let score = round.score(player: player.id, hole: hole.number)
                             scorecardScoreCell(score, hole: hole)
@@ -1190,11 +1190,11 @@ struct RoundReviewView: View {
 
     @ViewBuilder private func totalsSection(_ player: RoundPlayer) -> some View {
         let t = PlayedRoundCalculator.totals(round: round, player: player)
-        Section(player.isOwner ? "Your totals" : "\(player.name) · totals") {
+        Section(player.isOwner ? L("Your totals") : L("%@ · totals", "\(player.name)")) {
             LabeledContent("Holes played", value: "\(t.scoredHoles)")
             LabeledContent("Gross strokes", value: "\(t.gross)")
-            LabeledContent("Net strokes", value: t.net.map(String.init) ?? "Unavailable")
-            LabeledContent("Stableford", value: t.stableford.map { "\($0) points" } ?? "Unavailable")
+            LabeledContent("Net strokes", value: t.net.map(String.init) ?? L("Unavailable"))
+            LabeledContent("Stableford", value: t.stableford.map { L("%@ points", "\($0)") } ?? L("Unavailable"))
             LabeledContent("Putts", value: t.puttHoles > 0 ? "\(t.putts)" : "—")
             LabeledContent("Fairways", value: t.fairwaysAnswered > 0 ? "\(t.fairwaysHit)" : "—")
             LabeledContent("GIR", value: t.girHoles > 0 ? "\(t.estimatedGIR)" : "—")

@@ -40,7 +40,7 @@ struct TrajectoryChartView: View {
                     .foregroundStyle(PureLineStyle.muted)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            chartSection(title: "Side View (Height)", points: sideViewPoints, valueLabel: "Height")
+            chartSection(title: L("Side View (Height)"), points: sideViewPoints, valueLabel: L("Height"))
             topDownSection
         }
         .pureLineCard()
@@ -82,33 +82,33 @@ struct TrajectoryChartView: View {
                         .foregroundStyle(PureLineStyle.accent)
                         .frame(width: 32, height: 32)
                         .accessibilityHidden(true)
-                    Text(String(format: "Blowing direction · captured wind %.1f m/s", speed))
+                    Text(String(format: L("Blowing direction · captured wind %.1f m/s"), speed))
                         .font(.caption.weight(.semibold))
                 }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Captured wind blowing direction")
-                .accessibilityValue(String(format: "%.1f m/s; %.1f toward target, %+.1f toward right", speed, capturedWind.tail, capturedWind.right))
+                .accessibilityValue(String(format: L("%.1f m/s; %.1f toward target, %+.1f toward right"), speed, capturedWind.tail, capturedWind.right))
             }
             let points = topDownPoints
             Chart {
-                RuleMark(x: .value("Target line", 0))
+                RuleMark(x: .value(L("Target line"), 0))
                     .foregroundStyle(FairwayVectorColors.slate.opacity(0.5))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
                 ForEach(points) { point in
                     let position = TrajectoryChartGeometry.topDown(downrange: point.downrange, lateral: point.value)
-                    LineMark(x: .value("Lateral", position.x), y: .value("Downrange", position.y))
+                    LineMark(x: .value(L("Lateral"), position.x), y: .value(L("Downrange"), position.y))
                         .foregroundStyle(FairwayVectorColors.flightBlue)
                     if point.id == points.last?.id {
-                        PointMark(x: .value("Lateral", position.x), y: .value("Downrange", position.y))
+                        PointMark(x: .value(L("Lateral"), position.x), y: .value(L("Downrange"), position.y))
                             .foregroundStyle(FairwayVectorColors.orange)
                     }
                 }
                 if let targetDistanceM {
                     let target = TrajectoryChartGeometry.topDown(downrange: displayDistance(targetDistanceM), lateral: 0)
-                    RuleMark(y: .value("Target distance", target.y))
+                    RuleMark(y: .value(L("Target distance"), target.y))
                         .foregroundStyle(FairwayVectorColors.gold)
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
-                    PointMark(x: .value("Lateral", target.x), y: .value("Downrange", target.y))
+                    PointMark(x: .value(L("Lateral"), target.x), y: .value(L("Downrange"), target.y))
                         .foregroundStyle(FairwayVectorColors.gold)
                         .annotation(position: .top) { Text("Target").font(.caption2) }
                 }
@@ -117,8 +117,8 @@ struct TrajectoryChartView: View {
             // Symmetric lateral limits keep the golfer/target line centered.
             .chartXScale(domain: -lateralLimit...lateralLimit)
             .chartYScale(domain: downrangeDomain)
-            .chartXAxisLabel("Lateral · − left / + right (\(distanceUnitLabel))")
-            .chartYAxisLabel("Downrange (\(distanceUnitLabel))")
+            .chartXAxisLabel(L("Lateral · − left / + right (%@)", "\(distanceUnitLabel)"))
+            .chartYAxisLabel(L("Downrange (%@)", "\(distanceUnitLabel)"))
             .frame(height: 240)
             .accessibilityLabel("Top-down view, forward up and golfer's right to the right")
             .accessibilityValue(topDownSummary)
@@ -140,7 +140,7 @@ struct TrajectoryChartView: View {
 
     private func bearingLabel(_ degrees: Double) -> String {
         let bearing = (degrees.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)
-        let points = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+        let points = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"].map { L($0) }
         return String(format: "%@ %.1f°", points[Int((bearing / 45).rounded()) % points.count], bearing)
     }
 
@@ -151,47 +151,47 @@ struct TrajectoryChartView: View {
                 .font(.subheadline.bold())
             Chart(points) { point in
                 LineMark(
-                    x: .value("Downrange", point.downrange),
+                    x: .value(L("Downrange"), point.downrange),
                     y: .value(valueLabel, point.value)
                 )
                 .interpolationMethod(.catmullRom)
                 .foregroundStyle(FairwayVectorColors.flightBlue)
                 if point.id == points.last?.id {
                     PointMark(
-                        x: .value("Downrange", point.downrange),
+                        x: .value(L("Downrange"), point.downrange),
                         y: .value(valueLabel, point.value)
                     )
                     .foregroundStyle(FairwayVectorColors.orange)
                 }
                 if point.id == points.first?.id, let targetDistanceM {
-                    RuleMark(x: .value("Target distance", displayDistance(targetDistanceM)))
+                    RuleMark(x: .value(L("Target distance"), displayDistance(targetDistanceM)))
                         .foregroundStyle(FairwayVectorColors.gold)
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
-                    if valueLabel == "Height", let targetElevationM {
-                        PointMark(x: .value("Target distance", displayDistance(targetDistanceM)),
-                                  y: .value("Target elevation", displayDistance(targetElevationM)))
+                    if valueLabel == L("Height"), let targetElevationM {
+                        PointMark(x: .value(L("Target distance"), displayDistance(targetDistanceM)),
+                                  y: .value(L("Target elevation"), displayDistance(targetElevationM)))
                             .foregroundStyle(FairwayVectorColors.gold)
                     }
                 }
             }
-            .chartXAxisLabel("Downrange (\(distanceUnitLabel))")
+            .chartXAxisLabel(L("Downrange (%@)", "\(distanceUnitLabel)"))
             .chartYAxisLabel("\(valueLabel) (\(distanceUnitLabel))")
             .frame(height: 160)
             .accessibilityLabel(title)
-            .accessibilityValue(valueLabel == "Height" ? sideViewSummary : topDownSummary)
+            .accessibilityValue(valueLabel == L("Height") ? sideViewSummary : topDownSummary)
         }
     }
 
     private var chartSummary: String {
-        "Estimated carry is \(formattedDistance(lastDownrange)) with an apex of \(formattedDistance(apexHeight)). \(lateralSummary)"
+        L("Estimated carry is %@ with an apex of %@. %@", "\(formattedDistance(lastDownrange))", "\(formattedDistance(apexHeight))", "\(lateralSummary)")
     }
 
     private var sideViewSummary: String {
-        "Modeled physics path. Estimated carry is \(formattedDistance(lastDownrange)) and apex is \(formattedDistance(apexHeight))."
+        L("Modeled physics path. Estimated carry is %@ and apex is %@.", "\(formattedDistance(lastDownrange))", "\(formattedDistance(apexHeight))")
     }
 
     private var topDownSummary: String {
-        "Modeled physics path. At landing, the ball finishes \(formattedDistance(abs(lastLateral))) \(lastLateralDirection) of the target line."
+        L("Modeled physics path. At landing, the ball finishes %@ %@ of the target line.", "\(formattedDistance(abs(lastLateral)))", "\(lastLateralDirection)")
     }
 
     private var lastDownrange: Double {
@@ -208,16 +208,16 @@ struct TrajectoryChartView: View {
 
     private var lastLateralDirection: String {
         if abs(lastLateral) < 0.01 {
-            return "on the target line"
+            return L("on the target line")
         }
-        return lastLateral > 0 ? "right" : "left"
+        return lastLateral > 0 ? L("right") : L("left")
     }
 
     private var lateralSummary: String {
         if abs(lastLateral) < 0.01 {
-            return "The ball finishes on the target line."
+            return L("The ball finishes on the target line.")
         }
-        return "At landing, the ball finishes \(formattedDistance(abs(lastLateral))) \(lastLateralDirection) of the target line."
+        return L("At landing, the ball finishes %@ %@ of the target line.", "\(formattedDistance(abs(lastLateral)))", "\(lastLateralDirection)")
     }
 
     private func formattedDistance(_ meters: Double) -> String {

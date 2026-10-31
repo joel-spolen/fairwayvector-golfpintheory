@@ -64,7 +64,7 @@ struct CourseShotRecommendationView: View {
 
     private var compactAccessibilityValue: String {
         guard let choice = currentResult?.recommendations.first else { return compactStatus }
-        return "\(choice.title), \(unit.format(choice.recommendation.estimatedCarryM)) carry"
+        return L("%@, %@ carry", "\(choice.title)", "\(unit.format(choice.recommendation.estimatedCarryM))")
     }
 
     var body: some View {
@@ -179,8 +179,8 @@ struct CourseShotRecommendationView: View {
                 if recommendations.isEmpty {
                     failedInput = captured
                     errorMessage = useScoringRecommendations
-                        ? "No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range."
-                        : "No club prediction is available. Default club profiles are used until your bag is configured."
+                        ? L("No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range.")
+                        : L("No club prediction is available. Default club profiles are used until your bag is configured.")
                 }
                 result = CourseShotRecommendationResult(input: captured, recommendations: recommendations,
                     unavailableScoringShots: unavailable)
@@ -295,27 +295,27 @@ struct CourseShotRecommendationView: View {
     }
 
     private var compactStatus: String {
-        if selectedTarget == nil { return "Tap map to select target" }
-        if terrainStore.shotPending { return "Release target to calculate" }
-        if capturedWeather.map({ CourseShotRecommendationInput.valid($0) }) != true { return "Weather unavailable · tap for details" }
-        if input == nil { return terrainStore.isShotLoading ? "Loading terrain…" : "Terrain unavailable" }
-        if failedInput == input { return "Advice unavailable · tap for details" }
-        return "Comparing shots…"
+        if selectedTarget == nil { return L("Tap map to select target") }
+        if terrainStore.shotPending { return L("Release target to calculate") }
+        if capturedWeather.map({ CourseShotRecommendationInput.valid($0) }) != true { return L("Weather unavailable · tap for details") }
+        if input == nil { return terrainStore.isShotLoading ? L("Loading terrain…") : L("Terrain unavailable") }
+        if failedInput == input { return L("Advice unavailable · tap for details") }
+        return L("Comparing shots…")
     }
 
     private var status: String {
-        if selectedTarget == nil { return "Release a point on the map to choose a shot target." }
-        if terrainStore.shotPending { return "Target moving · release to calculate." }
+        if selectedTarget == nil { return L("Release a point on the map to choose a shot target.") }
+        if terrainStore.shotPending { return L("Target moving · release to calculate.") }
         if capturedWeather.map({ CourseShotRecommendationInput.valid($0) }) != true {
-            return "Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback."
+            return L("Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback.")
         }
         if input == nil {
-            return terrainStore.isShotLoading ? "Waiting for matching origin/target terrain…"
-                : "Matching origin/target terrain unavailable. Release the target or confirm Retry terrain; no flat-ground assumption."
+            return terrainStore.isShotLoading ? L("Waiting for matching origin/target terrain…")
+                : L("Matching origin/target terrain unavailable. Release the target or confirm Retry terrain; no flat-ground assumption.")
         }
-        if failedInput == input { return errorMessage ?? "Club predictions unavailable." }
-        return isScoringMode ? "Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…"
-            : "Calculating with your Practice bag, captured weather and terrain…"
+        if failedInput == input { return errorMessage ?? L("Club predictions unavailable.") }
+        return isScoringMode ? L("Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…")
+            : L("Calculating with your Practice bag, captured weather and terrain…")
     }
 
     private func recommendationRow(_ choice: CourseClubRecommendation, target: Double) -> some View {
@@ -326,10 +326,10 @@ struct CourseShotRecommendationView: View {
 
     private func aimAdvice(for recommendation: ClubRecommendation) -> String {
         guard let lateral = recommendation.lateralAtTargetDistanceM, abs(lateral) >= 0.5 else {
-            return "Aim at target"
+            return L("Aim at target")
         }
         let amount = unit.format(abs(lateral))
-        return "Aim ~\(amount) \(lateral > 0 ? "left" : "right")"
+        return lateral > 0 ? L("Aim ~%@ left", amount) : L("Aim ~%@ right", amount)
     }
 }
 
@@ -363,7 +363,7 @@ private struct CourseShotRecommendationDetail: View {
                                 Text("\(spec.title) · reference carry \(unit.format(spec.nominalCarryM))")
                                     .font(.subheadline)
                                     .foregroundStyle(PureLineStyle.muted)
-                                Text(String(format: "Fitted speed %.1f m/s · assumed launch %.1f°", shot.ballSpeedMps, shot.launchAngleDeg))
+                                Text(String(format: L("Fitted speed %.1f m/s · assumed launch %.1f°"), shot.ballSpeedMps, shot.launchAngleDeg))
                                     .font(.caption)
                                     .foregroundStyle(PureLineStyle.muted)
                             }
@@ -377,7 +377,7 @@ private struct CourseShotRecommendationDetail: View {
                                             shotBearingDeg: input.bearingDeg)
                     } else {
                         ContentUnavailableView("No recommendation", systemImage: "figure.golf",
-                                               description: Text(input.scoringPlan.guidance.isEmpty ? "No club recommendation is available for this shot." : input.scoringPlan.guidance))
+                                               description: Text(input.scoringPlan.guidance.isEmpty ? L("No club recommendation is available for this shot.") : input.scoringPlan.guidance))
                             .foregroundStyle(PureLineStyle.muted)
                     }
                 }
@@ -415,8 +415,8 @@ private struct CourseShotRecommendationDetail: View {
 
     static func errorText(_ recommendation: ClubRecommendation, target: Double, unit: DistanceUnit) -> String {
         let error = recommendation.estimatedCarryM - target
-        if abs(error) < 0.05 { return "on target (estimate)" }
+        if abs(error) < 0.05 { return L("on target (estimate)") }
         let value = unit == .meters ? abs(error) : abs(error) / 0.9144
-        return String(format: "%.1f %@ %@", value, unit.symbol, error < 0 ? "short" : "long")
+        return String(format: "%.1f %@ %@", value, unit.symbol, error < 0 ? L("short") : L("long"))
     }
 }

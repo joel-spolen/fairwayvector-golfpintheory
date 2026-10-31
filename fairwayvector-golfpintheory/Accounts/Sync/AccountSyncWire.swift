@@ -10,12 +10,12 @@ nonisolated enum AccountSyncError: Error, Sendable, Equatable, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .rpcFailure(let endpoint, let httpStatus, let code):
-            "Cloud sync request failed (\(endpoint), HTTP \(httpStatus), code \(code))."
-        case .authenticationRequired: "Sign in again to sync."
-        case .accountUnavailable: "This account is unavailable for sync."
-        case .serverContractUnavailable: "Cloud sync is not ready on this server yet. Your saved data remains on this device."
-        case .storageUnavailable, .invalidJournal: "Account sync storage is unavailable. Existing data was not replaced."
-        default: "Account sync could not complete."
+            L("Cloud sync request failed (%@, HTTP %@, code %@).", "\(endpoint)", "\(httpStatus)", "\(code)")
+        case .authenticationRequired: L("Sign in again to sync.")
+        case .accountUnavailable: L("This account is unavailable for sync.")
+        case .serverContractUnavailable: L("Cloud sync is not ready on this server yet. Your saved data remains on this device.")
+        case .storageUnavailable, .invalidJournal: L("Account sync storage is unavailable. Existing data was not replaced.")
+        default: L("Account sync could not complete.")
         }
     }
 }

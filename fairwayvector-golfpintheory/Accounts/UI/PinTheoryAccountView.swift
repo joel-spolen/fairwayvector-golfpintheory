@@ -30,7 +30,7 @@ struct PinTheoryAccountView: View {
                 PureLineHomeButton(onHome: onHome)
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
-                        PureLinePageHeader(title: "Account", subtitle: "")
+                        PureLinePageHeader(title: L("Account"), subtitle: "")
 
                         if let details {
                             accountSummary(details)
@@ -47,7 +47,7 @@ struct PinTheoryAccountView: View {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("Account details are unavailable")
                                     .font(.headline)
-                                Text(errorMessage ?? "Connect to the internet and try again.")
+                                Text(errorMessage ?? L("Connect to the internet and try again."))
                                     .font(.subheadline)
                                     .foregroundStyle(PureLineStyle.muted)
                                 Button("Try again") { Task { await loadDetails() } }
@@ -115,7 +115,7 @@ struct PinTheoryAccountView: View {
             Label("Account details", systemImage: "person.crop.circle.badge.checkmark")
                 .font(.headline)
             if let email = details.email, !email.isEmpty {
-                detailRow("Email", value: email)
+                detailRow(L("Email"), value: email)
                 Text("Email addresses can’t be changed in the app. Contact support if you need help.")
                     .font(.footnote)
                     .foregroundStyle(PureLineStyle.muted)
@@ -125,7 +125,7 @@ struct PinTheoryAccountView: View {
                     .font(.footnote)
                     .foregroundStyle(PureLineStyle.muted)
             }
-            detailRow("Sign-in method", value: details.providers.map(providerName).joined(separator: ", "))
+            detailRow(L("Sign-in method"), value: details.providers.map(providerName).joined(separator: ", "))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .pureLineCard()
@@ -133,9 +133,9 @@ struct PinTheoryAccountView: View {
 
     private var nameManagement: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeading("Name", subtitle: "Optional")
+            sectionHeading(L("Name"), subtitle: L("Optional"))
             HStack {
-                Text(details?.displayName.isEmpty == false ? details!.displayName : "Not set")
+                Text(details?.displayName.isEmpty == false ? details!.displayName : L("Not set"))
                     .foregroundStyle(details?.displayName.isEmpty == false ? PureLineStyle.ink : PureLineStyle.muted)
                 Spacer()
                 Button("Edit") { activeEditor = .name }
@@ -150,7 +150,7 @@ struct PinTheoryAccountView: View {
 
     private var passwordManagement: some View {
         VStack(alignment: .leading, spacing: 12) {
-            sectionHeading("Password", subtitle: "")
+            sectionHeading(L("Password"), subtitle: "")
             HStack {
                 Text("••••••••")
                     .foregroundStyle(PureLineStyle.muted)
@@ -200,7 +200,7 @@ struct PinTheoryAccountView: View {
                 }
             }
         }
-        .navigationTitle(editor == .name ? "Edit name" : "Change password")
+        .navigationTitle(editor == .name ? L("Edit name") : L("Change password"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -235,7 +235,7 @@ struct PinTheoryAccountView: View {
 
     private var deleteAccountSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            sectionHeading("Delete account", subtitle: "Permanently remove your account and its data.")
+            sectionHeading(L("Delete account"), subtitle: L("Permanently remove your account and its data."))
             Text("This cannot be undone. Your online account and saved golf records on this device will be removed.")
                 .font(.subheadline)
                 .foregroundStyle(PureLineStyle.muted)
@@ -317,7 +317,7 @@ struct PinTheoryAccountView: View {
 
     private func providerName(_ provider: String) -> String {
         switch provider.lowercased() {
-        case "email": "Email"
+        case "email": L("Email")
         case "google": "Google"
         case "apple": "Apple"
         default: provider.replacingOccurrences(of: "_", with: " ").capitalized
@@ -333,11 +333,11 @@ struct PinTheoryAccountView: View {
             lastName = cached.lastName
         }
         guard let auth = session.auth else {
-            if details == nil { errorMessage = "Account service is unavailable." }
+            if details == nil { errorMessage = L("Account service is unavailable.") }
             return
         }
         guard case .authenticated = auth.state else {
-            if details == nil { errorMessage = "Connect to the internet to load account details." }
+            if details == nil { errorMessage = L("Connect to the internet to load account details.") }
             return
         }
         isWorking = true
@@ -369,7 +369,7 @@ struct PinTheoryAccountView: View {
 
     @MainActor
     private func changePassword() async {
-        await perform("Your password has been updated. Sign in on your other devices with the new password.") {
+        await perform(L("Your password has been updated. Sign in on your other devices with the new password.")) {
             guard let auth = session.auth else { throw PinTheoryAuthError.authenticationRequired }
             try await auth.changePassword(currentPassword: currentPassword, newPassword: newPassword)
             currentPassword = ""
@@ -381,7 +381,7 @@ struct PinTheoryAccountView: View {
 
     @MainActor
     private func saveDisplayName() async {
-        await perform("Your display name has been saved.") {
+        await perform(L("Your display name has been saved.")) {
             let updated = try await session.updateAccountDisplayName(firstName: firstName, lastName: lastName)
             details = updated
             firstName = updated.firstName
@@ -396,7 +396,7 @@ struct PinTheoryAccountView: View {
         guard confirmsAccountDeletion else { return }
         isDeletingAccount = true
         defer { isDeletingAccount = false }
-        await perform("Your account was deleted.") {
+        await perform(L("Your account was deleted.")) {
             try await session.deleteAccount()
         }
     }

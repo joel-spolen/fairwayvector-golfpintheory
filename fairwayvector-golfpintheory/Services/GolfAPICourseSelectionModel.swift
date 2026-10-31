@@ -51,6 +51,21 @@ final class GolfAPICourseSelectionModel {
 
     var isConfigured: Bool { client.isConfigured }
 
+    var localizedSearchValidationMessage: String? {
+        guard let searchValidationMessage else { return nil }
+        return AppLanguage.localized(searchValidationMessage)
+    }
+
+    func localizedMessage(for message: String?) -> String? {
+        guard let message else { return nil }
+        let noMatchesPrefix = "No golf clubs matched \""
+        if message.hasPrefix(noMatchesPrefix), message.hasSuffix("\".") {
+            let terms = String(message.dropFirst(noMatchesPrefix.count).dropLast(2))
+            return AppLanguage.localized("No golf clubs matched \"%@\".", arguments: [terms])
+        }
+        return AppLanguage.localized(message)
+    }
+
     func beginSearchSession(preferredCountry: String?) {
         searchGeneration = UUID()
         isSearching = false
@@ -118,8 +133,8 @@ final class GolfAPICourseSelectionModel {
         guard (2...30).contains(query.count) else {
             clearSearchResults()
             errorMessage = query.count < 2
-                ? "Enter at least 2 characters to search for a club."
-                : "Use no more than 30 characters to search for a club."
+                ? L("Enter at least 2 characters to search for a club.")
+                : L("Use no more than 30 characters to search for a club.")
             searchValidationMessage = errorMessage
             return
         }
@@ -128,7 +143,7 @@ final class GolfAPICourseSelectionModel {
         }
         guard !selectedCountry.isEmpty else {
             clearSearchResults()
-            errorMessage = "Select a region and country to search for a club."
+            errorMessage = L("Select a region and country to search for a club.")
             searchValidationMessage = errorMessage
             return
         }
@@ -260,11 +275,11 @@ final class GolfAPICourseSelectionModel {
         selectedTeeID = nil
         errorMessage = nil
         guard purpose != .handicap || !DevelopmentAPIConfiguration.isDemoCourse(course.courseID) else {
-            errorMessage = "This course cannot be used for Handicap. Choose a rated course or an explicitly custom course."
+            errorMessage = L("This course cannot be used for Handicap. Choose a rated course or an explicitly custom course.")
             return
         }
         guard purpose != .map || course.hasGPS else {
-            errorMessage = "\(course.courseName): GPS data not available. GolfAPI lists this course without map coordinates, so it cannot be explored. No download was requested."
+            errorMessage = L("%@: GPS data not available. GolfAPI lists this course without map coordinates, so it cannot be explored. No download was requested.", "\(course.courseName)")
             return
         }
         isLoadingCourse = true
@@ -284,8 +299,8 @@ final class GolfAPICourseSelectionModel {
             apiRequestsLeft = nil
             if selectableTees.isEmpty {
                 errorMessage = purpose == .handicap
-                    ? "No eligible \(selectedSex == "female" ? "Women" : "Men") tees with valid ratings and complete hole pars. Use Custom course or an official differential."
-                    : "Course data was downloaded, but the provider returned no tee sets. A tee is needed to open this course."
+                    ? L(selectedSex == "female" ? "No eligible Women tees with valid ratings and complete hole pars. Use Custom course or an official differential." : "No eligible Men tees with valid ratings and complete hole pars. Use Custom course or an official differential.")
+                    : L("Course data was downloaded, but the provider returned no tee sets. A tee is needed to open this course.")
             } else {
                 // Map keeps its default; Handicap requires explicit tee confirmation.
                 selectedTeeID = purpose == .map ? (ratedTees.first ?? selectableTees.first)?.teeID : nil
@@ -298,7 +313,7 @@ final class GolfAPICourseSelectionModel {
     /// Explicit recent selection always revalidates the exact provider ID and current rating sex.
     func selectReference(_ reference: CourseReference) async {
         guard let id = reference.golfAPICourseID else {
-            errorMessage = "This recent course has no Golf API identity. Select a provider course or use Custom course."
+            errorMessage = L("This recent course has no Golf API identity. Select a provider course or use Custom course.")
             return
         }
         let summary = GolfAPICourseSummary(courseID: id, courseName: reference.courseName,

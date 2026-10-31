@@ -15,7 +15,7 @@ struct HCPProviderCourse: Hashable {
               detail.tees.contains(tee), [9, 18].contains(detail.numHoles),
               let rating = tee.rating(for: sex), rating.isFinite, rating > 0, rating <= 100,
               let slope = tee.slope(for: sex), (55...155).contains(slope) else {
-            throw GolfAPIError.invalidResponse("A real 9- or 18-hole course and valid rating for the selected category are required.")
+            throw GolfAPIError.invalidResponse(L("A real 9- or 18-hole course and valid rating for the selected category are required."))
         }
         let pars = sharedHoleData(detail: detail, men: \.parsMen, women: \.parsWomen,
                       courseMen: detail.parsMen, courseWomen: detail.parsWomen)
@@ -24,7 +24,7 @@ struct HCPProviderCourse: Hashable {
         // Par must be complete to calculate a total. Missing SI disables hole-by-hole;
         // incomplete/invalid supplied SI is never replaced with invented sequential indices.
         guard pars.count == detail.numHoles, pars.allSatisfy({ (3...6).contains($0) }) else {
-            throw GolfAPIError.invalidResponse("Complete provider hole pars are required; use Custom course or an official differential instead.")
+            throw GolfAPIError.invalidResponse(L("Complete provider hole pars are required; use Custom course or an official differential instead."))
         }
         let validIndices = indices.count == detail.numHoles
             && Set(indices).count == detail.numHoles && indices.allSatisfy { (1...18).contains($0) }

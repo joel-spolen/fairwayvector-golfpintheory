@@ -17,34 +17,34 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
 
     var errorDescription: String? {
         switch self {
-        case .invalidConfiguration: "Account sign-in is not configured correctly."
-        case .invalidCallback, .signInFailed: "Sign-in could not be completed. Please try again."
-        case .cancelled: "Sign-in was cancelled."
-        case .authenticationRequired: "Please connect and sign in again."
-        case .operationInProgress: "Another account operation is in progress."
-        case .secureStorageUnavailable: "Secure account storage is unavailable. Please try again."
-        case .emailRateLimited: "Too many sign-in email requests. Wait before trying again. The developer can check Supabase Auth rate limits."
-        case .emailDeliveryUnavailable: "The sign-in email could not be sent. Check Supabase Auth logs and the configured email provider's delivery logs."
-        case .emailProviderDisabled: "Email sign-in or new account registration is disabled for this project. Check Supabase Authentication settings."
-        case .emailRequestRejected: "The email request was rejected. Check the address and Supabase Auth logs; the email sender may restrict recipients."
-        case .networkUnavailable: "iOS could not connect this request to the account service. Other apps may still have internet access. Check this app’s mobile-data permission and any VPN or network filter. (Network code -1009.)"
-        case .accountServiceUnavailable: "The account service could not complete your request. Please try again later."
+        case .invalidConfiguration: L("Account sign-in is not configured correctly.")
+        case .invalidCallback, .signInFailed: L("Sign-in could not be completed. Please try again.")
+        case .cancelled: L("Sign-in was cancelled.")
+        case .authenticationRequired: L("Please connect and sign in again.")
+        case .operationInProgress: L("Another account operation is in progress.")
+        case .secureStorageUnavailable: L("Secure account storage is unavailable. Please try again.")
+        case .emailRateLimited: L("Too many sign-in email requests. Wait before trying again. The developer can check Supabase Auth rate limits.")
+        case .emailDeliveryUnavailable: L("The sign-in email could not be sent. Check Supabase Auth logs and the configured email provider's delivery logs.")
+        case .emailProviderDisabled: L("Email sign-in or new account registration is disabled for this project. Check Supabase Authentication settings.")
+        case .emailRequestRejected: L("The email request was rejected. Check the address and Supabase Auth logs; the email sender may restrict recipients.")
+        case .networkUnavailable: L("iOS could not connect this request to the account service. Other apps may still have internet access. Check this app’s mobile-data permission and any VPN or network filter. (Network code -1009.)")
+        case .accountServiceUnavailable: L("The account service could not complete your request. Please try again later.")
         case .connectionFailure(let code): Self.connectionDescription(code)
-        case .accountServiceUnauthorized: "The sign-in service rejected this app's configuration. Check the Supabase project URL and publishable key."
-        case .captchaRequired: "This project requires a security challenge that this app does not support yet. Contact the developer."
-        case .invalidCredentials: "The email or password is incorrect. Try again or reset your password."
-        case .weakPassword: "Choose a stronger password that meets the account service's requirements."
-        case .emailNotConfirmed: "Confirm your email before signing in. Check your inbox or request another confirmation email."
-        case .recentAuthenticationRequired: "Your password could not be verified. Check it and try again."
-        case .accountDeletionUnavailable: "Account deletion could not be completed. Please try again later."
-        case .authRequired: "Your account session is no longer valid. Sign in again and retry."
-        case .emailIdentityRequired: "This action is available only for accounts with an email sign-in method."
-        case .googleOAuthSetupFailed: "Google sign-in was rejected. Check that Google is enabled in Supabase and the Google OAuth client's authorized redirect URI exactly matches the Supabase Auth callback URL."
-        case .googleOAuthCallbackFailed: "Google returned to Golf PinTheory, but the one-time sign-in code could not be verified. Start Google sign-in again on this device. If it keeps happening, check the Supabase Auth logs for a PKCE or code-exchange error at the time of the attempt."
-        case .googleOAuthUnavailable: "Google sign-in could not be completed. Try again; if it keeps happening, check the Supabase Auth logs for this attempt."
-        case .accountPasswordUpdateUnavailable: "The password could not be updated. Please try again later."
-        case .invalidDisplayName: "Names must be 80 characters or fewer."
-        case .displayNameUpdateUnavailable: "Your display name could not be saved. Please try again."
+        case .accountServiceUnauthorized: L("The sign-in service rejected this app's configuration. Check the Supabase project URL and publishable key.")
+        case .captchaRequired: L("This project requires a security challenge that this app does not support yet. Contact the developer.")
+        case .invalidCredentials: L("The email or password is incorrect. Try again or reset your password.")
+        case .weakPassword: L("Choose a stronger password that meets the account service's requirements.")
+        case .emailNotConfirmed: L("Confirm your email before signing in. Check your inbox or request another confirmation email.")
+        case .recentAuthenticationRequired: L("Your password could not be verified. Check it and try again.")
+        case .accountDeletionUnavailable: L("Account deletion could not be completed. Please try again later.")
+        case .authRequired: L("Your account session is no longer valid. Sign in again and retry.")
+        case .emailIdentityRequired: L("This action is available only for accounts with an email sign-in method.")
+        case .googleOAuthSetupFailed: L("Google sign-in was rejected. Check that Google is enabled in Supabase and the Google OAuth client's authorized redirect URI exactly matches the Supabase Auth callback URL.")
+        case .googleOAuthCallbackFailed: L("Google returned to Golf PinTheory, but the one-time sign-in code could not be verified. Start Google sign-in again on this device. If it keeps happening, check the Supabase Auth logs for a PKCE or code-exchange error at the time of the attempt.")
+        case .googleOAuthUnavailable: L("Google sign-in could not be completed. Try again; if it keeps happening, check the Supabase Auth logs for this attempt.")
+        case .accountPasswordUpdateUnavailable: L("The password could not be updated. Please try again later.")
+        case .invalidDisplayName: L("Names must be 80 characters or fewer.")
+        case .displayNameUpdateUnavailable: L("Your display name could not be saved. Please try again.")
         }
     }
 
@@ -60,25 +60,25 @@ nonisolated enum PinTheoryAuthError: Error, LocalizedError, Equatable {
         let reason: String
         switch URLError.Code(rawValue: code) {
         case .cannotFindHost, .dnsLookupFailed:
-            reason = "The sign-in server address could not be resolved. Check the Supabase project status and try another network or DNS connection."
+            reason = L("The sign-in server address could not be resolved. Check the Supabase project status and try another network or DNS connection.")
         case .timedOut:
-            reason = "The sign-in request timed out. Check your connection, VPN or network filter, then try again."
+            reason = L("The sign-in request timed out. Check your connection, VPN or network filter, then try again.")
         case .cannotConnectToHost:
-            reason = "A connection to the sign-in server could not be established. Check the project status and try another network."
+            reason = L("A connection to the sign-in server could not be established. Check the project status and try another network.")
         case .networkConnectionLost:
-            reason = "The network connection was interrupted. Reconnect and try again."
+            reason = L("The network connection was interrupted. Reconnect and try again.")
         case .secureConnectionFailed, .serverCertificateHasBadDate, .serverCertificateUntrusted,
              .serverCertificateHasUnknownRoot, .serverCertificateNotYetValid, .clientCertificateRejected,
              .clientCertificateRequired, .appTransportSecurityRequiresSecureConnection:
-            reason = "A secure connection to the sign-in server could not be verified. Check the device date and time and any VPN, proxy or network security software."
+            reason = L("A secure connection to the sign-in server could not be verified. Check the device date and time and any VPN, proxy or network security software.")
         case .badURL, .unsupportedURL:
-            reason = "The sign-in server URL could not be used. Check this build's account configuration."
+            reason = L("The sign-in server URL could not be used. Check this build's account configuration.")
         case .badServerResponse, .cannotParseResponse, .cannotDecodeContentData:
-            reason = "The sign-in service returned an unreadable response. Check the project status or network proxy."
+            reason = L("The sign-in service returned an unreadable response. Check the project status or network proxy.")
         default:
-            reason = "The sign-in request failed at the network layer. Check your connection and try another network."
+            reason = L("The sign-in request failed at the network layer. Check your connection and try another network.")
         }
-        return "\(reason) (Network code \(code).)"
+        return L("%@ (Network code %@.)", "\(reason)", "\(code)")
     }
 }
 

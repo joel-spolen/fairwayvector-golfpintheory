@@ -5,7 +5,7 @@ struct DistanceCard: View {
     let hole: Hole
     let origin: DistanceOrigin?
     let unit: DistanceUnit
-    var middleTitle = "Center"
+    var middleTitle = L("Center")
     var middlePoint: GeoPoint? = nil
     @ScaledMetric(relativeTo: .largeTitle) private var featuredDistanceSize: CGFloat = 36
     @ScaledMetric(relativeTo: .title2) private var distanceSize: CGFloat = 23
@@ -18,9 +18,9 @@ struct DistanceCard: View {
                 let back = hole.greenBack.map { GolfGeometry.distance(origin.point, $0) }
                     ?? GolfGeometry.frontBack(from: origin.point, green: hole.green)?.back
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    metric("Front", front, color: PureLineStyle.ink)
+                    metric(L("Front"), front, color: PureLineStyle.ink)
                     metric(middleTitle, GolfGeometry.distance(origin.point, middlePoint ?? center), color: PureLineStyle.accent, prominent: true)
-                    metric("Back", back, color: PureLineStyle.ink)
+                    metric(L("Back"), back, color: PureLineStyle.ink)
                     Spacer(minLength: 0)
                 }
 

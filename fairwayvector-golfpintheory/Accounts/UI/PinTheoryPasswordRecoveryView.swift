@@ -157,7 +157,7 @@ struct PinTheoryPasswordRecoveryView: View {
                       !(error is CancellationError) else { return }
                 clearPasswords()
                 localError = (error as? PinTheoryAuthError)?.localizedDescription
-                    ?? "Your password could not be updated. Please try again."
+                    ?? L("Your password could not be updated. Please try again.")
             }
         }
     }
@@ -174,7 +174,7 @@ struct PinTheoryPasswordRecoveryView: View {
             // Root observes signedOut and detaches all account-bound content.
         } catch {
             localError = (error as? PinTheoryAuthError)?.localizedDescription
-                ?? "Local sign-in credentials could not be cleared. Please try again."
+                ?? L("Local sign-in credentials could not be cleared. Please try again.")
         }
     }
 }

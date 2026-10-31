@@ -99,7 +99,7 @@ struct CourseMapView: View {
                 .allowsHitTesting(transitionTargetPage == nil)
             }
                 .background(PureLineStyle.canvas)
-                .navigationTitle(isShowingScoreEntry ? "Hole \(scoringHole ?? 1) scorecard" : store.reference.courseName)
+                .navigationTitle(isShowingScoreEntry ? L("Hole %@ scorecard", "\(scoringHole ?? 1)") : store.reference.courseName)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(.hidden, for: .navigationBar)
                 .toolbar(.hidden, for: .tabBar)
@@ -334,7 +334,7 @@ struct CourseMapView: View {
         guard requestStartRound, store.course != nil else { return }
         requestStartRound = false
         if let draft = roundStore.active {
-            roundError = "A draft already exists for \(draft.reference.courseName). Return to Choose Course and resume it or discard it before starting another."
+            roundError = L("A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another.", "\(draft.reference.courseName)")
         } else { showingRoundSetup = true }
     }
 
@@ -350,11 +350,11 @@ struct CourseMapView: View {
                 Button("Start round", systemImage: "flag.checkered") { showingRoundSetup = true }
                     .disabled(store.course == nil || store.isLoading || roundStore.active != nil)
             }
-            Button(store.reference.golfAPICourseID == nil ? "Refresh course" : "Check for course updates", systemImage: "arrow.clockwise") {
+            Button(store.reference.golfAPICourseID == nil ? L("Refresh course") : L("Check for course updates"), systemImage: "arrow.clockwise") {
                 Task { await store.refresh() }
             }.disabled(store.isLoading || activeRound != nil)
         } label: {
-            Label(activeRound == nil ? "Round" : "Scorecard", systemImage: activeRound == nil ? "flag.checkered" : "list.bullet.rectangle")
+            Label(activeRound == nil ? L("Round") : L("Scorecard"), systemImage: activeRound == nil ? "flag.checkered" : "list.bullet.rectangle")
                 .font(.caption.weight(.semibold)).frame(minHeight: 44)
         }.accessibilityIdentifier("course-round-menu")
     }
@@ -507,14 +507,14 @@ struct CourseMapView: View {
 
     private func simulationIssue(hole: Hole, plan: ScoringShotPlan) -> String? {
         guard trajectoryModel.playerProfileStore.profile.isSetupComplete else {
-            return "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry."
+            return L("Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry.")
         }
         guard plan.maxFullCarryM != nil else {
-            return "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. \(plan.guidance)"
+            return L("Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@", "\(plan.guidance)")
         }
         guard let target = tapPoint ?? flagPosition(for: hole), let tee = hole.tee,
               DevelopmentScoringPosition.distanceRange(plan: plan, target: target, tee: tee) != nil else {
-            return "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance."
+            return L("Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance.")
         }
         return nil
     }
@@ -563,7 +563,7 @@ struct CourseMapView: View {
               let target = tapPoint ?? flagPosition(for: hole), let tee = hole.tee,
               let point = DevelopmentScoringPosition.make(plan: plan, target: target, tee: tee,
                 fraction: Double.random(in: 0...1), jitterDeg: Double.random(in: -20...20)) else {
-            simulationError = "No valid scoring position could be generated. Review your target and personal wedge calibration."
+            simulationError = L("No valid scoring position could be generated. Review your target and personal wedge calibration.")
             isShowingCourseInfo = true
             return
         }
@@ -619,8 +619,8 @@ struct CourseMapView: View {
                     .font(.body.weight(.medium))
                     .foregroundStyle(PureLineStyle.accent)
                 Text(terrainSummary
-                    .replacingOccurrences(of: "To target · ", with: "")
-                    .replacingOccurrences(of: "Tee → flag · ", with: ""))
+                    .replacingOccurrences(of: L("To target · "), with: "")
+                    .replacingOccurrences(of: L("Tee → flag · "), with: ""))
                     .font(.caption2.weight(.medium))
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -642,7 +642,7 @@ struct CourseMapView: View {
     }
 
     private var terrainSummary: String {
-        if terrainStore.shotPending { return "Terrain · release target" }
+        if terrainStore.shotPending { return L("Terrain · release target") }
         // Summary follows the committed shot, not the mode selected for chart inspection.
         if let request = terrainStore.committedRequest {
             if let profile = terrainStore.snapshot.shotProfile,
@@ -651,14 +651,14 @@ struct CourseMapView: View {
                TerrainGeometry.length(first.point, origin) <= TerrainGeometry.tolerance,
                TerrainGeometry.length(last.point, target) <= TerrainGeometry.tolerance,
                let delta = profile.elevationChangeMeters, delta.isFinite {
-                return "To target · \(terrainDeltaText(delta))"
+                return L("To target · %@", "\(terrainDeltaText(delta))")
             }
-            return terrainStore.isShotLoading ? "Loading terrain…" : "Terrain unavailable"
+            return terrainStore.isShotLoading ? L("Loading terrain…") : L("Terrain unavailable")
         }
         if let delta = terrainStore.snapshot.holeProfile?.elevationChangeMeters {
-            return "Tee → flag · \(terrainDeltaText(delta))"
+            return L("Tee → flag · %@", "\(terrainDeltaText(delta))")
         }
-        return terrainStore.isHoleLoading ? "Loading terrain…" : "Terrain unavailable"
+        return terrainStore.isHoleLoading ? L("Loading terrain…") : L("Terrain unavailable")
     }
 
     private func terrainDeltaText(_ meters: Double) -> String {
@@ -741,11 +741,11 @@ struct CourseMapView: View {
 
     private func distanceSidebar(hole: Hole, origin: DistanceOrigin?, flag: GeoPoint?) -> some View {
         VStack(spacing: 7) {
-            sidebarDistance("FRONT", from: origin?.point, to: hole.greenFront ?? hole.greenCenter)
-            sidebarDistance("TARGET", from: origin?.point, to: tapPoint, highlighted: true)
-            sidebarDistance("BACK", from: origin?.point, to: hole.greenBack ?? hole.greenCenter)
-            sidebarDistance("CENTER", from: origin?.point, to: hole.greenCenter)
-            sidebarDistance("TARGET → FLAG", from: tapPoint, to: tapPoint == nil ? nil : flag)
+            sidebarDistance(L("FRONT"), from: origin?.point, to: hole.greenFront ?? hole.greenCenter)
+            sidebarDistance(L("TARGET"), from: origin?.point, to: tapPoint, highlighted: true)
+            sidebarDistance(L("BACK"), from: origin?.point, to: hole.greenBack ?? hole.greenCenter)
+            sidebarDistance(L("CENTER"), from: origin?.point, to: hole.greenCenter)
+            sidebarDistance(L("TARGET → FLAG"), from: tapPoint, to: tapPoint == nil ? nil : flag)
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 5)
@@ -814,9 +814,9 @@ struct CourseMapView: View {
                 .foregroundStyle(FairwayVectorColors.navy)
                 .frame(maxWidth: .infinity, alignment: .center)
             HStack(alignment: .firstTextBaseline, spacing: 16) {
-                summaryValue("PAR", hole.par.map(String.init) ?? "–")
-                summaryValue("HCP", hole.handicapIndex.map(String.init) ?? "–")
-                summaryValue("LENGTH", hole.length > 0 ? unit.format(hole.length) : "–")
+                summaryValue(L("PAR"), hole.par.map(String.init) ?? "–")
+                summaryValue(L("HCP"), hole.handicapIndex.map(String.init) ?? "–")
+                summaryValue(L("LENGTH"), hole.length > 0 ? unit.format(hole.length) : "–")
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
@@ -859,7 +859,7 @@ struct CourseMapView: View {
             .buttonStyle(.plain)
             .foregroundStyle(unavailable ? PureLineStyle.muted.opacity(0.4) : PureLineStyle.accent)
         .disabled(unavailable)
-        .accessibilityLabel(isPrevious ? "Previous hole" : activeRound == nil ? "Next hole" : "Enter score for this hole")
+        .accessibilityLabel(isPrevious ? L("Previous hole") : activeRound == nil ? L("Next hole") : L("Enter score for this hole"))
     }
 }
 

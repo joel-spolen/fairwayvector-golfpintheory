@@ -51,7 +51,7 @@ enum MeasurementKind {
         case .angle: return "\u{00B0}"
         case .spin: return "rpm"
         case .temperature: return system == .imperial ? "\u{00B0}F" : "\u{00B0}C"
-        case .pressure: return system == .imperial ? "inHg" : "hPa"
+        case .pressure: return system == .imperial ? L("inHg") : L("hPa")
         case .distance: return system == .imperial ? "ft" : "m"
         case .percent: return "%"
         }

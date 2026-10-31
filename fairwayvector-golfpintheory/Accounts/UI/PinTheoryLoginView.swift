@@ -55,9 +55,9 @@ struct PinTheoryLoginView: View {
     }
     private var submitTitle: String {
         switch mode {
-        case .signIn: return "Sign in"
-        case .createAccount: return "Create account"
-        case .forgotPassword: return "Send password reset email"
+        case .signIn: return AppLanguage.localized("Sign in")
+        case .createAccount: return AppLanguage.localized("Create account")
+        case .forgotPassword: return AppLanguage.localized("Send password reset email")
         }
     }
 
@@ -181,8 +181,8 @@ struct PinTheoryLoginView: View {
     private var emailForm: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 4) {
-                modeButton("Sign in", mode: .signIn)
-                modeButton("Create account", mode: .createAccount)
+                modeButton(L("Sign in"), mode: .signIn)
+                modeButton(L("Create account"), mode: .createAccount)
             }
             .padding(4)
             .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 12))
@@ -272,7 +272,9 @@ struct PinTheoryLoginView: View {
                     .font(.caption).foregroundStyle(PureLineStyle.muted)
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     let seconds = remainingCooldown(at: context.date)
-                    Button(seconds > 0 ? "Resend confirmation in \(seconds)s" : "Resend confirmation email") {
+                    Button(seconds > 0
+                        ? AppLanguage.localized("Resend confirmation in %d s", arguments: [seconds])
+                        : AppLanguage.localized("Resend confirmation email")) {
                         start(.resendConfirmation)
                     }
                     .frame(minHeight: 44)
@@ -285,7 +287,7 @@ struct PinTheoryLoginView: View {
 
     private func modeButton(_ title: String, mode target: Mode) -> some View {
         Button { changeMode(target) } label: {
-            Text(title).font(.subheadline.weight(.semibold))
+            Text(AppLanguage.localized(title)).font(.subheadline.weight(.semibold))
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .padding(.horizontal, 8)
@@ -373,18 +375,18 @@ struct PinTheoryLoginView: View {
                         lastSendAttempt = Date()
                         mode = .signIn
                         confirmationEmail = address
-                        notice = "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked."
+                        notice = L("Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked.")
                     }
                 case .resetPassword:
                     try await auth.sendPasswordReset(email: address)
                     guard generation == ticket, !Task.isCancelled else { return }
                     mode = .signIn
                     confirmationEmail = nil
-                    notice = "If password reset is available for this address, an email has been sent. Check your inbox and spam folder. Open the reset link on this device and return to Golf PinTheory to choose a new password."
+                    notice = L("If password reset is available for this address, an email has been sent. Check your inbox and spam folder. Open the reset link on this device and return to Golf PinTheory to choose a new password.")
                 case .resendConfirmation:
                     try await auth.resendSignupConfirmation(email: resendEmail)
                     guard generation == ticket, !Task.isCancelled else { return }
-                    notice = "If confirmation is available for this address, a confirmation email has been sent. Open its link on this device and return to Golf PinTheory."
+                    notice = L("If confirmation is available for this address, a confirmation email has been sent. Open its link on this device and return to Golf PinTheory.")
                 }
                 guard generation == ticket, !Task.isCancelled else { return }
                 clearPasswords()
@@ -395,7 +397,7 @@ struct PinTheoryLoginView: View {
                 clearPasswords()
                 // Never expose raw provider errors or account-existence details.
                 localError = (error as? PinTheoryAuthError)?.localizedDescription
-                    ?? "The account request could not be completed. Please try again."
+                    ?? L("The account request could not be completed. Please try again.")
             }
         }
     }

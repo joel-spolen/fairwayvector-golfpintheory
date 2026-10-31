@@ -60,7 +60,7 @@ struct WedgeClubSelectorView: View {
                     )
                 } else {
                     ContentUnavailableView(
-                        "No clubs in bag",
+                        L("No clubs in bag"),
                         systemImage: "bag.badge.questionmark",
                         description: Text("From Home, open In the bag > Wedge bag to add wedges and get a recommendation.")
                     )
@@ -148,12 +148,12 @@ private struct GreenLayoutCard: View {
             HStack(spacing: 12) {
                 ReadoutChip(
                     systemImage: elevationMeters > 0.2 ? "arrow.up.right" : (elevationMeters < -0.2 ? "arrow.down.right" : "equal"),
-                    title: "Elevation",
+                    title: L("Elevation"),
                     value: ClubSelector.elevationLabel(meters: elevationMeters, unit: unit)
                 )
                 ReadoutChip(
                     systemImage: flagPosition.systemImage,
-                    title: "Pin",
+                    title: L("Pin"),
                     value: flagPosition.title
                 )
             }
@@ -428,13 +428,13 @@ private struct PlaysLikeCard: View {
                     .foregroundStyle(PureLineStyle.muted)
             }
 
-            AdjustmentRow(label: "Measured", value: unit.format(targetDistance) + " " + unit.abbreviation)
+            AdjustmentRow(label: L("Measured"), value: unit.format(targetDistance) + " " + unit.abbreviation)
             AdjustmentRow(
                 label: ClubSelector.elevationLabel(meters: elevationMeters, unit: unit),
                 value: signed(ClubSelector.elevationAdjustment(meters: elevationMeters), unit: unit)
             )
             AdjustmentRow(
-                label: "\(pin.title) pin play",
+                label: L("%@ pin play", "\(pin.title)"),
                 value: signed(ClubSelector.pinAdjustment(pin), unit: unit)
             )
         }
@@ -501,12 +501,12 @@ private struct RecommendationCard: View {
             HStack(spacing: 10) {
                 ReadoutChip(
                     systemImage: "ruler",
-                    title: "Carries",
+                    title: L("Carries"),
                     value: "\(unit.format(suggestion.carry)) \(unit.abbreviation)"
                 )
                 ReadoutChip(
                     systemImage: "target",
-                    title: "Vs. number",
+                    title: L("Vs. number"),
                     value: deltaText
                 )
             }
@@ -542,7 +542,7 @@ private struct RecommendationCard: View {
         let delta = suggestion.expectedFinish - playsLike
         let converted = unit == .meters ? delta * 0.9144 : delta
         let rounded = converted.rounded()
-        if abs(rounded) < 1 { return "On the number" }
+        if abs(rounded) < 1 { return L("On the number") }
         return rounded > 0
             ? "\(String(format: "%.0f", rounded)) \(unit.abbreviation) long"
             : "\(String(format: "%.0f", abs(rounded))) \(unit.abbreviation) short"
@@ -553,34 +553,34 @@ private struct RecommendationCard: View {
         let carryText = "\(unit.format(suggestion.carry)) \(unit.abbreviation)"
         let rolloutText = "\(unit.format(suggestion.expectedRollout)) \(unit.abbreviation)"
         let playsText = "\(unit.format(playsLike)) \(unit.abbreviation)"
-        items.append("Your \(suggestion.wedge.name) at a \(suggestion.swing.title.lowercased()) swing carries \(carryText) with about \(rolloutText) of rollout, finishing closest to the \(playsText) this shot plays.")
-        items.append("The \(suggestion.swing.title.lowercased()) swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies.")
+        items.append(L("Your %@ at a %@ swing carries %@ with about %@ of rollout, finishing closest to the %@ this shot plays.", "\(suggestion.wedge.name)", "\(suggestion.swing.title.lowercased())", "\(carryText)", "\(rolloutText)", "\(playsText)"))
+        items.append(L("The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies.", "\(suggestion.swing.title.lowercased())"))
 
         if elevationMeters >= 0.6 {
-            items.append("It is uphill to the green, so the shot plays longer than the laser number — the extra club covers it.")
+            items.append(L("It is uphill to the green, so the shot plays longer than the laser number — the extra club covers it."))
         } else if elevationMeters <= -0.6 {
-            items.append("The green sits below you, so the ball hangs and runs — less club keeps it from flying the surface.")
+            items.append(L("The green sits below you, so the ball hangs and runs — less club keeps it from flying the surface."))
         }
 
         if abs(elevationMeters) >= 0.5 {
-            let direction = elevationMeters > 0 ? "uphill" : "downhill"
-            items.append("The \(direction) elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it.")
+            let direction = elevationMeters > 0 ? L("uphill") : L("downhill")
+            items.append(L("The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it.", "\(direction)"))
         }
 
         switch pin {
         case .short:
-            items.append("Front pin: choose a \(suggestion.trajectory.title.lowercased()) flight that gives you enough landing room to reach the front portion of the green.")
+            items.append(L("Front pin: choose a %@ flight that gives you enough landing room to reach the front portion of the green.", "\(suggestion.trajectory.title.lowercased())"))
         case .middle:
-            items.append("Middle pin: the \(suggestion.trajectory.title.lowercased()) flight is the balanced option, combining predictable carry with controlled rollout.")
+            items.append(L("Middle pin: the %@ flight is the balanced option, combining predictable carry with controlled rollout.", "\(suggestion.trajectory.title.lowercased())"))
         case .long:
-            items.append("Back pin: the \(suggestion.trajectory.title.lowercased()) flight gives the ball enough forward release to reach the deeper pin position.")
+            items.append(L("Back pin: the %@ flight gives the ball enough forward release to reach the deeper pin position.", "\(suggestion.trajectory.title.lowercased())"))
         }
 
         items.append(rolloutReason)
         items.append(suggestion.trajectory.ballPositionDescription)
 
         if suggestion.swing == .half {
-            items.append("Keep the tempo smooth — this is the shortest swing in your matrix, so distance control comes from length, not speed.")
+            items.append(L("Keep the tempo smooth — this is the shortest swing in your matrix, so distance control comes from length, not speed."))
         }
         return items
     }
@@ -588,11 +588,11 @@ private struct RecommendationCard: View {
     private var rolloutReason: String {
         switch suggestion.trajectory {
         case .knockdown:
-            "Low flight: expect about \(unit.format(suggestion.expectedRollout)) \(unit.abbreviation) of rollout, so the carry must finish short of the pin."
+            L("Low flight: expect about %@ %@ of rollout, so the carry must finish short of the pin.", "\(unit.format(suggestion.expectedRollout))", "\(unit.abbreviation)")
         case .stock:
-            "Mid flight: expect about \(unit.format(suggestion.expectedRollout)) \(unit.abbreviation) of rollout and a balanced carry-to-release pattern."
+            L("Mid flight: expect about %@ %@ of rollout and a balanced carry-to-release pattern.", "\(unit.format(suggestion.expectedRollout))", "\(unit.abbreviation)")
         case .high:
-            "High flight: expect only about \(unit.format(suggestion.expectedRollout)) \(unit.abbreviation) of rollout, so most of the distance is covered in the air."
+            L("High flight: expect only about %@ %@ of rollout, so most of the distance is covered in the air.", "\(unit.format(suggestion.expectedRollout))", "\(unit.abbreviation)")
         }
     }
 }

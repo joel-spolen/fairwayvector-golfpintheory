@@ -91,13 +91,13 @@ struct PureLineHomeView: View {
                         Text("Build your game")
                             .font(.title3.weight(.semibold)).tracking(-0.4)
                             .padding(.bottom, 10)
-                        destination("Handicap", detail: "Round history & score projections", symbol: "chart.line.uptrend.xyaxis", action: onOpenHandicap)
+                        destination(L("Handicap"), detail: L("Round history & score projections"), symbol: "chart.line.uptrend.xyaxis", action: onOpenHandicap)
                         Divider().overlay(PureLineStyle.line)
-                        destination("In the bag", detail: "Set up your clubs and wedges", symbol: "bag", action: onOpenBag)
+                        destination(L("In the bag"), detail: L("Set up your clubs and wedges"), symbol: "bag", action: onOpenBag)
                         Divider().overlay(PureLineStyle.line)
-                        destination("Wedge Matrix", detail: "Your distances. Every swing.", symbol: "target", action: onOpenWedge)
+                        destination(L("Wedge Matrix"), detail: L("Your distances. Every swing."), symbol: "target", action: onOpenWedge)
                         Divider().overlay(PureLineStyle.line)
-                        destination("Trajectory", detail: "Understand your next shot", symbol: "chart.xyaxis.line", action: onOpenTrajectory)
+                        destination(L("Trajectory"), detail: L("Understand your next shot"), symbol: "chart.xyaxis.line", action: onOpenTrajectory)
                     }
                     .foregroundStyle(PureLineStyle.ink)
 
@@ -105,7 +105,7 @@ struct PureLineHomeView: View {
                         Text("See your game")
                             .font(.title3.weight(.semibold)).tracking(-0.4)
                             .padding(.bottom, 10)
-                        destination("Rounds & statistics", detail: "Review your scores and spot the trends", symbol: "chart.xyaxis.line", action: onOpenStatistics)
+                        destination(L("Rounds & statistics"), detail: L("Review your scores and spot the trends"), symbol: "chart.xyaxis.line", action: onOpenStatistics)
                             .accessibilityIdentifier("home-rounds-statistics-button")
                     }
                     .foregroundStyle(PureLineStyle.ink)
@@ -114,7 +114,7 @@ struct PureLineHomeView: View {
                         Text("Account settings")
                             .font(.title3.weight(.semibold)).tracking(-0.4)
                             .padding(.bottom, 10)
-                        destination("Account", detail: "Details about your account", symbol: "person.crop.circle", action: onOpenAccount)
+                        destination(L("Account"), detail: L("Details about your account"), symbol: "person.crop.circle", action: onOpenAccount)
                             .accessibilityIdentifier("home-account-button")
                     }
                     .foregroundStyle(PureLineStyle.ink)

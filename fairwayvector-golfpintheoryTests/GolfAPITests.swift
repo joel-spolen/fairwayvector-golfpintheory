@@ -343,7 +343,9 @@ struct GolfAPITests {
                 #expect(!error.localizedDescription.contains("HTTP 503"))
                 #expect(!error.localizedDescription.contains(code))
                 if code == "provider_cooldown" {
-                    #expect(error.localizedDescription == "We couldn't load this course just now. Please wait a few minutes, then try again.")
+                    #expect(error.localizedDescription == AppLanguage.localized(
+                        "We couldn't load this course just now. Please wait a few minutes, then try again.",
+                        preference: "en"))
                 }
             }
             #expect(GolfAPIStubProtocol.requestCount == 1)

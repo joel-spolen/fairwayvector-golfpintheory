@@ -346,7 +346,7 @@ private struct CourseMapFlowView: View {
             if let course = courseStore.course {
                 setupCourse = course
             } else {
-                setupCourseError = courseStore.errorMessage ?? "The selected course could not be loaded."
+                setupCourseError = courseStore.errorMessage ?? L("The selected course could not be loaded.")
             }
         }
     }

@@ -67,11 +67,11 @@ struct TrajectoryProfileSettingsView: View {
     private var activeDetailDescription: String {
         switch profileStore.profile.detailLevel {
         case .easy:
-            return "Simple uses only your selected handicap range for club defaults."
+            return L("Simple uses only your selected handicap range for club defaults.")
         case .medium:
-            return "Medium uses entered carry distances to estimate reasonable carry values for the rest of the bag."
+            return L("Medium uses entered carry distances to estimate reasonable carry values for the rest of the bag.")
         case .expert:
-            return "Advanced uses entered launch data directly and estimates missing values from the launch data you have entered."
+            return L("Advanced uses entered launch data directly and estimates missing values from the launch data you have entered.")
         }
     }
 }
@@ -199,33 +199,33 @@ private struct ExpertProfileView: View {
                 let effective = profileStore.effectiveProfile(for: selectedClub)
                 let override = profileStore.profile.override(for: selectedClub)
                 ProfileSpeedRow(
-                    title: "Ball Speed",
+                    title: L("Ball Speed"),
                     value: override.ballSpeedMps,
                     unitPreferences: unitPreferences,
                     fallbackMps: effective.ballSpeedMps.value,
                     onChange: { updateOverride(\.ballSpeedMps, value: $0) }
                 )
                 ProfileOptionalNumberRow(
-                    title: "Launch Angle",
+                    title: L("Launch Angle"),
                     value: override.launchAngleDeg,
                     unit: "deg",
-                    defaultValue: override.launchAngleDeg == nil ? String(format: "%.1f deg", effective.launchAngleDeg.value) : nil,
+                    defaultValue: override.launchAngleDeg == nil ? String(format: L("%.1f deg"), effective.launchAngleDeg.value) : nil,
                     decimalPlaces: 1,
                     onChange: { updateOverride(\.launchAngleDeg, value: $0) }
                 )
                 ProfileOptionalNumberRow(
-                    title: "Spin Rate",
+                    title: L("Spin Rate"),
                     value: override.spinRateRpm,
                     unit: "rpm",
-                    defaultValue: override.spinRateRpm == nil ? String(format: "%.0f rpm", effective.spinRateRpm.value) : nil,
+                    defaultValue: override.spinRateRpm == nil ? String(format: L("%.0f rpm"), effective.spinRateRpm.value) : nil,
                     decimalPlaces: 0,
                     onChange: { updateOverride(\.spinRateRpm, value: $0) }
                 )
                 ProfileOptionalNumberRow(
-                    title: "Spin Axis",
+                    title: L("Spin Axis"),
                     value: override.spinAxisDeg,
                     unit: "deg",
-                    defaultValue: override.spinAxisDeg == nil ? String(format: "%.1f deg", effective.spinAxisDeg.value) : nil,
+                    defaultValue: override.spinAxisDeg == nil ? String(format: L("%.1f deg"), effective.spinAxisDeg.value) : nil,
                     decimalPlaces: 1,
                     onChange: { updateOverride(\.spinAxisDeg, value: $0) }
                 )
@@ -385,7 +385,7 @@ private struct ProfileDistanceRow: View {
 
     private var defaultText: String {
         switch distanceSystem {
-        case .imperial: return String(format: "%.0f yd", Units.yardsFromMeters(fallbackMeters))
+        case .imperial: return String(format: L("%.0f yd"), Units.yardsFromMeters(fallbackMeters))
         case .metric: return String(format: "%.0f m", fallbackMeters)
         }
     }
@@ -430,7 +430,7 @@ private struct ProfileSpeedRow: View {
 
     private var defaultText: String {
         switch speedSystem {
-        case .imperial: return String(format: "%.1f mph", Units.mphFromMps(fallbackMps))
+        case .imperial: return String(format: L("%.1f mph"), Units.mphFromMps(fallbackMps))
         case .metric: return String(format: "%.1f m/s", fallbackMps)
         }
     }
@@ -574,7 +574,7 @@ private struct DoneAccessoryNumberField: UIViewRepresentable {
             toolbar.sizeToFit()
             toolbar.items = [
                 UIBarButtonItem(systemItem: .flexibleSpace),
-                UIBarButtonItem(title: "Done", style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
+                UIBarButtonItem(title: L("Done"), style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
             ]
             return toolbar
         }

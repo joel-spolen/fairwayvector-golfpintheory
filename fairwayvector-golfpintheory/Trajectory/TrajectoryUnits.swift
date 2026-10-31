@@ -9,8 +9,8 @@ enum UnitSystem: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .imperial: return "Imperial"
-        case .metric: return "Metric"
+        case .imperial: return L("Imperial")
+        case .metric: return L("Metric")
         }
     }
 }
@@ -28,12 +28,12 @@ enum UnitField: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .ballSpeed: return "Ball Speed"
-        case .windSpeed: return "Wind Speed"
-        case .landingSpeed: return "Landing Speed"
-        case .distance: return "Distance & Height"
-        case .temperature: return "Temperature"
-        case .pressure: return "Pressure"
+        case .ballSpeed: return L("Ball Speed")
+        case .windSpeed: return L("Wind Speed")
+        case .landingSpeed: return L("Landing Speed")
+        case .distance: return L("Distance & Height")
+        case .temperature: return L("Temperature")
+        case .pressure: return L("Pressure")
         }
     }
 }
@@ -58,7 +58,7 @@ enum Units {
     static func formattedDistance(meters: Double, system: UnitSystem) -> String {
         switch system {
         case .imperial:
-            return String(format: "%.1f yd", yardsFromMeters(meters))
+            return String(format: L("%.1f yd"), yardsFromMeters(meters))
         case .metric:
             return String(format: "%.1f m", meters)
         }
@@ -67,7 +67,7 @@ enum Units {
     static func formattedHeight(meters: Double, system: UnitSystem) -> String {
         switch system {
         case .imperial:
-            return String(format: "%.0f ft", feetFromMeters(meters))
+            return String(format: L("%.0f ft"), feetFromMeters(meters))
         case .metric:
             return String(format: "%.1f m", meters)
         }
@@ -76,7 +76,7 @@ enum Units {
     static func formattedSpeed(mps: Double, system: UnitSystem) -> String {
         switch system {
         case .imperial:
-            return String(format: "%.1f mph", mphFromMps(mps))
+            return String(format: L("%.1f mph"), mphFromMps(mps))
         case .metric:
             return String(format: "%.1f m/s", mps)
         }
@@ -85,9 +85,9 @@ enum Units {
     static func formattedPressure(hpa: Double, system: UnitSystem) -> String {
         switch system {
         case .imperial:
-            return String(format: "%.2f inHg", inHgFromHpa(hpa))
+            return String(format: L("%.2f inHg"), inHgFromHpa(hpa))
         case .metric:
-            return String(format: "%.1f hPa", hpa)
+            return String(format: L("%.1f hPa"), hpa)
         }
     }
 }

@@ -84,7 +84,7 @@ struct RoundPerformanceRecord: Identifiable {
             let validScores = scores.filter { $0 > 0 }
             let hasScores = !scores.isEmpty && scores.count == round.holes && validScores.count == scores.count
             var record = Self(id: "hcp-\(round.persistentModelID)", date: round.date,
-                title: round.courseName.isEmpty ? "HCP round" : round.courseName,
+                title: round.courseName.isEmpty ? L("HCP round") : round.courseName,
                 holes: round.holes, gross: hasScores ? scores.reduce(0, +) : nil,
                 adjustedGross: round.adjustedGrossScore, differential: round.handicapDifferential,
                 played: nil, handicap: round)
@@ -115,8 +115,8 @@ struct RoundStatisticsDashboard: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    PureLinePageHeader(title: "Rounds & statistics",
-                        subtitle: "See your progress and discover where you can improve.")
+                    PureLinePageHeader(title: L("Rounds & statistics"),
+                        subtitle: L("See your progress and discover where you can improve."))
                     if let message = store.errorMessage {
                         VStack(alignment: .leading, spacing: 10) {
                             Text(message).font(.footnote).foregroundStyle(.red)
@@ -176,10 +176,10 @@ struct RoundStatisticsDashboard: View {
         let data = records
         let scored = data.filter { $0.gross != nil && $0.holes > 0 }
         return LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            statCard("Rounds", value: String(data.count), detail: "Your round history")
-            statCard("Strokes / hole", value: average(scored.compactMap(\.gross).reduce(0, +), scored.reduce(0) { $0 + $1.holes }), detail: "Average score")
-            statCard("Putts / hole", value: average(data.reduce(0) { $0 + $1.putts }, data.reduce(0) { $0 + $1.puttHoles }), detail: "Average putts")
-            statCard("Penalties / 18", value: average(data.reduce(0) { $0 + $1.penalties }, data.reduce(0) { $0 + $1.penaltyHoles }, scale: 18), detail: "Average per 18 holes")
+            statCard(L("Rounds"), value: String(data.count), detail: L("Your round history"))
+            statCard(L("Strokes / hole"), value: average(scored.compactMap(\.gross).reduce(0, +), scored.reduce(0) { $0 + $1.holes }), detail: L("Average score"))
+            statCard(L("Putts / hole"), value: average(data.reduce(0) { $0 + $1.putts }, data.reduce(0) { $0 + $1.puttHoles }), detail: L("Average putts"))
+            statCard(L("Penalties / 18"), value: average(data.reduce(0) { $0 + $1.penalties }, data.reduce(0) { $0 + $1.penaltyHoles }, scale: 18), detail: L("Average per 18 holes"))
         }
     }
 
@@ -198,7 +198,7 @@ struct RoundStatisticsDashboard: View {
             (par: par, scores: records.flatMap { $0.scoresByPar[par] ?? [] })
         }
         return VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Scoring by par", detail: "Your average score on each type of hole")
+            chartHeading(L("Scoring by par"), detail: L("Your average score on each type of hole"))
             HStack(alignment: .top, spacing: 12) {
                 ForEach(groups, id: \.par) { group in
                     VStack(alignment: .leading, spacing: 6) {
@@ -206,7 +206,7 @@ struct RoundStatisticsDashboard: View {
                             .font(.caption.weight(.medium)).foregroundStyle(PureLineStyle.muted)
                         Text(average(group.scores.reduce(0, +), group.scores.count))
                             .font(.title2.weight(.semibold)).monospacedDigit()
-                        Text(group.scores.isEmpty ? "No scores yet" : "\(group.scores.count) holes")
+                        Text(group.scores.isEmpty ? L("No scores yet") : L("%@ holes", "\(group.scores.count)"))
                             .font(.caption2).foregroundStyle(PureLineStyle.muted)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -216,7 +216,7 @@ struct RoundStatisticsDashboard: View {
             if groups.contains(where: { !$0.scores.isEmpty }) {
                 Chart(groups.filter { !$0.scores.isEmpty }, id: \.par) { group in
                     let value = Double(group.scores.reduce(0, +)) / Double(group.scores.count)
-                    BarMark(x: .value("Hole type", "Par \(group.par)"), y: .value("Average score", value))
+                    BarMark(x: .value(L("Hole type"), L("Par %@", "\(group.par)")), y: .value(L("Average score"), value))
                         .cornerRadius(4)
                         .foregroundStyle(PureLineStyle.accent.gradient)
                         .accessibilityLabel("Par \(group.par)")
@@ -230,7 +230,7 @@ struct RoundStatisticsDashboard: View {
     private var holeTypeDetails: some View {
         let samples = records.flatMap(\.holeDetails)
         return VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Your game by hole type", detail: "See where you play your best")
+            chartHeading(L("Your game by hole type"), detail: L("See where you play your best"))
             Grid(alignment: .leading, horizontalSpacing: 12, verticalSpacing: 16) {
                 GridRow {
                     Text("Average").foregroundStyle(PureLineStyle.muted)
@@ -238,9 +238,9 @@ struct RoundStatisticsDashboard: View {
                         Text("Par \(par)").fontWeight(.semibold)
                     }
                 }
-                detailAverageRow("Putts", samples: samples, value: \.putts)
-                detailAverageRow("Sand shots", samples: samples, value: \.bunkerShots)
-                detailAverageRow("Penalties", samples: samples, value: \.penalties)
+                detailAverageRow(L("Putts"), samples: samples, value: \.putts)
+                detailAverageRow(L("Sand shots"), samples: samples, value: \.bunkerShots)
+                detailAverageRow(L("Penalties"), samples: samples, value: \.penalties)
                 GridRow {
                     Text("Fairways hit")
                     ForEach(3...5, id: \.self) { par in
@@ -284,8 +284,8 @@ struct RoundStatisticsDashboard: View {
     private var scrambling: some View {
         let results = records.flatMap(\.holeDetails).compactMap(\.scramble)
         return VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Scrambling", detail: "Saving par after missing the green in regulation")
-            accuracyRing("All holes", hits: results.filter { $0 }.count, total: results.count)
+            chartHeading(L("Scrambling"), detail: L("Saving par after missing the green in regulation"))
+            accuracyRing(L("All holes"), hits: results.filter { $0 }.count, total: results.count)
             if !results.isEmpty {
                 Text("\(results.filter { $0 }.count) par saves or better from \(results.count) missed greens")
                     .font(.caption).foregroundStyle(PureLineStyle.muted)
@@ -303,25 +303,25 @@ struct RoundStatisticsDashboard: View {
     private var scoringTrend: some View {
         let points = records.filter { $0.gross != nil && $0.holes > 0 }
         return VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Scoring trend", detail: "Your average strokes per hole over time")
+            chartHeading(L("Scoring trend"), detail: L("Your average strokes per hole over time"))
             if points.isEmpty {
-                chartEmpty("Add hole scores to see your scoring trend.")
+                chartEmpty(L("Add hole scores to see your scoring trend."))
             } else {
                 Chart(Array(points.enumerated()), id: \.element.id) { index, record in
                     let value = Double(record.gross ?? 0) / Double(record.holes)
-                    LineMark(x: .value("Round", index + 1), y: .value("Strokes / hole", value))
+                    LineMark(x: .value(L("Round"), index + 1), y: .value(L("Strokes / hole"), value))
                         .foregroundStyle(PureLineStyle.accent)
-                    PointMark(x: .value("Round", index + 1), y: .value("Strokes / hole", value))
+                    PointMark(x: .value(L("Round"), index + 1), y: .value(L("Strokes / hole"), value))
                         .foregroundStyle(PureLineStyle.accent)
                         .accessibilityLabel(record.title)
                         .accessibilityValue("\(record.date.formatted(date: .abbreviated, time: .omitted)), \(value.formatted(.number.precision(.fractionLength(1)))) strokes per hole")
                     if index == 0 {
-                        RuleMark(y: .value("Average", Double(points.compactMap(\.gross).reduce(0, +)) / Double(points.reduce(0) { $0 + $1.holes })))
+                        RuleMark(y: .value(L("Average"), Double(points.compactMap(\.gross).reduce(0, +)) / Double(points.reduce(0) { $0 + $1.holes })))
                             .foregroundStyle(PureLineStyle.muted.opacity(0.4))
                             .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
                     }
                 }
-                .chartXAxisLabel("Earlier → Latest")
+                .chartXAxisLabel(L("Earlier → Latest"))
                 .frame(height: 180)
             }
             Text("The dashed line shows your overall average.")
@@ -332,22 +332,22 @@ struct RoundStatisticsDashboard: View {
     private var handicapTrend: some View {
         let points = records.filter { $0.differential?.isFinite == true }
         return VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Handicap performance", detail: "Your HCP scores over time · lower is better")
+            chartHeading(L("Handicap performance"), detail: L("Your HCP scores over time · lower is better"))
             if points.isEmpty {
-                chartEmpty("Save a handicap round to see your progress here.")
+                chartEmpty(L("Save a handicap round to see your progress here."))
             } else {
                 Text(average(points.compactMap(\.differential)))
                     .font(.title.weight(.semibold)).monospacedDigit()
                 Text("Average HCP score · \(points.count) rounds")
                     .font(.caption).foregroundStyle(PureLineStyle.muted)
                 Chart(Array(points.enumerated()), id: \.element.id) { index, record in
-                    BarMark(x: .value("Round", index + 1), y: .value("HCP score", record.differential ?? 0))
+                    BarMark(x: .value(L("Round"), index + 1), y: .value(L("HCP score"), record.differential ?? 0))
                         .cornerRadius(3)
                         .foregroundStyle(PureLineStyle.accent.gradient)
                         .accessibilityLabel(record.title)
                         .accessibilityValue("HCP score \((record.differential ?? 0).formatted(.number.precision(.fractionLength(1))))")
                 }
-                .chartXAxisLabel("Earlier → Latest")
+                .chartXAxisLabel(L("Earlier → Latest"))
                 .frame(height: 160)
             }
         }.pureLineCard()
@@ -356,15 +356,15 @@ struct RoundStatisticsDashboard: View {
     private var accuracy: some View {
         let data = records
         return VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Finding your targets", detail: "Fairways hit and greens in regulation")
+            chartHeading(L("Finding your targets"), detail: L("Fairways hit and greens in regulation"))
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top, spacing: 24) {
-                    accuracyRing("Fairways", hits: data.reduce(0) { $0 + $1.fairways }, total: data.reduce(0) { $0 + $1.fairwayHoles })
-                    accuracyRing("GIR", hits: data.reduce(0) { $0 + $1.greens }, total: data.reduce(0) { $0 + $1.greenHoles })
+                    accuracyRing(L("Fairways"), hits: data.reduce(0) { $0 + $1.fairways }, total: data.reduce(0) { $0 + $1.fairwayHoles })
+                    accuracyRing(L("GIR"), hits: data.reduce(0) { $0 + $1.greens }, total: data.reduce(0) { $0 + $1.greenHoles })
                 }
                 VStack(spacing: 20) {
-                    accuracyRing("Fairways", hits: data.reduce(0) { $0 + $1.fairways }, total: data.reduce(0) { $0 + $1.fairwayHoles })
-                    accuracyRing("GIR", hits: data.reduce(0) { $0 + $1.greens }, total: data.reduce(0) { $0 + $1.greenHoles })
+                    accuracyRing(L("Fairways"), hits: data.reduce(0) { $0 + $1.fairways }, total: data.reduce(0) { $0 + $1.fairwayHoles })
+                    accuracyRing(L("GIR"), hits: data.reduce(0) { $0 + $1.greens }, total: data.reduce(0) { $0 + $1.greenHoles })
                 }
             }
             Text("Par 3s don't count toward fairways hit. GIR is estimated from your score and putts.")
@@ -377,12 +377,12 @@ struct RoundStatisticsDashboard: View {
     private func accuracyRing(_ title: String, hits: Int, total: Int) -> some View {
         VStack(spacing: 10) {
             Chart {
-                SectorMark(angle: .value("Hit", hits), innerRadius: .ratio(0.8), angularInset: 2)
+                SectorMark(angle: .value(L("Hit"), hits), innerRadius: .ratio(0.8), angularInset: 2)
                     .foregroundStyle(PureLineStyle.accent)
-                SectorMark(angle: .value("Miss", max(0, total - hits)), innerRadius: .ratio(0.8), angularInset: 2)
+                SectorMark(angle: .value(L("Miss"), max(0, total - hits)), innerRadius: .ratio(0.8), angularInset: 2)
                     .foregroundStyle(PureLineStyle.line)
                 if total == 0 {
-                    SectorMark(angle: .value("No data", 1), innerRadius: .ratio(0.8))
+                    SectorMark(angle: .value(L("No data"), 1), innerRadius: .ratio(0.8))
                         .foregroundStyle(PureLineStyle.line)
                 }
             }
@@ -393,27 +393,27 @@ struct RoundStatisticsDashboard: View {
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(title)
-            .accessibilityValue(total > 0 ? "\(hits) hits from \(total) holes" : "No data yet")
+            .accessibilityValue(total > 0 ? L("%@ hits from %@ holes", "\(hits)", "\(total)") : L("No data yet"))
             Text(title).font(.subheadline.weight(.semibold))
-            Text(total > 0 ? "Across \(total) holes" : "No data yet")
+            Text(total > 0 ? L("Across %@ holes", "\(total)") : L("No data yet"))
                 .font(.caption2).foregroundStyle(PureLineStyle.muted)
         }.frame(maxWidth: .infinity)
     }
 
     private var scoringMix: some View {
         let outcomes = records.flatMap(\.outcomes)
-        let labels = ["Birdie or better", "Par", "Bogey", "Double bogey or worse"]
+        let labels = [L("Birdie or better"), L("Par"), L("Bogey"), L("Double bogey or worse")]
         let counts = [outcomes.filter { $0 < 0 }.count, outcomes.filter { $0 == 0 }.count,
                       outcomes.filter { $0 == 1 }.count, outcomes.filter { $0 >= 2 }.count]
         let colors = [PureLineStyle.accent, Color(red: 0.35, green: 0.62, blue: 0.58),
                       Color(red: 0.80, green: 0.60, blue: 0.33), PureLineStyle.muted]
         return VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Your scoring mix", detail: "How often you score par, birdie or bogey")
+            chartHeading(L("Your scoring mix"), detail: L("How often you score par, birdie or bogey"))
             if outcomes.isEmpty {
-                chartEmpty("Add hole-by-hole scores to see your scoring mix.")
+                chartEmpty(L("Add hole-by-hole scores to see your scoring mix."))
             } else {
                 Chart(0..<4, id: \.self) { index in
-                    SectorMark(angle: .value("Holes", counts[index]), innerRadius: .ratio(0.65), angularInset: 2)
+                    SectorMark(angle: .value(L("Holes"), counts[index]), innerRadius: .ratio(0.65), angularInset: 2)
                         .cornerRadius(3)
                         .foregroundStyle(colors[index])
                         .accessibilityLabel(labels[index])
@@ -441,7 +441,7 @@ struct RoundStatisticsDashboard: View {
 
     private var history: some View {
         VStack(alignment: .leading, spacing: 16) {
-            chartHeading("Round history", detail: "\(records.count) rounds · newest first")
+            chartHeading(L("Round history"), detail: L("%@ rounds · newest first", "\(records.count)"))
             ForEach(records.reversed()) { record in
                 NavigationLink {
                     if let round = record.played {
