@@ -1,25 +1,136 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Golf PinTheory"
+          }
+        }
+      }
+    },
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Golf PinTheory"
+          }
+        }
+      }
+    },
     "NSLocationWhenInUseUsageDescription" : {
       "comment" : "Shown in the iOS location permission dialog. Explain that location shows the golfer on the course and distance to the green.",
+      "extractionState" : "extracted_with_value",
       "localizations" : {
-        "cs" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory používá vaši polohu, aby zobrazila vaši pozici na hřišti a vzdálenost ke greenu." } },
-        "da" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory bruger din placering til at vise, hvor du er på banen, og afstanden til greenen." } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory verwendet deinen Standort, um deine Position auf dem Platz und die Entfernung zum Grün anzuzeigen." } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory usa tu ubicación para mostrar dónde estás en el campo y la distancia al green." } },
-        "fi" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory näyttää sijaintisi kentällä ja etäisyyden viheriölle sijaintisi avulla." } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory utilise votre position pour indiquer où vous vous trouvez sur le parcours et la distance jusqu’au green." } },
-        "is" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory notar staðsetningu þína til að sýna hvar þú ert á vellinum og fjarlægðina að flötinni." } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory usa la tua posizione per mostrarti dove ti trovi sul campo e la distanza dal green." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheoryは、コース上の現在地とグリーンまでの距離を表示するために位置情報を使用します。" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory는 코스에서 현재 위치와 그린까지의 거리를 표시하기 위해 위치 정보를 사용합니다." } },
-        "nb" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory bruker posisjonen din til å vise hvor du er på banen, og avstanden til greenen." } },
-        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory gebruikt je locatie om te tonen waar je op de baan bent en hoe ver het is naar de green." } },
-        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory używa Twojej lokalizacji, aby pokazać Twoje miejsce na polu i odległość do greenu." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Golf PinTheory utiliza a sua localização para mostrar onde se encontra no campo e a distância até ao green." } },
-        "sv" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory använder din plats för att visa var du är på banan och avståndet till greenen." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Golf PinTheory 使用你的位置来显示你在球场上的位置以及到果岭的距离。" } }
+        "cs" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory používá vaši polohu, aby zobrazila vaši pozici na hřišti a vzdálenost ke greenu."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory bruger din placering til at vise, hvor du er på banen, og afstanden til greenen."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory verwendet deinen Standort, um deine Position auf dem Platz und die Entfernung zum Grün anzuzeigen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Golf PinTheory uses your location to show where you are on the course and how far it is to the green."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory usa tu ubicación para mostrar dónde estás en el campo y la distancia al green."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory näyttää sijaintisi kentällä ja etäisyyden viheriölle sijaintisi avulla."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory utilise votre position pour indiquer où vous vous trouvez sur le parcours et la distance jusqu’au green."
+          }
+        },
+        "is" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory notar staðsetningu þína til að sýna hvar þú ert á vellinum og fjarlægðina að flötinni."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory usa la tua posizione per mostrarti dove ti trovi sul campo e la distanza dal green."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheoryは、コース上の現在地とグリーンまでの距離を表示するために位置情報を使用します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory는 코스에서 현재 위치와 그린까지의 거리를 표시하기 위해 위치 정보를 사용합니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory bruker posisjonen din til å vise hvor du er på banen, og avstanden til greenen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory gebruikt je locatie om te tonen waar je op de baan bent en hoe ver het is naar de green."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory używa Twojej lokalizacji, aby pokazać Twoje miejsce na polu i odległość do greenu."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "O Golf PinTheory utiliza a sua localização para mostrar onde se encontra no campo e a distância até ao green."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory använder din plats för att visa var du är på banan och avståndet till greenen."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Golf PinTheory 使用你的位置来显示你在球场上的位置以及到果岭的距离。"
+          }
+        }
       }
     }
   },
