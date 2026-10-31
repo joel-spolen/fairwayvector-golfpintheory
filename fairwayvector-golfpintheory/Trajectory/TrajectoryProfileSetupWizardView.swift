@@ -4,7 +4,6 @@ struct TrajectoryProfileSetupWizardView: View {
     @ObservedObject var profileStore: PlayerProfileStore
     let unitPreferences: UnitPreferences
     let onClose: () -> Void
-    @Environment(\.dismiss) private var dismiss
     @State private var selectedBand: HandicapBand
 
     init(profileStore: PlayerProfileStore, unitPreferences: UnitPreferences, onClose: @escaping () -> Void) {
@@ -26,7 +25,7 @@ struct TrajectoryProfileSetupWizardView: View {
                         .font(.title2.bold())
                         .foregroundStyle(PureLineStyle.ink)
 
-                    Text("Choose the handicap range that best matches your game. To enter personal distances and launch data, open In the bag > Club distances & launch from Home.")
+                    Text("Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home.")
                         .font(.subheadline)
                         .foregroundStyle(PureLineStyle.muted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -57,13 +56,7 @@ struct TrajectoryProfileSetupWizardView: View {
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        if profileStore.profile.isSetupComplete {
-                            dismiss()
-                        } else {
-                            onClose()
-                        }
-                    }
+                    Button("Cancel", action: onClose)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { finishSetup() }
@@ -79,7 +72,7 @@ struct TrajectoryProfileSetupWizardView: View {
             profile.detailLevel = .easy
             profile.handicapBand = selectedBand
         }
-        dismiss()
+        onClose()
     }
 }
 

@@ -224,7 +224,7 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "플레이어별로 상세 스코어링을 선택하세요. 상세 스코어카드는 퍼트, 페어웨이 위치, 벙커 샷, 벌타를 기록합니다.";
 "Choose the club to use for launch conditions." = "발사 조건에 사용할 클럽을 선택하세요.";
 "Choose the clubs you carry and set up your club and wedge distances." = "가지고 다니는 클럽을 선택하고 클럽과 웨지 거리를 설정하세요.";
-"Choose the handicap range that best matches your game. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "내 게임에 가장 잘 맞는 핸디캡 범위를 선택하세요. 개인 거리와 발사 데이터를 입력하려면 홈에서 백 > 클럽 거리 및 발사를 여세요.";
+"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "내 게임에 가장 잘 맞는 핸디캡 범위를 선택하세요. 클럽 선택에 사용됩니다. 개인 거리와 발사 데이터를 입력하려면 홈에서 백 > 클럽 거리 및 발사를 여세요.";
 "Choose wedges in Clubs in my bag to include them here." = "내 백의 클럽에서 웨지를 선택하면 여기에 포함됩니다.";
 "Choose which clubs are available" = "사용 가능한 클럽 선택";
 "Choose your course and tee." = "코스와 티를 선택하세요.";

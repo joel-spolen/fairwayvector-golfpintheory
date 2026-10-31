@@ -98,7 +98,10 @@ private struct EasyProfileView: View {
         Binding(
             get: { profileStore.profile.handicapBand },
             set: { band in
-                profileStore.update { $0.handicapBand = band }
+                profileStore.update {
+                    $0.handicapBand = band
+                    $0.isSetupComplete = true
+                }
             }
         )
     }
@@ -155,6 +158,7 @@ private struct MediumProfileView: View {
             var override = profile.override(for: club)
             override.carryDistanceM = carryDistanceM
             profile.setOverride(override, for: club)
+            profile.isSetupComplete = true
         }
         if let carryDistanceM {
             carryDrafts[club] = carryDistanceM
@@ -245,6 +249,7 @@ private struct ExpertProfileView: View {
             var override = profile.override(for: selectedClub)
             override[keyPath: keyPath] = value
             profile.setOverride(override, for: selectedClub)
+            profile.isSetupComplete = true
         }
     }
 

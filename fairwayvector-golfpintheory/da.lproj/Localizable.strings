@@ -224,7 +224,7 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Vælg detaljeret scoring for hver spiller. Detaljerede scorekort registrerer putts, fairwayplacering, bunkerslag og strafslag.";
 "Choose the club to use for launch conditions." = "Vælg køllen, der skal bruges til udgangsværdierne.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Vælg de køller, du bærer, og opsæt afstande for køller og wedger.";
-"Choose the handicap range that best matches your game. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Vælg det handicapinterval, der passer bedst til dit spil. For at angive personlige afstande og udgangsdata skal du åbne I bagen > Køllafstande & udgang fra Hjem.";
+"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Vælg det handicapinterval, der passer bedst til dit spil. Det bruges til valg af kølle. For at angive personlige afstande og udgangsdata skal du åbne I bagen > Køllafstande & udgang fra Hjem.";
 "Choose wedges in Clubs in my bag to include them here." = "Vælg wedger i Køller i min bag for at medtage dem her.";
 "Choose which clubs are available" = "Vælg hvilke køller der er tilgængelige";
 "Choose your course and tee." = "Vælg din bane og dit teested.";

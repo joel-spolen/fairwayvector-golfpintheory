@@ -131,6 +131,8 @@ struct ContentView: View {
     @State private var roundStore: PlayedRoundStore
     @State private var requestStartRound = false
     @State private var automaticSyncTask: Task<Void, Never>?
+    @State private var showingHandicapSetup = false
+    private static let handicapSetupPromptedKey = "onboarding.handicapRangePrompted.v1"
 
     init(accountData: PinTheoryAccountData) {
         self.accountData = accountData
@@ -174,6 +176,21 @@ struct ContentView: View {
             }
             .modelContainer(accountData.modelContainer)
             .frame(width: 0, height: 0)
+        }
+        // An overlay (not a sheet) so the splash screen stays on top.
+        .overlay {
+            if showingHandicapSetup {
+                TrajectoryProfileSetupWizardView(profileStore: trajectoryModel.playerProfileStore,
+                    unitPreferences: trajectoryModel.unitPreferences) {
+                    accountData.defaults.set(true, forKey: Self.handicapSetupPromptedKey)
+                    showingHandicapSetup = false
+                }
+                .accessibilityAddTraits(.isModal)
+            }
+        }
+        .onAppear {
+            showingHandicapSetup = trajectoryModel.playerProfileStore.needsSetup
+                && !accountData.defaults.bool(forKey: Self.handicapSetupPromptedKey)
         }
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
             feature(screen)

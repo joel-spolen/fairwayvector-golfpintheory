@@ -224,7 +224,7 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "プレーヤーごとに詳細スコアリングを選択します。詳細スコアカードでは、パット、フェアウェイの位置、バンカーショット、ペナルティを記録します。";
 "Choose the club to use for launch conditions." = "打ち出し条件に使用するクラブを選択します。";
 "Choose the clubs you carry and set up your club and wedge distances." = "持ち運ぶクラブを選び、クラブとウェッジの距離を設定します。";
-"Choose the handicap range that best matches your game. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "あなたのプレーに最も合うハンディキャップ範囲を選んでください。個人の距離と打ち出しデータを入力するには、ホームから「バッグ > クラブの距離と打ち出し」を開いてください。";
+"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "あなたのプレーに最も合うハンディキャップ範囲を選んでください。クラブ選択に使用されます。個人の距離と打ち出しデータを入力するには、ホームから「バッグ > クラブの距離と打ち出し」を開いてください。";
 "Choose wedges in Clubs in my bag to include them here." = "「バッグのクラブ」でウェッジを選ぶと、ここに含まれます。";
 "Choose which clubs are available" = "使用可能なクラブを選択";
 "Choose your course and tee." = "コースとティーを選んでください。";
