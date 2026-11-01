@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Zvolte podrobný scoring pro každého hráče zvlášť. Podrobné karty zaznamenávají putty, polohu na fairwayi, rány z bunkru a tresty.";
 "Choose the club to use for launch conditions." = "Vyberte hůl pro výletové podmínky.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Vyberte hole, které nosíte, a nastavte vzdálenosti holí a wedgí.";
+"Downloading course elevation…" = "Stahování výškových dat hřiště…";
+"Elevation isn't available for this course." = "Pro toto hřiště nejsou výšková data k dispozici.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Výšková data hřiště se teď nepodařilo stáhnout. Při dalším otevření hřiště to zkusíme znovu.";
+"This position is outside the downloaded course elevation." = "Tato poloha je mimo stažená výšková data hřiště.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Vyberte rozsah handicapu, který nejlépe odpovídá vaší hře. Používá se pro výběr hole. Pro zadání osobních vzdáleností a výletových dat otevřete na Domovské obrazovce V bagu > Vzdálenosti holí a výlet.";
 "Choose wedges in Clubs in my bag to include them here." = "Vyberte wedge v Holích v mém bagu, aby se sem zahrnuly.";
 "Choose which clubs are available" = "Vyberte dostupné hole";

@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Wybierz szczegółowy scoring osobno dla każdego gracza. Szczegółowe karty rejestrują putty, pozycję na fairwayu, uderzenia z bunkra i kary.";
 "Choose the club to use for launch conditions." = "Wybierz kij do parametrów wylotu.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Wybierz kije, które nosisz, i ustaw odległości kijów oraz wedge'y.";
+"Downloading course elevation…" = "Pobieranie danych wysokościowych pola…";
+"Elevation isn't available for this course." = "Dane wysokościowe nie są dostępne dla tego pola.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Nie udało się teraz pobrać danych wysokościowych pola. Spróbujemy ponownie przy następnym otwarciu pola.";
+"This position is outside the downloaded course elevation." = "Ta pozycja znajduje się poza pobranymi danymi wysokościowymi pola.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Wybierz zakres handicapu najlepiej pasujący do Twojej gry. Służy do doboru kija. Aby wpisać osobiste odległości i dane wylotu, otwórz W torbie > Odległości kijów i wylot na ekranie Start.";
 "Choose wedges in Clubs in my bag to include them here." = "Wybierz wedge'e w sekcji Kije w mojej torbie, aby je tutaj uwzględnić.";
 "Choose which clubs are available" = "Wybierz dostępne kije";

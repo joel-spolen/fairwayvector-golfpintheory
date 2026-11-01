@@ -361,7 +361,7 @@ struct CourseMapView: View {
 
     @ViewBuilder
     private func content(for requestedHoleIndex: Int) -> some View {
-        if let holes = store.course?.holes, !holes.isEmpty {
+        if !store.isLoadingTerrain, let holes = store.course?.holes, !holes.isEmpty {
             let pageHoleIndex = min(max(requestedHoleIndex, 0), holes.count - 1)
             let hole = holes[pageHoleIndex]
             let origin = distanceOrigin(for: hole)
@@ -450,10 +450,10 @@ struct CourseMapView: View {
                     }
             }
             .task(id: holeRequest) {
-                // Opening geometry/tee/hole/saved flag reads terrain cache ONLY.
                 tapPoint = nil
                 terrainInspectionPoint = nil
                 clearSimulation()
+                terrainStore.setTerrain(store.terrain, unavailableMessage: store.terrainMessage)
                 terrainStore.open(terrainRequest(for: hole,
                     origin: distanceOrigin(for: hole), target: nil))
             }
@@ -461,8 +461,8 @@ struct CourseMapView: View {
                 guard let location = courseWeatherLocation else { return }
                 await weatherStore.load(for: location)
             }
-        } else if store.isLoading || store.errorMessage == nil {
-            ProgressView("Loading course…")
+        } else if store.isLoading || store.isLoadingTerrain || store.errorMessage == nil {
+            ProgressView(store.isLoadingTerrain ? L("Downloading course elevation…") : L("Loading course…"))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             ContentUnavailableView {
@@ -493,9 +493,8 @@ struct CourseMapView: View {
 
     private func commitSelectedShot(for hole: Hole, target: GeoPoint?) {
         let origin = distanceOrigin(for: hole)
-        // Simulated target release also remains cache-only in live GPXZ mode.
-        terrainStore.commitShot(terrainRequest(for: hole, origin: origin, target: target),
-            allowPaid: origin?.isSimulated != true || DevelopmentAPIConfiguration.current.gpxz == .mock)
+        // Simulated origins use the same downloaded course elevation as real ones.
+        terrainStore.commitShot(terrainRequest(for: hole, origin: origin, target: target))
     }
 
     #if DEBUG
@@ -536,7 +535,7 @@ struct CourseMapView: View {
                 guard let hole = developmentHole else { return }
                 clearSimulation()
                 terrainInspectionPoint = nil
-                terrainStore.commitShot(terrainRequest(for: hole, origin: distanceOrigin(for: hole), target: tapPoint), allowPaid: false)
+                terrainStore.commitShot(terrainRequest(for: hole, origin: distanceOrigin(for: hole), target: tapPoint))
             }
             .disabled(simulatedGolfer == nil || terrainStore.shotPending || developmentHole == nil)
             .accessibilityIdentifier("use-device-gps")

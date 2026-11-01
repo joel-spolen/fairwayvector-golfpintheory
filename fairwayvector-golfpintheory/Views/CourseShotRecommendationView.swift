@@ -311,7 +311,7 @@ struct CourseShotRecommendationView: View {
         }
         if input == nil {
             return terrainStore.isShotLoading ? L("Waiting for matching origin/target terrain…")
-                : L("Matching origin/target terrain unavailable. Release the target or confirm Retry terrain; no flat-ground assumption.")
+                : terrainStore.shotMessage ?? L("Terrain unavailable")
         }
         if failedInput == input { return errorMessage ?? L("Club predictions unavailable.") }
         return isScoringMode ? L("Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…")

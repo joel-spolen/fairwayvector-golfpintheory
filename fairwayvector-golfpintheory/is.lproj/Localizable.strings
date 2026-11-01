@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Veldu ítarlegt skor fyrir hvern leikmann. Ítarleg skorkort skrá pútt, stöðu á braut, glompuhögg og víti.";
 "Choose the club to use for launch conditions." = "Veldu kylfuna sem nota á fyrir upphafsgildin.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Veldu kylfurnar sem þú berð og stilltu vegalengdir kylfna og fleygjárna.";
+"Downloading course elevation…" = "Sæki hæðargögn vallarins…";
+"Elevation isn't available for this course." = "Hæðargögn eru ekki tiltæk fyrir þennan völl.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Ekki tókst að sækja hæðargögn vallarins núna. Reynt verður aftur næst þegar þú opnar völlinn.";
+"This position is outside the downloaded course elevation." = "Þessi staðsetning er utan niðurhalaðra hæðargagna vallarins.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Veldu forgjafarbilið sem passar best við leikinn. Það er notað við val á kylfu. Til að slá inn eigin vegalengdir og upphafsgögn skaltu opna Í pokanum > Kylfuvegalengdir og upphaf á Heim.";
 "Choose wedges in Clubs in my bag to include them here." = "Veldu fleygjárn í Kylfur í pokanum mínum til að taka þau með hér.";
 "Choose which clubs are available" = "Veldu hvaða kylfur eru tiltækar";

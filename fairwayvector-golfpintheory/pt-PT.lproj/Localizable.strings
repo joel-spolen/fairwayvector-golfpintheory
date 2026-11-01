@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Escolha o scoring detalhado para cada jogador. Os cartões detalhados registam putts, posição no fairway, pancadas de bunker e penalidades.";
 "Choose the club to use for launch conditions." = "Escolha o taco a usar nas condições de lançamento.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Escolha os tacos que leva e configure as distâncias dos tacos e wedges.";
+"Downloading course elevation…" = "A transferir a altimetria do campo…";
+"Elevation isn't available for this course." = "A altimetria não está disponível para este campo.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Não foi possível transferir a altimetria do campo neste momento. Será tentado novamente da próxima vez que abrir o campo.";
+"This position is outside the downloaded course elevation." = "Esta posição está fora da altimetria transferida do campo.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Escolha o intervalo de handicap que melhor corresponde ao seu jogo. É utilizado na escolha do taco. Para introduzir distâncias e dados de lançamento pessoais, abra No saco > Distâncias dos tacos e lançamento a partir do Início.";
 "Choose wedges in Clubs in my bag to include them here." = "Escolha wedges em Tacos no meu saco para os incluir aqui.";
 "Choose which clubs are available" = "Escolher os tacos disponíveis";

@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Valitse yksityiskohtainen scoring jokaiselle pelaajalle erikseen. Yksityiskohtaiset tuloskortit seuraavat puttien määrää, väyläsijaintia, bunkkerilyöntejä ja rangaistuksia.";
 "Choose the club to use for launch conditions." = "Valitse lähtöarvoissa käytettävä maila.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Valitse mailat, joita kannat, ja määritä mailojen ja wedgejen matkat.";
+"Downloading course elevation…" = "Ladataan kentän korkeustietoja…";
+"Elevation isn't available for this course." = "Tälle kentälle ei ole saatavilla korkeustietoja.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Kentän korkeustietoja ei voitu ladata juuri nyt. Lataus yritetään uudelleen, kun avaat kentän seuraavan kerran.";
+"This position is outside the downloaded course elevation." = "Tämä sijainti on ladattujen korkeustietojen ulkopuolella.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Valitse peliisi parhaiten sopiva tasoitusväli. Sitä käytetään mailan valintaan. Syöttääksesi henkilökohtaiset matkat ja lähtötiedot avaa Kodista Bägissä > Mailojen matkat ja lähtö.";
 "Choose wedges in Clubs in my bag to include them here." = "Valitse wedget kohdassa Mailat bägissäni sisällyttääksesi ne tähän.";
 "Choose which clubs are available" = "Valitse käytettävissä olevat mailat";

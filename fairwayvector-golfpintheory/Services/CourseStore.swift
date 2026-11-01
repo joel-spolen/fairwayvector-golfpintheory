@@ -7,22 +7,29 @@ final class CourseStore {
     private(set) var course: Course?
     private(set) var isLoading = false
     private(set) var errorMessage: String?
+    private(set) var terrain: CourseTerrain?
+    private(set) var terrainMessage: String?
+    private(set) var isLoadingTerrain = false
 
     private let client: OverpassClient
     private let golfAPIClient: GolfAPIClient
+    private let terrainMode: DevelopmentAPIConfiguration.Mode
     private let maxCacheAge: TimeInterval = 24 * 60 * 60
     private var resolvedRelationID: Int?
+    private var bundledTerrain: CourseTerrainManifest?
 
     init(
         reference: CourseReference,
         client: OverpassClient = OverpassClient(),
         golfAPIClient: GolfAPIClient = .shared,
-        initialCourse: Course? = nil
+        initialCourse: Course? = nil,
+        terrainMode: DevelopmentAPIConfiguration.Mode = DevelopmentAPIConfiguration.current.gpxz
     ) {
         self.reference = reference
         self.client = client
         self.golfAPIClient = golfAPIClient
         self.course = initialCourse
+        self.terrainMode = terrainMode
     }
 
     func load() async {
@@ -31,15 +38,11 @@ final class CourseStore {
         }
         if golfAPIClient.mode == .mock {
             if course == nil { await refresh() }
-            return
+        } else if !(reference.golfAPICourseID != nil && course != nil),
+                  !(course.map { Date.now.timeIntervalSince($0.fetchedAt) < maxCacheAge } ?? false) {
+            await refresh()
         }
-        if reference.golfAPICourseID != nil, course != nil {
-            return
-        }
-        if let course, Date.now.timeIntervalSince(course.fetchedAt) < maxCacheAge {
-            return
-        }
-        await refresh()
+        await loadTerrain()
     }
 
     func refresh() async {
@@ -56,9 +59,16 @@ final class CourseStore {
                 }
             }
             if let courseID = reference.golfAPICourseID {
-                let payload = try await (course == nil
-                    ? golfAPIClient.loadCourse(id: courseID)
-                    : golfAPIClient.refreshCourse(id: courseID))
+                let payload: GolfAPICoursePayload
+                if course == nil, golfAPIClient.mode == .live, golfAPIClient.cachedPayload(id: courseID) == nil {
+                    let bundle = try await golfAPIClient.loadCourseBundle(id: courseID)
+                    payload = bundle.payload
+                    bundledTerrain = bundle.terrain
+                } else {
+                    payload = try await (course == nil
+                        ? golfAPIClient.loadCourse(id: courseID)
+                        : golfAPIClient.refreshCourse(id: courseID))
+                }
                 let built = try GolfAPICourseBuilder.build(reference: reference, payload: payload)
                 course = built
                 writeCache(built)
@@ -119,5 +129,50 @@ final class CourseStore {
         guard let url = cacheURL, let data = try? JSONEncoder().encode(course) else { return }
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? data.write(to: url, options: .atomic)
+    }
+
+    /// Saved elevation first; otherwise the course bundle's manifest and its tiles.
+    /// Never blocks the course: failures leave `terrain` nil with a message.
+    private func loadTerrain() async {
+        guard course != nil, terrain == nil else { return }
+        if terrainMode == .mock {
+            terrain = CourseTerrain(source: .synthetic)
+            terrainMessage = nil
+            return
+        }
+        guard let courseID = reference.golfAPICourseID, golfAPIClient.mode == .live,
+              let identity = terrainCourseID else {
+            terrainMessage = L("Elevation isn't available for this course.")
+            return
+        }
+        let directory = CourseDataStore.directory(courseID: identity)
+        CourseTerrainStore.removeLegacyFiles(directory: directory, accountRoot: CourseDataStore.root)
+        if let saved = CourseTerrainStore.read(directory: directory) {
+            terrain = saved
+            terrainMessage = nil
+            return
+        }
+        isLoadingTerrain = true
+        defer { isLoadingTerrain = false }
+        do {
+            let manifest: CourseTerrainManifest
+            if let bundledTerrain {
+                manifest = bundledTerrain
+            } else {
+                manifest = try await golfAPIClient.loadCourseBundle(id: courseID).terrain
+            }
+            bundledTerrain = nil
+            terrain = try await CourseTerrainStore.download(manifest, directory: directory) { id in
+                try await self.golfAPIClient.downloadTerrainTile(id: id)
+            }
+            terrainMessage = manifest.isReady ? nil
+                : L("Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course.")
+        } catch CourseTerrainError.unavailable(let temporary) {
+            terrainMessage = temporary
+                ? L("Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course.")
+                : L("Elevation isn't available for this course.")
+        } catch {
+            terrainMessage = L("Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course.")
+        }
     }
 }

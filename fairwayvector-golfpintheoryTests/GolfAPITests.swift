@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import Testing
 @testable import fairwayvector_golfpintheory
@@ -675,12 +676,60 @@ struct GolfAPITests {
 
         // Play's CourseStore uses the same client cache, so it needs no third fetch.
         let store = CourseStore(reference: try #require(explore.selection).reference,
-            golfAPIClient: client)
+            golfAPIClient: client, terrainMode: .mock)
         await store.load()
         #expect(store.course?.holes.count == 2)
         #expect(store.errorMessage == nil)
         #expect(GolfAPIStubProtocol.requestCount == 2)
         GolfAPIStubProtocol.handler = nil
+    }
+
+    @Test func firstCourseDownloadUsesOneBundleAndReopensWithSavedElevation() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer {
+            try? FileManager.default.removeItem(at: directory)
+            CourseDataStore.removeCourseData(id: "course-123")
+        }
+        CourseDataStore.removeCourseData(id: "course-123")
+        let tile = try CourseTerrainTests.packed(width: 10, height: 10, bounds: (13.07, 13.12, 63.39, 63.44)) { x, y in
+            UInt16(x * 50 + y * 10)
+        }
+        let tileID = String(repeating: "a", count: 64)
+        let sha256 = SHA256.hash(data: tile).map { String(format: "%02x", $0) }.joined()
+        let bundle = try JSONSerialization.data(withJSONObject: [
+            "detail": JSONSerialization.jsonObject(with: Data(courseDetailJSON.utf8)),
+            "coordinates": JSONSerialization.jsonObject(with: Data(coordinatesJSON.utf8)),
+            "terrain": ["status": "ready", "tiles": [["status": "ready", "id": tileID, "sha256": sha256,
+                "bytes": tile.count, "width": 10, "height": 10, "resolutionMeters": 1, "sources": ["fixture_1m"],
+                "bounds": ["left": 13.07, "right": 13.12, "bottom": 63.39, "top": 63.44]]]]
+        ])
+        let client = makeClient(directory: directory) { request in
+            switch request.url?.path {
+            case "/functions/v1/golf-data/api/v1/golf/courses/course-123/bundle": (200, bundle)
+            case "/functions/v1/golf-data/api/v1/golf/terrain/\(tileID)": (200, tile)
+            default: (404, Data())
+            }
+        }
+        defer { GolfAPIStubProtocol.handler = nil }
+        let detail = try GolfAPICourseDetail(json: try #require(
+            JSONSerialization.jsonObject(with: Data(courseDetailJSON.utf8)) as? [String: Any]))
+        let summary = GolfAPICourseSummary(courseID: "course-123", courseName: "Åre GK", numHoles: 2, hasGPS: true, timestampUpdated: nil)
+        let club = GolfAPIClub(clubID: "club-1", clubName: "Åre Golfklubb", city: "Åre", state: "Jämtland",
+            country: "Sweden", courses: [summary])
+        let reference = GolfAPICourseSelection(club: club, course: summary, details: detail,
+            tee: try #require(detail.tees.first), sex: "male").reference
+
+        let store = CourseStore(reference: reference, golfAPIClient: client, terrainMode: .live)
+        await store.load()
+        #expect(store.course?.holes.count == 2 && store.errorMessage == nil)
+        #expect(store.terrain != nil && store.terrainMessage == nil && !store.isLoadingTerrain)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
+
+        let reopened = CourseStore(reference: reference, golfAPIClient: client, terrainMode: .live)
+        await reopened.load()
+        let tee = try #require(reopened.course?.holes.first?.tee)
+        #expect(reopened.terrain?.sample(at: tee)?.elevation.isFinite == true)
+        #expect(GolfAPIStubProtocol.requestCount == 2)
     }
 
     @Test func downloadReportsLocalStorageFailure() async throws {

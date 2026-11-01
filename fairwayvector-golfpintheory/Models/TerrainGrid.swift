@@ -66,23 +66,9 @@ nonisolated struct TerrainSnapshot: Sendable {
 }
 
 nonisolated enum TerrainError: Error, LocalizedError, Sendable {
-    case invalidPath, invalidResponse, cacheUnavailable, ledgerUnavailable, exhausted, notConfigured, requestPaused
-    case http(Int, reason: String? = nil), retryAfter(Date), transport, failedRequest(String)
+    case invalidPath
     var errorDescription: String? {
-        switch self {
-        case .invalidPath: L("Terrain path must contain valid WGS84 points (maximum 5,000).")
-        case .invalidResponse: L("Supabase returned an invalid terrain profile; nothing was saved.")
-        case .cacheUnavailable: L("Terrain cache could not be read or saved. Paid requests are blocked; preserve the cache and resolve the storage issue.")
-        case .ledgerUnavailable: L("The local terrain request ledger is unreadable. Requests are blocked; do not delete it to bypass the limit.")
-        case .exhausted: L("The local 100-call UTC monthly limit is exhausted. Showing saved terrain only.")
-        case .notConfigured: L("The authenticated Supabase terrain service is unavailable. Sign in and check the app's Supabase configuration. Saved terrain remains available.")
-        case .requestPaused: L("Terrain acquisition paused for target interaction. Release a target to request its missing shot terrain.")
-        case .http(let status, let reason):
-            L("Supabase terrain request failed (HTTP %@). %@ No automatic retry.", "\(status)", reason ?? L("The data service supplied no usable detail."))
-        case .transport: L("Supabase could not complete the terrain request. No automatic retry; the local reservation is retained.")
-        case .failedRequest(let reason): L("%@ Identical failed request blocked. Correct the cause, then confirm Retry terrain to try again.", reason)
-        case .retryAfter(let date): L("Supabase has paused terrain requests until %@. Retry explicitly afterwards.", date.formatted())
-        }
+        L("Terrain path must contain valid WGS84 points (maximum 5,000).")
     }
 }
 

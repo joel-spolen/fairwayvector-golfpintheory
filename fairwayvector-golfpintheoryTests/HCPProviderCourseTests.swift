@@ -20,7 +20,7 @@ struct HCPProviderCourseTests {
 
     private func forbiddenSession() -> URLSession {
         let config = URLSessionConfiguration.ephemeral
-        config.protocolClasses = [GPXZForbiddenNetworkProtocol.self]
+        config.protocolClasses = [ForbiddenNetworkProtocol.self]
         return URLSession(configuration: config)
     }
 

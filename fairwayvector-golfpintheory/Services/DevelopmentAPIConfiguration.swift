@@ -18,6 +18,5 @@ nonisolated struct DevelopmentAPIConfiguration: Sendable {
              gpxz: Mode(setting: Bundle.main.object(forInfoDictionaryKey: "GPXZ_API_MODE") as? String))
     }
     static let syntheticSource = "Synthetic development terrain"
-    static let terrainNamespace = "development-gpxz-v1:"
     static func isDemoCourse(_ id: String) -> Bool { id.contains("mock-hills-v1") }
 }

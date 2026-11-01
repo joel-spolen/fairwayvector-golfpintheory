@@ -6,7 +6,7 @@ import Testing
 @MainActor struct DevelopmentAPIMockTests {
     private func session() -> URLSession {
         let config = URLSessionConfiguration.ephemeral
-        config.protocolClasses = [GPXZForbiddenNetworkProtocol.self]
+        config.protocolClasses = [ForbiddenNetworkProtocol.self]
         return URLSession(configuration: config)
     }
 
@@ -182,69 +182,5 @@ import Testing
         wrong.golfAPICourseID = "wrong-provider-id"
         try JSONEncoder().encode(wrong).write(to: durable)
         #expect(CourseDataStore.readCourse(reference: reference, applicationSupport: support) == nil)
-    }
-
-    @Test func terrainSendGatePrecedesDispatchEvenForLiveRequest() async throws {
-        let client = GPXZElevationClient(session: session(), mode: .mock)
-        let path = [GeoPoint(lat: 57.623, lon: 12), GeoPoint(lat: 57.626, lon: 12.001)]
-        let request = URLRequest(url: URL(string: "https://supabase.example.test/functions/v1/golf-data/api/v1/elevation/sample")!)
-        let record = try await client.send(request, path: path, count: 100, dispatch: { _ in
-            Issue.record("Mock must never enter the URLSession dispatch gate")
-            return false
-        })
-        #expect(record.samples.count == 100)
-        #expect(record.samples.first?.point == path.first && record.samples.last?.point == path.last)
-        #expect(record.samples.allSatisfy { $0.elevationMeters?.isFinite == true && $0.provenance.allSatisfy(\.isSynthetic) })
-        #expect(record.samples.first?.provenance.first?.captureDateMin == nil)
-        #expect(try client.request(path: path).0.value(forHTTPHeaderField: "x-api-key") == nil)
-        let reverse = try GPXZElevationClient.syntheticRecord(path: path.reversed(), count: 100)
-        #expect(reverse.samples.first?.elevationMeters == record.samples.last?.elevationMeters)
-        #expect(reverse.samples.last?.elevationMeters == record.samples.first?.elevationMeters)
-    }
-
-    @Test func mockRepositoryPreservesFiveCallLedgerLocksAndLiveTerrainAcrossReopenRetry() async throws {
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: root) }
-        let id = "golfapi:real-hills", directory = CourseDataStore.directory(courseID: id, root: root)
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let liveSidecar = directory.appendingPathComponent("terrain-gpxz-v1.json")
-        let liveBytes = Data("even corrupt live terrain must never be read or repaired in mock".utf8)
-        try liveBytes.write(to: liveSidecar)
-        let ledgerURL = root.appendingPathComponent("ledger.json")
-        let ledgerBytes = Data(#"{"schemaVersion":1,"months":{"2026-10":5},"failedRequests":{"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa":"historical 400"}}"#.utf8)
-        try ledgerBytes.write(to: ledgerURL)
-        let marker = ledgerURL.appendingPathExtension("initialized"), markerBytes = Data("untouched marker".utf8)
-        try markerBytes.write(to: marker)
-        let client = GPXZElevationClient(session: session(), mode: .mock)
-        let path = [GeoPoint(lat: 57.623, lon: 12), GeoPoint(lat: 57.625, lon: 12)]
-        for _ in 0..<2 {
-            let repo = GPXZTerrainRepository(root: root, client: client, ledgerURL: ledgerURL)
-            for paid in [false, true] {
-                let result = await repo.profile(courseID: id, path: path, straight: true, allowPaid: paid,
-                    maySend: { false }, dispatch: { _ in Issue.record("Mock must not dispatch"); return false })
-                #expect(result.message == nil && result.quota == nil && result.plannedCalls == 0)
-                #expect(result.profile?.samples.allSatisfy { $0.elevationMeters != nil } == true)
-            }
-            let reverse = await repo.profile(courseID: id, path: path.reversed(), straight: true)
-            #expect(reverse.profile?.samples.first?.point == path.last)
-            let subpath = [TerrainGeometry.interpolate(path[0], path[1], 0.25), TerrainGeometry.interpolate(path[0], path[1], 0.75)]
-            let subsection = await repo.profile(courseID: id, path: subpath, straight: true)
-            #expect(subsection.message == nil && subsection.plannedCalls == 0)
-            #expect(subsection.profile?.samples.allSatisfy { $0.elevationMeters != nil } == true)
-            #expect(await repo.prepareExplicitRetry() == nil)
-            #expect(try Data(contentsOf: ledgerURL) == ledgerBytes)
-            #expect(try Data(contentsOf: marker) == markerBytes)
-            #expect(try Data(contentsOf: liveSidecar) == liveBytes)
-        }
-        let syntheticID = DevelopmentAPIConfiguration.terrainNamespace + id
-        let sidecar = CourseDataStore.directory(courseID: syntheticID, root: root).appendingPathComponent("terrain-synthetic-development-v1.json")
-        let cache = try JSONDecoder().decode(TerrainCourseCache.self, from: Data(contentsOf: sidecar))
-        try cache.validate(expectedID: syntheticID)
-        #expect(cache.responses.count == 1) // Overlap/reversal/relaunch use the same saved synthetic coverage.
-        let noLedgerURL = root.appendingPathComponent("never-initialized.json")
-        let fresh = GPXZTerrainRepository(root: root, client: client, ledgerURL: noLedgerURL)
-        _ = await fresh.profile(courseID: "other-live-id", path: path, straight: true)
-        #expect(!FileManager.default.fileExists(atPath: noLedgerURL.path))
-        #expect(!FileManager.default.fileExists(atPath: noLedgerURL.appendingPathExtension("initialized").path))
     }
 }

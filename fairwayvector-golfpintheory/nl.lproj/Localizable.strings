@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Kies per speler gedetailleerde scoring. Gedetailleerde scorekaarten houden putts, fairwaypositie, bunkerslagen en strafslagen bij.";
 "Choose the club to use for launch conditions." = "Kies de club voor de lanceeromstandigheden.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Kies de clubs die je meeneemt en stel de afstanden van je clubs en wedges in.";
+"Downloading course elevation…" = "Hoogtegegevens van de baan downloaden…";
+"Elevation isn't available for this course." = "Er zijn geen hoogtegegevens beschikbaar voor deze baan.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "De hoogtegegevens van de baan konden nu niet worden gedownload. Dit wordt opnieuw geprobeerd wanneer je de baan weer opent.";
+"This position is outside the downloaded course elevation." = "Deze positie ligt buiten de gedownloade hoogtegegevens van de baan.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Kies het handicapbereik dat het best bij je spel past. Dit wordt gebruikt voor de clubkeuze. Om persoonlijke afstanden en lanceergegevens in te voeren, open je In de tas > Clubafstanden & lancering vanaf Start.";
 "Choose wedges in Clubs in my bag to include them here." = "Kies wedges in Clubs in mijn tas om ze hier op te nemen.";
 "Choose which clubs are available" = "Kies welke clubs beschikbaar zijn";

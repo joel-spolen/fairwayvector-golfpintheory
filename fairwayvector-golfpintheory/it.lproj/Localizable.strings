@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Scegli il punteggio dettagliato per ciascun giocatore. Le score card dettagliate registrano putt, posizione sul fairway, colpi dal bunker e penalità.";
 "Choose the club to use for launch conditions." = "Scegli il bastone da usare per le condizioni di lancio.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Scegli i bastoni che porti e imposta le distanze di bastoni e wedge.";
+"Downloading course elevation…" = "Download dell’altimetria del percorso…";
+"Elevation isn't available for this course." = "L’altimetria non è disponibile per questo percorso.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Non è stato possibile scaricare l’altimetria del percorso in questo momento. Verrà riprovato alla prossima apertura del percorso.";
+"This position is outside the downloaded course elevation." = "Questa posizione è fuori dall’altimetria scaricata del percorso.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Scegli l’intervallo di handicap più adatto al tuo gioco. Viene usato per la scelta del bastone. Per inserire distanze e dati di lancio personali, apri Nella sacca > Distanze dei bastoni e lancio dalla Home.";
 "Choose wedges in Clubs in my bag to include them here." = "Scegli i wedge in Bastoni nella mia sacca per includerli qui.";
 "Choose which clubs are available" = "Scegli i bastoni disponibili";

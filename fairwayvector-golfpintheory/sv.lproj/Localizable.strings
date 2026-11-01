@@ -224,6 +224,10 @@
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Välj detaljerad scoring separat för varje spelare. Detaljerade scorekort följer puttar, fairwayläge, bunkerslag och pliktslag.";
 "Choose the club to use for launch conditions." = "Välj klubban som ska användas för utgångsvärdena.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Välj klubborna du bär och ställ in avstånd för klubbor och wedgar.";
+"Downloading course elevation…" = "Laddar ner banans höjddata…";
+"Elevation isn't available for this course." = "Höjddata är inte tillgänglig för den här banan.";
+"Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Banans höjddata kunde inte laddas ner just nu. Ett nytt försök görs nästa gång du öppnar banan.";
+"This position is outside the downloaded course elevation." = "Den här positionen ligger utanför banans nedladdade höjddata.";
 "Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Välj det handicapintervall som bäst matchar ditt spel. Det används för klubbval. För att ange personliga avstånd och utgångsdata, öppna I bagen > Klubbavstånd & utgång från Hem.";
 "Choose wedges in Clubs in my bag to include them here." = "Välj wedgar i Klubbor i min bag för att ta med dem här.";
 "Choose which clubs are available" = "Välj vilka klubbor som är tillgängliga";

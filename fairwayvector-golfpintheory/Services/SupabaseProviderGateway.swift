@@ -73,8 +73,9 @@ final class SupabaseProviderGateway {
         settings.urlCredentialStorage = nil
         settings.httpShouldSetCookies = false
         settings.requestCachePolicy = .reloadIgnoringLocalCacheData
-        settings.timeoutIntervalForRequest = 30
-        settings.timeoutIntervalForResource = 60
+        // A first course download waits while the server fetches and packs its elevation.
+        settings.timeoutIntervalForRequest = 120
+        settings.timeoutIntervalForResource = 180
         session = URLSession(configuration: settings, delegate: ProviderNoRedirectDelegate(), delegateQueue: nil)
     }
 
@@ -108,7 +109,7 @@ final class SupabaseProviderGateway {
         return request
     }
 
-    func send(_ originalRequest: URLRequest) async throws -> SupabaseProviderResponse {
+    func send(_ originalRequest: URLRequest, maxBytes: Int = 4_000_000) async throws -> SupabaseProviderResponse {
         let request = try await authorizedRequest(originalRequest)
 
         let data: Data
@@ -116,7 +117,7 @@ final class SupabaseProviderGateway {
         do { (data, response) = try await session.data(for: request) }
         catch { throw SupabaseProviderError.transportUnavailable }
         guard let http = response as? HTTPURLResponse else { throw SupabaseProviderError.transportUnavailable }
-        guard data.count <= 4_000_000 else { throw SupabaseProviderError.requestRejected }
+        guard data.count <= maxBytes else { throw SupabaseProviderError.requestRejected }
         let headers: [String: String] = Dictionary(uniqueKeysWithValues: http.allHeaderFields.compactMap { key, value -> (String, String)? in
             guard let key = key as? String else { return nil }
             return (key, String(describing: value))

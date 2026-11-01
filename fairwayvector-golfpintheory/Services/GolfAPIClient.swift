@@ -181,6 +181,37 @@ struct GolfAPIClient {
         return GolfAPICoursePayload(detail: detail, coordinates: coordinates)
     }
 
+    /// Live only: course details, GPS coordinates and the course elevation manifest in one request.
+    func loadCourseBundle(id: String) async throws -> (payload: GolfAPICoursePayload, terrain: CourseTerrainManifest) {
+        let data = try await get("/golf/courses/\(id)/bundle", timeout: 120)
+        let object = try Self.jsonObject(data)
+        guard let detailObject = object["detail"] as? [String: Any],
+              let coordinatesObject = object["coordinates"] as? [String: Any],
+              let terrainObject = object["terrain"] as? [String: Any] else {
+            throw GolfAPIError.invalidResponse("The course bundle is incomplete.")
+        }
+        let detailData = try JSONSerialization.data(withJSONObject: detailObject)
+        let coordinatesData = try JSONSerialization.data(withJSONObject: coordinatesObject)
+        let detail = try Self.decodeDetail(from: detailData)
+        guard detail.courseID == id else {
+            throw GolfAPIError.invalidResponse("The returned course ID does not match the requested course.")
+        }
+        let coordinates = try Self.decodeCoordinates(from: coordinatesData, expectedCourseID: id)
+        let terrain = try JSONDecoder().decode(CourseTerrainManifest.self,
+            from: JSONSerialization.data(withJSONObject: terrainObject))
+        try cache.persistCourseDetail(detailData, id: id)
+        try cache.persistCoordinates(coordinatesData, id: id)
+        await retainSelectedCourse(id)
+        return (GolfAPICoursePayload(detail: detail, coordinates: coordinates), terrain)
+    }
+
+    func downloadTerrainTile(id: String) async throws -> Data {
+        guard id.range(of: #"^[a-f0-9]{64}$"#, options: .regularExpression) != nil else {
+            throw GolfAPIError.invalidResponse("Invalid course elevation tile.")
+        }
+        return try await get("/golf/terrain/\(id)", timeout: 120, maxBytes: 64_000_000)
+    }
+
     static func normalizedSearchTerm(_ value: String) -> String {
         value.trimmingCharacters(in: .whitespacesAndNewlines).precomposedStringWithCanonicalMapping
     }
@@ -273,7 +304,8 @@ struct GolfAPIClient {
         }
     }
 
-    private func get(_ path: String, queryItems: [URLQueryItem] = []) async throws -> Data {
+    private func get(_ path: String, queryItems: [URLQueryItem] = [], timeout: TimeInterval = 25,
+                     maxBytes: Int = 4_000_000) async throws -> Data {
         // Mock mode is fixture-only. Live mode is restricted to Supabase's
         // authenticated Edge Function; no provider URL or provider key exists here.
         if mode == .mock {
@@ -285,7 +317,7 @@ struct GolfAPIClient {
         if !queryItems.isEmpty { components.queryItems = queryItems }
         var request = URLRequest(url: components.url!)
         request.httpMethod = "GET"
-        request.timeoutInterval = 25
+        request.timeoutInterval = timeout
         request.setValue("application/json", forHTTPHeaderField: "Accept")
 
         let result: SupabaseProviderResponse
@@ -301,7 +333,7 @@ struct GolfAPIClient {
                 })
                 result = SupabaseProviderResponse(data: data, statusCode: http.statusCode, headers: headers)
             } else {
-                result = try await SupabaseProviderGateway.shared.send(request)
+                result = try await SupabaseProviderGateway.shared.send(request, maxBytes: maxBytes)
             }
         } catch let error as GolfAPIError { throw error }
         catch let error as SupabaseProviderError {
@@ -328,7 +360,8 @@ struct GolfAPIClient {
             let decoded = result.data.count <= 65_536
                 ? (try? JSONDecoder().decode(Envelope.self, from: result.data).error.code) : nil
             let code = decoded.flatMap { allowed.contains($0) ? $0 : nil } ?? "service_unavailable"
-            let stage = path.hasPrefix("/golf/coordinates/") ? "course GPS coordinates"
+            let stage = path.hasPrefix("/golf/terrain/") ? "course elevation"
+                : path.hasPrefix("/golf/coordinates/") ? "course GPS coordinates"
                 : path.hasPrefix("/golf/courses/") ? "course details and tees" : "course search results"
             throw GolfAPIError.dataService(status: result.statusCode, code: code, stage: stage)
         }
