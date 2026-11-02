@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "%@ pútt á holu (var %@)";
 "%@ per 18 holes (was %@)" = "%@ á 18 holur (var %@)";
 "%@ (was %@)" = "%@ (var %@)";
+"All" = "Allir";
+"Last %@" = "Síðustu %@";
+"Rounds included" = "Hringir sem teljast með";
+"Based on 1 round" = "Byggt á 1 hring";
+"Based on all %@ rounds" = "Byggt á öllum %@ hringjunum";
+"Based on your last %@ rounds" = "Byggt á síðustu %@ hringjunum þínum";

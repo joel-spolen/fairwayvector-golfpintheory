@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "%@ puttu na jamku (dříve %@)";
 "%@ per 18 holes (was %@)" = "%@ na 18 jamek (dříve %@)";
 "%@ (was %@)" = "%@ (dříve %@)";
+"All" = "Vše";
+"Last %@" = "Posledních %@";
+"Rounds included" = "Zahrnutá kola";
+"Based on 1 round" = "Na základě 1 kola";
+"Based on all %@ rounds" = "Na základě všech %@ kol";
+"Based on your last %@ rounds" = "Na základě vašich posledních %@ kol";

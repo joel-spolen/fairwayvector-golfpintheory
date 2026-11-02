@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "%@ putts por buraco (antes %@)";
 "%@ per 18 holes (was %@)" = "%@ por 18 buracos (antes %@)";
 "%@ (was %@)" = "%@ (antes %@)";
+"All" = "Todas";
+"Last %@" = "Últimas %@";
+"Rounds included" = "Voltas incluídas";
+"Based on 1 round" = "Com base em 1 volta";
+"Based on all %@ rounds" = "Com base em todas as %@ voltas";
+"Based on your last %@ rounds" = "Com base nas suas últimas %@ voltas";

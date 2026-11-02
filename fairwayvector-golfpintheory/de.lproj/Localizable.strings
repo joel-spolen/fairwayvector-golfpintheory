@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "%@ Putts pro Loch (vorher %@)";
 "%@ per 18 holes (was %@)" = "%@ pro 18 Löcher (vorher %@)";
 "%@ (was %@)" = "%@ (vorher %@)";
+"All" = "Alle";
+"Last %@" = "Letzte %@";
+"Rounds included" = "Einbezogene Runden";
+"Based on 1 round" = "Basierend auf 1 Runde";
+"Based on all %@ rounds" = "Basierend auf allen %@ Runden";
+"Based on your last %@ rounds" = "Basierend auf deinen letzten %@ Runden";

@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "1 ホールあたり %@ パット（以前は %@）";
 "%@ per 18 holes (was %@)" = "18 ホールあたり %@（以前は %@）";
 "%@ (was %@)" = "%@（以前は %@）";
+"All" = "すべて";
+"Last %@" = "直近 %@";
+"Rounds included" = "対象ラウンド";
+"Based on 1 round" = "1 ラウンドに基づく";
+"Based on all %@ rounds" = "全 %@ ラウンドに基づく";
+"Based on your last %@ rounds" = "直近 %@ ラウンドに基づく";

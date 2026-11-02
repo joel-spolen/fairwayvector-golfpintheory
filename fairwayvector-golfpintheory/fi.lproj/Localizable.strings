@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "%@ puttia reikää kohden (aiemmin %@)";
 "%@ per 18 holes (was %@)" = "%@ 18 reikää kohden (aiemmin %@)";
 "%@ (was %@)" = "%@ (aiemmin %@)";
+"All" = "Kaikki";
+"Last %@" = "Viimeiset %@";
+"Rounds included" = "Mukaan otettavat kierrokset";
+"Based on 1 round" = "Perustuu 1 kierrokseen";
+"Based on all %@ rounds" = "Perustuu kaikkiin %@ kierrokseen";
+"Based on your last %@ rounds" = "Perustuu viimeisimpään %@ kierrokseesi";

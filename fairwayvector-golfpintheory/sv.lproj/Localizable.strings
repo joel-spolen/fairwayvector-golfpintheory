@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "%@ puttar per hål (var %@)";
 "%@ per 18 holes (was %@)" = "%@ per 18 hål (var %@)";
 "%@ (was %@)" = "%@ (var %@)";
+"All" = "Alla";
+"Last %@" = "Senaste %@";
+"Rounds included" = "Inkluderade rundor";
+"Based on 1 round" = "Baserat på 1 runda";
+"Based on all %@ rounds" = "Baserat på alla %@ rundor";
+"Based on your last %@ rounds" = "Baserat på dina senaste %@ rundor";

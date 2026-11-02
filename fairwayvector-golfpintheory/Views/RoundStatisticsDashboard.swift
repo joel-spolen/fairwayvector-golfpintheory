@@ -100,15 +100,33 @@ struct RoundPerformanceRecord: Identifiable {
     }
 }
 
+enum StatisticsRoundRange: Int, CaseIterable, Identifiable {
+    case last5 = 5, last10 = 10, last20 = 20, all = 0
+
+    var id: Int { rawValue }
+    var title: String { self == .all ? L("All") : L("Last %@", "\(rawValue)") }
+
+    func apply(_ records: [RoundPerformanceRecord]) -> [RoundPerformanceRecord] {
+        let ordered = records.sorted { $0.date == $1.date ? $0.id < $1.id : $0.date < $1.date }
+        return self == .all ? ordered : Array(ordered.suffix(rawValue))
+    }
+}
+
 struct RoundStatisticsDashboard: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(PlayedRoundStore.self) private var store
     @Query(sort: \GolfRound.date, order: .reverse) private var handicapRounds: [GolfRound]
     @State private var deleting: UUID?
     @State private var error: String?
+    @AppStorage("statistics.roundRange.v1") private var roundRange: StatisticsRoundRange = .last10
 
-    private var records: [RoundPerformanceRecord] {
+    private var allRecords: [RoundPerformanceRecord] {
         RoundPerformanceRecord.combined(played: store.saved, handicap: handicapRounds)
+    }
+
+    /// Rounds the statistics cards are based on; recent form and history always use every round.
+    private var records: [RoundPerformanceRecord] {
+        roundRange.apply(allRecords)
     }
 
     var body: some View {
@@ -127,11 +145,12 @@ struct RoundStatisticsDashboard: View {
                             }
                         }.pureLineCard()
                     }
-                    if records.isEmpty {
+                    if allRecords.isEmpty {
                         ContentUnavailableView("Your story starts here", systemImage: "chart.xyaxis.line",
                             description: Text("Save your first round to see your averages and trends."))
                     } else {
                         recentForm
+                        rangePicker
                         overview
                         scoringByPar
                         holeTypeDetails
@@ -176,7 +195,7 @@ struct RoundStatisticsDashboard: View {
     private var recentForm: some View {
         VStack(alignment: .leading, spacing: 16) {
             chartHeading(L("Your recent form"), detail: L("Last 5 rounds compared with your earlier rounds"))
-            switch RecentFormAnalysis.analyze(records) {
+            switch RecentFormAnalysis.analyze(allRecords) {
             case .notEnoughData(let roundsNeeded):
                 Text(roundsNeeded == 1
                      ? L("Save 1 more round with detailed scoring to see your recent form.")
@@ -229,6 +248,22 @@ struct RoundStatisticsDashboard: View {
             return L("%@ per 18 holes (was %@)", decimal(change.recent), decimal(change.earlier))
         case .approach, .driving, .shortGame:
             return L("%@ (was %@)", percent(change.recent), percent(change.earlier))
+        }
+    }
+
+    private var rangePicker: some View {
+        let included = records.count
+        let isWholeHistory = roundRange == .all || allRecords.count <= roundRange.rawValue
+        return VStack(alignment: .leading, spacing: 8) {
+            Picker(L("Rounds included"), selection: $roundRange) {
+                ForEach(StatisticsRoundRange.allCases) { Text($0.title).tag($0) }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityIdentifier("statistics-round-range")
+            Text(included == 1 ? L("Based on 1 round")
+                 : isWholeHistory ? L("Based on all %@ rounds", "\(included)")
+                 : L("Based on your last %@ rounds", "\(included)"))
+                .font(.caption).foregroundStyle(PureLineStyle.muted)
         }
     }
 
@@ -501,8 +536,8 @@ struct RoundStatisticsDashboard: View {
 
     private var history: some View {
         VStack(alignment: .leading, spacing: 16) {
-            chartHeading(L("Round history"), detail: L("%@ rounds · newest first", "\(records.count)"))
-            ForEach(records.reversed()) { record in
+            chartHeading(L("Round history"), detail: L("%@ rounds · newest first", "\(allRecords.count)"))
+            ForEach(allRecords.reversed()) { record in
                 NavigationLink {
                     if let round = record.played {
                         RoundReviewView(initialRound: round, isHistoryDetail: true)

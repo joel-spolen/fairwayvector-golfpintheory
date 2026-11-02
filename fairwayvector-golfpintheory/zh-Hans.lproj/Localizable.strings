@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "每洞推杆 %@ 次（之前 %@）";
 "%@ per 18 holes (was %@)" = "每 18 洞 %@ 次（之前 %@）";
 "%@ (was %@)" = "%@（之前 %@）";
+"All" = "全部";
+"Last %@" = "最近 %@ 轮";
+"Rounds included" = "纳入的轮次";
+"Based on 1 round" = "基于 1 轮";
+"Based on all %@ rounds" = "基于全部 %@ 轮";
+"Based on your last %@ rounds" = "基于最近 %@ 轮";

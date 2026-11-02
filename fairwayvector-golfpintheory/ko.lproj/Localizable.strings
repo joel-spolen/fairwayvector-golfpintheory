@@ -1202,3 +1202,9 @@
 "%@ putts per hole (was %@)" = "홀당 %@퍼트 (이전 %@)";
 "%@ per 18 holes (was %@)" = "18홀당 %@ (이전 %@)";
 "%@ (was %@)" = "%@ (이전 %@)";
+"All" = "전체";
+"Last %@" = "최근 %@";
+"Rounds included" = "포함할 라운드";
+"Based on 1 round" = "라운드 1개 기준";
+"Based on all %@ rounds" = "전체 라운드 %@개 기준";
+"Based on your last %@ rounds" = "최근 라운드 %@개 기준";
