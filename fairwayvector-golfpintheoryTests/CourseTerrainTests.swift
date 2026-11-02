@@ -88,6 +88,31 @@ import Testing
         store.open(request)
         #expect(store.holeMessage == "Unavailable" && store.snapshot.holeProfile == nil)
     }
+
+    @Test func chartDecimationKeepsGapsEndpointsAndExtremesWithinBudget() {
+        let point = GeoPoint(lat: 57.62, lon: 12.0)
+        // 2001 samples: a gap at 900…949 m, a spike at 300 m and a dip at 1500 m.
+        let samples = (0...2000).map { i -> TerrainSample in
+            let d = Double(i)
+            let height: Double? = (900..<950).contains(i) ? nil
+                : i == 300 ? 150 : i == 1500 ? 20 : 60 + sin(d / 40) * 5
+            return TerrainSample(distanceMeters: d, point: point, elevationMeters: height)
+        }
+        let runs = TerrainProfileChart.displayRuns(samples, buckets: 200)
+        #expect(runs.count == 2)
+        #expect(runs[0].first?.distanceMeters == 0 && runs[0].last?.distanceMeters == 899)
+        #expect(runs[1].first?.distanceMeters == 950 && runs[1].last?.distanceMeters == 2000)
+        let kept = runs.flatMap { $0 }
+        #expect(kept.count <= 2 * 200 + 2 * runs.count)
+        #expect(kept.contains { $0.distanceMeters == 300 && $0.elevationMeters == 150 })
+        #expect(kept.contains { $0.distanceMeters == 1500 && $0.elevationMeters == 20 })
+        #expect(zip(kept, kept.dropFirst()).allSatisfy { $0.distanceMeters < $1.distanceMeters })
+
+        let single = [TerrainSample(distanceMeters: 0, point: point, elevationMeters: 10),
+                      TerrainSample(distanceMeters: 1, point: point, elevationMeters: nil),
+                      TerrainSample(distanceMeters: 2, point: point, elevationMeters: 12)]
+        #expect(TerrainProfileChart.displayRuns(single).map(\.count) == [1, 1])
+    }
 }
 
 /// All test sessions route here; any dispatch fails offline instead of reaching a server.

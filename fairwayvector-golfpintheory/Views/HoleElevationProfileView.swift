@@ -1,23 +1,23 @@
 import SwiftUI
 import Charts
 
+/// Shared with the map so chart drags redraw only the marker, not the whole course page.
+@Observable final class TerrainInspection {
+    var point: GeoPoint?
+}
+
 /// Inspection is local-only. The parent owns committed acquisition and map selection.
 struct HoleElevationProfileView: View {
     let store: TerrainElevationStore
     let holeNumber: Int
     let unit: DistanceUnit
     let usesGPS: Bool
-    @Binding var inspectionPoint: GeoPoint?
+    let inspection: TerrainInspection
 
     @Environment(\.dismiss) private var dismiss
     @State private var selectedDistance: Double?
 
     private var mode: TerrainProfileMode { store.mode }
-
-    private struct ValidRun: Identifiable {
-        let id: Int
-        let samples: [TerrainSample]
-    }
 
     private var profile: TerrainProfile? {
         switch mode {
@@ -46,7 +46,7 @@ struct HoleElevationProfileView: View {
                     .pickerStyle(.segmented)
                     .tint(PureLineStyle.accent)
 
-                    if let profile, !validRuns(profile).isEmpty {
+                    if let profile, profile.samples.contains(where: { validElevation($0) != nil }) {
                         profileContent(profile)
                     } else if store.isLoading {
                         VStack(alignment: .leading, spacing: 8) {
@@ -82,7 +82,8 @@ struct HoleElevationProfileView: View {
         }
         .tint(PureLineStyle.accent)
         .onChange(of: selectedDistance) { _, _ in
-            inspectionPoint = inspectedSample?.point
+            let point = inspectedSample?.point
+            if inspection.point != point { inspection.point = point }
         }
         .onChange(of: mode) { _, _ in resetInspection() }
         .onChange(of: profile?.samples) { _, _ in resetInspection() }
@@ -154,21 +155,6 @@ struct HoleElevationProfileView: View {
         return elevation
     }
 
-    private func validRuns(_ profile: TerrainProfile) -> [ValidRun] {
-        var runs: [ValidRun] = []
-        var current: [TerrainSample] = []
-        for sample in profile.samples {
-            if validElevation(sample) != nil {
-                current.append(sample)
-            } else if !current.isEmpty {
-                runs.append(ValidRun(id: runs.count, samples: current))
-                current.removeAll(keepingCapacity: true)
-            }
-        }
-        if !current.isEmpty { runs.append(ValidRun(id: runs.count, samples: current)) }
-        return runs
-    }
-
     /// Binary search includes missing-height samples so inspection never hides a gap.
     private var inspectedSample: TerrainSample? {
         guard let selectedDistance, selectedDistance.isFinite,
@@ -201,6 +187,6 @@ struct HoleElevationProfileView: View {
 
     private func resetInspection() {
         selectedDistance = nil
-        inspectionPoint = nil
+        inspection.point = nil
     }
 }

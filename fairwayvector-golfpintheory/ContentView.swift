@@ -28,7 +28,7 @@ struct CourseMapView: View {
     @State private var terrainStore = TerrainElevationStore()
     @State private var isShowingTerrainProfile = false
     @State private var isShowingCourseInfo = false
-    @State private var terrainInspectionPoint: GeoPoint?
+    @State private var terrainInspection = TerrainInspection()
     @State private var mapHeading = 0.0
     @State private var locationManager = LocationManager()
     @State private var holeIndex = 0
@@ -209,13 +209,13 @@ struct CourseMapView: View {
         } message: {
             Text("This discards the unsaved round and its scores. Saved scorecards are not affected.")
         }
-        .sheet(isPresented: $isShowingTerrainProfile, onDismiss: { terrainInspectionPoint = nil }) {
+        .sheet(isPresented: $isShowingTerrainProfile, onDismiss: { terrainInspection.point = nil }) {
             if let holes = store.course?.holes, !holes.isEmpty {
                 let hole = holes[min(holeIndex, holes.count - 1)]
                 HoleElevationProfileView(
                     store: terrainStore, holeNumber: hole.number, unit: unit,
                     usesGPS: terrainStore.usesGPS,
-                    inspectionPoint: $terrainInspectionPoint
+                    inspection: terrainInspection
                 )
                 .presentationDetents([.medium, .large])
                 .presentationBackgroundInteraction(.enabled(upThrough: .medium))
@@ -372,11 +372,11 @@ struct CourseMapView: View {
                     tapPoint: $tapPoint,
                     onDoubleTapGreen: { point in saveFlagPosition(point, for: hole) },
                     onHeadingChange: { mapHeading = $0 },
-                    terrainInspectionPoint: terrainInspectionPoint,
+                    terrainInspection: terrainInspection,
                     onTargetInteractionBegan: { terrainStore.beginTargetInteraction() },
                     onTargetInteractionCancelled: { terrainStore.cancelTargetInteraction() },
                     onTargetCommitted: { point in
-                        terrainInspectionPoint = nil
+                        terrainInspection.point = nil
                         commitSelectedShot(for: hole, target: point)
                     },
                     simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
@@ -448,7 +448,7 @@ struct CourseMapView: View {
             }
             .task(id: holeRequest) {
                 tapPoint = nil
-                terrainInspectionPoint = nil
+                terrainInspection.point = nil
                 clearSimulation()
                 terrainStore.setTerrain(store.terrain, unavailableMessage: store.terrainMessage)
                 terrainStore.open(terrainRequest(for: hole,

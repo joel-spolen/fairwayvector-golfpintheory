@@ -9,7 +9,7 @@ struct HoleMapView: View {
     @Binding var tapPoint: GeoPoint?
     let onDoubleTapGreen: (GeoPoint) -> Void
     var onHeadingChange: (Double) -> Void = { _ in }
-    var terrainInspectionPoint: GeoPoint? = nil
+    var terrainInspection: TerrainInspection? = nil
     var onTargetInteractionBegan: () -> Void = {}
     var onTargetInteractionCancelled: () -> Void = {}
     var onTargetCommitted: (GeoPoint) -> Void = { _ in }
@@ -98,7 +98,7 @@ struct HoleMapView: View {
                     .annotationTitles(.hidden)
                 }
 
-                if let terrainInspectionPoint {
+                if let terrainInspectionPoint = terrainInspection?.point {
                     Annotation("Terrain profile position", coordinate: terrainInspectionPoint.coordinate) {
                         Image(systemName: "mountain.2.fill")
                             .font(.caption.bold())
