@@ -29,14 +29,14 @@ import Testing
         let before = try FileManager.default.contentsOfDirectory(atPath: root.path).sorted()
         let client = GolfAPIClient(session: session(), cache: cache, mode: .mock, bundledSavedCourses: nil)
         #expect(client.isConfigured)
-        for refresh in [false, true] {
-            let clubs = try await client.searchClubs(named: "Hills", country: "Sweden", forceRefresh: refresh)
+        for _ in [false, true] {
+            let clubs = try await client.searchClubs(named: "Hills", country: "Sweden")
             #expect(clubs.count == 1)
             #expect(clubs[0].clubName == "Demo Hills")
             #expect(clubs[0].courses[0].courseID == DevelopmentGolfAPIFixtures.courseID)
-            #expect(try await client.searchClubs(named: "Hills", country: "USA", forceRefresh: refresh).isEmpty)
-            #expect(try await client.searchClubs(named: "Other club", country: "Sweden", forceRefresh: refresh).isEmpty)
-            #expect(try await client.searchClubs(named: "Hills", country: "Sweden", region: "Other region", forceRefresh: refresh).isEmpty)
+            #expect(try await client.searchClubs(named: "Hills", country: "USA").isEmpty)
+            #expect(try await client.searchClubs(named: "Other club", country: "Sweden").isEmpty)
+            #expect(try await client.searchClubs(named: "Hills", country: "Sweden", region: "Other region").isEmpty)
             do {
                 _ = try await client.loadCourse(id: "real-hills")
                 Issue.record("Missing/corrupt real downloads must not return demo data under a real ID")
@@ -46,7 +46,7 @@ import Testing
             #expect(payload.detail.clubName == "Demo Hills")
             #expect(payload.detail.numHoles == 18 && payload.detail.tees.count == 2)
             #expect(payload.coordinates.count == 90)
-            #expect(try await client.checkForUpdates(to: payload.detail) == false)
+            #expect(try await client.checkForUpdates() == false)
             _ = try await client.refreshCourse(id: DevelopmentGolfAPIFixtures.courseID)
         }
         #expect(cache.readSearch(query: "Hills", country: "Sweden", region: "") == sentinel)
@@ -93,7 +93,7 @@ import Testing
         let before = try FileManager.default.contentsOfDirectory(atPath: root.path).sorted()
         let client = GolfAPIClient(session: session(), cache: cache, mode: .mock, bundledSavedCourses: nil)
         for refresh in [false, true] {
-            let clubs = try await client.searchClubs(named: "Hills", country: "Sweden", forceRefresh: refresh)
+            let clubs = try await client.searchClubs(named: "Hills", country: "Sweden")
             #expect(clubs.map(\.clubName) == ["Cached Hills regression fixture", "Demo Hills"])
             #expect(try await client.loadCourseDetail(id: id, forceRefresh: refresh).courseID == id)
             #expect(try await client.loadCoordinates(id: id, forceRefresh: refresh).count == 90)
@@ -122,7 +122,7 @@ import Testing
         let client = GolfAPIClient(session: session(), cache: GolfAPICache(directoryURL: root),
             mode: .mock, bundledSavedCourses: bundle)
         for refresh in [false, true] {
-            let clubs = try await client.searchClubs(named: "Hills", country: "Sweden", forceRefresh: refresh)
+            let clubs = try await client.searchClubs(named: "Hills", country: "Sweden")
             let club = try #require(clubs.first)
             #expect(club.clubName == "Hills Golf & Sports Club")
             #expect(club.courses.map(\.courseID) == [id]) // Valley is not a saved download.

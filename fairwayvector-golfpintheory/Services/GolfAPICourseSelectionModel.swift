@@ -10,7 +10,6 @@ final class GolfAPICourseSelectionModel {
     private let pageSize: Int
     let purpose: Purpose
     let savedCourses: [CourseReference]
-    var savedClubs: [GolfAPIClub] { client.cachedClubs(requiresGPS: purpose == .map) }
 
     var selectedRegion = "Europe"
     var selectedCountry = "Sweden"
@@ -77,12 +76,6 @@ final class GolfAPICourseSelectionModel {
         clearSearchResults()
     }
 
-    func hasSavedCourse(_ reference: CourseReference) -> Bool {
-        if CourseDataStore.readCourse(reference: reference) != nil { return true }
-        guard let id = reference.golfAPICourseID, let payload = client.cachedPayload(id: id) else { return false }
-        return (try? GolfAPICourseBuilder.build(reference: reference, payload: payload)) != nil
-    }
-
     var coverageRegions: [GolfAPICoverageRegion] { GolfAPICoverage.regions }
 
     var availableCountries: [String] {
@@ -127,7 +120,7 @@ final class GolfAPICourseSelectionModel {
         )
     }
 
-    func search(forceRefresh: Bool = false) async {
+    func search() async {
         guard !isSearching else { return }
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard (2...30).contains(query.count) else {

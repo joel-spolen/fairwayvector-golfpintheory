@@ -37,19 +37,6 @@ enum HandicapBand: String, Codable, Identifiable {
         case .twentyFivePlus: return "25+"
         }
     }
-
-    var midpoint: Double {
-        switch self {
-        case .plusToZero: return -2.5
-        case .zeroToFive: return 2.5
-        case .fiveToTen: return 7.5
-        case .tenToFifteen: return 12.5
-        case .fifteenToTwenty: return 17.5
-        case .twentyToTwentyFive: return 22.5
-        case .twentyFiveToThirtyFive, .twentyFivePlus: return 30.0
-        case .thirtyFivePlus: return 40.0
-        }
-    }
 }
 
 enum ProfileDetailLevel: String, CaseIterable, Codable, Identifiable {
@@ -64,14 +51,6 @@ enum ProfileDetailLevel: String, CaseIterable, Codable, Identifiable {
         case .easy: return L("Simple")
         case .medium: return L("Medium")
         case .expert: return L("Advanced")
-        }
-    }
-
-    var description: String {
-        switch self {
-        case .easy: return L("Use your handicap range.")
-        case .medium: return L("Use driver and 7 iron carry distances.")
-        case .expert: return L("Use per-club carry and launch data.")
         }
     }
 }
@@ -330,11 +309,6 @@ enum ClubProfileDefaults {
         let spinAdjustmentRpm: Double
     }
 
-    static func baselineProfile(for club: TrajectoryGolfClub, handicapBand: HandicapBand) -> ClubLaunchProfile {
-        let values = calibratedValues(for: club, handicapBand: handicapBand, driverCarryM: nil, sevenIronCarryM: nil)
-        return profile(from: values, source: .baseline)
-    }
-
     static func effectiveProfile(for club: TrajectoryGolfClub, playerProfile: TrajectoryPlayerProfile,
                                  wedges: [Wedge] = []) -> ClubLaunchProfile {
         let profile: ClubLaunchProfile
@@ -518,17 +492,6 @@ enum ClubProfileDefaults {
 
     private static func calibratedValues(
         for club: TrajectoryGolfClub,
-        handicapBand: HandicapBand,
-        exactHandicap: Double? = nil,
-        driverCarryM: Double?,
-        sevenIronCarryM: Double?
-    ) -> (carryM: Double, ballSpeedMps: Double, launchAngleDeg: Double, spinRateRpm: Double, spinAxisDeg: Double) {
-        let band = effectiveBandBaseline(selectedBand: handicapBand, exactHandicap: exactHandicap)
-        return calibratedValues(for: club, baseline: band, driverCarryM: driverCarryM, sevenIronCarryM: sevenIronCarryM)
-    }
-
-    private static func calibratedValues(
-        for club: TrajectoryGolfClub,
         baseline: BandBaseline,
         driverCarryM: Double?,
         sevenIronCarryM: Double?
@@ -563,30 +526,6 @@ enum ClubProfileDefaults {
             launchAngleDeg: ProfileValue(value: values.launchAngleDeg, source: source),
             spinRateRpm: ProfileValue(value: values.spinRateRpm, source: source),
             spinAxisDeg: ProfileValue(value: values.spinAxisDeg, source: source)
-        )
-    }
-
-    private static func effectiveBandBaseline(selectedBand: HandicapBand, exactHandicap: Double?) -> BandBaseline {
-        guard let exactHandicap else {
-            return bandBaseline(for: selectedBand)
-        }
-        let handicap = min(max(exactHandicap, -5.0), 40.0)
-        let sortedBands = HandicapBand.allCases.sorted { $0.midpoint < $1.midpoint }
-        guard let upper = sortedBands.first(where: { $0.midpoint >= handicap }) else {
-            return bandBaseline(for: .thirtyFivePlus)
-        }
-        guard let lower = sortedBands.last(where: { $0.midpoint <= handicap }), lower != upper else {
-            return bandBaseline(for: upper)
-        }
-        let lowerBaseline = bandBaseline(for: lower)
-        let upperBaseline = bandBaseline(for: upper)
-        let position = (handicap - lower.midpoint) / (upper.midpoint - lower.midpoint)
-        return BandBaseline(
-            driverCarryYards: interpolate(lowerBaseline.driverCarryYards, upperBaseline.driverCarryYards, position),
-            sevenIronCarryYards: interpolate(lowerBaseline.sevenIronCarryYards, upperBaseline.sevenIronCarryYards, position),
-            driverBallSpeedMph: interpolate(lowerBaseline.driverBallSpeedMph, upperBaseline.driverBallSpeedMph, position),
-            launchAdjustmentDeg: interpolate(lowerBaseline.launchAdjustmentDeg, upperBaseline.launchAdjustmentDeg, position),
-            spinAdjustmentRpm: interpolate(lowerBaseline.spinAdjustmentRpm, upperBaseline.spinAdjustmentRpm, position)
         )
     }
 

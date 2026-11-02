@@ -13,8 +13,9 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
     }
 
     @MainActor
-    private func launchAtHome() -> XCUIApplication {
+    private func launchAtHome(seedRound: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing"] + (seedRound ? ["-ui-testing-seed-round"] : [])
         app.launch()
         XCTAssertTrue(app.buttons["global-settings-button"].waitForExistence(timeout: 12))
         return app
@@ -83,7 +84,7 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         scrollTo(clubProfile, in: app)
         clubProfile.tap()
         XCTAssertTrue(app.navigationBars["Club distances & launch"].waitForExistence(timeout: 5))
-        app.buttons["Done"].tap()
+        app.buttons["Cancel"].tap()
         XCTAssertTrue(app.staticTexts["Build your bag"].waitForExistence(timeout: 5))
         returnHome(in: app)
 
@@ -125,7 +126,7 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         scrollTo(wedgeBag, in: app)
         wedgeBag.tap()
         XCTAssertTrue(app.staticTexts["Your wedge bag"].waitForExistence(timeout: 5))
-        app.buttons["Done"].tap()
+        app.buttons["Cancel"].tap()
         returnHome(in: app)
     }
 
@@ -142,9 +143,9 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         openHomeDestination("Wedge Matrix", in: app)
         app.buttons["Selector"].tap()
         XCTAssertTrue(app.staticTexts["Choose a wedge"].waitForExistence(timeout: 5))
-        // Slider endpoints exist even when the user has no wedges; no invented bag data is needed.
-        XCTAssertTrue(app.staticTexts["20 m"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["160 m"].exists)
+        // Slider endpoints exist even when the user has no wedges; the 20–160 yd range shows as 18–146 m.
+        XCTAssertTrue(app.staticTexts["18 m"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["146 m"].exists)
         returnHome(in: app)
 
         app.buttons["global-settings-button"].tap()
@@ -162,14 +163,11 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
     }
 
     @MainActor
-    func testExistingStatisticsRoundUsesBack() throws {
-        let app = launchAtHome()
+    func testExistingStatisticsRoundUsesBack() {
+        let app = launchAtHome(seedRound: true)
         openHomeDestination("Rounds & statistics", in: app)
         XCTAssertTrue(app.staticTexts["Rounds & statistics"].waitForExistence(timeout: 5))
-        // Use only genuine persisted history. A clean install cannot exercise a detail route.
-        if app.staticTexts["Your story starts here"].exists {
-            throw XCTSkip("No saved rounds available; no synthetic history is injected.")
-        }
+        XCTAssertFalse(app.staticTexts["Your story starts here"].exists, "The seeded round should be listed")
         let round = app.scrollViews.buttons.matching(NSPredicate(format: "label CONTAINS %@", " holes")).firstMatch
         scrollTo(round, in: app, maximumSwipes: 30)
         let roundLabel = round.label

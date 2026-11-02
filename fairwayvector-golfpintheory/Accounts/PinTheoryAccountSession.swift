@@ -83,8 +83,51 @@ final class PinTheoryAccountSession: ObservableObject {
     func start() {
         guard !started else { return }
         started = true
+        #if DEBUG
+        if Self.isUITesting { openUITestAccount(); return }
+        #endif
         restore()
     }
+
+    #if DEBUG
+    /// `-ui-testing` launch argument (debug builds only): a fresh local account, no sign-in, no sync.
+    static let isUITesting = ProcessInfo.processInfo.arguments.contains("-ui-testing")
+
+    private func openUITestAccount() {
+        let userID = UUID(uuidString: "00000000-0000-4000-8000-0000000000a1")!
+        do {
+            try PinTheoryAccountData(projectHost: "ui-test.local", userID: userID).eraseLocalContent()
+            let data = try PinTheoryAccountData(projectHost: "ui-test.local", userID: userID)
+            data.defaults.set(false, forKey: Self.syncOptInKey)
+            data.defaults.set(true, forKey: "onboarding.handicapRangePrompted.v1")
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-seed-round") {
+                try Self.seedUITestRound(at: data.roundsURL)
+            }
+            AccountCourseStorage.configure(accountDirectory: data.directory)
+            accountData = data
+        } catch {
+            message = L("Your account storage could not be opened. Existing records have been preserved. Retry or sign out.")
+        }
+    }
+
+    /// One complete 18-hole round saved through the normal store validation.
+    private static func seedUITestRound(at url: URL) throws {
+        var reference = CourseReference(osmRelationID: 42, name: "UI test course")
+        reference.holeCount = 18; reference.totalPar = 72
+        reference.courseRating = 72; reference.slopeRating = 113
+        reference.teeName = "Yellow"
+        let holes = (1...18).map { Hole(number: $0, par: 4, handicapIndex: $0, path: [], green: []) }
+        let course = Course(osmRelationID: 42, name: reference.courseName, holes: holes, fetchedAt: .now)
+        let owner = RoundPlayer(name: "You", isOwner: true, handicapIndex: 18)
+        var round = PlayedRound(reference: reference, course: course,
+            holes: holes.map { PlayedHole(number: $0.number, par: $0.par, strokeIndex: $0.handicapIndex) },
+            players: [owner], game: .strokePlay, detailMode: .strokesOnly)
+        for hole in round.holes { round.setScore(PlayedHoleScore(strokes: 5), player: owner.id, hole: hole.number) }
+        let store = PlayedRoundStore(url: url)
+        try store.start(round)
+        try store.saveActive()
+    }
+    #endif
 
     func restore() {
         guard let auth, !auth.isBusy else { return }
@@ -553,8 +596,7 @@ final class PinTheoryAccountSession: ObservableObject {
             try roundStore.mergeCloudRecords(remoteRounds, deletedIDs: cloudDeletedRounds,
                                              acknowledgedDeletionIDs: appliedDeletions.union(locallyResolvedDeletions))
 
-            try applyCloudCustomRecords(final.localRecords, conflicts: finalConflicts,
-                                        ownerID: identity.userID, modelContext: modelContext)
+            try applyCloudCustomRecords(final.localRecords, conflicts: finalConflicts, modelContext: modelContext)
             try applyCloudWedgeRecords(final.localRecords, conflicts: finalConflicts,
                                        ownerID: identity.userID, defaults: accountData.defaults)
             try applyCloudHandicapRounds(final.localRecords, conflicts: finalConflicts, modelContext: modelContext)
@@ -637,7 +679,7 @@ final class PinTheoryAccountSession: ObservableObject {
 
     @MainActor
     private func applyCloudCustomRecords(_ records: [AccountSyncLocalRecord], conflicts: Set<UUID>,
-                                         ownerID: UUID, modelContext: ModelContext) throws {
+                                         modelContext: ModelContext) throws {
         let relevant = records.filter { [.customClub, .customCourse, .customTee].contains($0.kind) }
         guard !relevant.isEmpty else { return }
         let clubs = try modelContext.fetch(FetchDescriptor<GolfClub>())
@@ -766,6 +808,9 @@ final class PinTheoryAccountSession: ObservableObject {
     }
 
     private func apply(_ state: PinTheoryAuthState) {
+        #if DEBUG
+        if Self.isUITesting { return }
+        #endif
         switch state {
         case .authenticated(let identity), .offlineCachedIdentity(let identity):
             if auth?.accountWasDeleted != true { accountDeletionNotice = nil }

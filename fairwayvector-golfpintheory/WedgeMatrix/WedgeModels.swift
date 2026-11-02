@@ -124,26 +124,6 @@ enum SwingLength: String, CaseIterable, Identifiable {
         case .full: 1.0
         }
     }
-
-    var background: Color {
-        switch self {
-        case .half: FairwayVectorColors.conditionsSurface.opacity(0.75)
-        case .threeQuarter: FairwayVectorColors.conditionsSurface
-        case .full: FairwayVectorColors.gold.opacity(0.22)
-        }
-    }
-
-    func shotImageName(for trajectory: WedgeTrajectory) -> String {
-        "Shot\(shotAssetSegment)\(trajectory.shotAssetSegment)"
-    }
-
-    private var shotAssetSegment: String {
-        switch self {
-        case .half: "50"
-        case .threeQuarter: "75"
-        case .full: "Full"
-        }
-    }
 }
 
 enum FlagPosition: String, CaseIterable, Identifiable {
@@ -161,35 +141,11 @@ enum FlagPosition: String, CaseIterable, Identifiable {
         }
     }
 
-    var shortTitle: String {
-        switch self {
-        case .short: L("Short")
-        case .middle: L("Middle")
-        case .long: L("Long")
-        }
-    }
-
-    var metricTitle: String {
-        switch self {
-        case .short: L("Short Flag")
-        case .middle: L("Middle Flag")
-        case .long: L("Long Flag")
-        }
-    }
-
     var systemImage: String {
         switch self {
         case .short: "flag"
         case .middle: "flag.fill"
         case .long: "flag.checkered"
-        }
-    }
-
-    var targetAdjustment: Double {
-        switch self {
-        case .short: -5
-        case .middle: 0
-        case .long: 5
         }
     }
 
@@ -233,14 +189,6 @@ enum WedgeTrajectory: String, CaseIterable, Identifiable {
         }
     }
 
-    var shotAssetSegment: String {
-        switch self {
-        case .knockdown: "Low"
-        case .stock: "Stock"
-        case .high: "High"
-        }
-    }
-
     func adjustedDistance(for stockCarry: Double) -> Double {
         switch self {
         case .knockdown: stockCarry * 0.92
@@ -256,13 +204,6 @@ enum WedgeDistanceUnit: String, CaseIterable, Identifiable {
     case meters
 
     var id: String { rawValue }
-
-    var label: String {
-        switch self {
-        case .yards: L("Imperial")
-        case .meters: L("Metric")
-        }
-    }
 
     var abbreviation: String {
         switch self {

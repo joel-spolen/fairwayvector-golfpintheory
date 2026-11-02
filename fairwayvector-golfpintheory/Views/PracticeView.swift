@@ -3,13 +3,6 @@ import SwiftUI
 enum PracticeDestination: String, CaseIterable {
     case trajectory
     case wedge
-
-    var title: String {
-        switch self {
-        case .trajectory: L("Trajectory")
-        case .wedge: L("Wedge Matrix")
-        }
-    }
 }
 
 struct PracticeView: View {

@@ -34,13 +34,10 @@ struct CourseMapView: View {
     @State private var holeIndex = 0
     @State private var tapPoint: GeoPoint?
     @State private var isShowingFlagEditor = false
-    @State private var adviceContentHeight: CGFloat = 150
     #if DEBUG
     @State private var simulatedGolfer: GeoPoint?
-    @State private var simulationError: String?
     @State private var isShowingDevelopmentWedges = false
     @State private var isShowingDevelopmentProfile = false
-    @AppStorage("wedgeMatrix.wedges") private var developmentStoredWedges = ""
     #endif
     @AppStorage("distanceUnit", store: .standard) private var unit: DistanceUnit = .meters
     @AppStorage("customFlagPositions") private var customFlagPositions = ""
@@ -487,7 +484,6 @@ struct CourseMapView: View {
     private func clearSimulation() {
         #if DEBUG
         simulatedGolfer = nil
-        simulationError = nil
         #endif
     }
 
@@ -496,83 +492,6 @@ struct CourseMapView: View {
         // Simulated origins use the same downloaded course elevation as real ones.
         terrainStore.commitShot(terrainRequest(for: hole, origin: origin, target: target))
     }
-
-    #if DEBUG
-    private var developmentScoringPlan: ScoringShotPlan {
-        let wedges = developmentStoredWedges.data(using: .utf8)
-            .flatMap { try? JSONDecoder().decode([Wedge].self, from: $0) } ?? []
-        return ScoringShotPlan.make(profile: trajectoryModel.playerProfileStore.profile, wedges: wedges)
-    }
-
-    private func simulationIssue(hole: Hole, plan: ScoringShotPlan) -> String? {
-        guard trajectoryModel.playerProfileStore.profile.isSetupComplete else {
-            return L("Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry.")
-        }
-        guard plan.maxFullCarryM != nil else {
-            return L("Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@", "\(plan.guidance)")
-        }
-        guard let target = tapPoint ?? flagPosition(for: hole), let tee = hole.tee,
-              DevelopmentScoringPosition.distanceRange(plan: plan, target: target, tee: tee) != nil else {
-            return L("Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance.")
-        }
-        return nil
-    }
-
-    private var developmentHole: Hole? {
-        guard let holes = store.course?.holes, !holes.isEmpty else { return nil }
-        return holes[min(holeIndex, holes.count - 1)]
-    }
-
-    private var developmentToolsMenu: some View {
-        Menu {
-            Button("Random scoring position", systemImage: "dice") {
-                if let hole = developmentHole { randomScoringPosition(hole: hole) }
-            }
-            .disabled(developmentHole == nil || store.isLoading || terrainStore.isHoleLoading || terrainStore.isShotLoading || terrainStore.shotPending
-                || developmentHole.map { simulationIssue(hole: $0, plan: developmentScoringPlan) != nil } == true)
-            .accessibilityIdentifier("random-scoring-position")
-            Button("Use device GPS", systemImage: "location") {
-                guard let hole = developmentHole else { return }
-                clearSimulation()
-                terrainInspectionPoint = nil
-                terrainStore.commitShot(terrainRequest(for: hole, origin: distanceOrigin(for: hole), target: tapPoint))
-            }
-            .disabled(simulatedGolfer == nil || terrainStore.shotPending || developmentHole == nil)
-            .accessibilityIdentifier("use-device-gps")
-            Section("Personal calibration") {
-                Button("Configure wedge calibration & matrix", systemImage: "slider.horizontal.3") { isShowingDevelopmentWedges = true }
-                Button("Configure Practice / Profile", systemImage: "person.crop.circle") { isShowingDevelopmentProfile = true }
-                Button("Development guidance", systemImage: "info.circle") { isShowingCourseInfo = true }
-            }
-        } label: {
-            VStack(spacing: 0) {
-                Image(systemName: "dice").font(.body)
-                Text("DEV").font(.system(size: 8, weight: .bold))
-            }
-            .frame(minWidth: 44, minHeight: 44)
-        }
-        .accessibilityLabel("Development tools")
-        .accessibilityHint("Random scoring position, reset to device GPS, and personal wedge calibration")
-        .accessibilityIdentifier("development-tools")
-    }
-
-    private func randomScoringPosition(hole: Hole) {
-        let plan = developmentScoringPlan
-        guard simulationIssue(hole: hole, plan: plan) == nil,
-              let target = tapPoint ?? flagPosition(for: hole), let tee = hole.tee,
-              let point = DevelopmentScoringPosition.make(plan: plan, target: target, tee: tee,
-                fraction: Double.random(in: 0...1), jitterDeg: Double.random(in: -20...20)) else {
-            simulationError = L("No valid scoring position could be generated. Review your target and personal wedge calibration.")
-            isShowingCourseInfo = true
-            return
-        }
-        simulationError = nil
-        simulatedGolfer = point
-        tapPoint = target
-        terrainInspectionPoint = nil
-        commitSelectedShot(for: hole, target: target)
-    }
-    #endif
 
     private var courseWeatherLocation: GeoPoint? {
         if let location = store.reference.location { return location }
@@ -806,35 +725,6 @@ struct CourseMapView: View {
         customFlagPositions = value
     }
 
-    private func holeSummary(_ hole: Hole) -> some View {
-        VStack(spacing: 5) {
-            Text("HOLE \(hole.number)")
-                .font(.headline.bold().monospacedDigit())
-                .foregroundStyle(FairwayVectorColors.navy)
-                .frame(maxWidth: .infinity, alignment: .center)
-            HStack(alignment: .firstTextBaseline, spacing: 16) {
-                summaryValue(L("PAR"), hole.par.map(String.init) ?? "–")
-                summaryValue(L("HCP"), hole.handicapIndex.map(String.init) ?? "–")
-                summaryValue(L("LENGTH"), hole.length > 0 ? unit.format(hole.length) : "–")
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-        }
-        .multilineTextAlignment(.center)
-    }
-
-    private func summaryValue(_ label: String, _ value: String) -> some View {
-        VStack(alignment: .leading, spacing: 1) {
-            Text(label)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(FairwayVectorColors.slate)
-            Text(value)
-                .font(.caption.weight(.semibold).monospacedDigit())
-                .foregroundStyle(FairwayVectorColors.charcoal)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-        }
-    }
-
     private func holeNavigationButton(isPrevious: Bool, count: Int, pageHoleIndex: Int? = nil) -> some View {
         let currentHoleIndex = pageHoleIndex ?? holeIndex
         let unavailable: Bool
@@ -860,11 +750,6 @@ struct CourseMapView: View {
         .disabled(unavailable)
         .accessibilityLabel(isPrevious ? L("Previous hole") : activeRound == nil ? L("Next hole") : L("Enter score for this hole"))
     }
-}
-
-private struct MapAdviceHeightKey: PreferenceKey {
-    static let defaultValue: CGFloat = 150
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
 }
 
 #Preview {

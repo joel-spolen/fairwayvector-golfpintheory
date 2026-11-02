@@ -9,12 +9,19 @@ struct PinTheoryAccountRootView: View {
 
     var body: some View {
         Group {
-            if let auth = session.auth {
-                PinTheoryAuthenticatedGate(session: session, auth: auth)
+            #if DEBUG
+            if PinTheoryAccountSession.isUITesting {
+                if let data = session.accountData {
+                    ContentView(accountData: data).id(data.id)
+                } else {
+                    ProgressView()
+                }
             } else {
-                ContentUnavailableView("Sign-in unavailable", systemImage: "person.crop.circle.badge.exclamationmark",
-                    description: Text(session.message ?? L("Account configuration is unavailable.")))
+                accountContent
             }
+            #else
+            accountContent
+            #endif
         }
         .environmentObject(session)
         .overlay {
@@ -34,6 +41,15 @@ struct PinTheoryAccountRootView: View {
         .id(languagePreference)
         .onAppear { session.start() }
         .onOpenURL { url in Task { await session.handle(url) } }
+    }
+
+    @ViewBuilder private var accountContent: some View {
+        if let auth = session.auth {
+            PinTheoryAuthenticatedGate(session: session, auth: auth)
+        } else {
+            ContentUnavailableView("Sign-in unavailable", systemImage: "person.crop.circle.badge.exclamationmark",
+                description: Text(session.message ?? L("Account configuration is unavailable.")))
+        }
     }
 }
 

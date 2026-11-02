@@ -216,18 +216,6 @@ private struct LiveFlightPreview: View {
     }
 }
 
-private struct HomeFlightPath: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY - 24))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX, y: rect.maxY - 24),
-            control: CGPoint(x: rect.midX, y: rect.minY + 4)
-        )
-        return path
-    }
-}
-
 struct HowItWorksView: View {
     @Environment(\.dismiss) private var dismiss
 

@@ -138,12 +138,6 @@ struct TrajectoryChartView: View {
         return minimum...(maximum * 1.1)
     }
 
-    private func bearingLabel(_ degrees: Double) -> String {
-        let bearing = (degrees.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)
-        let points = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"].map { L($0) }
-        return String(format: "%@ %.1f°", points[Int((bearing / 45).rounded()) % points.count], bearing)
-    }
-
     @ViewBuilder
     private func chartSection(title: String, points: [Point], valueLabel: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {

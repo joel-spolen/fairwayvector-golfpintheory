@@ -4,7 +4,7 @@ import Foundation
 nonisolated enum AccountSyncError: Error, Sendable, Equatable, LocalizedError {
     case rpcFailure(endpoint: String, httpStatus: Int, code: String)
     case invalidWire, invalidConfiguration, authenticationRequired, accountUnavailable
-    case requestRejected, serverContractUnavailable, transportUnavailable, storageUnavailable, invalidJournal
+    case serverContractUnavailable, transportUnavailable, storageUnavailable, invalidJournal
     case mutationIDReused, recordBusy, staleOperation
 
     var errorDescription: String? {

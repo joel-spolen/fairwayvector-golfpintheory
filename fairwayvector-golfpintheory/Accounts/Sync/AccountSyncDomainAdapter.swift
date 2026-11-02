@@ -455,11 +455,6 @@ enum AccountSyncDomainAdapter {
             payload: encodePayload(GolferProfilePayload(name: profile.name, lowHandicapIndex: profile.lowHandicapIndex)))
     }
 
-    static func golferProfile(from record: AccountSyncRecord) throws -> (name: String, lowHandicapIndex: Double?) {
-        guard record.kind == .golferProfile else { throw AccountSyncError.invalidWire }
-        return try golferProfile(from: record.payload)
-    }
-
     static func golferProfile(from record: AccountSyncLocalRecord) throws -> (name: String, lowHandicapIndex: Double?) {
         guard record.kind == .golferProfile, !record.isDeleted else { throw AccountSyncError.invalidWire }
         return try golferProfile(from: record.payload)

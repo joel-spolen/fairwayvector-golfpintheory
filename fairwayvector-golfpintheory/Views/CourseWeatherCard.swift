@@ -82,10 +82,6 @@ struct CourseWeatherCard: View {
         }
     }
 
-    private var locationKey: String {
-        String(format: "%.3f,%.3f", location.lat, location.lon)
-    }
-
     private func compactTemperature(_ weather: CourseWeather) -> String {
         guard let temperature = weather.temperatureC else { return "–°" }
         return String(format: "%.0f°", temperature)

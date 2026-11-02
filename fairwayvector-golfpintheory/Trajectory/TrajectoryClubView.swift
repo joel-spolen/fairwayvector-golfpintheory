@@ -959,59 +959,6 @@ private struct ClubWindGraphic: View {
         }
     }
 
-private struct ClubDoneAccessoryNumberField: UIViewRepresentable {
-    let placeholder: String
-    @Binding var text: String
-
-    func makeUIView(context: Context) -> UITextField {
-        let textField = UITextField(frame: .zero)
-        textField.placeholder = placeholder
-        textField.keyboardType = .decimalPad
-        textField.textAlignment = .center
-        textField.font = UIFont.monospacedDigitSystemFont(ofSize: 28, weight: .bold)
-        textField.borderStyle = .none
-        textField.backgroundColor = .clear
-        textField.delegate = context.coordinator
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        toolbar.items = [
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(title: L("Done"), style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
-        ]
-        textField.inputAccessoryView = toolbar
-        return textField
-    }
-
-    func updateUIView(_ textField: UITextField, context: Context) {
-        textField.placeholder = placeholder
-        if textField.text != text {
-            textField.text = text
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text)
-    }
-
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        @Binding private var text: String
-
-        init(text: Binding<String>) {
-            _text = text
-        }
-
-        func textFieldDidBeginEditing(_ textField: UITextField) {
-            if let endPosition = textField.endOfDocument as UITextPosition? {
-                textField.selectedTextRange = textField.textRange(from: endPosition, to: endPosition)
-            }
-        }
-
-        func textFieldDidChangeSelection(_ textField: UITextField) {
-            text = textField.text ?? ""
-        }
-    }
-}
-
 private struct ClubAtmosphereField: View {
     @Binding var siteElevationM: Double
     @Binding var pressureInputMode: PressureInputMode

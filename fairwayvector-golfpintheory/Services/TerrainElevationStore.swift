@@ -20,8 +20,6 @@ final class TerrainElevationStore {
     var mode: TerrainProfileMode = .hole
     var isLoading: Bool { mode == .hole ? isHoleLoading : isShotLoading }
     var statusMessage: String? { mode == .hole ? holeMessage : shotMessage }
-    var metadata: [TerrainProvenance] { selectedProfile?.metadata ?? [] }
-    var selectedProfile: TerrainProfile? { mode == .hole ? snapshot.holeProfile : snapshot.shotProfile }
     var usesGPS: Bool { committedRequest?.usesGPS == true }
 
     @ObservationIgnored private var terrain: CourseTerrain?

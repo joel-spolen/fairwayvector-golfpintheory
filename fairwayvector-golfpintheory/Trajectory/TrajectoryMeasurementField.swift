@@ -8,11 +8,9 @@ enum InputInfoDiagramKind: Equatable {
     case spinAxis
     case temperature
     case humidity
-    case pressure
     case tailwind
     case crosswind
     case elevationChange
-    case atmosphere
 }
 
 /// The physical quantity a `TrajectoryMeasurementField` edits, controlling unit conversion and formatting.

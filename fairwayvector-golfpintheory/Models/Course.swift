@@ -133,8 +133,6 @@ struct CourseReference: Codable, Hashable {
     var courseRating: Double
     var slopeRating: Int
 
-    var name: String { courseName }
-
     var cacheKey: String {
         [golfAPICourseID ?? "", clubName, courseName, teeName, teeSex]
             .joined(separator: "-")

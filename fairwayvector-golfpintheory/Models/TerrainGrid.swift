@@ -11,7 +11,6 @@ nonisolated struct TerrainProvenance: Codable, Hashable, Sendable {
     let interpolation: String
     let verticalDatum: String
     let providerSampleIntervalMeters: Double
-    var isSynthetic: Bool { dataSource == DevelopmentAPIConfiguration.syntheticSource }
 }
 
 nonisolated struct TerrainSample: Codable, Identifiable, Hashable, Sendable {
@@ -30,9 +29,6 @@ nonisolated struct TerrainProfile: Sendable {
     var elevationChangeMeters: Double? {
         guard let first = samples.first?.elevationMeters, let last = samples.last?.elevationMeters else { return nil }
         return last - first
-    }
-    var metadata: [TerrainProvenance] {
-        Array(Set(samples.flatMap(\.provenance))).sorted { $0.dataSource < $1.dataSource }
     }
     var maximumSpacingMeters: Double {
         zip(samples, samples.dropFirst()).map { $1.distanceMeters - $0.distanceMeters }.max() ?? 0
@@ -61,8 +57,6 @@ nonisolated struct TerrainSnapshot: Sendable {
     var holeProfile: TerrainProfile?
     var shotProfile: TerrainProfile?
     var targetToFlagProfile: TerrainProfile?
-    var shotElevationChangeMeters: Double? { shotProfile?.elevationChangeMeters }
-    var targetToFlagElevationChangeMeters: Double? { targetToFlagProfile?.elevationChangeMeters }
 }
 
 nonisolated enum TerrainError: Error, LocalizedError, Sendable {
@@ -114,12 +108,5 @@ nonisolated enum TerrainGeometry {
             return interpolate(path[i], path[i + 1], max(0, (distance - chain[i]) / (chain[i + 1] - chain[i])))
         }
         return path.last!
-    }
-    static func slice(_ path: [GeoPoint], from lower: Double, to upper: Double) -> [GeoPoint] {
-        let chain = chainages(path)
-        var result = [point(path, at: lower)]
-        for i in path.indices where chain[i] > lower && chain[i] < upper { result.append(path[i]) }
-        result.append(point(path, at: upper))
-        return result
     }
 }

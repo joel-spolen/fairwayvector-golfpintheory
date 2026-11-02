@@ -121,7 +121,7 @@ nonisolated struct CourseTeeInfo: Hashable, Identifiable, Sendable {
 
     var holePars: [Int] {
         guard let holeParsData, holeParsData.count == holes else {
-            return TeeSet.defaultPars(for: holes, totalPar: par)
+            return TeeSet.defaultPars(for: holes)
         }
         return holeParsData
     }
@@ -195,10 +195,6 @@ nonisolated final class CourseCatalogStore: @unchecked Sendable {
 
     func clubs(in country: String) -> [CourseClubInfo] {
         clubsByCountry[country] ?? []
-    }
-
-    var countries: [String] {
-        clubsByCountry.keys.sorted()
     }
 
     func tees(in country: String, for sex: PlayerSex) -> [CourseTeeInfo] {

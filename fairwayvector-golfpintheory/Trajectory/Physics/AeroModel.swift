@@ -9,8 +9,7 @@ nonisolated struct ParametricAeroModel: Sendable {
     var cdMax: Double = 0.50
     var clMax: Double = 0.45
 
-    /// Reynolds is accepted but unused by this starter parametrization.
-    func coefficients(reynolds: Double, spinFactor: Double) -> (cd: Double, cl: Double) {
+    func coefficients(spinFactor: Double) -> (cd: Double, cl: Double) {
         let cd = min(max(cd0 + cdSpinSlope * spinFactor, cdMin), cdMax)
         let cl = min(max(clSpinSlope * spinFactor, 0.0), clMax)
         return (cd, cl)
@@ -23,7 +22,7 @@ nonisolated struct V1AeroModel: Sendable {
     var cdMultiplier: Double = 0.97
 
     func coefficients(reynolds: Double, spinFactor: Double) -> (cd: Double, cl: Double) {
-        let (baselineCd, _) = baselineModel.coefficients(reynolds: reynolds, spinFactor: spinFactor)
+        let (baselineCd, _) = baselineModel.coefficients(spinFactor: spinFactor)
         let clRaw = -3.25 * spinFactor * spinFactor + 1.99 * spinFactor
         let cl = max(0.0, clRaw)
         return (baselineCd * cdMultiplier, cl)

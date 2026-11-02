@@ -891,16 +891,6 @@ struct RoundScorecardView: View {
             .padding(.vertical, 4)
     }
 
-    private func fairwayResult(_ score: PlayedHoleScore?, hole: PlayedHole) -> String {
-        guard hole.par != 3, let fairway = score?.fairway, fairway != .unknown, fairway != .notApplicable else { return "—" }
-        return fairway == .hit ? "✓" : "×"
-    }
-
-    private func greenResult(_ score: PlayedHoleScore?, hole: PlayedHole) -> String {
-        guard let score, let putts = score.putts, let par = hole.par else { return "—" }
-        return score.strokes - putts <= par - 2 ? "✓" : "×"
-    }
-
     private func scoreColor(_ score: PlayedHoleScore, par: Int?) -> Color {
         guard let par else { return PureLineStyle.ink }
         if score.strokes < par { return PureLineStyle.accent }
@@ -1208,13 +1198,5 @@ struct RoundReviewView: View {
 struct RoundStatisticsView: View {
     var body: some View {
         RoundStatisticsDashboard()
-    }
-}
-
-private extension View {
-    func roundFormStyle() -> some View {
-        self.scrollContentBackground(.hidden)
-            .background(FairwayVectorColors.background)
-            .listRowBackground(FairwayVectorColors.surface)
     }
 }

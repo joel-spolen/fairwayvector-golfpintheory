@@ -42,7 +42,6 @@ struct CatalogTeeRating: Decodable, Hashable, Identifiable {
     var golfAPITeeID: String? = nil
 
     var id: String { golfAPITeeID ?? "\(tee)|\(sex)" }
-    var playerCategory: String { sex == "female" ? "Women" : "Men" }
 }
 
 struct SelectedCourse: Hashable, Identifiable {
@@ -51,40 +50,6 @@ struct SelectedCourse: Hashable, Identifiable {
     let tee: CatalogTeeRating
 
     var id: String { "\(club.name)|\(course.name)|\(tee.id)" }
-
-    var reference: CourseReference {
-        CourseReference(selection: self)
-    }
-}
-
-extension SelectedCourse {
-    init(golfAPI selection: GolfAPICourseSelection) {
-        club = CatalogClub(
-            name: selection.club.clubName,
-            city: selection.club.city,
-            region: selection.club.state,
-            courses: [],
-            golfAPIClubID: selection.club.clubID
-        )
-        let holes = selection.details.numHoles
-        let coursePars = selection.sex == "female" ? selection.details.parsWomen : selection.details.parsMen
-        let pars = selection.tee.pars(for: selection.sex, fallback: coursePars)
-        let coursePar = pars.reduce(0, +)
-        course = CatalogCourse(
-            name: selection.details.courseName,
-            holes: holes,
-            par: coursePar,
-            ratings: [],
-            golfAPICourseID: selection.course.courseID
-        )
-        tee = CatalogTeeRating(
-            tee: selection.tee.teeName,
-            sex: selection.sex,
-            courseRating: selection.tee.rating(for: selection.sex) ?? 0,
-            slopeRating: selection.tee.slope(for: selection.sex) ?? 0,
-            golfAPITeeID: selection.tee.teeID
-        )
-    }
 }
 
 struct SwedenCourseCatalogStore {
@@ -108,9 +73,5 @@ struct SwedenCourseCatalogStore {
                 clubs: []
             )
         }
-    }
-
-    var clubs: [CatalogClub] {
-        catalog.clubs.sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 }

@@ -343,14 +343,6 @@ struct BagClubsView: View {
     }
 }
 
-private extension View {
-    func profileFormStyle() -> some View {
-        scrollContentBackground(.hidden)
-            .background(PureLineStyle.canvas)
-            .tint(PureLineStyle.accent)
-    }
-}
-
 private struct ProfileDistanceRow: View {
     let title: String
     let value: Double?

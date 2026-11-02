@@ -169,13 +169,6 @@ struct HoleElevationProfileView: View {
         return runs
     }
 
-    private func elevationDomain(_ runs: [ValidRun]) -> ClosedRange<Double> {
-        let heights = runs.flatMap(\.samples).compactMap { validElevation($0).map(displayValue) }
-        guard let low = heights.min(), let high = heights.max() else { return 0...displayValue(1) }
-        let padding = max((high - low) * 0.1, displayValue(1))
-        return (low - padding)...(high + padding)
-    }
-
     /// Binary search includes missing-height samples so inspection never hides a gap.
     private var inspectedSample: TerrainSample? {
         guard let selectedDistance, selectedDistance.isFinite,
@@ -204,11 +197,6 @@ struct HoleElevationProfileView: View {
         let direction = meters > 0 ? L("uphill") : (meters < 0 ? L("downhill") : L("level"))
         let sign = meters > 0 ? "+" : (meters < 0 ? "−" : "")
         return "\(sign)\(heightText(abs(meters))) · \(direction)"
-    }
-
-    private func chartSummary(_ profile: TerrainProfile) -> String {
-        let available = profile.samples.filter { validElevation($0) != nil }.count
-        return L("Horizontal distance %@. %@ elevation %@. %@ elevation %@. Elevation change %@. %@ of %@ samples available. Missing terrain is shown as gaps. Vertical and horizontal scales differ.", "\(unit.format(profile.distanceMeters))", "\(startLabel)", "\(heightText(profile.samples.first?.elevationMeters))", "\(endLabel)", "\(heightText(profile.samples.last?.elevationMeters))", "\(deltaText(profile.elevationChangeMeters))", "\(available)", "\(profile.samples.count)")
     }
 
     private func resetInspection() {

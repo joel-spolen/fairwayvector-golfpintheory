@@ -23,10 +23,6 @@ struct PinTheoryLoginView: View {
     private enum Mode { case signIn, createAccount, forgotPassword }
     private enum Action { case google, signIn, createAccount, resetPassword, resendConfirmation }
 
-    init(auth: PinTheoryAuthService, notice: String? = nil) {
-        self.init(auth: auth, browser: PinTheoryWebAuthenticationBroker(), notice: notice)
-    }
-
     /// Root may retain the broker to cancel browser presentation during logout.
     /// After recovery, root can pass a transient password-updated notice here.
     init(auth: PinTheoryAuthService, browser: PinTheoryWebAuthenticationBroker, notice: String? = nil) {

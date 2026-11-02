@@ -44,7 +44,6 @@ struct GolfAPIClient {
         named query: String = "",
         country: String,
         region: String = "",
-        forceRefresh: Bool = false,
         requiresGPS: Bool = true
     ) async throws -> [GolfAPIClub] {
         let normalizedQuery = Self.normalizedSearchTerm(query)
@@ -224,7 +223,7 @@ struct GolfAPIClient {
         return try await GolfAPICoursePayload(detail: detail, coordinates: coordinates)
     }
 
-    func checkForUpdates(to detail: GolfAPICourseDetail) async throws -> Bool {
+    func checkForUpdates() async throws -> Bool {
         false // The provider update probe was a paid search request; refresh now uses detail/coordinate endpoints only.
     }
 

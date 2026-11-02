@@ -50,7 +50,8 @@ final class PlayerProfileStore: ObservableObject {
 
     /// Resolve only from the injected store; never from an active/global account.
     var wedges: [Wedge] {
-        Wedge.catalog(from: userDefaults.string(forKey: "wedgeMatrix.wedges") ?? "")
+        Wedge.catalog(from: userDefaults.string(forKey: "wedgeMatrix.wedges") ?? "",
+                      availableClubs: profile.availableClubs)
     }
 
     var storedWedgeSetup: String {

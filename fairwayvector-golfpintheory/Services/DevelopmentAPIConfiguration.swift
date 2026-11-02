@@ -8,7 +8,6 @@ nonisolated struct DevelopmentAPIConfiguration: Sendable {
             // Missing, blank, misspelled and unexpanded settings all fail safely to mock.
             self = setting?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "live" ? .live : .mock
         }
-        var status: String { self == .mock ? "Mock · 0 paid requests" : "LIVE · paid requests enabled" }
     }
 
     let golfAPI: Mode

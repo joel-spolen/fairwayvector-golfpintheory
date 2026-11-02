@@ -858,12 +858,6 @@ private struct TargetCalculatorView: View {
                 return CourseTeeInfo(custom: tee)
     }
 
-    private var selectedTeeSummary: String {
-        guard let selectedTee else { return "" }
-        let rating = selectedTee.courseRating.formatted(.number.precision(.fractionLength(1)))
-        return L("Par %@ • CR %@ • Slope %@", "\(selectedTee.par)", "\(rating)", "\(selectedTee.slopeRating)")
-    }
-
     private var hasHoleByHoleData: Bool {
         guard let selectedTee else { return false }
         let parData = selectedTee.holeParsData ?? []
@@ -873,20 +867,6 @@ private struct TargetCalculatorView: View {
 
     private var entries: [ScoringRecordEntry] {
         WHSCalculator.scoringEntries(from: rounds, lowHandicapIndex: profile?.lowHandicapIndex)
-    }
-
-    private var currentHandicap: Double? {
-        WHSCalculator.handicapIndex(from: entries, lowHandicapIndex: profile?.lowHandicapIndex)
-    }
-
-    private var results: [TargetResult] {
-        guard let selectedTee else { return [] }
-        return WHSCalculator.targetResults(
-            currentEntries: entries,
-            tee: selectedTee.snapshot,
-            inputMode: inputMode,
-            lowHandicapIndex: profile?.lowHandicapIndex
-        )
     }
 
     private func improvingResults(from results: [TargetResult]) -> [TargetResult] {
@@ -1218,12 +1198,6 @@ private struct NewRoundView: View {
                 guard let tee = tees.first(where: { $0.persistentModelID == selectedCustomTeeID }),
               tee.isAvailable(for: profile?.sexOrDefault ?? .male) else { return nil }
                 return CourseTeeInfo(custom: tee)
-    }
-
-    private var selectedTeeSummary: String {
-        guard let selectedTee else { return "" }
-        let rating = selectedTee.courseRating.formatted(.number.precision(.fractionLength(1)))
-        return L("Par %@ • CR %@ • Slope %@", "\(selectedTee.par)", "\(rating)", "\(selectedTee.slopeRating)")
     }
 
     private var hasHoleByHoleData: Bool {
@@ -1586,7 +1560,7 @@ private struct NewRoundView: View {
 
     private func resetHoleScores() {
         let count = selectedTee?.holes ?? 18
-        let pars = selectedTee?.holePars ?? TeeSet.defaultPars(for: count, totalPar: selectedTee?.par ?? 72)
+        let pars = selectedTee?.holePars ?? TeeSet.defaultPars(for: count)
         holeScores = pars
     }
 
@@ -1809,15 +1783,6 @@ private struct CustomCoursesView: View {
 
     private var searchQuery: String { searchText.trimmingCharacters(in: .whitespacesAndNewlines) }
 
-    private var filteredClubs: [GolfClub] {
-        guard !searchQuery.isEmpty else { return uniqueCustomClubs }
-        return uniqueCustomClubs.filter {
-            $0.name.localizedCaseInsensitiveContains(searchQuery)
-                || $0.city.localizedCaseInsensitiveContains(searchQuery)
-                || $0.country.localizedCaseInsensitiveContains(searchQuery)
-        }.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
-    }
-
     private var filteredCourses: [CustomCourseSearchResult] {
         return uniqueCustomClubs.flatMap { club in
             courseNames(for: club.name).compactMap { courseName in
@@ -1839,10 +1804,6 @@ private struct CustomCoursesView: View {
     private func courseNames(for club: String) -> [String] {
         Array(Set(courses.filter { ($0.isCustom ?? false) && $0.clubName == club }.map(\.name)
             + customTees.filter { $0.clubName == club }.map(\.courseName))).sorted()
-    }
-
-    private func teesIn(club: String, course: String) -> [TeeSet] {
-        customTees.filter { $0.clubName == club && $0.courseName == course }.sorted { $0.name < $1.name }
     }
 
     var body: some View {
@@ -2573,226 +2534,6 @@ struct HCPCustomCoursesEntryView: View {
     }
 }
 
-private struct HCPSettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-    let courseCatalog: CourseCatalogStore
-    var profile: PlayerProfile?
-    var clubs: [GolfClub]
-    var courses: [GolfCourse]
-    var tees: [TeeSet]
-
-    @State private var selectedCountry = "Sweden"
-    @State private var selectedScoringMode = RoundInputMode.adjustedGrossScore
-    @State private var selectedSex = PlayerSex.male
-    #if DEBUG
-    @State private var showTestDataImportConfirm = false
-    @State private var testDataMessage: String?
-    @State private var exportedTestDataURL: URL?
-    #endif
-
-    private var customTeesCount: Int {
-        tees.filter { $0.isCustom ?? false }.count
-    }
-
-    private var availableCountries: [String] {
-        let customCountries = clubs.map(\.country).filter { !$0.isEmpty }
-        return Array(Set(courseCatalog.countries + customCountries)).sorted()
-    }
-
-    var body: some View {
-        NavigationStack {
-            Form {
-                Section("Player") {
-                    Picker("Tee Rating Category", selection: $selectedSex) {
-                        ForEach(PlayerSex.allCases) { sex in
-                            Text(sex == .male ? L("Men") : L("Women")).tag(sex)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .onChange(of: selectedSex) {
-                        updateSex(to: selectedSex)
-                    }
-                }
-                .listRowBackground(PureLineStyle.surface)
-
-                Section("Round Defaults") {
-                    Picker("Default Scoring Mode", selection: $selectedScoringMode) {
-                        ForEach(RoundInputMode.allCases) { mode in
-                            Text(mode.title).tag(mode)
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                    .background(PureLineStyle.surface)
-                    .onChange(of: selectedScoringMode) {
-                        updateScoringMode(to: selectedScoringMode)
-                    }
-                }
-                .listRowBackground(PureLineStyle.surface)
-
-                Section("Region") {
-                    Picker("Country / Region", selection: $selectedCountry) {
-                        ForEach(availableCountries, id: \.self) { country in
-                            Text(country).tag(country)
-                        }
-                    }
-                    .pickerStyle(.navigationLink)
-                    .background(PureLineStyle.surface)
-                    .onChange(of: selectedCountry) {
-                        updateCountry(to: selectedCountry)
-                    }
-                }
-                .listRowBackground(PureLineStyle.surface)
-
-                Section("Course Data") {
-                    NavigationLink {
-                        CustomCoursesView(courseCatalog: courseCatalog, profile: profile, clubs: clubs, courses: courses, tees: tees)
-                    } label: {
-                        HStack {
-                            Text("Custom Courses")
-                            Spacer()
-                            Text("\(customTeesCount)")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-                .listRowBackground(PureLineStyle.surface)
-
-                Section {
-                    Link("Privacy Policy", destination: URL(string: "https://fairwayvector.com/hcp-projection/privacy-policy")!)
-                }
-                .listRowBackground(PureLineStyle.surface)
-
-                #if DEBUG
-                Section("Test Data") {
-                    Button("Replace All Data With Test Data", role: .destructive) {
-                        showTestDataImportConfirm = true
-                    }
-                    Button("Export Current Data") {
-                        exportTestData()
-                    }
-                    if let exportedTestDataURL {
-                        ShareLink(item: exportedTestDataURL) {
-                            Text("Share Exported Snapshot")
-                        }
-                    }
-                    if let testDataMessage {
-                        Text(testDataMessage)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .listRowBackground(PureLineStyle.surface)
-                #endif
-            }
-            .hcpPureLineList()
-            .navigationTitle("Settings")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
-                }
-            }
-            .onAppear {
-                if let profile {
-                    let savedCountry = profile.countryOrDefault
-                    selectedCountry = availableCountries.contains(savedCountry)
-                        ? savedCountry
-                        : (availableCountries.first ?? "Sweden")
-                    selectedScoringMode = profile.defaultInputMode
-                    selectedSex = profile.sexOrDefault
-                    if profile.countryOrDefault != selectedCountry {
-                        profile.selectedCountry = selectedCountry
-                    }
-                }
-            }
-            .onChange(of: availableCountries) {
-                guard !availableCountries.contains(selectedCountry),
-                      let fallback = availableCountries.first else { return }
-                selectedCountry = fallback
-                updateCountry(to: fallback)
-            }
-            #if DEBUG
-            .confirmationDialog(
-                L("Replace all data with the bundled test data?"),
-                isPresented: $showTestDataImportConfirm,
-                titleVisibility: .visible
-            ) {
-                Button("Replace Everything", role: .destructive) { importTestData() }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("Existing profile, custom courses and rounds on this device will be deleted.")
-            }
-            #endif
-        }
-    }
-
-    #if DEBUG
-    private func importTestData() {
-        do {
-            let snapshot = try TestDataStore.importBundledSnapshot(into: modelContext)
-            testDataMessage = "Imported \"\(snapshot.name)\" · \(snapshot.rounds.count) rounds."
-        } catch {
-            testDataMessage = "Import failed: \(error.localizedDescription)"
-        }
-    }
-
-    private func exportTestData() {
-        do {
-            let stamp = ISO8601DateFormatter().string(from: .now)
-            let data = try TestDataStore.exportSnapshotJSON(from: modelContext, name: "Device snapshot \(stamp)")
-            let url = URL.temporaryDirectory.appending(path: "hcp-testdata.json")
-            try data.write(to: url, options: .atomic)
-            exportedTestDataURL = url
-            testDataMessage = "Exported \(data.count) bytes."
-        } catch {
-            testDataMessage = "Export failed: \(error.localizedDescription)"
-        }
-    }
-    #endif
-
-    private func updateScoringMode(to newMode: RoundInputMode) {
-        if let profile {
-            profile.defaultInputMode = newMode
-        } else {
-            let newProfile = PlayerProfile(
-                name: "Player",
-                selectedCountry: selectedCountry,
-                defaultInputModeRawValue: newMode.rawValue,
-                sexRawValue: selectedSex.rawValue
-            )
-            modelContext.insert(newProfile)
-        }
-    }
-
-    private func updateCountry(to newCountry: String) {
-        if let profile {
-            profile.selectedCountry = newCountry
-        } else {
-            let newProfile = PlayerProfile(
-                name: "Player",
-                selectedCountry: newCountry,
-                defaultInputModeRawValue: selectedScoringMode.rawValue,
-                sexRawValue: selectedSex.rawValue
-            )
-            modelContext.insert(newProfile)
-        }
-    }
-
-    private func updateSex(to newSex: PlayerSex) {
-        if let profile {
-            profile.sexOrDefault = newSex
-        } else {
-            let newProfile = PlayerProfile(
-                name: "Player",
-                selectedCountry: selectedCountry,
-                defaultInputModeRawValue: selectedScoringMode.rawValue,
-                sexRawValue: newSex.rawValue
-            )
-            modelContext.insert(newProfile)
-        }
-    }
-}
-
 struct RoundDetailView: View {
     var round: GolfRound
     var handicapIndex: Double?
@@ -2899,7 +2640,7 @@ struct RoundDetailView: View {
             }
 
             if let holeScores = round.holeScores, !holeScores.isEmpty {
-                let pars = round.holePars ?? TeeSet.defaultPars(for: round.holes, totalPar: round.par)
+                let pars = round.holePars ?? TeeSet.defaultPars(for: round.holes)
                 let indices = round.holeHandicapIndices ?? Array(1...max(round.holes, 1))
                 let safeHoleCount = min(holeScores.count, min(pars.count, indices.count))
                 let calc = WHSCalculator.calculateHoleByHole(
@@ -3120,24 +2861,6 @@ private struct TargetResultRow: View {
         } else {
             return PureLineStyle.muted
         }
-    }
-}
-
-private extension TeeSet {
-    var displayName: String {
-        "\(clubName) · \(courseName) · \(name)"
-    }
-
-    var snapshot: TeeSnapshot {
-        TeeSnapshot(
-            clubName: clubName,
-            courseName: courseName,
-            teeName: name,
-            holes: holes,
-            par: par,
-            courseRating: courseRating,
-            slopeRating: slopeRating
-        )
     }
 }
 

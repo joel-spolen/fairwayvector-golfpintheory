@@ -32,10 +32,6 @@ struct CourseShotRecommendationView: View {
         return decoded // Never substitute Wedge.defaults as personal calibration.
     }
 
-    private var scoringPlan: ScoringShotPlan {
-        ScoringShotPlan.make(profile: model.playerProfileStore.profile, wedges: wedges)
-    }
-
     private var capturedWeather: CourseWeather? {
         guard let weatherLocation else { return nil }
         return weatherStore.weather(for: weatherLocation)

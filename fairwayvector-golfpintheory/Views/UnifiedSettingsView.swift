@@ -233,56 +233,6 @@ private struct FairwayVectorAboutView: View {
     }
 }
 
-private struct FairwayVectorPrivacyPolicyView: View {
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Privacy Policy")
-                        .font(.largeTitle.weight(.semibold))
-                        .foregroundStyle(PureLineStyle.ink)
-                    Text("Last updated: 2026-08-24")
-                        .font(.caption)
-                        .foregroundStyle(PureLineStyle.muted)
-                    Text("fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data.")
-                        .font(.body)
-                        .foregroundStyle(PureLineStyle.ink)
-                        .padding(.top, 8)
-                }
-
-                policySection(L("Data Collection"), text: L("fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind."))
-                policySection(L("Data Storage"), text: L("The information the app saves, including player profiles, course data, rounds, and preferences, is stored locally on your device via Apple’s standard SwiftData and system storage mechanisms. This information never leaves your device."))
-                policySection(L("Third-Party Services"), text: L("fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks."))
-                policySection(L("Children’s Privacy"), text: L("Since no data is collected from any user, this app is safe for use by individuals of all ages."))
-                policySection(L("Changes to This Policy"), text: L("If this policy changes in the future, an updated version will be posted with a revised ‘Last updated’ date."))
-                policySection(L("Contact"), text: L("Questions about this policy can be directed to the developer via the support contact listed on the app’s App Store page."))
-
-                Text("© 2026 Fairway Vector")
-                    .font(.caption)
-                    .foregroundStyle(PureLineStyle.muted)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.top, 8)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(18)
-        }
-        .background(PureLineStyle.canvas)
-    }
-
-    private func policySection(_ title: String, text: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(PureLineStyle.ink)
-            Text(text)
-                .font(.body)
-                .foregroundStyle(PureLineStyle.muted)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-}
-
 private struct TrajectoryUnitSettingsView: View {
     @ObservedObject var unitPreferences: UnitPreferences
 

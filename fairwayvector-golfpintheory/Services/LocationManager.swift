@@ -26,11 +26,4 @@ final class LocationManager {
             }
         }
     }
-
-    func stop() {
-        updatesTask?.cancel()
-        updatesTask = nil
-        serviceSession?.invalidate()
-        serviceSession = nil
-    }
 }

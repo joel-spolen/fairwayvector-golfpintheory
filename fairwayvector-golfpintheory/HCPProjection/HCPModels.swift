@@ -141,20 +141,6 @@ final class TeeSet {
         self.holeHandicapIndicesData = holeHandicapIndicesData
     }
 
-    var holePars: [Int] {
-        if let pars = holeParsData, pars.count == holes {
-            return pars
-        }
-        return TeeSet.defaultPars(for: holes, totalPar: par)
-    }
-
-    var holeHandicapIndices: [Int] {
-        if let indices = holeHandicapIndicesData, indices.count == holes {
-            return indices
-        }
-        return Array(1...max(holes, 1))
-    }
-
     var ratingSex: PlayerSex? {
         guard let ratingSexRawValue else { return nil }
         return PlayerSex(rawValue: ratingSexRawValue)
@@ -164,7 +150,7 @@ final class TeeSet {
         ratingSex == nil || ratingSex == sex
     }
 
-    static func defaultPars(for holes: Int, totalPar: Int) -> [Int] {
+    static func defaultPars(for holes: Int) -> [Int] {
         if holes == 9 {
             // typical 9-hole par: 4,4,3,4,5,4,3,4,5 = 36
             return [4, 4, 3, 4, 5, 4, 3, 4, 5]
