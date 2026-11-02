@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "Tallennettuja tietojasi ei voitu avata. Mitään ei ole poistettu. Yritä uudelleen tai kirjaudu ulos.";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "Tallennettuja kierroksiasi ei voitu ladata. Mitään ei ole poistettu. Käynnistä sovellus uudelleen ja yritä uudestaan.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "Kirjautumisesi muuttui synkronoinnin aikana. Kytke Synkronoi laitteiden välillä pois päältä ja takaisin päälle.";
+"Your recent form" = "Viimeaikainen vireesi";
+"Last 5 rounds compared with your earlier rounds" = "Viimeiset 5 kierrosta verrattuna aiempiin kierroksiisi";
+"Save 1 more round with detailed scoring to see your recent form." = "Tallenna vielä 1 kierros yksityiskohtaisella scoringilla, niin näet viimeaikaisen vireesi.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "Tallenna vielä %@ kierrosta yksityiskohtaisella scoringilla, niin näet viimeaikaisen vireesi.";
+"Your game is steady compared with your earlier rounds." = "Pelisi on tasaista verrattuna aiempiin kierroksiisi.";
+"Work on" = "Kehitettävää";
+"Going well" = "Sujuu hyvin";
+"Putting" = "Puttaus";
+"Approach (GIR)" = "Lähestymiset (GIR)";
+"Driving (fairways)" = "Avaukset (väylät)";
+"Short game (scrambling)" = "Lähipeli (scrambling)";
+"%@ putts per hole (was %@)" = "%@ puttia reikää kohden (aiemmin %@)";
+"%@ per 18 holes (was %@)" = "%@ 18 reikää kohden (aiemmin %@)";
+"%@ (was %@)" = "%@ (aiemmin %@)";

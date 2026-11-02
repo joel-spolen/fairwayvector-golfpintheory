@@ -131,6 +131,7 @@ struct RoundStatisticsDashboard: View {
                         ContentUnavailableView("Your story starts here", systemImage: "chart.xyaxis.line",
                             description: Text("Save your first round to see your averages and trends."))
                     } else {
+                        recentForm
                         overview
                         scoringByPar
                         holeTypeDetails
@@ -170,6 +171,65 @@ struct RoundStatisticsDashboard: View {
         }
         .tint(PureLineStyle.accent)
         .preferredColorScheme(.light)
+    }
+
+    private var recentForm: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            chartHeading(L("Your recent form"), detail: L("Last 5 rounds compared with your earlier rounds"))
+            switch RecentFormAnalysis.analyze(records) {
+            case .notEnoughData(let roundsNeeded):
+                Text(roundsNeeded == 1
+                     ? L("Save 1 more round with detailed scoring to see your recent form.")
+                     : L("Save %@ more rounds with detailed scoring to see your recent form.", "\(roundsNeeded)"))
+                    .font(.subheadline).foregroundStyle(PureLineStyle.muted)
+            case .steady:
+                Text("Your game is steady compared with your earlier rounds.")
+                    .font(.subheadline).foregroundStyle(PureLineStyle.muted)
+            case .changes(let workOn, let goingWell):
+                if let workOn { formRow(L("Work on"), workOn, symbol: "scope") }
+                if let goingWell { formRow(L("Going well"), goingWell, symbol: "arrow.up.right") }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .pureLineCard()
+    }
+
+    private func formRow(_ label: String, _ change: RecentFormAnalysis.Change, symbol: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: symbol)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(PureLineStyle.accent)
+                .frame(width: 24)
+            VStack(alignment: .leading, spacing: 3) {
+                Text(label).font(.caption.weight(.semibold)).foregroundStyle(PureLineStyle.muted)
+                Text(formAreaTitle(change.area)).font(.headline)
+                Text(formValueText(change)).font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private func formAreaTitle(_ area: RecentFormAnalysis.Area) -> String {
+        switch area {
+        case .putting: L("Putting")
+        case .approach: L("Approach (GIR)")
+        case .driving: L("Driving (fairways)")
+        case .shortGame: L("Short game (scrambling)")
+        case .penalties: L("Penalties")
+        }
+    }
+
+    private func formValueText(_ change: RecentFormAnalysis.Change) -> String {
+        let decimal: (Double) -> String = { $0.formatted(.number.precision(.fractionLength(1))) }
+        let percent: (Double) -> String = { "\(Int($0.rounded()))%" }
+        switch change.area {
+        case .putting:
+            return L("%@ putts per hole (was %@)", decimal(change.recent), decimal(change.earlier))
+        case .penalties:
+            return L("%@ per 18 holes (was %@)", decimal(change.recent), decimal(change.earlier))
+        case .approach, .driving, .shortGame:
+            return L("%@ (was %@)", percent(change.recent), percent(change.earlier))
+        }
     }
 
     private var overview: some View {

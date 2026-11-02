@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "Je opgeslagen gegevens konden niet worden geopend. Er is niets verwijderd. Probeer het opnieuw of log uit.";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "Je opgeslagen rondes konden niet worden geladen. Er is niets verwijderd. Start de app opnieuw en probeer het nog eens.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "Je aanmelding is tijdens de synchronisatie gewijzigd. Zet Synchroniseren tussen apparaten uit en weer aan.";
+"Your recent form" = "Je recente vorm";
+"Last 5 rounds compared with your earlier rounds" = "Laatste 5 rondes vergeleken met je eerdere rondes";
+"Save 1 more round with detailed scoring to see your recent form." = "Sla nog 1 ronde op met gedetailleerde scoring om je recente vorm te zien.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "Sla nog %@ rondes op met gedetailleerde scoring om je recente vorm te zien.";
+"Your game is steady compared with your earlier rounds." = "Je spel is stabiel vergeleken met je eerdere rondes.";
+"Work on" = "Werkpunt";
+"Going well" = "Gaat goed";
+"Putting" = "Putten";
+"Approach (GIR)" = "Approach (GIR)";
+"Driving (fairways)" = "Afslag (fairways)";
+"Short game (scrambling)" = "Korte spel (scrambling)";
+"%@ putts per hole (was %@)" = "%@ putts per hole (was %@)";
+"%@ per 18 holes (was %@)" = "%@ per 18 holes (was %@)";
+"%@ (was %@)" = "%@ (was %@)";

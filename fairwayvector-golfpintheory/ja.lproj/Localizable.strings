@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "保存したデータを開けませんでした。データは削除されていません。もう一度お試しいただくか、サインアウトしてください。";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "保存したラウンドを読み込めませんでした。データは削除されていません。アプリを再起動して、もう一度お試しください。";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "同期中にサインイン状態が変わりました。「デバイス間で同期」をオフにしてから、もう一度オンにしてください。";
+"Your recent form" = "最近の調子";
+"Last 5 rounds compared with your earlier rounds" = "直近 5 ラウンドとそれ以前のラウンドの比較";
+"Save 1 more round with detailed scoring to see your recent form." = "詳細スコアリングでラウンドをあと 1 回保存すると、最近の調子が表示されます。";
+"Save %@ more rounds with detailed scoring to see your recent form." = "詳細スコアリングでラウンドをあと %@ 回保存すると、最近の調子が表示されます。";
+"Your game is steady compared with your earlier rounds." = "以前のラウンドと比べて、安定したプレーができています。";
+"Work on" = "課題";
+"Going well" = "好調";
+"Putting" = "パッティング";
+"Approach (GIR)" = "パーオン（GIR）";
+"Driving (fairways)" = "ティーショット（フェアウェイ）";
+"Short game (scrambling)" = "ショートゲーム（スクランブリング）";
+"%@ putts per hole (was %@)" = "1 ホールあたり %@ パット（以前は %@）";
+"%@ per 18 holes (was %@)" = "18 ホールあたり %@（以前は %@）";
+"%@ (was %@)" = "%@（以前は %@）";

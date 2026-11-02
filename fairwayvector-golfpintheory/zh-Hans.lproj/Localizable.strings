@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "无法打开你保存的数据。没有任何内容被删除。请重试或退出登录。";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "无法加载你保存的轮次。没有任何内容被删除。请重新启动 App 后重试。";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "同步期间你的登录状态发生了变化。请关闭再打开“在设备间同步”。";
+"Your recent form" = "近期状态";
+"Last 5 rounds compared with your earlier rounds" = "最近 5 轮与之前轮次的对比";
+"Save 1 more round with detailed scoring to see your recent form." = "再保存 1 轮详细计分成绩，即可查看你的近期状态。";
+"Save %@ more rounds with detailed scoring to see your recent form." = "再保存 %@ 轮详细计分成绩，即可查看你的近期状态。";
+"Your game is steady compared with your earlier rounds." = "与之前的轮次相比，你的表现很稳定。";
+"Work on" = "待提升";
+"Going well" = "表现不错";
+"Putting" = "推杆";
+"Approach (GIR)" = "攻果岭（GIR）";
+"Driving (fairways)" = "开球（球道）";
+"Short game (scrambling)" = "短杆（救球率）";
+"%@ putts per hole (was %@)" = "每洞推杆 %@ 次（之前 %@）";
+"%@ per 18 holes (was %@)" = "每 18 洞 %@ 次（之前 %@）";
+"%@ (was %@)" = "%@（之前 %@）";

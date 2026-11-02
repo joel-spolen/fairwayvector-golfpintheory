@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "Deine gespeicherten Daten konnten nicht geöffnet werden. Es wurde nichts gelöscht. Versuche es erneut oder melde dich ab.";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "Deine gespeicherten Runden konnten nicht geladen werden. Es wurde nichts gelöscht. Starte die App neu und versuche es erneut.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "Deine Anmeldung hat sich während der Synchronisierung geändert. Schalte „Auf Geräten synchronisieren“ aus und wieder ein.";
+"Your recent form" = "Deine aktuelle Form";
+"Last 5 rounds compared with your earlier rounds" = "Letzte 5 Runden im Vergleich zu deinen früheren Runden";
+"Save 1 more round with detailed scoring to see your recent form." = "Speichere noch 1 Runde mit detailliertem Scoring, um deine aktuelle Form zu sehen.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "Speichere noch %@ Runden mit detailliertem Scoring, um deine aktuelle Form zu sehen.";
+"Your game is steady compared with your earlier rounds." = "Dein Spiel ist stabil im Vergleich zu deinen früheren Runden.";
+"Work on" = "Daran arbeiten";
+"Going well" = "Läuft gut";
+"Putting" = "Putten";
+"Approach (GIR)" = "Annäherung (GIR)";
+"Driving (fairways)" = "Abschlag (Fairways)";
+"Short game (scrambling)" = "Kurzes Spiel (Scrambling)";
+"%@ putts per hole (was %@)" = "%@ Putts pro Loch (vorher %@)";
+"%@ per 18 holes (was %@)" = "%@ pro 18 Löcher (vorher %@)";
+"%@ (was %@)" = "%@ (vorher %@)";

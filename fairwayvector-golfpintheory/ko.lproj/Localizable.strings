@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "저장된 데이터를 열 수 없습니다. 삭제된 항목은 없습니다. 다시 시도하거나 로그아웃하세요.";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "저장된 라운드를 불러올 수 없습니다. 삭제된 항목은 없습니다. 앱을 다시 시작한 후 다시 시도하세요.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "동기화 중에 로그인 상태가 변경되었습니다. 기기 간 동기화를 껐다가 다시 켜세요.";
+"Your recent form" = "최근 경기력";
+"Last 5 rounds compared with your earlier rounds" = "최근 5라운드와 이전 라운드 비교";
+"Save 1 more round with detailed scoring to see your recent form." = "상세 스코어링으로 라운드를 1개 더 저장하면 최근 경기력을 볼 수 있습니다.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "상세 스코어링으로 라운드를 %@개 더 저장하면 최근 경기력을 볼 수 있습니다.";
+"Your game is steady compared with your earlier rounds." = "이전 라운드와 비교해 안정적인 경기를 하고 있습니다.";
+"Work on" = "보완할 점";
+"Going well" = "잘되고 있는 점";
+"Putting" = "퍼팅";
+"Approach (GIR)" = "어프로치 샷 (GIR)";
+"Driving (fairways)" = "티샷 (페어웨이)";
+"Short game (scrambling)" = "숏게임 (스크램블링)";
+"%@ putts per hole (was %@)" = "홀당 %@퍼트 (이전 %@)";
+"%@ per 18 holes (was %@)" = "18홀당 %@ (이전 %@)";
+"%@ (was %@)" = "%@ (이전 %@)";

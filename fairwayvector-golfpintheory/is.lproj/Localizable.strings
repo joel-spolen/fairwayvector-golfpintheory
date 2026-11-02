@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "Ekki tókst að opna vistuðu gögnin þín. Engu hefur verið eytt. Reyndu aftur eða skráðu þig út.";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "Ekki tókst að hlaða vistuðu hringjunum þínum. Engu hefur verið eytt. Endurræstu forritið og reyndu aftur.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "Innskráningin þín breyttist meðan á samstillingu stóð. Slökktu og kveiktu aftur á Samstilla milli tækja.";
+"Your recent form" = "Formið þitt undanfarið";
+"Last 5 rounds compared with your earlier rounds" = "Síðustu 5 hringir bornir saman við fyrri hringi";
+"Save 1 more round with detailed scoring to see your recent form." = "Vistaðu 1 hring í viðbót með ítarlegu skori til að sjá formið þitt undanfarið.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "Vistaðu %@ hringi í viðbót með ítarlegu skori til að sjá formið þitt undanfarið.";
+"Your game is steady compared with your earlier rounds." = "Leikurinn þinn er stöðugur miðað við fyrri hringi.";
+"Work on" = "Til að bæta";
+"Going well" = "Gengur vel";
+"Putting" = "Pútt";
+"Approach (GIR)" = "Innáhögg (GIR)";
+"Driving (fairways)" = "Teighögg (brautir)";
+"Short game (scrambling)" = "Stutta spilið (scrambling)";
+"%@ putts per hole (was %@)" = "%@ pútt á holu (var %@)";
+"%@ per 18 holes (was %@)" = "%@ á 18 holur (var %@)";
+"%@ (was %@)" = "%@ (var %@)";

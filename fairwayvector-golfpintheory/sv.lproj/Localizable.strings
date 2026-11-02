@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "Dina sparade data kunde inte öppnas. Inget har raderats. Försök igen eller logga ut.";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "Dina sparade rundor kunde inte läsas in. Inget har raderats. Starta om appen och försök igen.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "Din inloggning ändrades under synkroniseringen. Stäng av Synkronisera mellan enheter och slå på det igen.";
+"Your recent form" = "Din senaste form";
+"Last 5 rounds compared with your earlier rounds" = "De senaste 5 rundorna jämfört med dina tidigare rundor";
+"Save 1 more round with detailed scoring to see your recent form." = "Spara 1 runda till med detaljerad scoring för att se din senaste form.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "Spara %@ rundor till med detaljerad scoring för att se din senaste form.";
+"Your game is steady compared with your earlier rounds." = "Ditt spel är stabilt jämfört med dina tidigare rundor.";
+"Work on" = "Att jobba på";
+"Going well" = "Går bra";
+"Putting" = "Puttning";
+"Approach (GIR)" = "Inspel (GIR)";
+"Driving (fairways)" = "Utslag (fairways)";
+"Short game (scrambling)" = "Närspel (scrambling)";
+"%@ putts per hole (was %@)" = "%@ puttar per hål (var %@)";
+"%@ per 18 holes (was %@)" = "%@ per 18 hål (var %@)";
+"%@ (was %@)" = "%@ (var %@)";

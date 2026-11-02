@@ -1188,3 +1188,17 @@
 "Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out." = "Vaše uložená data se nepodařilo otevřít. Nic nebylo smazáno. Zkuste to znovu nebo se odhlaste.";
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "Uložená kola se nepodařilo načíst. Nic nebylo smazáno. Restartujte aplikaci a zkuste to znovu.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "Během synchronizace se změnilo vaše přihlášení. Vypněte a znovu zapněte volbu Synchronizovat mezi zařízeními.";
+"Your recent form" = "Vaše aktuální forma";
+"Last 5 rounds compared with your earlier rounds" = "Posledních 5 kol ve srovnání s vašimi staršími koly";
+"Save 1 more round with detailed scoring to see your recent form." = "Uložte ještě 1 kolo s podrobným scoringem a uvidíte svou aktuální formu.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "Uložte ještě další kola s podrobným scoringem (zbývá %@) a uvidíte svou aktuální formu.";
+"Your game is steady compared with your earlier rounds." = "Ve srovnání s vašimi staršími koly hrajete vyrovnaně.";
+"Work on" = "Na čem zapracovat";
+"Going well" = "Co se daří";
+"Putting" = "Puttování";
+"Approach (GIR)" = "Rány na green (GIR)";
+"Driving (fairways)" = "Odpaly (fairwaye)";
+"Short game (scrambling)" = "Krátká hra (scrambling)";
+"%@ putts per hole (was %@)" = "%@ puttu na jamku (dříve %@)";
+"%@ per 18 holes (was %@)" = "%@ na 18 jamek (dříve %@)";
+"%@ (was %@)" = "%@ (dříve %@)";

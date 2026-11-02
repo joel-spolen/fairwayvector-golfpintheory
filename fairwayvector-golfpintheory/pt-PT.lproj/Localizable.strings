@@ -1188,3 +1188,17 @@
 "Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again." = "Não foi possível carregar as suas voltas guardadas. Nada foi eliminado. Reinicie a app e tente novamente.";
 "Your sign-in changed during sync. Turn Sync across devices off and on again." = "O seu início de sessão mudou durante a sincronização. Desative e volte a ativar Sincronizar entre dispositivos.";
 "±0.0 (Score not used)" = "±0,0 (pontuação não usada)";
+"Your recent form" = "A sua forma recente";
+"Last 5 rounds compared with your earlier rounds" = "Últimas 5 voltas comparadas com as suas voltas anteriores";
+"Save 1 more round with detailed scoring to see your recent form." = "Guarde mais 1 volta com scoring detalhado para ver a sua forma recente.";
+"Save %@ more rounds with detailed scoring to see your recent form." = "Guarde mais %@ voltas com scoring detalhado para ver a sua forma recente.";
+"Your game is steady compared with your earlier rounds." = "O seu jogo mantém-se estável em relação às suas voltas anteriores.";
+"Work on" = "A melhorar";
+"Going well" = "Está a correr bem";
+"Putting" = "Putting";
+"Approach (GIR)" = "Aproximação (GIR)";
+"Driving (fairways)" = "Drive (fairways)";
+"Short game (scrambling)" = "Jogo curto (scrambling)";
+"%@ putts per hole (was %@)" = "%@ putts por buraco (antes %@)";
+"%@ per 18 holes (was %@)" = "%@ por 18 buracos (antes %@)";
+"%@ (was %@)" = "%@ (antes %@)";
