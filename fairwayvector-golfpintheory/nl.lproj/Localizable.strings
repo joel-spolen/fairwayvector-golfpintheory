@@ -71,7 +71,7 @@
 "9 Wood" = "Hout 9";
 "9–11 scores: lowest 3" = "9–11 scores: laagste 3";
 "A %@ rating for this club, course, and tee already exists in this country." = "Er bestaat al een rating (%@) voor deze club, baan en tee in dit land.";
-"A clearer way\nto play." = "Een helderdere manier\nom te golfen.";
+"Know your numbers.\nPlay better golf." = "Ken je cijfers.\nSpeel beter golf.";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "Er bestaat al een concept voor %@. Ga terug naar Baan kiezen en hervat of verwijder het voordat je een nieuwe ronde start.";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "Een echte 9- of 18-holesbaan en een geldige rating voor de gekozen categorie zijn vereist.";
 "AW · 48° Wedge" = "AW · 48°-wedge";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "Je account is verwijderd.";
 "Your average score on each type of hole" = "Je gemiddelde score op elk type hole";
 "Your average strokes per hole over time" = "Je gemiddelde aantal slagen per hole in de loop van de tijd";
-"Your course. Your game. One place." = "Jouw baan. Jouw spel. Alles op één plek.";
+"Distances, club advice and stats that show where your strokes go." = "Afstanden, clubadvies en statistieken die laten zien waar je slagen verliest.";
 "Your display name could not be saved. Please try again." = "Je weergavenaam kon niet worden bewaard. Probeer het opnieuw.";
 "Your display name has been saved." = "Je weergavenaam is bewaard.";
 "Your distances. Every swing." = "Jouw afstanden. Elke swing.";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "%@ putts per hole · je gemiddelde %@";
 "%@ per 18 holes · your average %@" = "%@ per 18 holes · je gemiddelde %@";
 "%@ · your average %@" = "%@ · je gemiddelde %@";
+"Get started" = "Aan de slag";
+"Hide" = "Verberg";
+"Enter your club distances" = "Voer je clubafstanden in";
+"Better club advice on the course" = "Beter clubadvies op de baan";
+"Play or record a round" = "Speel of registreer een ronde";
+"Start a round, or add one in Handicap" = "Start een ronde of voeg er een toe in Handicap";
+"See your statistics" = "Bekijk je statistieken";
+"Find where your strokes go" = "Ontdek waar je slagen verliest";
+"Not done" = "Niet gereed";

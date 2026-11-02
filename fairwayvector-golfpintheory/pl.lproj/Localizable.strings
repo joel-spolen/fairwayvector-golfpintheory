@@ -71,7 +71,7 @@
 "9 Wood" = "Drewno 9";
 "9–11 scores: lowest 3" = "9–11 wyników: najniższe 3";
 "A %@ rating for this club, course, and tee already exists in this country." = "Rating (%@) dla tego klubu, pola i tee już istnieje w tym kraju.";
-"A clearer way\nto play." = "Golf w prostszej\nformie.";
+"Know your numbers.\nPlay better golf." = "Poznaj swoje liczby.\nGraj lepiej w golfa.";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "Dla %@ istnieje już szkic. Wróć do Wyboru pola i wznów go lub odrzuć, zanim zaczniesz kolejną rundę.";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "Wymagane jest prawdziwe pole 9- lub 18-dołkowe oraz prawidłowy rating dla wybranej kategorii.";
 "AW · 48° Wedge" = "AW · Wedge 48°";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "Twoje konto zostało usunięte.";
 "Your average score on each type of hole" = "Twój średni wynik na każdym typie dołka";
 "Your average strokes per hole over time" = "Twoja średnia liczba uderzeń na dołek w czasie";
-"Your course. Your game. One place." = "Twoje pole. Twoja gra. Wszystko w jednym miejscu.";
+"Distances, club advice and stats that show where your strokes go." = "Odległości, porady w doborze kija i statystyki, które pokazują, gdzie tracisz uderzenia.";
 "Your display name could not be saved. Please try again." = "Nie udało się zapisać wyświetlanej nazwy. Spróbuj ponownie.";
 "Your display name has been saved." = "Wyświetlana nazwa została zapisana.";
 "Your distances. Every swing." = "Twoje odległości. Każdy zamach.";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "%@ putta na dołek · Twoja średnia %@";
 "%@ per 18 holes · your average %@" = "%@ na 18 dołków · Twoja średnia %@";
 "%@ · your average %@" = "%@ · Twoja średnia %@";
+"Get started" = "Pierwsze kroki";
+"Hide" = "Ukryj";
+"Enter your club distances" = "Wpisz odległości swoich kijów";
+"Better club advice on the course" = "Lepsze podpowiedzi kijów na polu";
+"Play or record a round" = "Zagraj lub zapisz rundę";
+"Start a round, or add one in Handicap" = "Rozpocznij rundę lub dodaj ją w sekcji Handicap";
+"See your statistics" = "Zobacz swoje statystyki";
+"Find where your strokes go" = "Sprawdź, gdzie tracisz uderzenia";
+"Not done" = "Niegotowe";

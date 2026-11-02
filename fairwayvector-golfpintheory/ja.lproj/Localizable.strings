@@ -71,7 +71,7 @@
 "9 Wood" = "9 番ウッド";
 "9–11 scores: lowest 3" = "9–11 スコア：上位 3";
 "A %@ rating for this club, course, and tee already exists in this country." = "この国には、このクラブ、コース、ティーの %@ レーティングがすでにあります。";
-"A clearer way\nto play." = "もっと分かりやすく\nゴルフを楽しもう。";
+"Know your numbers.\nPlay better golf." = "自分の数字を知ろう。\nもっといいゴルフを。";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "%@ の下書きがすでにあります。「コースを選択」に戻って再開するか破棄してから、新しいラウンドを始めてください。";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "実在する 9 ホールまたは 18 ホールのコースと、選択した区分の有効なレーティングが必要です。";
 "AW · 48° Wedge" = "AW · 48° ウェッジ";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "アカウントは削除されました。";
 "Your average score on each type of hole" = "ホールタイプ別の平均スコア";
 "Your average strokes per hole over time" = "ホールあたりの平均打数の推移";
-"Your course. Your game. One place." = "あなたのコース。あなたのゴルフ。すべてをひとつに。";
+"Distances, club advice and stats that show where your strokes go." = "距離、クラブのアドバイス、そしてどこで打数を落としているかが分かる統計。";
 "Your display name could not be saved. Please try again." = "表示名を保存できませんでした。もう一度お試しください。";
 "Your display name has been saved." = "表示名を保存しました。";
 "Your distances. Every swing." = "あなたの飛距離。すべてのスイング。";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "1 ホールあたり %@ パット · 平均 %@";
 "%@ per 18 holes · your average %@" = "18 ホールあたり %@ · 平均 %@";
 "%@ · your average %@" = "%@ · 平均 %@";
+"Get started" = "はじめに";
+"Hide" = "非表示";
+"Enter your club distances" = "クラブの距離を入力";
+"Better club advice on the course" = "コースでのクラブ選びがより的確に";
+"Play or record a round" = "ラウンドをプレーまたは記録";
+"Start a round, or add one in Handicap" = "ラウンドを開始するか、ハンディキャップで追加";
+"See your statistics" = "統計を見る";
+"Find where your strokes go" = "どこで打数を落としているかを確認";
+"Not done" = "未完了";

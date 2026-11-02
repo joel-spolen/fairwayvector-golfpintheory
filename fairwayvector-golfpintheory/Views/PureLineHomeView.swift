@@ -12,9 +12,18 @@ struct PureLineHomeView: View {
     let onOpenStatistics: () -> Void
     let onOpenSettings: () -> Void
     let onOpenAccount: () -> Void
+    @ObservedObject var profileStore: PlayerProfileStore
     @Environment(PlayedRoundStore.self) private var roundStore
     @Query private var handicapRounds: [GolfRound]
     @Query private var profiles: [PlayerProfile]
+    @AppStorage("onboarding.statisticsOpened.v1") private var statisticsOpened = false
+    @AppStorage("onboarding.getStartedDismissed.v1") private var getStartedDismissed = false
+
+    private var gettingStarted: (clubs: Bool, round: Bool, statistics: Bool) {
+        (GettingStartedProgress.clubDistancesEntered(profile: profileStore.profile, wedges: profileStore.wedges),
+         !roundStore.saved.isEmpty || !handicapRounds.isEmpty,
+         statisticsOpened)
+    }
 
     private var handicapIndex: Double? {
         let low = profiles.first?.lowHandicapIndex
@@ -59,13 +68,18 @@ struct PureLineHomeView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("A clearer way\nto play.")
+                        Text("Know your numbers.\nPlay better golf.")
                             .font(.system(.largeTitle, design: .default).weight(.semibold))
                             .tracking(-1.2)
                             .foregroundStyle(PureLineStyle.ink)
-                        Text("Your course. Your game. One place.")
+                        Text("Distances, club advice and stats that show where your strokes go.")
                             .font(.subheadline)
                             .foregroundStyle(PureLineStyle.muted)
+                    }
+
+                    let steps = gettingStarted
+                    if !getStartedDismissed, !(steps.clubs && steps.round && steps.statistics) {
+                        getStartedCard(steps)
                     }
 
                     if let handicapIndex {
@@ -153,7 +167,7 @@ struct PureLineHomeView: View {
                         Text("See your game")
                             .font(.title3.weight(.semibold)).tracking(-0.4)
                             .padding(.bottom, 10)
-                        destination(L("Rounds & statistics"), detail: L("Review your scores and spot the trends"), symbol: "chart.xyaxis.line", action: onOpenStatistics)
+                        destination(L("Rounds & statistics"), detail: L("Review your scores and spot the trends"), symbol: "chart.xyaxis.line", action: openStatistics)
                             .accessibilityIdentifier("home-rounds-statistics-button")
                     }
                     .foregroundStyle(PureLineStyle.ink)
@@ -184,6 +198,64 @@ struct PureLineHomeView: View {
         }
         .tint(PureLineStyle.accent)
         .accessibilityIdentifier("map-home-screen")
+    }
+
+    private func openStatistics() {
+        statisticsOpened = true
+        onOpenStatistics()
+    }
+
+    private func getStartedCard(_ steps: (clubs: Bool, round: Bool, statistics: Bool)) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("Get started").font(.headline)
+                Spacer()
+                Button { getStartedDismissed = true } label: {
+                    Image(systemName: "xmark")
+                        .font(.caption.weight(.semibold))
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(PureLineStyle.muted)
+                .accessibilityLabel("Hide")
+            }
+            getStartedStep(L("Enter your club distances"), detail: L("Better club advice on the course"),
+                           done: steps.clubs, action: onOpenBag)
+            Divider().overlay(PureLineStyle.line)
+            getStartedStep(L("Play or record a round"), detail: L("Start a round, or add one in Handicap"),
+                           done: steps.round, action: onStartRound)
+            Divider().overlay(PureLineStyle.line)
+            getStartedStep(L("See your statistics"), detail: L("Find where your strokes go"),
+                           done: steps.statistics, action: openStatistics)
+        }
+        .pureLineCard()
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("home-get-started")
+    }
+
+    private func getStartedStep(_ title: String, detail: String, done: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: done ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .foregroundStyle(done ? PureLineStyle.accent : PureLineStyle.muted)
+                    .frame(width: 28)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title).font(.subheadline.weight(.semibold))
+                    Text(detail).font(.caption).foregroundStyle(PureLineStyle.muted)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(PureLineStyle.muted)
+            }
+            .padding(.vertical, 10)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(PureLineStyle.ink)
+        .accessibilityValue(done ? L("Done") : L("Not done"))
     }
 
     private func destination(_ title: String, detail: String, symbol: String, action: @escaping () -> Void) -> some View {

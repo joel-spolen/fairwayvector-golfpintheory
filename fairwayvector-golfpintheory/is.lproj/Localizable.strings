@@ -71,7 +71,7 @@
 "9 Wood" = "9-tré";
 "9–11 scores: lowest 3" = "9–11 skor: lægstu 3";
 "A %@ rating for this club, course, and tee already exists in this country." = "Mat (%@) fyrir þennan klúbb, völl og teig er þegar til í þessu landi.";
-"A clearer way\nto play." = "Skýrari leið\ntil að spila golf.";
+"Know your numbers.\nPlay better golf." = "Þekktu tölurnar þínar.\nSpilaðu betra golf.";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "Drög eru þegar til fyrir %@. Farðu aftur í Velja völl og haltu áfram með þau eða hentu þeim áður en þú byrjar nýjan hring.";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "Raunverulegur 9 eða 18 holu völlur og gilt mat fyrir valinn flokk eru nauðsynleg.";
 "AW · 48° Wedge" = "AW · 48° fleygjárn";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "Reikningnum þínum hefur verið eytt.";
 "Your average score on each type of hole" = "Meðalskorið þitt á hverri gerð holu";
 "Your average strokes per hole over time" = "Meðalhögg á holu yfir tíma";
-"Your course. Your game. One place." = "Þinn völlur. Þinn leikur. Allt á einum stað.";
+"Distances, club advice and stats that show where your strokes go." = "Vegalengdir, kylfuráð og tölfræði sem sýnir hvar þú tapar höggum.";
 "Your display name could not be saved. Please try again." = "Ekki tókst að vista birtingarnafnið. Reyndu aftur.";
 "Your display name has been saved." = "Birtingarnafnið hefur verið vistað.";
 "Your distances. Every swing." = "Þínar vegalengdir. Hvert sveifluslag.";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "%@ pútt á holu · meðaltal þitt %@";
 "%@ per 18 holes · your average %@" = "%@ á 18 holur · meðaltal þitt %@";
 "%@ · your average %@" = "%@ · meðaltal þitt %@";
+"Get started" = "Fyrstu skrefin";
+"Hide" = "Fela";
+"Enter your club distances" = "Sláðu inn kylfuvegalengdirnar þínar";
+"Better club advice on the course" = "Betri kylfuráð á vellinum";
+"Play or record a round" = "Spilaðu eða skráðu hring";
+"Start a round, or add one in Handicap" = "Byrjaðu hring eða bættu einum við í Forgjöf";
+"See your statistics" = "Skoðaðu tölfræðina þína";
+"Find where your strokes go" = "Sjáðu hvar þú tapar höggum";
+"Not done" = "Ólokið";

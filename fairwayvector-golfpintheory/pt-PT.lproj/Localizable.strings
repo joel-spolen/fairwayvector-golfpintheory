@@ -71,7 +71,7 @@
 "9 Wood" = "Madeira 9";
 "9–11 scores: lowest 3" = "9–11 pontuações: as 3 mais baixas";
 "A %@ rating for this club, course, and tee already exists in this country." = "Já existe um rating (%@) para este clube, campo e tee neste país.";
-"A clearer way\nto play." = "Uma forma mais clara\nde jogar.";
+"Know your numbers.\nPlay better golf." = "Conheça os seus números.\nJogue melhor golfe.";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "Já existe um rascunho para %@. Volte a Escolher campo e retome-o ou descarte-o antes de iniciar outro.";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "É necessário um campo real de 9 ou 18 buracos e um rating válido para a categoria selecionada.";
 "AW · 48° Wedge" = "AW · Wedge de 48°";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "A sua conta foi eliminada.";
 "Your average score on each type of hole" = "A sua pontuação média em cada tipo de buraco";
 "Your average strokes per hole over time" = "A sua média de pancadas por buraco ao longo do tempo";
-"Your course. Your game. One place." = "O seu campo. O seu jogo. Tudo num só lugar.";
+"Distances, club advice and stats that show where your strokes go." = "Distâncias, recomendações de taco e estatísticas que mostram onde perde pancadas.";
 "Your display name could not be saved. Please try again." = "Não foi possível guardar o nome a apresentar. Tente novamente.";
 "Your display name has been saved." = "O nome a apresentar foi guardado.";
 "Your distances. Every swing." = "As suas distâncias. Cada swing.";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "%@ putts por buraco · a sua média %@";
 "%@ per 18 holes · your average %@" = "%@ por 18 buracos · a sua média %@";
 "%@ · your average %@" = "%@ · a sua média %@";
+"Get started" = "Primeiros passos";
+"Hide" = "Ocultar";
+"Enter your club distances" = "Introduza as distâncias dos seus tacos";
+"Better club advice on the course" = "Melhores sugestões de taco no campo";
+"Play or record a round" = "Jogue ou registe uma volta";
+"Start a round, or add one in Handicap" = "Inicie uma volta ou adicione uma em Handicap";
+"See your statistics" = "Veja as suas estatísticas";
+"Find where your strokes go" = "Descubra onde perde pancadas";
+"Not done" = "Por concluir";

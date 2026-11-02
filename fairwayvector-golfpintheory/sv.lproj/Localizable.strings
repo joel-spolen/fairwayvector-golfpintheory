@@ -71,7 +71,7 @@
 "9 Wood" = "Trä 9";
 "9–11 scores: lowest 3" = "9–11 scorer: lägsta 3";
 "A %@ rating for this club, course, and tee already exists in this country." = "En värdering (%@) för denna klubb, bana och tee finns redan i landet.";
-"A clearer way\nto play." = "Ett tydligare sätt\natt spela.";
+"Know your numbers.\nPlay better golf." = "Känn dina siffror.\nSpela bättre golf.";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "Det finns redan ett utkast för %@. Gå tillbaka till Välj bana och återuppta eller kassera det innan du startar en ny runda.";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "En riktig 9- eller 18-hålsbana och en giltig värdering för vald kategori krävs.";
 "AW · 48° Wedge" = "AW · 48° wedge";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "Ditt konto har raderats.";
 "Your average score on each type of hole" = "Din snittscore på varje typ av hål";
 "Your average strokes per hole over time" = "Ditt snitt av slag per hål över tid";
-"Your course. Your game. One place." = "Din bana. Ditt spel. Allt på ett ställe.";
+"Distances, club advice and stats that show where your strokes go." = "Avstånd, klubbråd och statistik som visar var du tappar slag.";
 "Your display name could not be saved. Please try again." = "Ditt visningsnamn kunde inte sparas. Försök igen.";
 "Your display name has been saved." = "Ditt visningsnamn har sparats.";
 "Your distances. Every swing." = "Dina avstånd. Varje sving.";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "%@ puttar per hål · ditt snitt %@";
 "%@ per 18 holes · your average %@" = "%@ per 18 hål · ditt snitt %@";
 "%@ · your average %@" = "%@ · ditt snitt %@";
+"Get started" = "Kom igång";
+"Hide" = "Dölj";
+"Enter your club distances" = "Ange dina klubbavstånd";
+"Better club advice on the course" = "Bättre klubbråd på banan";
+"Play or record a round" = "Spela eller registrera en runda";
+"Start a round, or add one in Handicap" = "Starta en runda eller lägg till en i Handicap";
+"See your statistics" = "Se din statistik";
+"Find where your strokes go" = "Se var du tappar slag";
+"Not done" = "Inte klart";

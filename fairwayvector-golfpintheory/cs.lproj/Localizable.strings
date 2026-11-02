@@ -71,7 +71,7 @@
 "9 Wood" = "Dřevo 9";
 "9–11 scores: lowest 3" = "9–11 skóre: nejnižší 3";
 "A %@ rating for this club, course, and tee already exists in this country." = "Rating (%@) pro tento klub, hřiště a odpaliště v této zemi už existuje.";
-"A clearer way\nto play." = "Jasnější cesta\nke golfu.";
+"Know your numbers.\nPlay better golf." = "Znejte svá čísla.\nHrajte lepší golf.";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "Pro %@ už existuje koncept. Vraťte se do Výběru hřiště a pokračujte v něm nebo ho zahoďte, než začnete další kolo.";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "Je vyžadováno skutečné hřiště s 9 nebo 18 jamkami a platný rating pro vybranou kategorii.";
 "AW · 48° Wedge" = "AW · wedge 48°";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "Váš účet byl smazán.";
 "Your average score on each type of hole" = "Vaše průměrné skóre na každém typu jamky";
 "Your average strokes per hole over time" = "Váš průměrný počet ran na jamku v čase";
-"Your course. Your game. One place." = "Vaše hřiště. Vaše hra. Vše na jednom místě.";
+"Distances, club advice and stats that show where your strokes go." = "Vzdálenosti, doporučení holí a statistiky, které ukazují, kde ztrácíte rány.";
 "Your display name could not be saved. Please try again." = "Zobrazované jméno se nepodařilo uložit. Zkuste to znovu.";
 "Your display name has been saved." = "Zobrazované jméno bylo uloženo.";
 "Your distances. Every swing." = "Vaše vzdálenosti. Každý švih.";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "%@ puttu na jamku · váš průměr %@";
 "%@ per 18 holes · your average %@" = "%@ na 18 jamek · váš průměr %@";
 "%@ · your average %@" = "%@ · váš průměr %@";
+"Get started" = "Začínáme";
+"Hide" = "Skrýt";
+"Enter your club distances" = "Zadejte vzdálenosti holí";
+"Better club advice on the course" = "Lepší doporučení holí na hřišti";
+"Play or record a round" = "Zahrajte nebo zapište kolo";
+"Start a round, or add one in Handicap" = "Zahajte kolo, nebo ho přidejte v sekci Handicap";
+"See your statistics" = "Prohlédněte si statistiky";
+"Find where your strokes go" = "Zjistěte, kde ztrácíte rány";
+"Not done" = "Nehotovo";

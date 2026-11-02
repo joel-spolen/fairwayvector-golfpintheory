@@ -71,7 +71,7 @@
 "9 Wood" = "9 号木";
 "9–11 scores: lowest 3" = "9–11 个成绩：最低 3 个";
 "A %@ rating for this club, course, and tee already exists in this country." = "此国家/地区已存在此球会、球场和发球台的%@评级。";
-"A clearer way\nto play." = "让高尔夫\n更清晰易懂。";
+"Know your numbers.\nPlay better golf." = "了解你的数据。\n打出更好的高尔夫。";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "%@ 已有草稿。请返回“选择球场”继续或放弃该草稿，再开始新的一轮。";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "需要真实的 9 洞或 18 洞球场，以及所选类别的有效评级。";
 "AW · 48° Wedge" = "AW · 48° 挖起杆";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "你的账户已删除。";
 "Your average score on each type of hole" = "你在各类球洞上的平均成绩";
 "Your average strokes per hole over time" = "你每洞平均杆数随时间的变化";
-"Your course. Your game. One place." = "你的球场，你的比赛，一站尽览。";
+"Distances, club advice and stats that show where your strokes go." = "距离、球杆建议，以及显示你在哪里丢杆的统计。";
 "Your display name could not be saved. Please try again." = "无法保存你的显示名称。请重试。";
 "Your display name has been saved." = "你的显示名称已保存。";
 "Your distances. Every swing." = "你的距离，每一次挥杆。";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "每洞推杆 %@ 次 · 你的平均 %@";
 "%@ per 18 holes · your average %@" = "每 18 洞 %@ 次 · 你的平均 %@";
 "%@ · your average %@" = "%@ · 你的平均 %@";
+"Get started" = "快速开始";
+"Hide" = "隐藏";
+"Enter your club distances" = "输入你的球杆距离";
+"Better club advice on the course" = "在球场上获得更准确的选杆建议";
+"Play or record a round" = "打一轮或记录一轮";
+"Start a round, or add one in Handicap" = "开始一轮，或在“差点”中添加";
+"See your statistics" = "查看你的统计";
+"Find where your strokes go" = "找出你在哪里丢杆";
+"Not done" = "未完成";

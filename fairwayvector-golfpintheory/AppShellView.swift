@@ -160,7 +160,8 @@ struct ContentView: View {
                 },
                 onOpenStatistics: { destination = .statistics },
                 onOpenSettings: { showingSettings = true },
-                onOpenAccount: { destination = .account }
+                onOpenAccount: { destination = .account },
+                profileStore: trajectoryModel.playerProfileStore
             )
 
         }

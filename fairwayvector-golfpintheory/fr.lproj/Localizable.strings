@@ -71,7 +71,7 @@
 "9 Wood" = "Bois 9";
 "9–11 scores: lowest 3" = "9–11 scores : les 3 plus bas";
 "A %@ rating for this club, course, and tee already exists in this country." = "Un rating (%@) pour ce club, ce parcours et ce départ existe déjà dans ce pays.";
-"A clearer way\nto play." = "Le golf en toute\nclarté.";
+"Know your numbers.\nPlay better golf." = "Connaissez vos chiffres.\nJouez mieux au golf.";
 "A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another." = "Un brouillon existe déjà pour %@. Revenez à Choisir un parcours et reprenez-le ou supprimez-le avant d’en commencer un autre.";
 "A real 9- or 18-hole course and valid rating for the selected category are required." = "Un vrai parcours de 9 ou 18 trous et un rating valide pour la catégorie sélectionnée sont requis.";
 "AW · 48° Wedge" = "AW · Wedge 48°";
@@ -1092,7 +1092,7 @@
 "Your account was deleted." = "Votre compte a été supprimé.";
 "Your average score on each type of hole" = "Votre score moyen sur chaque type de trou";
 "Your average strokes per hole over time" = "Votre moyenne de coups par trou au fil du temps";
-"Your course. Your game. One place." = "Votre parcours. Votre jeu. Tout au même endroit.";
+"Distances, club advice and stats that show where your strokes go." = "Distances, conseils de club et statistiques qui montrent où vous perdez des coups.";
 "Your display name could not be saved. Please try again." = "Votre nom d’affichage n’a pas pu être enregistré. Veuillez réessayer.";
 "Your display name has been saved." = "Votre nom d’affichage a été enregistré.";
 "Your distances. Every swing." = "Vos distances. Chaque swing.";
@@ -1218,3 +1218,12 @@
 "%@ putts per hole · your average %@" = "%@ putts par trou · votre moyenne %@";
 "%@ per 18 holes · your average %@" = "%@ par 18 trous · votre moyenne %@";
 "%@ · your average %@" = "%@ · votre moyenne %@";
+"Get started" = "Pour commencer";
+"Hide" = "Masquer";
+"Enter your club distances" = "Saisissez les distances de vos clubs";
+"Better club advice on the course" = "De meilleurs conseils de club sur le parcours";
+"Play or record a round" = "Jouez ou enregistrez une partie";
+"Start a round, or add one in Handicap" = "Commencez une partie ou ajoutez-en une dans Handicap";
+"See your statistics" = "Consultez vos statistiques";
+"Find where your strokes go" = "Découvrez où vous perdez des coups";
+"Not done" = "Non terminé";
