@@ -732,7 +732,9 @@ struct RoundScorecardView: View {
                             if let hole = column.hole, let onViewHole {
                                 Button { onViewHole(hole.number) } label: {
                                     Text(String(hole.number))
-                                        .font(.system(size: 11, weight: .bold).monospacedDigit())
+                                        .font(.caption2.bold().monospacedDigit())
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.6)
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                                         .contentShape(Rectangle())
                                 }
@@ -740,7 +742,9 @@ struct RoundScorecardView: View {
                                 .accessibilityLabel("View hole \(hole.number) on course map")
                             } else {
                                 Text(column.hole.map { String($0.number) } ?? (column.title == L("TOTAL") ? L("TOT") : column.title) ?? "—")
-                                    .font(.system(size: 11, weight: .bold).monospacedDigit())
+                                    .font(.caption2.bold().monospacedDigit())
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.6)
                             }
                         }
                         row(label: L("PAR"), columnWidth: columnWidth, rowInsets: rowInsets, isHeader: true, height: 34 * rowScale) { column in
@@ -808,6 +812,8 @@ struct RoundScorecardView: View {
         }
         // Keep scores and controls safe while row decoration extends to the edges.
         .background(PureLineStyle.canvas.ignoresSafeArea())
+        // Cells have fixed sizes; larger text would no longer fit.
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .statusBarHidden(true)
         .preferredColorScheme(.light)
     }
@@ -817,9 +823,9 @@ struct RoundScorecardView: View {
                                  @ViewBuilder cell: @escaping (RoundScorecardColumn) -> Cell) -> some View {
         HStack(spacing: 0) {
             Text(label.uppercased())
-                .font(.system(size: 10, weight: .semibold))
+                .font(.caption2.weight(.semibold))
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.6)
                 .foregroundStyle(isHeader ? PureLineStyle.muted : PureLineStyle.ink)
                 .frame(width: labelWidth - 8, height: height, alignment: .leading)
                 .padding(.leading, 8)
@@ -906,7 +912,9 @@ struct RoundScorecardView: View {
             GeometryReader { geometry in
                 let size = max(12, min(30, geometry.size.width - 6, geometry.size.height - 6))
                 Text(String(score.strokes))
-                    .font(.system(size: 13, weight: .bold).monospacedDigit())
+                    .font(.footnote.bold().monospacedDigit())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                     .foregroundStyle(scoreColor(score, par: hole.par))
                     .frame(width: size, height: size)
                     .overlay {
@@ -921,7 +929,7 @@ struct RoundScorecardView: View {
             .accessibilityValue(scoreDescription(score, par: hole.par))
         } else {
             Text("—")
-                .font(.system(size: 13).monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(PureLineStyle.muted)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -959,7 +967,9 @@ struct RoundScorecardView: View {
 
     private func scoreDetail(_ value: String) -> some View {
         Text(value)
-            .font(.system(size: 10, weight: .medium).monospacedDigit())
+            .font(.caption2.weight(.medium).monospacedDigit())
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
             .foregroundStyle(PureLineStyle.muted)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -1005,9 +1015,9 @@ struct RoundScorecardView: View {
 
     private func coloredMark(_ value: String, color: Color) -> some View {
         Text(value)
-            .font(.system(size: 9, weight: .bold).monospacedDigit())
+            .font(.caption2.bold().monospacedDigit())
             .lineLimit(1)
-            .minimumScaleFactor(0.65)
+            .minimumScaleFactor(0.6)
             .foregroundStyle(color)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(color.opacity(0.13), in: RoundedRectangle(cornerRadius: 5))
@@ -1024,7 +1034,9 @@ struct RoundScorecardView: View {
 
     private func scorecardText(_ value: String, emphasized: Bool = false) -> some View {
         Text(value)
-            .font(.system(size: 10, weight: emphasized ? .semibold : .regular).monospacedDigit())
+            .font(.caption2.weight(emphasized ? .semibold : .regular).monospacedDigit())
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
             .foregroundStyle(emphasized ? PureLineStyle.ink : PureLineStyle.muted)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -1242,14 +1254,15 @@ struct RoundReviewView: View {
             }
         }
         .scrollIndicators(.visible)
+        .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
         .accessibilityLabel("Round scorecard. Scroll horizontally to see all holes.")
     }
 
     private func scorecardLabelCell(_ title: String, header: Bool = false) -> some View {
         Text(title)
-            .font(.system(size: 10, weight: .semibold))
+            .font(.caption2.weight(.semibold))
             .lineLimit(1)
-            .minimumScaleFactor(0.75)
+            .minimumScaleFactor(0.6)
             .foregroundStyle(header ? PureLineStyle.ink : PureLineStyle.muted)
             .frame(width: 76, height: 42, alignment: .leading)
             .padding(.leading, 8)
@@ -1259,7 +1272,9 @@ struct RoundReviewView: View {
 
     private func scorecardCell(_ value: String, header: Bool = false) -> some View {
         Text(value)
-            .font(.system(size: 12, weight: header ? .semibold : .regular).monospacedDigit())
+            .font(.caption.weight(header ? .semibold : .regular).monospacedDigit())
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
             .foregroundStyle(PureLineStyle.ink)
             .frame(width: 44, height: 42)
             .background(header ? PureLineStyle.surface : PureLineStyle.canvas)
@@ -1283,7 +1298,9 @@ struct RoundReviewView: View {
         if let score {
             let relative = score.strokes - (hole.par ?? score.strokes)
             Text(String(score.strokes))
-                .font(.system(size: 13, weight: .semibold).monospacedDigit())
+                .font(.footnote.weight(.semibold).monospacedDigit())
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
                 .foregroundStyle(relative < 0 ? PureLineStyle.accent : PureLineStyle.ink)
                 .frame(width: 30, height: 30)
                 .background(relative < 0 ? PureLineStyle.accent.opacity(0.12) : .clear, in: Circle())
@@ -1292,7 +1309,7 @@ struct RoundReviewView: View {
                 }
         } else {
             Text("—")
-                .font(.system(size: 13, weight: .regular).monospacedDigit())
+                .font(.footnote.monospacedDigit())
                 .foregroundStyle(PureLineStyle.muted)
                 .frame(width: 44, height: 42)
         }

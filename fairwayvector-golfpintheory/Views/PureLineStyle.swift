@@ -69,6 +69,59 @@ extension View {
                     .strokeBorder(PureLineStyle.line.opacity(0.6), lineWidth: 1)
             }
     }
+
+    /// Limits line length on iPad; no effect on iPhone.
+    func pureLineReadableWidth() -> some View {
+        frame(maxWidth: 720)
+            .frame(maxWidth: .infinity)
+            .background(PureLineStyle.canvas.ignoresSafeArea())
+    }
+}
+
+/// Segmented tool switcher used at the top of Handicap, Trajectory and Wedge Matrix.
+struct PureLineToolTabs<Item: Hashable>: View {
+    let items: [Item]
+    @Binding var selection: Item
+    let title: (Item) -> String
+    let accessibilityLabel: String
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(items, id: \.self) { item in
+                let isSelected = selection == item
+                Button {
+                    selection = item
+                } label: {
+                    Text(title(item))
+                        .font(.subheadline.weight(.semibold))
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(isSelected ? PureLineStyle.accent : PureLineStyle.muted)
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                        .padding(.horizontal, 4)
+                        .background {
+                            if isSelected {
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(PureLineStyle.canvas)
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .strokeBorder(PureLineStyle.line, lineWidth: 1)
+                                    }
+                            }
+                        }
+                        .contentShape(RoundedRectangle(cornerRadius: 16))
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(isSelected ? [.isSelected] : [])
+            }
+        }
+        .padding(4)
+        .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 20))
+        .padding(.horizontal, 18)
+        .padding(.vertical, 10)
+        .background(PureLineStyle.canvas)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(accessibilityLabel)
+    }
 }
 
 struct PureLinePrimaryButtonStyle: ButtonStyle {

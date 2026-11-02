@@ -851,7 +851,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "Alleen opgeslagen terrein wordt getoond; sommige delen van het pad ontbreken. Bevestig of vernieuw handmatig om ontbrekend terrein aan te vragen.";
 "Shows an explanation of this input" = "Toont uitleg bij dit veld";
 "Shows club curvature relative to the target line." = "Toont de curve van de clubs ten opzichte van de doellijn.";
-"Shows the %@ handicap tool" = "Toont de handicaptool %@";
+"Scores in your record: %@" = "Scores in je historie: %@";
+"Lowest scores that count: %@" = "Laagste scores die tellen: %@";
+"Adjustment: %@" = "Correctie: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "Toont de aanbevolen club en de dichtstbijzijnde alternatieven, met het doel gemarkeerd door een groene lijn.";
 "Side view (height)" = "Zijaanzicht (hoogte)";
 "Sign in" = "Inloggen";

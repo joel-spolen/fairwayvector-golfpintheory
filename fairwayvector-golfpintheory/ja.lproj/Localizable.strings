@@ -851,7 +851,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "保存済みの地形のみを表示しています。パスの一部区間がありません。不足している地形をリクエストするには、手動で確定または更新してください。";
 "Shows an explanation of this input" = "この入力の説明を表示します";
 "Shows club curvature relative to the target line." = "ターゲットラインに対するクラブ別の曲がりを示します。";
-"Shows the %@ handicap tool" = "%@ のハンディキャップツールを表示します";
+"Scores in your record: %@" = "記録済みのスコア: %@";
+"Lowest scores that count: %@" = "採用される低いスコア: %@";
+"Adjustment: %@" = "調整: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "推奨クラブと最も近い代替案を示します。ターゲットは緑の線で表示されます。";
 "Side view (height)" = "側面図（高さ）";
 "Sign in" = "サインイン";

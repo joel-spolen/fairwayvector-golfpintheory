@@ -122,41 +122,8 @@ struct HCPProjectionRootView: View {
     var body: some View {
         VStack(spacing: 0) {
             PureLineHomeButton(onHome: onHome)
-            HStack(spacing: 4) {
-                ForEach(Tab.allCases, id: \.self) { tab in
-                    Button {
-                        selectedTab = tab
-                    } label: {
-                        Text(tab.title)
-                            .font(.subheadline.weight(.semibold))
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(selectedTab == tab ? PureLineStyle.accent : PureLineStyle.muted)
-                            .frame(maxWidth: .infinity, minHeight: 48)
-                            .padding(.horizontal, 4)
-                            .background {
-                                if selectedTab == tab {
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(PureLineStyle.canvas)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .strokeBorder(PureLineStyle.line, lineWidth: 1)
-                                        }
-                                }
-                            }
-                            .contentShape(RoundedRectangle(cornerRadius: 16))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selectedTab == tab ? [.isSelected] : [])
-                    .accessibilityHint("Shows the \(tab.title.lowercased()) handicap tool")
-                }
-            }
-            .padding(4)
-            .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 20))
-            .padding(.horizontal, 18)
-            .padding(.vertical, 10)
-            .background(PureLineStyle.canvas)
-            .accessibilityElement(children: .contain)
-                    .accessibilityLabel(AppLanguage.localized("Handicap tools"))
+            PureLineToolTabs(items: Tab.allCases, selection: $selectedTab, title: \.title,
+                             accessibilityLabel: AppLanguage.localized("Handicap tools"))
 
             Group {
                 switch selectedTab {
@@ -535,8 +502,12 @@ private struct HandicapRoundsView: View {
             return L("At least three scores are required to calculate a Handicap Index.")
         }
         let rule = WHSCalculator.bestDifferentialRule(for: min(scoreCount, 20))
-        let adjustment = rule.adjustment == 0 ? "" : " with a \(Int(rule.adjustment)) adjustment"
-        return "With \(scoreCount) scores, your lowest \(rule.count) \(rule.count == 1 ? "score counts" : "scores count")\(adjustment)."
+        var lines = [L("Scores in your record: %@", "\(scoreCount)"),
+                     L("Lowest scores that count: %@", "\(rule.count)")]
+        if rule.adjustment != 0 {
+            lines.append(L("Adjustment: %@", String(format: "%+.1f", rule.adjustment)))
+        }
+        return lines.joined(separator: "\n")
     }
 
     var body: some View {

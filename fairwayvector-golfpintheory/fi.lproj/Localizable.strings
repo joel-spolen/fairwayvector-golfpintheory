@@ -853,7 +853,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "Näytetään vain tallennettu maasto; osa polun väleistä puuttuu. Vahvista tai päivitä manuaalisesti pyytääksesi puuttuvan maaston.";
 "Shows an explanation of this input" = "Näyttää selityksen tälle kentälle";
 "Shows club curvature relative to the target line." = "Näyttää mailojen kaarteen suhteessa kohdelinjaan.";
-"Shows the %@ handicap tool" = "Näyttää tasoitustyökalun %@";
+"Scores in your record: %@" = "Tuloksia historiassasi: %@";
+"Lowest scores that count: %@" = "Laskettavat parhaat tulokset: %@";
+"Adjustment: %@" = "Korjaus: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "Näyttää suositellun mailan ja lähimmät vaihtoehdot; kohde on merkitty vihreällä viivalla.";
 "Side view (height)" = "Sivunäkymä (korkeus)";
 "Sign in" = "Kirjaudu sisään";

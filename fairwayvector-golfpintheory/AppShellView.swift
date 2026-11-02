@@ -163,6 +163,7 @@ struct ContentView: View {
                 onOpenSettings: { showingSettings = true },
                 profileStore: trajectoryModel.playerProfileStore
             )
+            .pureLineReadableWidth()
 
         }
         .background {
@@ -243,16 +244,21 @@ struct ContentView: View {
                               initialRound: roundStore.active)
         case .handicap:
             HCPProjectionEntryView(onHome: { destination = nil })
+                .pureLineReadableWidth()
         case .practice:
             PracticeView(destination: $practiceDestination, trajectoryModel: trajectoryModel, onHome: { destination = nil })
+                .pureLineReadableWidth()
         case .statistics:
             RoundStatisticsView()
+                .pureLineReadableWidth()
         case .bag:
             InTheBagView(trajectoryModel: trajectoryModel, onHome: { destination = nil }, onSave: {
                 Task { @MainActor in await syncSavedDataIfEnabled() }
             })
+            .pureLineReadableWidth()
         case .account:
             PinTheoryAccountView(onHome: { destination = nil })
+                .pureLineReadableWidth()
         }
     }
 

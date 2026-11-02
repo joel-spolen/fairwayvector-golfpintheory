@@ -851,7 +851,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "Aðeins vistað landslag er sýnt; suma kafla leiðarinnar vantar. Staðfestu eða endurnýjaðu handvirkt til að biðja um landslagið sem vantar.";
 "Shows an explanation of this input" = "Sýnir skýringu á þessum reit";
 "Shows club curvature relative to the target line." = "Sýnir sveigju kylfna miðað við marklínuna.";
-"Shows the %@ handicap tool" = "Sýnir forgjafartólið %@";
+"Scores in your record: %@" = "Skor í sögu þinni: %@";
+"Lowest scores that count: %@" = "Lægstu skor sem gilda: %@";
+"Adjustment: %@" = "Leiðrétting: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "Sýnir ráðlagða kylfu og næstu valkosti, með markið merkt með grænni línu.";
 "Side view (height)" = "Hliðarsýn (hæð)";
 "Sign in" = "Skrá inn";

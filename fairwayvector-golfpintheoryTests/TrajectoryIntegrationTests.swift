@@ -5,7 +5,7 @@ import UIKit
 struct TrajectoryIntegrationTests {
     @Test func trajectoryArtworkIsBundled() {
         let imageNames = [
-            "ballspeed", "driver", "elevation", "fairwaywood", "homescreen", "humidity",
+            "ballspeed", "driver", "elevation", "fairwaywood", "humidity",
             "hybrid", "iron", "launchangle", "launchdirection", "pressure", "spinaxis",
             "spinrate", "temperature", "wedge", "wind"
         ]

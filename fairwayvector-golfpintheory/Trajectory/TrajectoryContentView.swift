@@ -29,40 +29,8 @@ struct TrajectoryRootView: View {
     var body: some View {
         VStack(spacing: 0) {
             PureLineHomeButton(onHome: onHome)
-            HStack(spacing: 4) {
-                ForEach(Tab.allCases, id: \.self) { tab in
-                    Button {
-                        selectedTab = tab
-                    } label: {
-                        Text(tab.title)
-                            .font(.subheadline.weight(.semibold))
-                            .multilineTextAlignment(.center)
-                            .foregroundStyle(selectedTab == tab ? PureLineStyle.accent : PureLineStyle.muted)
-                            .frame(maxWidth: .infinity, minHeight: 48)
-                            .padding(.horizontal, 4)
-                            .background {
-                                if selectedTab == tab {
-                                    RoundedRectangle(cornerRadius: 16)
-                                        .fill(PureLineStyle.canvas)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 16)
-                                                .strokeBorder(PureLineStyle.line, lineWidth: 1)
-                                        }
-                                }
-                            }
-                            .contentShape(RoundedRectangle(cornerRadius: 16))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selectedTab == tab ? [.isSelected] : [])
-                }
-            }
-            .padding(4)
-            .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 20))
-            .padding(.horizontal, 18)
-            .padding(.vertical, 10)
-            .background(PureLineStyle.canvas)
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel("Trajectory tools")
+            PureLineToolTabs(items: Tab.allCases, selection: $selectedTab, title: \.title,
+                             accessibilityLabel: L("Trajectory tools"))
 
             Group {
                 switch selectedTab {

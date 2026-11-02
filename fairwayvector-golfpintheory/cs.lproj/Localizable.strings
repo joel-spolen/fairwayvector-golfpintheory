@@ -851,7 +851,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "Zobrazuje se jen uložený terén; některé úseky trasy chybí. Pro vyžádání chybějícího terénu potvrďte nebo ručně obnovte.";
 "Shows an explanation of this input" = "Zobrazí vysvětlení tohoto pole";
 "Shows club curvature relative to the target line." = "Zobrazuje zakřivení holí vůči cílové linii.";
-"Shows the %@ handicap tool" = "Zobrazí handicapový nástroj %@";
+"Scores in your record: %@" = "Skóre v záznamu: %@";
+"Lowest scores that count: %@" = "Započítaná nejnižší skóre: %@";
+"Adjustment: %@" = "Úprava: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "Zobrazuje doporučenou hůl a nejbližší alternativy s cílem označeným zelenou čárou.";
 "Side view (height)" = "Boční pohled (výška)";
 "Sign in" = "Přihlásit se";

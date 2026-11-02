@@ -851,7 +851,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "저장된 지형만 표시합니다. 일부 경로 구간이 없습니다. 누락된 지형을 요청하려면 직접 확정하거나 새로 고치세요.";
 "Shows an explanation of this input" = "이 입력 항목에 대한 설명을 표시합니다";
 "Shows club curvature relative to the target line." = "목표선 기준 클럽별 휘어짐을 보여 줍니다.";
-"Shows the %@ handicap tool" = "%@ 핸디캡 도구를 표시합니다";
+"Scores in your record: %@" = "기록된 스코어: %@";
+"Lowest scores that count: %@" = "반영되는 최저 스코어: %@";
+"Adjustment: %@" = "조정: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "추천 클럽과 가장 가까운 대안을 보여 주며, 목표는 초록색 선으로 표시됩니다.";
 "Side view (height)" = "측면 보기(높이)";
 "Sign in" = "로그인";

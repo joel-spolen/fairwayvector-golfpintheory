@@ -851,7 +851,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "Es wird nur gespeichertes Gelände angezeigt; einige Pfadabschnitte fehlen. Bestätige oder aktualisiere manuell, um fehlendes Gelände anzufordern.";
 "Shows an explanation of this input" = "Zeigt eine Erklärung zu dieser Eingabe";
 "Shows club curvature relative to the target line." = "Zeigt die Kurve der Schläger relativ zur Ziellinie.";
-"Shows the %@ handicap tool" = "Zeigt das Handicap-Werkzeug „%@“";
+"Scores in your record: %@" = "Scores in deiner Historie: %@";
+"Lowest scores that count: %@" = "Niedrigste Scores, die zählen: %@";
+"Adjustment: %@" = "Anpassung: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "Zeigt den empfohlenen Schläger und die nächsten Alternativen; das Ziel ist mit einer grünen Linie markiert.";
 "Side view (height)" = "Seitenansicht (Höhe)";
 "Sign in" = "Anmelden";

@@ -853,7 +853,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "Visar endast sparad terräng; vissa delar av vägen saknas. Bekräfta eller uppdatera manuellt för att begära saknad terräng.";
 "Shows an explanation of this input" = "Visar en förklaring av fältet";
 "Shows club curvature relative to the target line." = "Visar klubbornas kurva relativt mållinjen.";
-"Shows the %@ handicap tool" = "Visar handicapverktyget %@";
+"Scores in your record: %@" = "Scorer i din historik: %@";
+"Lowest scores that count: %@" = "Lägsta scorer som räknas: %@";
+"Adjustment: %@" = "Justering: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "Visar den rekommenderade klubban och närmaste alternativ med målet markerat med en grön linje.";
 "Side view (height)" = "Sidovy (höjd)";
 "Sign in" = "Logga in";

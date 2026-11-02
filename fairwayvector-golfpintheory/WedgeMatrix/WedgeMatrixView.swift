@@ -36,38 +36,8 @@ struct WedgeMatrixView: View {
     var body: some View {
         VStack(spacing: 0) {
             PureLineHomeButton(onHome: onHome)
-            HStack(spacing: 4) {
-                ForEach(Section.allCases, id: \.self) { item in
-                    Button {
-                        section = item
-                    } label: {
-                        Text(item.title)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(section == item ? PureLineStyle.accent : PureLineStyle.muted)
-                            .frame(maxWidth: .infinity, minHeight: 48)
-                            .background {
-                                if section == item {
-                                    RoundedRectangle(cornerRadius: 14)
-                                        .fill(PureLineStyle.canvas)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 14)
-                                                .strokeBorder(PureLineStyle.line, lineWidth: 1)
-                                        }
-                                }
-                            }
-                            .contentShape(RoundedRectangle(cornerRadius: 14))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(section == item ? [.isSelected] : [])
-                }
-            }
-            .padding(4)
-            .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 18))
-            .padding(.horizontal, 18)
-            .padding(.vertical, 10)
-            .background(PureLineStyle.canvas)
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel("Wedge tools")
+            PureLineToolTabs(items: Section.allCases, selection: $section, title: \.title,
+                             accessibilityLabel: L("Wedge tools"))
 
             Group {
                 switch section {

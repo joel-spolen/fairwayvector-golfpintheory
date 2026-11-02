@@ -853,7 +853,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "Viser bare lagret terreng; noen deler av banen mangler. Bekreft eller oppdater manuelt for å be om manglende terreng.";
 "Shows an explanation of this input" = "Viser en forklaring av dette feltet";
 "Shows club curvature relative to the target line." = "Viser køllenes kurve i forhold til mållinjen.";
-"Shows the %@ handicap tool" = "Viser handicapverktøyet %@";
+"Scores in your record: %@" = "Scorer i historikken din: %@";
+"Lowest scores that count: %@" = "Laveste scorer som teller: %@";
+"Adjustment: %@" = "Justering: %@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "Viser anbefalt kølle og nærmeste alternativer med målet markert med en grønn linje.";
 "Side view (height)" = "Sidevisning (høyde)";
 "Sign in" = "Logg inn";

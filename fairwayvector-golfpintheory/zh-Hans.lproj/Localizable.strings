@@ -851,7 +851,9 @@
 "Showing saved terrain only; some path intervals are unavailable. Commit or refresh explicitly to request uncovered terrain." = "仅显示已保存的地形；部分路径区间缺失。请手动确认或刷新以请求缺失的地形。";
 "Shows an explanation of this input" = "显示此输入项的说明";
 "Shows club curvature relative to the target line." = "显示各球杆相对目标线的弯曲。";
-"Shows the %@ handicap tool" = "显示%@差点工具";
+"Scores in your record: %@" = "记录中的成绩：%@";
+"Lowest scores that count: %@" = "计入的最低成绩：%@";
+"Adjustment: %@" = "调整：%@";
 "Shows the recommended club and closest alternatives with the target marked by a green line." = "显示推荐球杆和最接近的备选，目标以绿线标出。";
 "Side view (height)" = "侧视图（高度）";
 "Sign in" = "登录";
