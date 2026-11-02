@@ -29,10 +29,10 @@ enum HCPCustomCourseSearch {
               coverage.countries.contains(where: { normalizedCountry($0) == country }) else { return [] }
         // GolfClub has country/city, not a state or region. Region is country membership only.
         // Adding multiple custom courses can create repeated GolfClub rows with the same
-        // name and country, so group them before presenting search results.
+        // name, country and city, so group them; same-named clubs in other cities stay separate.
         let clubsInCountry = clubs.filter { normalizedCountry($0.country) == country }
         let groups = Dictionary(grouping: clubsInCountry) {
-            "\(normalizedCountry($0.name))|\(normalizedCountry($0.country))"
+            "\(normalizedCountry($0.name))|\(normalizedCountry($0.country))|\(normalizedCountry($0.city))"
         }
 
         return groups.values.compactMap { clubGroup -> Match? in

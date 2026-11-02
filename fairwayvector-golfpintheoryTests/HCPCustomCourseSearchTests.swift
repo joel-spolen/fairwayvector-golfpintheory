@@ -72,4 +72,14 @@ struct HCPCustomCourseSearchTests {
         #expect(Set(found.map(\.id)).count == 2)
         #expect(Set(found.map(\.id)) == Set([first.persistentModelID, second.persistentModelID]))
     }
+
+    @Test func repeatedCustomClubRowsAppearOnce() {
+        let first = GolfClub(name: "Hills", city: "", country: "Sweden", isCustom: true)
+        let second = GolfClub(name: "Hills", city: "", country: "Sweden", isCustom: true)
+        let courses = [GolfCourse(clubName: "Hills", name: "North", isCustom: true),
+                       GolfCourse(clubName: "Hills", name: "South", isCustom: true)]
+        let found = matches([first, second], courses: courses)
+        #expect(found.count == 1)
+        #expect(found.first?.courseNames == ["North", "South"])
+    }
 }

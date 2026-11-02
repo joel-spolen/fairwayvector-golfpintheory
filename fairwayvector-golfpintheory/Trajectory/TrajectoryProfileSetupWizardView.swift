@@ -67,11 +67,14 @@ struct TrajectoryProfileSetupWizardView: View {
     }
 
     private func finishSetup() {
+        let previous = profileStore.profile
         profileStore.update { profile in
             profile.isSetupComplete = true
             profile.detailLevel = .easy
             profile.handicapBand = selectedBand
         }
+        // Without a fresh timestamp, cloud sync treats the older remote profile as newer.
+        if profileStore.profile != previous { profileStore.markClubProfileSaved() }
         onClose()
     }
 }

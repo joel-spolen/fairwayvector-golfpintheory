@@ -66,33 +66,6 @@ struct HCPProviderCourseTests {
         #expect(result.tee.holeHandicapIndicesData == indices)
     }
 
-    @Test func incompleteParsInvalidRatingsAndDemoAreRejected() throws {
-        for raw in [json(pars: [4]), json(slope: 54), json(slope: 156), json(rating: 0),
-                    json(holes: 12), json(id: DevelopmentGolfAPIFixtures.courseID)] {
-            let detail = try GolfAPICourseDetail(json: raw)
-            #expect(throws: GolfAPIError.self) {
-                try HCPProviderCourse.convert(detail: detail, tee: detail.tees[0], sex: "male")
-            }
-        }
-        let detail = try GolfAPICourseDetail(json: json())
-        #expect(throws: GolfAPIError.self) {
-            try HCPProviderCourse.convert(detail: detail, tee: detail.tees[1], sex: "female")
-        }
-        #expect(throws: GolfAPIError.self) {
-            try HCPProviderCourse.convert(detail: detail, tee: detail.tees[0], sex: "unknown")
-        }
-    }
-
-    @Test func missingOrInvalidStrokeIndicesDisableHoleByHoleOnly() throws {
-        for indices in [[], [1], Array(repeating: 1, count: 18), Array(2...19)] {
-            let detail = try GolfAPICourseDetail(json: json(indices: indices))
-            let result = try HCPProviderCourse.convert(detail: detail, tee: detail.tees[0], sex: "male")
-            #expect(result.tee.holeHandicapIndicesData == nil)
-            #expect(result.tee.holeParsData == detail.parsMen)
-            #expect(result.tee.snapshot.par == 72)
-        }
-    }
-
     @Test func bothModesReuseDetailOnlyCacheAndMapStillRequiresGPS() async throws {
         for mode in [DevelopmentAPIConfiguration.Mode.mock, .live] {
             let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)

@@ -184,6 +184,7 @@ struct ContentView: View {
                     unitPreferences: trajectoryModel.unitPreferences) {
                     accountData.defaults.set(true, forKey: Self.handicapSetupPromptedKey)
                     showingHandicapSetup = false
+                    if !trajectoryModel.playerProfileStore.needsSetup { scheduleAutomaticSync() }
                 }
                 .accessibilityAddTraits(.isModal)
             }
