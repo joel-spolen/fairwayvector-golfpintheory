@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Distanze di carry corrette per colpi con traiettoria %@";
 "Center" = "Centro";
 "Change" = "Cambia";
-"Change course" = "Cambia percorso";
 "Change course, club, or tee" = "Cambia percorso, circolo o tee";
 "Change password" = "Cambia password";
 "Changes to This Policy" = "Modifiche alla presente informativa";
-"Check for course updates" = "Cerca aggiornamenti del percorso";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Controlla la posta in arrivo e lo spam per un’email di conferma, se è possibile creare un account per questo indirizzo. Apri il link su questo dispositivo, torna a Golf PinTheory e accedi se richiesto.";
 "Checking for cloud updates…" = "Ricerca di aggiornamenti nel cloud…";
 "Checking saved data in the cloud…" = "Controllo dei dati salvati nel cloud…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Percorso e tee · Obbligatorio";
 "Course & scoring" = "Percorso e scoring";
 "Course & tee" = "Percorso e tee";
-"Course & tee information" = "Informazioni su percorso e tee";
 "Course Data" = "Dati del percorso";
 "Course Handicap" = "Course Handicap";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Le informazioni del percorso non sono temporaneamente disponibili. Riprova più tardi.";
 "Course map data is temporarily unavailable. Try again shortly." = "I dati mappa del percorso non sono temporaneamente disponibili. Riprova tra poco.";
 "Course name" = "Nome del percorso";
-"Course options, scorecard and tools" = "Opzioni del percorso, score card e strumenti";
 "Course rating" = "Course rating";
 "Course unavailable" = "Percorso non disponibile";
 "Course view" = "Vista del percorso";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Traiettoria fisica modellata. All’atterraggio, la palla finisce %@ a %@ della linea dell’obiettivo.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Traiettoria fisica modellata. Carry stimato %@, apice %@.";
 "Move Flag · Hole %lld" = "Sposta bandiera · Buca %lld";
-"Move flag" = "Sposta bandiera";
 "N" = "N";
 "N/A" = "N/D";
 "N/A · par 3" = "N/D · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Registrato in parte";
 "Password" = "Password";
 "Passwords do not match." = "Le password non corrispondono.";
-"Pause round & choose course" = "Metti in pausa il giro e scegli il percorso";
 "Penalties" = "Penalità";
 "Penalties / 18" = "Penalità / 18";
 "Penalty strokes" = "Colpi di penalità";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Consigliato e alternative più vicine";
 "Record a round" = "Registra un giro";
 "Record valid strokes for every player on every hole before finishing." = "Registra colpi validi per ogni giocatore su ogni buca prima di terminare.";
-"Refresh course" = "Aggiorna percorso";
 "Refresh course weather" = "Aggiorna meteo del percorso";
 "Region" = "Regione";
 "Relative humidity" = "Umidità relativa";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Riprova a caricare l’archivio dei giri";
 "Retry saving draft" = "Riprova a salvare la bozza";
 "Retry secure storage" = "Riprova archiviazione sicura";
-"Review / finish round" = "Rivedi / termina il giro";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Controlla carry, apice, dati di atterraggio e le traiettorie viste di lato e dall’alto.";
 "Review your carry numbers and the wedges currently in your bag." = "Controlla i tuoi valori di carry e i wedge attualmente nella sacca.";
 "Review your scores and spot the trends" = "Rivedi i punteggi e individua le tendenze";
@@ -814,7 +806,6 @@
 "Score %@" = "Punteggio %@";
 "Score Summary" = "Riepilogo del punteggio";
 "Score could not be saved" = "Impossibile salvare il punteggio";
-"Score current hole" = "Registra la buca attuale";
 "Score saved" = "Punteggio salvato";
 "Score: %@" = "Punteggio: %@";
 "Score: —" = "Punteggio: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Dettagli del terreno, %@";
 "Terrain elevation (%@)" = "Quota del terreno (%@)";
 "Terrain elevation: %@" = "Quota del terreno: %@";
-"Terrain profile" = "Profilo del terreno";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Profilo del terreno; scala verticale adattata separatamente, i vuoti indicano quote non disponibili";
 "Terrain unavailable" = "Terreno non disponibile";
 "Terrain · release target" = "Terreno · rilascia l’obiettivo";

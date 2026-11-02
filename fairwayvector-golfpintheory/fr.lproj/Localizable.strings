@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Distances de carry ajustées pour les coups à trajectoire %@";
 "Center" = "Centre";
 "Change" = "Modifier";
-"Change course" = "Changer de parcours";
 "Change course, club, or tee" = "Changer de parcours, de club ou de départ";
 "Change password" = "Modifier le mot de passe";
 "Changes to This Policy" = "Modifications de cette politique";
-"Check for course updates" = "Rechercher des mises à jour du parcours";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Consultez votre boîte de réception et vos spams pour un e-mail de confirmation si la création de compte est possible pour cette adresse. Ouvrez le lien sur cet appareil, revenez dans Golf PinTheory, puis connectez-vous si demandé.";
 "Checking for cloud updates…" = "Recherche de mises à jour dans le cloud…";
 "Checking saved data in the cloud…" = "Vérification des données enregistrées dans le cloud…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Parcours & départ · Obligatoire";
 "Course & scoring" = "Parcours & scoring";
 "Course & tee" = "Parcours & départ";
-"Course & tee information" = "Informations sur le parcours & le départ";
 "Course Data" = "Données du parcours";
 "Course Handicap" = "Handicap de parcours";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Les informations du parcours sont temporairement indisponibles. Veuillez réessayer plus tard.";
 "Course map data is temporarily unavailable. Try again shortly." = "Les données cartographiques du parcours sont temporairement indisponibles. Réessayez dans un instant.";
 "Course name" = "Nom du parcours";
-"Course options, scorecard and tools" = "Options du parcours, carte de score et outils";
 "Course rating" = "Course rating";
 "Course unavailable" = "Parcours indisponible";
 "Course view" = "Vue du parcours";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Trajectoire physique modélisée. À l’atterrissage, la balle finit %@ %@ de la ligne de cible.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Trajectoire physique modélisée. Carry estimé %@, apex %@.";
 "Move Flag · Hole %lld" = "Déplacer le drapeau · Trou %lld";
-"Move flag" = "Déplacer le drapeau";
 "N" = "N";
 "N/A" = "N/A";
 "N/A · par 3" = "N/A · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Partiellement saisi";
 "Password" = "Mot de passe";
 "Passwords do not match." = "Les mots de passe ne correspondent pas.";
-"Pause round & choose course" = "Mettre la partie en pause & choisir un parcours";
 "Penalties" = "Pénalités";
 "Penalties / 18" = "Pénalités / 18";
 "Penalty strokes" = "Coups de pénalité";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Recommandé et alternatives les plus proches";
 "Record a round" = "Enregistrer une partie";
 "Record valid strokes for every player on every hole before finishing." = "Enregistrez des coups valides pour chaque joueur sur chaque trou avant de terminer.";
-"Refresh course" = "Actualiser le parcours";
 "Refresh course weather" = "Actualiser la météo du parcours";
 "Region" = "Région";
 "Relative humidity" = "Humidité relative";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Réessayer de charger le stockage des parties";
 "Retry saving draft" = "Réessayer d’enregistrer le brouillon";
 "Retry secure storage" = "Réessayer le stockage sécurisé";
-"Review / finish round" = "Revoir / terminer la partie";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Consultez le carry, l’apex, les données d’atterrissage et les trajectoires vues de côté et de dessus.";
 "Review your carry numbers and the wedges currently in your bag." = "Consultez vos carrys et les wedges actuellement dans votre sac.";
 "Review your scores and spot the trends" = "Consultez vos scores et repérez les tendances";
@@ -814,7 +806,6 @@
 "Score %@" = "Score %@";
 "Score Summary" = "Résumé du score";
 "Score could not be saved" = "Le score n’a pas pu être enregistré";
-"Score current hole" = "Saisir le trou actuel";
 "Score saved" = "Score enregistré";
 "Score: %@" = "Score : %@";
 "Score: —" = "Score : —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Détails du terrain, %@";
 "Terrain elevation (%@)" = "Altitude du terrain (%@)";
 "Terrain elevation: %@" = "Altitude du terrain : %@";
-"Terrain profile" = "Profil du terrain";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Profil du terrain ; échelle verticale ajustée indépendamment, les trous indiquent des altitudes indisponibles";
 "Terrain unavailable" = "Terrain indisponible";
 "Terrain · release target" = "Terrain · relâchez la cible";

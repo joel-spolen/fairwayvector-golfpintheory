@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Distâncias de carry ajustadas para pancadas com trajetória %@";
 "Center" = "Centro";
 "Change" = "Alterar";
-"Change course" = "Mudar de campo";
 "Change course, club, or tee" = "Mudar de campo, clube ou tee";
 "Change password" = "Alterar palavra-passe";
 "Changes to This Policy" = "Alterações a esta política";
-"Check for course updates" = "Procurar atualizações do campo";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Verifique a caixa de entrada e a pasta de spam para encontrar um e-mail de confirmação, caso seja possível criar conta para este endereço. Abra a ligação neste dispositivo, regresse ao Golf PinTheory e inicie sessão se lhe for pedido.";
 "Checking for cloud updates…" = "A procurar atualizações na nuvem…";
 "Checking saved data in the cloud…" = "A verificar os dados guardados na nuvem…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Campo e tee · Obrigatório";
 "Course & scoring" = "Campo e scoring";
 "Course & tee" = "Campo e tee";
-"Course & tee information" = "Informações do campo e do tee";
 "Course Data" = "Dados do campo";
 "Course Handicap" = "Handicap de campo";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "As informações do campo estão temporariamente indisponíveis. Tente mais tarde.";
 "Course map data is temporarily unavailable. Try again shortly." = "Os dados do mapa do campo estão temporariamente indisponíveis. Tente novamente daqui a pouco.";
 "Course name" = "Nome do campo";
-"Course options, scorecard and tools" = "Opções do campo, cartão e ferramentas";
 "Course rating" = "Course rating";
 "Course unavailable" = "Campo indisponível";
 "Course view" = "Vista do campo";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Trajetória física modelada. Na aterragem, a bola fica %@ à %@ da linha do alvo.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Trajetória física modelada. Carry estimado de %@ e ápice de %@.";
 "Move Flag · Hole %lld" = "Mover bandeira · Buraco %lld";
-"Move flag" = "Mover bandeira";
 "N" = "N";
 "N/A" = "N/A";
 "N/A · par 3" = "N/A · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Parcialmente registado";
 "Password" = "Palavra-passe";
 "Passwords do not match." = "As palavras-passe não coincidem.";
-"Pause round & choose course" = "Pausar volta e escolher campo";
 "Penalties" = "Penalidades";
 "Penalties / 18" = "Penalidades / 18";
 "Penalty strokes" = "Pancadas de penalidade";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Recomendado e alternativas mais próximas";
 "Record a round" = "Registar uma volta";
 "Record valid strokes for every player on every hole before finishing." = "Registe pancadas válidas para cada jogador em cada buraco antes de terminar.";
-"Refresh course" = "Atualizar campo";
 "Refresh course weather" = "Atualizar tempo do campo";
 "Region" = "Região";
 "Relative humidity" = "Humidade relativa";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Tentar carregar o armazenamento das voltas novamente";
 "Retry saving draft" = "Tentar guardar o rascunho novamente";
 "Retry secure storage" = "Tentar armazenamento seguro novamente";
-"Review / finish round" = "Rever / terminar volta";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Reveja o carry, o ápice, os dados de aterragem e as trajetórias vistas de lado e de cima.";
 "Review your carry numbers and the wedges currently in your bag." = "Reveja os seus valores de carry e os wedges que tem agora no saco.";
 "Review your scores and spot the trends" = "Reveja os resultados e identifique tendências";
@@ -814,7 +806,6 @@
 "Score %@" = "Pontuação %@";
 "Score Summary" = "Resumo da pontuação";
 "Score could not be saved" = "Não foi possível guardar a pontuação";
-"Score current hole" = "Registar o buraco atual";
 "Score saved" = "Pontuação guardada";
 "Score: %@" = "Pontuação: %@";
 "Score: —" = "Pontuação: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Detalhes do terreno, %@";
 "Terrain elevation (%@)" = "Altitude do terreno (%@)";
 "Terrain elevation: %@" = "Altitude do terreno: %@";
-"Terrain profile" = "Perfil do terreno";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Perfil do terreno; escala vertical ajustada de forma independente, as lacunas são altitudes indisponíveis";
 "Terrain unavailable" = "Terreno indisponível";
 "Terrain · release target" = "Terreno · largue o alvo";

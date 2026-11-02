@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Carryavstander justert for slag med ballbane: %@";
 "Center" = "Midt";
 "Change" = "Endre";
-"Change course" = "Bytt bane";
 "Change course, club, or tee" = "Bytt bane, klubb eller utslagssted";
 "Change password" = "Endre passord";
 "Changes to This Policy" = "Endringer i denne policyen";
-"Check for course updates" = "Se etter baneoppdateringer";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Sjekk innboksen og søppelpostmappen for en bekreftelses-e-post hvis kontoopprettelse er mulig for denne adressen. Åpne lenken på denne enheten, gå tilbake til Golf PinTheory og logg på hvis du blir bedt om det.";
 "Checking for cloud updates…" = "Ser etter skyoppdateringer…";
 "Checking saved data in the cloud…" = "Sjekker lagrede data i skyen…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Bane & utslagssted · Påkrevd";
 "Course & scoring" = "Bane & scoring";
 "Course & tee" = "Bane & utslagssted";
-"Course & tee information" = "Informasjon om bane & utslagssted";
 "Course Data" = "Banedata";
 "Course Handicap" = "Banehandicap";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Baneinformasjon er midlertidig utilgjengelig. Prøv igjen senere.";
 "Course map data is temporarily unavailable. Try again shortly." = "Banekartdata er midlertidig utilgjengelige. Prøv igjen om litt.";
 "Course name" = "Banenavn";
-"Course options, scorecard and tools" = "Banealternativer, scorekort og verktøy";
 "Course rating" = "Course rating";
 "Course unavailable" = "Banen er ikke tilgjengelig";
 "Course view" = "Banevisning";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Modellert fysikkbane. Ved landing havner ballen %@ %@ for mållinjen.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Modellert fysikkbane. Anslått carry er %@ og toppunktet er %@.";
 "Move Flag · Hole %lld" = "Flytt flagg · Hull %lld";
-"Move flag" = "Flytt flagg";
 "N" = "N";
 "N/A" = "I/A";
 "N/A · par 3" = "I/A · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Delvis registrert";
 "Password" = "Passord";
 "Passwords do not match." = "Passordene samsvarer ikke.";
-"Pause round & choose course" = "Sett runden på pause & velg bane";
 "Penalties" = "Straffeslag";
 "Penalties / 18" = "Straffeslag / 18";
 "Penalty strokes" = "Straffeslag";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Anbefalt og nærmeste alternativer";
 "Record a round" = "Registrer en runde";
 "Record valid strokes for every player on every hole before finishing." = "Registrer gyldige slag for alle spillere på alle hull før du avslutter.";
-"Refresh course" = "Oppdater bane";
 "Refresh course weather" = "Oppdater banevær";
 "Region" = "Region";
 "Relative humidity" = "Relativ luftfuktighet";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Prøv å laste inn rundelagringen igjen";
 "Retry saving draft" = "Prøv å lagre utkastet igjen";
 "Retry secure storage" = "Prøv sikker lagring igjen";
-"Review / finish round" = "Gå gjennom / avslutt runde";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Gå gjennom carry, toppunkt, landingsdata og ballbanen sett fra siden og ovenfra.";
 "Review your carry numbers and the wedges currently in your bag." = "Gå gjennom carryverdiene og wedgene som for øyeblikket er i bagen.";
 "Review your scores and spot the trends" = "Se gjennom resultatene og finn utviklingen";
@@ -814,7 +806,6 @@
 "Score %@" = "Score %@";
 "Score Summary" = "Scoreoversikt";
 "Score could not be saved" = "Scoren kunne ikke lagres";
-"Score current hole" = "Registrer gjeldende hull";
 "Score saved" = "Score lagret";
 "Score: %@" = "Score: %@";
 "Score: —" = "Score: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Terrengdetaljer, %@";
 "Terrain elevation (%@)" = "Terrenghøyde (%@)";
 "Terrain elevation: %@" = "Terrenghøyde: %@";
-"Terrain profile" = "Terrengprofil";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Terrengprofil; uavhengig tilpasset vertikal skala, hull er manglende høyder";
 "Terrain unavailable" = "Terreng utilgjengelig";
 "Terrain · release target" = "Terreng · slipp målet";

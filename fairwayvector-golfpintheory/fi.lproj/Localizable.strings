@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Carry-matkat korjattu lentoradan %@ lyönneille";
 "Center" = "Keskikohta";
 "Change" = "Vaihda";
-"Change course" = "Vaihda kenttää";
 "Change course, club, or tee" = "Vaihda kenttää, seuraa tai tiiauspaikkaa";
 "Change password" = "Vaihda salasana";
 "Changes to This Policy" = "Muutokset tähän käytäntöön";
-"Check for course updates" = "Tarkista kentän päivitykset";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Tarkista saapuneet viestit ja roskaposti vahvistusviestin varalta, jos tälle osoitteelle voi luoda tilin. Avaa linkki tällä laitteella, palaa Golf PinTheoryyn ja kirjaudu sisään, jos sitä pyydetään.";
 "Checking for cloud updates…" = "Etsitään pilvipäivityksiä…";
 "Checking saved data in the cloud…" = "Tarkistetaan pilveen tallennettuja tietoja…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Kenttä ja tii · Pakollinen";
 "Course & scoring" = "Kenttä ja scoring";
 "Course & tee" = "Kenttä ja tiiauspaikka";
-"Course & tee information" = "Kentän ja tiiauspaikan tiedot";
 "Course Data" = "Kentän tiedot";
 "Course Handicap" = "Kenttätasoitus";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Kentän tiedot eivät ole tilapäisesti saatavilla. Yritä myöhemmin uudelleen.";
 "Course map data is temporarily unavailable. Try again shortly." = "Kentän karttatiedot eivät ole tilapäisesti saatavilla. Yritä hetken kuluttua uudelleen.";
 "Course name" = "Kentän nimi";
-"Course options, scorecard and tools" = "Kentän valinnat, tuloskortti ja työkalut";
 "Course rating" = "Course rating";
 "Course unavailable" = "Kenttä ei saatavilla";
 "Course view" = "Kenttänäkymä";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Mallinnettu fysiikkarata. Laskeutuessa pallo päätyy %@ kohdelinjan %@ puolelle.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Mallinnettu fysiikkarata. Arvioitu carry %@, lakipiste %@.";
 "Move Flag · Hole %lld" = "Siirrä lippua · Reikä %lld";
-"Move flag" = "Siirrä lippua";
 "N" = "P";
 "N/A" = "Ei koske";
 "N/A · par 3" = "Ei koske · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Osittain kirjattu";
 "Password" = "Salasana";
 "Passwords do not match." = "Salasanat eivät täsmää.";
-"Pause round & choose course" = "Keskeytä kierros ja valitse kenttä";
 "Penalties" = "Rangaistukset";
 "Penalties / 18" = "Rangaistukset / 18";
 "Penalty strokes" = "Rangaistuslyönnit";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Suositeltu ja lähimmät vaihtoehdot";
 "Record a round" = "Kirjaa kierros";
 "Record valid strokes for every player on every hole before finishing." = "Kirjaa kelvolliset lyönnit jokaiselle pelaajalle jokaisella reiällä ennen lopettamista.";
-"Refresh course" = "Päivitä kenttä";
 "Refresh course weather" = "Päivitä kentän sää";
 "Region" = "Alue";
 "Relative humidity" = "Suhteellinen kosteus";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Yritä ladata kierrosten tallennustila uudelleen";
 "Retry saving draft" = "Yritä tallentaa luonnos uudelleen";
 "Retry secure storage" = "Yritä suojattua tallennusta uudelleen";
-"Review / finish round" = "Tarkista / päätä kierros";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Tarkista carry, lakipiste, laskeutumistiedot sekä lentorata sivulta ja ylhäältä.";
 "Review your carry numbers and the wedges currently in your bag." = "Tarkista carry-arvosi ja bägissäsi tällä hetkellä olevat wedget.";
 "Review your scores and spot the trends" = "Tarkastele tuloksiasi ja kehitystäsi";
@@ -814,7 +806,6 @@
 "Score %@" = "Tulos %@";
 "Score Summary" = "Tulosyhteenveto";
 "Score could not be saved" = "Tulosta ei voitu tallentaa";
-"Score current hole" = "Kirjaa nykyinen reikä";
 "Score saved" = "Tulos tallennettu";
 "Score: %@" = "Tulos: %@";
 "Score: —" = "Tulos: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Maaston tiedot, %@";
 "Terrain elevation (%@)" = "Maaston korkeus (%@)";
 "Terrain elevation: %@" = "Maaston korkeus: %@";
-"Terrain profile" = "Maastoprofiili";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Maastoprofiili; itsenäisesti sovitettu pystyskaala, aukot ovat puuttuvia korkeuksia";
 "Terrain unavailable" = "Maasto ei saatavilla";
 "Terrain · release target" = "Maasto · päästä kohde";

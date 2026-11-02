@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Carryavstånd justerade för slag med bollbana: %@";
 "Center" = "Mitt";
 "Change" = "Ändra";
-"Change course" = "Byt bana";
 "Change course, club, or tee" = "Byt bana, klubb eller tee";
 "Change password" = "Byt lösenord";
 "Changes to This Policy" = "Ändringar av policyn";
-"Check for course updates" = "Sök efter banuppdateringar";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Kontrollera inkorgen och skräpposten efter ett bekräftelsemejl om kontoskapande är möjligt för adressen. Öppna länken på den här enheten och återvänd till Golf PinTheory, och logga sedan in om du ombeds.";
 "Checking for cloud updates…" = "Söker efter molnuppdateringar…";
 "Checking saved data in the cloud…" = "Kontrollerar sparade data i molnet…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Bana & tee · Obligatoriskt";
 "Course & scoring" = "Bana & scoring";
 "Course & tee" = "Bana & tee";
-"Course & tee information" = "Information om bana & tee";
 "Course Data" = "Bandata";
 "Course Handicap" = "Banhandicap";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Baninformationen är tillfälligt otillgänglig. Försök igen senare.";
 "Course map data is temporarily unavailable. Try again shortly." = "Bankartdata är tillfälligt otillgängliga. Försök igen om en stund.";
 "Course name" = "Bannamn";
-"Course options, scorecard and tools" = "Banalternativ, scorekort och verktyg";
 "Course rating" = "Course rating";
 "Course unavailable" = "Banan är inte tillgänglig";
 "Course view" = "Banvy";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Modellerad fysikbana. Vid landning hamnar bollen %@ %@ om mållinjen.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Modellerad fysikbana. Uppskattad carry är %@ och topphöjden är %@.";
 "Move Flag · Hole %lld" = "Flytta flagga · Hål %lld";
-"Move flag" = "Flytta flagga";
 "N" = "N";
 "N/A" = "Ej tillämpligt";
 "N/A · par 3" = "Ej tillämpligt · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Delvis registrerad";
 "Password" = "Lösenord";
 "Passwords do not match." = "Lösenorden matchar inte.";
-"Pause round & choose course" = "Pausa runda & välj bana";
 "Penalties" = "Pliktslag";
 "Penalties / 18" = "Plikt / 18";
 "Penalty strokes" = "Pliktslag";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Rekommenderad och närmaste alternativ";
 "Record a round" = "Registrera en runda";
 "Record valid strokes for every player on every hole before finishing." = "Registrera giltiga slag för varje spelare på varje hål innan du avslutar.";
-"Refresh course" = "Uppdatera bana";
 "Refresh course weather" = "Uppdatera banväder";
 "Region" = "Region";
 "Relative humidity" = "Relativ luftfuktighet";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Försök läsa in rundlagringen igen";
 "Retry saving draft" = "Försök spara utkastet igen";
 "Retry secure storage" = "Försök igen med säker lagring";
-"Review / finish round" = "Granska / avsluta runda";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Granska carry, topphöjd, landningsdata samt bollbanan från sidan och ovanifrån.";
 "Review your carry numbers and the wedges currently in your bag." = "Granska dina carryvärden och wedgarna som just nu finns i din bag.";
 "Review your scores and spot the trends" = "Se över dina resultat och hitta trender";
@@ -814,7 +806,6 @@
 "Score %@" = "Score %@";
 "Score Summary" = "Scoresammanfattning";
 "Score could not be saved" = "Scoren kunde inte sparas";
-"Score current hole" = "Registrera aktuellt hål";
 "Score saved" = "Score sparad";
 "Score: %@" = "Score: %@";
 "Score: —" = "Score: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Terrängdetaljer, %@";
 "Terrain elevation (%@)" = "Terränghöjd (%@)";
 "Terrain elevation: %@" = "Terränghöjd: %@";
-"Terrain profile" = "Terrängprofil";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Terrängprofil; separat anpassad vertikal skala, luckor är saknade höjder";
 "Terrain unavailable" = "Terräng saknas";
 "Terrain · release target" = "Terräng · släpp målet";

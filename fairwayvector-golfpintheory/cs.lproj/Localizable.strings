@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Vzdálenosti carry upravené pro rány s dráhou letu: %@";
 "Center" = "Střed";
 "Change" = "Změnit";
-"Change course" = "Změnit hřiště";
 "Change course, club, or tee" = "Změnit hřiště, klub nebo odpaliště";
 "Change password" = "Změnit heslo";
 "Changes to This Policy" = "Změny těchto zásad";
-"Check for course updates" = "Zkontrolovat aktualizace hřiště";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Pokud lze pro tuto adresu vytvořit účet, zkontrolujte doručenou poštu a složku se spamem, zda nepřišel potvrzovací e-mail. Otevřete odkaz v tomto zařízení, vraťte se do Golf PinTheory a v případě výzvy se přihlaste.";
 "Checking for cloud updates…" = "Hledají se aktualizace v cloudu…";
 "Checking saved data in the cloud…" = "Kontrolují se data uložená v cloudu…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Hřiště a odpaliště · Povinné";
 "Course & scoring" = "Hřiště a scoring";
 "Course & tee" = "Hřiště a odpaliště";
-"Course & tee information" = "Informace o hřišti a odpališti";
 "Course Data" = "Data hřiště";
 "Course Handicap" = "Hřištní handicap";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Informace o hřišti jsou dočasně nedostupné. Zkuste to později.";
 "Course map data is temporarily unavailable. Try again shortly." = "Mapová data hřiště jsou dočasně nedostupná. Zkuste to za chvíli znovu.";
 "Course name" = "Název hřiště";
-"Course options, scorecard and tools" = "Možnosti hřiště, karta a nástroje";
 "Course rating" = "Course rating";
 "Course unavailable" = "Hřiště nedostupné";
 "Course view" = "Pohled na hřiště";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Modelovaná fyzikální dráha. Při dopadu končí míček %@ %@ od cílové linie.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Modelovaná fyzikální dráha. Odhadované carry %@, vrchol %@.";
 "Move Flag · Hole %lld" = "Přesunout praporek · Jamka %lld";
-"Move flag" = "Přesunout praporek";
 "N" = "S";
 "N/A" = "N/A";
 "N/A · par 3" = "N/A · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Částečně zapsáno";
 "Password" = "Heslo";
 "Passwords do not match." = "Hesla se neshodují.";
-"Pause round & choose course" = "Pozastavit kolo a vybrat hřiště";
 "Penalties" = "Tresty";
 "Penalties / 18" = "Tresty / 18";
 "Penalty strokes" = "Trestné rány";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Doporučená hůl a nejbližší alternativy";
 "Record a round" = "Zapsat kolo";
 "Record valid strokes for every player on every hole before finishing." = "Před dokončením zapište platné rány každého hráče na každé jamce.";
-"Refresh course" = "Obnovit hřiště";
 "Refresh course weather" = "Obnovit počasí na hřišti";
 "Region" = "Oblast";
 "Relative humidity" = "Relativní vlhkost";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Znovu načíst úložiště kol";
 "Retry saving draft" = "Znovu uložit koncept";
 "Retry secure storage" = "Znovu zkusit zabezpečené úložiště";
-"Review / finish round" = "Zkontrolovat / dokončit kolo";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Zkontrolujte carry, vrchol, data dopadu a dráhu letu z boku a shora.";
 "Review your carry numbers and the wedges currently in your bag." = "Zkontrolujte své hodnoty carry a wedge, které máte nyní v bagu.";
 "Review your scores and spot the trends" = "Projděte si výsledky a sledujte vývoj";
@@ -814,7 +806,6 @@
 "Score %@" = "Skóre %@";
 "Score Summary" = "Shrnutí skóre";
 "Score could not be saved" = "Skóre se nepodařilo uložit";
-"Score current hole" = "Zapsat aktuální jamku";
 "Score saved" = "Skóre uloženo";
 "Score: %@" = "Skóre: %@";
 "Score: —" = "Skóre: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Podrobnosti terénu, %@";
 "Terrain elevation (%@)" = "Výška terénu (%@)";
 "Terrain elevation: %@" = "Výška terénu: %@";
-"Terrain profile" = "Profil terénu";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Profil terénu; nezávisle upravené svislé měřítko, mezery jsou nedostupné výšky";
 "Terrain unavailable" = "Terén nedostupný";
 "Terrain · release target" = "Terén · pusťte cíl";

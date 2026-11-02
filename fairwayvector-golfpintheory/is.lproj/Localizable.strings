@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Flugvegalengdir leiðréttar fyrir högg með ferli: %@";
 "Center" = "Miðja";
 "Change" = "Breyta";
-"Change course" = "Skipta um völl";
 "Change course, club, or tee" = "Skipta um völl, klúbb eða teig";
 "Change password" = "Breyta lykilorði";
 "Changes to This Policy" = "Breytingar á þessari stefnu";
-"Check for course updates" = "Leita að uppfærslum vallar";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Athugaðu pósthólfið og ruslpóstinn hvort staðfestingarpóstur hafi borist, ef hægt er að stofna reikning fyrir þetta netfang. Opnaðu tengilinn á þessu tæki, farðu aftur í Golf PinTheory og skráðu þig inn ef beðið er um það.";
 "Checking for cloud updates…" = "Leitar að uppfærslum í skýinu…";
 "Checking saved data in the cloud…" = "Athugar vistuð gögn í skýinu…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Völlur og teigur · Áskilið";
 "Course & scoring" = "Völlur og skor";
 "Course & tee" = "Völlur og teigur";
-"Course & tee information" = "Upplýsingar um völl og teig";
 "Course Data" = "Vallargögn";
 "Course Handicap" = "Vallarforgjöf";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Upplýsingar um völl eru tímabundið ótiltækar. Reyndu aftur síðar.";
 "Course map data is temporarily unavailable. Try again shortly." = "Kortagögn vallar eru tímabundið ótiltæk. Reyndu aftur eftir smástund.";
 "Course name" = "Nafn vallar";
-"Course options, scorecard and tools" = "Valkostir vallar, skorkort og tól";
 "Course rating" = "Course rating";
 "Course unavailable" = "Völlur ekki tiltækur";
 "Course view" = "Vallarsýn";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Líkanaður eðlisfræðiferill. Við lendingu endar boltinn %@ %@ við marklínuna.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Líkanaður eðlisfræðiferill. Áætlað flug %@ og toppur %@.";
 "Move Flag · Hole %lld" = "Færa fána · Hola %lld";
-"Move flag" = "Færa fána";
 "N" = "N";
 "N/A" = "Á ekki við";
 "N/A · par 3" = "Á ekki við · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Skráð að hluta";
 "Password" = "Lykilorð";
 "Passwords do not match." = "Lykilorðin stemma ekki.";
-"Pause round & choose course" = "Gera hlé á hring og velja völl";
 "Penalties" = "Víti";
 "Penalties / 18" = "Víti / 18";
 "Penalty strokes" = "Vítahögg";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Ráðlögð og næstu valkostir";
 "Record a round" = "Skrá hring";
 "Record valid strokes for every player on every hole before finishing." = "Skráðu gild högg fyrir alla leikmenn á öllum holum áður en þú lýkur.";
-"Refresh course" = "Endurnýja völl";
 "Refresh course weather" = "Endurnýja vallarveður";
 "Region" = "Svæði";
 "Relative humidity" = "Hlutfallslegur raki";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Reyna aftur að hlaða hringgeymslu";
 "Retry saving draft" = "Reyna aftur að vista drög";
 "Retry secure storage" = "Reyna örugga geymslu aftur";
-"Review / finish round" = "Yfirfara / ljúka hring";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Farðu yfir flug, topp, lendingargögn og ferilinn frá hlið og ofan frá.";
 "Review your carry numbers and the wedges currently in your bag." = "Farðu yfir flugtölurnar og fleygjárnin sem eru núna í pokanum.";
 "Review your scores and spot the trends" = "Skoðaðu skorin þín og sjáðu þróunina";
@@ -814,7 +806,6 @@
 "Score %@" = "Skor %@";
 "Score Summary" = "Samantekt skors";
 "Score could not be saved" = "Ekki tókst að vista skor";
-"Score current hole" = "Skrá núverandi holu";
 "Score saved" = "Skor vistað";
 "Score: %@" = "Skor: %@";
 "Score: —" = "Skor: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Upplýsingar um landslag, %@";
 "Terrain elevation (%@)" = "Landslagshæð (%@)";
 "Terrain elevation: %@" = "Landslagshæð: %@";
-"Terrain profile" = "Landslagsprófíll";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Landslagsprófíll; sjálfstætt aðlagaður lóðréttur kvarði, bil eru hæðir sem vantar";
 "Terrain unavailable" = "Landslag ekki tiltækt";
 "Terrain · release target" = "Landslag · slepptu markinu";

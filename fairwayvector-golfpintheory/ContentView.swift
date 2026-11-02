@@ -101,31 +101,6 @@ struct CourseMapView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar(.hidden, for: .navigationBar)
                 .toolbar(.hidden, for: .tabBar)
-                .toolbar {
-                    if !isShowingScoreEntry {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button("Change course", systemImage: "chevron.left", action: onChangeCourse)
-                                .labelStyle(.iconOnly)
-                                .frame(minWidth: 44, minHeight: 44)
-                                .accessibilityLabel("Change course, club, or tee")
-                        }
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Menu {
-                                roundMenu
-                                Button("Course & tee information", systemImage: "info.circle") { isShowingCourseInfo = true }
-                                Button("Terrain profile", systemImage: "mountain.2") { isShowingTerrainProfile = true }
-                                    .disabled(store.course == nil)
-                                Button("Move flag", systemImage: "flag") { isShowingFlagEditor = true }
-                                    .disabled(store.course == nil)
-                            } label: {
-                                Image(systemName: "ellipsis")
-                                    .font(.body.weight(.semibold))
-                                    .frame(minWidth: 44, minHeight: 44)
-                            }
-                            .accessibilityLabel("Course options, scorecard and tools")
-                        }
-                    }
-                }
         }
         .tint(PureLineStyle.accent)
         .task {
@@ -274,12 +249,6 @@ struct CourseMapView: View {
         scene.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait)) { _ in }
     }
 
-    private func showScoreEntry(for number: Int) {
-        guard let index = activeRound?.holes.firstIndex(where: { $0.number == number }) else { return }
-        scoringHole = number
-        navigateRoundPage(to: index * 2 + 1)
-    }
-
     private func showCourseHole(_ number: Int) {
         guard let index = activeRound?.holes.firstIndex(where: { $0.number == number }) else { return }
         scoringHole = nil
@@ -339,27 +308,6 @@ struct CourseMapView: View {
         if let draft = roundStore.active {
             roundError = L("A draft already exists for %@. Return to Choose Course and resume it or discard it before starting another.", "\(draft.reference.courseName)")
         } else { showingRoundSetup = true }
-    }
-
-    private var roundMenu: some View {
-        Menu {
-            if activeRound != nil {
-                Button("Score current hole", systemImage: "square.and.pencil") {
-                    if let number = activeRound?.holes[holeIndex].number { showScoreEntry(for: number) }
-                }
-                Button("Review / finish round", systemImage: "list.bullet.rectangle") { openRoundReview() }
-                Button("Pause round & choose course", systemImage: "pause.circle", action: onChangeCourse)
-            } else {
-                Button("Start round", systemImage: "flag.checkered") { showingRoundSetup = true }
-                    .disabled(store.course == nil || store.isLoading || roundStore.active != nil)
-            }
-            Button(store.reference.golfAPICourseID == nil ? L("Refresh course") : L("Check for course updates"), systemImage: "arrow.clockwise") {
-                Task { await store.refresh() }
-            }.disabled(store.isLoading || activeRound != nil)
-        } label: {
-            Label(activeRound == nil ? L("Round") : L("Scorecard"), systemImage: activeRound == nil ? "flag.checkered" : "list.bullet.rectangle")
-                .font(.caption.weight(.semibold)).frame(minHeight: 44)
-        }.accessibilityIdentifier("course-round-menu")
     }
 
     @ViewBuilder
@@ -647,10 +595,12 @@ struct CourseMapView: View {
             } else {
                 Button("Start round", systemImage: "flag.checkered") { showingRoundSetup = true }
                     .disabled(store.course == nil || store.isLoading || roundStore.active != nil)
+                // Course and tee are fixed once a round has started.
+                Button("Change course, club, or tee", systemImage: "arrow.triangle.2.circlepath", action: onChangeCourse)
             }
         } label: {
-            Image(systemName: "gearshape")
-                .font(.body.weight(.medium))
+            Image(systemName: "ellipsis")
+                .font(.body.weight(.semibold))
                 .foregroundStyle(PureLineStyle.accent)
                 .frame(width: 44, height: 44)
                 .background(PureLineStyle.canvas.opacity(0.94), in: Circle())

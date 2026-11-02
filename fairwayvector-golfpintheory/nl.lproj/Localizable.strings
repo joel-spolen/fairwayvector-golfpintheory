@@ -193,11 +193,9 @@
 "Carry distances adjusted for %@ shots" = "Carryafstanden aangepast voor slagen met vlucht: %@";
 "Center" = "Midden";
 "Change" = "Wijzigen";
-"Change course" = "Baan wijzigen";
 "Change course, club, or tee" = "Baan, club of tee wijzigen";
 "Change password" = "Wachtwoord wijzigen";
 "Changes to This Policy" = "Wijzigingen in dit beleid";
-"Check for course updates" = "Zoeken naar baanupdates";
 "Check your inbox and spam folder for a confirmation email if account creation is available for this address. Open its link on this device and return to Golf PinTheory, then sign in if asked." = "Controleer je inbox en spammap op een bevestigingsmail als voor dit adres een account kan worden aangemaakt. Open de link op dit apparaat, ga terug naar Golf PinTheory en log in als daarom wordt gevraagd.";
 "Checking for cloud updates…" = "Zoeken naar cloudupdates…";
 "Checking saved data in the cloud…" = "Opgeslagen gegevens in de cloud controleren…";
@@ -274,7 +272,6 @@
 "Course & Tee · Required" = "Baan & tee · Verplicht";
 "Course & scoring" = "Baan & scoring";
 "Course & tee" = "Baan & tee";
-"Course & tee information" = "Informatie over baan & tee";
 "Course Data" = "Baangegevens";
 "Course Handicap" = "Baanhandicap";
 "Course Rating" = "Course Rating";
@@ -286,7 +283,6 @@
 "Course information is temporarily unavailable. Please try again later." = "Baaninformatie is tijdelijk niet beschikbaar. Probeer het later opnieuw.";
 "Course map data is temporarily unavailable. Try again shortly." = "Baankaartgegevens zijn tijdelijk niet beschikbaar. Probeer het zo opnieuw.";
 "Course name" = "Baannaam";
-"Course options, scorecard and tools" = "Baanopties, scorekaart en tools";
 "Course rating" = "Course rating";
 "Course unavailable" = "Baan niet beschikbaar";
 "Course view" = "Baanweergave";
@@ -587,7 +583,6 @@
 "Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Gemodelleerde fysische baan. Bij de landing eindigt de bal %@ %@ van de doellijn.";
 "Modeled physics path. Estimated carry is %@ and apex is %@." = "Gemodelleerde fysische baan. Geschatte carry %@, toppunt %@.";
 "Move Flag · Hole %lld" = "Vlag verplaatsen · Hole %lld";
-"Move flag" = "Vlag verplaatsen";
 "N" = "N";
 "N/A" = "N.v.t.";
 "N/A · par 3" = "N.v.t. · par 3";
@@ -677,7 +672,6 @@
 "Partly scored" = "Gedeeltelijk ingevuld";
 "Password" = "Wachtwoord";
 "Passwords do not match." = "De wachtwoorden komen niet overeen.";
-"Pause round & choose course" = "Ronde pauzeren & baan kiezen";
 "Penalties" = "Strafslagen";
 "Penalties / 18" = "Strafslagen / 18";
 "Penalty strokes" = "Strafslagen";
@@ -740,7 +734,6 @@
 "Recommended and closest alternatives" = "Aanbevolen en dichtstbijzijnde alternatieven";
 "Record a round" = "Een ronde vastleggen";
 "Record valid strokes for every player on every hole before finishing." = "Leg geldige slagen vast voor elke speler op elke hole voordat je afrondt.";
-"Refresh course" = "Baan vernieuwen";
 "Refresh course weather" = "Baanweer vernieuwen";
 "Region" = "Regio";
 "Relative humidity" = "Relatieve luchtvochtigheid";
@@ -766,7 +759,6 @@
 "Retry loading round storage" = "Rondeopslag opnieuw laden";
 "Retry saving draft" = "Concept opnieuw opslaan";
 "Retry secure storage" = "Veilige opslag opnieuw proberen";
-"Review / finish round" = "Ronde bekijken / afronden";
 "Review carry, apex, landing data, and the side and top-down flight paths." = "Bekijk carry, toppunt, landingsgegevens en de vlucht van opzij en van bovenaf.";
 "Review your carry numbers and the wedges currently in your bag." = "Bekijk je carrywaarden en de wedges die nu in je tas zitten.";
 "Review your scores and spot the trends" = "Bekijk je scores en ontdek trends";
@@ -814,7 +806,6 @@
 "Score %@" = "Score %@";
 "Score Summary" = "Scoresamenvatting";
 "Score could not be saved" = "Score kon niet worden opgeslagen";
-"Score current hole" = "Huidige hole invoeren";
 "Score saved" = "Score opgeslagen";
 "Score: %@" = "Score: %@";
 "Score: —" = "Score: —";
@@ -958,7 +949,6 @@
 "Terrain details, %@" = "Terreindetails, %@";
 "Terrain elevation (%@)" = "Terreinhoogte (%@)";
 "Terrain elevation: %@" = "Terreinhoogte: %@";
-"Terrain profile" = "Terreinprofiel";
 "Terrain profile; independently fitted vertical scale, gaps are unavailable heights" = "Terreinprofiel; onafhankelijk geschaalde verticale as, gaten zijn ontbrekende hoogtes";
 "Terrain unavailable" = "Terrein niet beschikbaar";
 "Terrain · release target" = "Terrein · doel loslaten";
