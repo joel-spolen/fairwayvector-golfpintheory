@@ -198,16 +198,17 @@ struct CourseShotRecommendationView: View {
         VStack(spacing: 3) {
             if isScoringMode {
                 Text("SCORING")
-                    .font(.system(size: 7, weight: .bold))
-                    .tracking(0.4)
+                    .font(.caption2.weight(.bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 2)
                     .background(PureLineStyle.accent, in: Capsule())
                 Text("50 / 75 / 100%")
-                    .font(.system(size: 8, weight: .semibold).monospacedDigit())
+                    .font(.caption2.weight(.semibold).monospacedDigit())
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.6)
                     .foregroundStyle(PureLineStyle.muted)
             }
             Image(systemName: "scope")
@@ -239,8 +240,7 @@ struct CourseShotRecommendationView: View {
             }
         }
         .padding(6)
-        .frame(width: 78)
-        .frame(minHeight: 64)
+        .frame(maxWidth: .infinity, minHeight: 64)
         .background(isScoringMode ? PureLineStyle.accent.opacity(0.08) : PureLineStyle.canvas.opacity(0.97),
                     in: RoundedRectangle(cornerRadius: 14))
         .overlay {

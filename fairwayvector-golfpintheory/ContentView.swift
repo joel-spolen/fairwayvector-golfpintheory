@@ -41,6 +41,7 @@ struct CourseMapView: View {
     #endif
     @AppStorage("distanceUnit", store: .standard) private var unit: DistanceUnit = .meters
     @AppStorage("customFlagPositions") private var customFlagPositions = ""
+    @ScaledMetric(relativeTo: .body) private var sidebarWidth = 94.0
 
     init(reference: CourseReference, requestStartRound: Binding<Bool> = .constant(false),
          resumedRound: PlayedRound? = nil, onHome: @escaping () -> Void = {},
@@ -390,28 +391,6 @@ struct CourseMapView: View {
                 .overlay(alignment: .leading) {
                     ScrollView(.vertical) {
                         VStack(spacing: 9) {
-                            Button {
-                                isShowingFlagEditor = true
-                            } label: {
-                                VStack(spacing: 3) {
-                                    Image(systemName: "flag")
-                                        .font(.body.weight(.medium))
-                                        .foregroundStyle(.white)
-                                    Text("Pin position")
-                                        .font(.caption2.weight(.medium))
-                                        .multilineTextAlignment(.center)
-                                        .foregroundStyle(.white)
-                                }
-                                .padding(6)
-                                .frame(width: 78)
-                                .frame(minHeight: 64)
-                                .contentShape(RoundedRectangle(cornerRadius: 14))
-                            }
-                            .buttonStyle(.plain)
-                            .background(PureLineStyle.accent, in: RoundedRectangle(cornerRadius: 14))
-                            .disabled(hole.greenCenter == nil)
-                            .accessibilityHint("Opens an enlarged green where you can tap to place the flag")
-
                             distanceSidebar(hole: hole, origin: origin, flag: flagPosition(for: hole))
 
                             if courseDisplayOptions.showWind, let location = courseWeatherLocation {
@@ -427,11 +406,32 @@ struct CourseMapView: View {
                                     model: trajectoryModel, compact: true,
                                     allowsScoringMode: courseDisplayOptions.scoringMode)
                             }
+
+                            Button {
+                                isShowingFlagEditor = true
+                            } label: {
+                                VStack(spacing: 3) {
+                                    Image(systemName: "flag")
+                                        .font(.body.weight(.medium))
+                                        .foregroundStyle(PureLineStyle.accent)
+                                    Text("Pin position")
+                                        .font(.caption2.weight(.medium))
+                                        .multilineTextAlignment(.center)
+                                        .foregroundStyle(PureLineStyle.ink)
+                                }
+                                .padding(6)
+                                .frame(maxWidth: .infinity, minHeight: 56)
+                                .contentShape(RoundedRectangle(cornerRadius: 14))
+                            }
+                            .buttonStyle(.plain)
+                            .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
+                            .disabled(hole.greenCenter == nil)
+                            .accessibilityHint("Opens an enlarged green where you can tap to place the flag")
                         }
                         .padding(.vertical, 8)
                         .padding(.horizontal, 6)
                     }
-                    .frame(width: 94, height: geometry.size.height)
+                    .frame(width: min(sidebarWidth, 136), height: geometry.size.height)
                     .scrollIndicators(.hidden)
                     .padding(.leading, 6)
                 }
@@ -547,8 +547,7 @@ struct CourseMapView: View {
                 if terrainStore.isShotLoading || terrainStore.isHoleLoading { ProgressView().controlSize(.mini) }
             }
             .padding(6)
-            .frame(width: 78)
-            .frame(minHeight: 64)
+            .frame(maxWidth: .infinity, minHeight: 64)
             .contentShape(RoundedRectangle(cornerRadius: 14))
         }
         .buttonStyle(.plain)
@@ -658,12 +657,15 @@ struct CourseMapView: View {
     }
 
     private func distanceSidebar(hole: Hole, origin: DistanceOrigin?, flag: GeoPoint?) -> some View {
-        VStack(spacing: 7) {
-            sidebarDistance(L("FRONT"), from: origin?.point, to: hole.greenFront ?? hole.greenCenter)
-            sidebarDistance(L("TARGET"), from: origin?.point, to: tapPoint, highlighted: true)
-            sidebarDistance(L("BACK"), from: origin?.point, to: hole.greenBack ?? hole.greenCenter)
-            sidebarDistance(L("CENTER"), from: origin?.point, to: hole.greenCenter)
-            sidebarDistance(L("TARGET → FLAG"), from: tapPoint, to: tapPoint == nil ? nil : flag)
+        VStack(spacing: 6) {
+            sidebarDistance(L("FRONT"), from: origin?.point, to: hole.greenFront ?? hole.greenCenter, style: .secondary)
+            sidebarDistance(L("CENTER"), from: origin?.point, to: hole.greenCenter, style: .primary)
+            sidebarDistance(L("BACK"), from: origin?.point, to: hole.greenBack ?? hole.greenCenter, style: .secondary)
+            if tapPoint != nil {
+                Divider().overlay(PureLineStyle.line)
+                sidebarDistance(L("TARGET"), from: origin?.point, to: tapPoint, style: .target)
+                sidebarDistance(L("TARGET → FLAG"), from: tapPoint, to: flag, style: .secondary)
+            }
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 5)
@@ -673,23 +675,29 @@ struct CourseMapView: View {
         .accessibilityLabel("Shot distances")
     }
 
-    private func sidebarDistance(_ title: String, from start: GeoPoint?, to end: GeoPoint?, highlighted: Bool = false) -> some View {
-        VStack(spacing: 1) {
+    private enum SidebarDistanceStyle { case primary, secondary, target }
+
+    private func sidebarDistance(_ title: String, from start: GeoPoint?, to end: GeoPoint?,
+                                 style: SidebarDistanceStyle) -> some View {
+        VStack(spacing: 0) {
             Text(title)
-                .font(.system(size: 8, weight: .semibold))
-                .lineLimit(1)
+                .font(.caption2.weight(.semibold))
+                .lineLimit(2)
                 .minimumScaleFactor(0.7)
-                .foregroundStyle(PureLineStyle.muted)
-            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                .multilineTextAlignment(.center)
+                .foregroundStyle(style == .target ? PureLineStyle.accent : PureLineStyle.muted)
+            HStack(alignment: .firstTextBaseline, spacing: 1) {
                 Text(distanceValue(from: start, to: end))
-                    .font(.system(size: highlighted ? 17 : 14, weight: highlighted ? .semibold : .medium).monospacedDigit())
-                    .minimumScaleFactor(0.65)
-                    .lineLimit(1)
-                    .foregroundStyle(highlighted ? PureLineStyle.accent : PureLineStyle.ink)
+                    .font(style == .primary ? .largeTitle.weight(.bold)
+                          : style == .target ? .title.weight(.bold) : .title3.weight(.semibold))
+                    .monospacedDigit()
+                    .foregroundStyle(style == .target ? PureLineStyle.accent : PureLineStyle.ink)
                 Text(unit.symbol)
-                    .font(.system(size: 8))
+                    .font(.caption2.weight(.medium))
                     .foregroundStyle(PureLineStyle.muted)
             }
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .ignore)
@@ -697,7 +705,7 @@ struct CourseMapView: View {
     }
 
     private func distanceValue(from start: GeoPoint?, to end: GeoPoint?) -> String {
-        guard let start, let end else { return "N/A" }
+        guard let start, let end else { return "–" }
         return "\(unit.value(GolfGeometry.distance(start, end)))"
     }
 

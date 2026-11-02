@@ -12,8 +12,7 @@ struct CourseWeatherCard: View {
             labelContent
             .font(.caption)
             .padding(compact ? 6 : 10)
-            .frame(maxWidth: compact ? nil : .infinity)
-            .frame(width: compact ? 78 : nil)
+            .frame(maxWidth: .infinity)
             .frame(minHeight: compact ? 64 : 44)
             .contentShape(Rectangle())
         }
