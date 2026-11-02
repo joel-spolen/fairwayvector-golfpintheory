@@ -13,7 +13,7 @@ struct TrajectoryResultsView: View {
                 .foregroundStyle(PureLineStyle.ink)
 
             ResultCard(
-                title: L("Carry Distance"),
+                title: L("Carry distance"),
                 value: Units.formattedDistance(meters: prediction.hybrid["carry_m"] ?? 0, system: unitPreferences.unitSystem(for: .distance)),
                 prominence: .primary
             )
@@ -27,9 +27,9 @@ struct TrajectoryResultsView: View {
             .accessibilityLabel("Apex height")
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                ResultCard(title: L("Flight Time"), value: String(format: "%.2f s", prediction.hybrid["flight_time_s"] ?? 0), prominence: .compact)
-                ResultCard(title: L("Landing Angle"), value: String(format: "%.1f\u{00B0}", prediction.hybrid["landing_angle_deg"] ?? 0), prominence: .compact)
-                ResultCard(title: L("Landing Speed"), value: Units.formattedSpeed(mps: prediction.hybrid["landing_speed_mps"] ?? 0, system: unitPreferences.unitSystem(for: .landingSpeed)), prominence: .compact)
+                ResultCard(title: L("Flight time"), value: String(format: "%.2f s", prediction.hybrid["flight_time_s"] ?? 0), prominence: .compact)
+                ResultCard(title: L("Landing angle"), value: String(format: "%.1f\u{00B0}", prediction.hybrid["landing_angle_deg"] ?? 0), prominence: .compact)
+                ResultCard(title: L("Landing speed"), value: Units.formattedSpeed(mps: prediction.hybrid["landing_speed_mps"] ?? 0, system: unitPreferences.unitSystem(for: .landingSpeed)), prominence: .compact)
             }
 
             if showsEstimationInfo {

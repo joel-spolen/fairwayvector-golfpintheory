@@ -82,7 +82,7 @@ private struct DistanceSliderCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Distance To Flag")
+                Text("Distance to flag")
                     .font(.headline)
                     .foregroundStyle(PureLineStyle.ink)
                 Spacer()
@@ -123,7 +123,7 @@ private struct GreenLayoutCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Green & Pin")
+                Text("Green & pin")
                     .font(.headline)
                     .foregroundStyle(PureLineStyle.ink)
                 Spacer()
@@ -414,7 +414,7 @@ private struct PlaysLikeCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Plays Like")
+            Text("Plays like")
                 .font(.headline)
                 .foregroundStyle(PureLineStyle.ink)
 
@@ -477,7 +477,7 @@ private struct RecommendationCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Play This Shot")
+            Text("Play this shot")
                 .font(.caption.bold())
                 .foregroundStyle(PureLineStyle.muted)
 
@@ -607,7 +607,7 @@ private struct AlternativesCard: View {
             EmptyView()
         } else {
             VStack(alignment: .leading, spacing: 10) {
-                Text("Other Options")
+                Text("Other options")
                     .font(.headline)
                     .foregroundStyle(PureLineStyle.ink)
 

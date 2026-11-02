@@ -37,7 +37,7 @@ struct HoleMapView: View {
                             .font(.caption2.bold())
                             .padding(6)
                             .foregroundStyle(.white)
-                            .background(FairwayVectorColors.orange, in: Capsule())
+                            .background(PureLineStyle.accent, in: Capsule())
                     }
                     .annotationTitles(.hidden)
                 }

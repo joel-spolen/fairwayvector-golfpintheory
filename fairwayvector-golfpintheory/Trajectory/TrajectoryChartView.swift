@@ -40,7 +40,7 @@ struct TrajectoryChartView: View {
                     .foregroundStyle(PureLineStyle.muted)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            chartSection(title: L("Side View (Height)"), points: sideViewPoints, valueLabel: L("Height"))
+            chartSection(title: L("Side view (height)"), points: sideViewPoints, valueLabel: L("Height"))
             topDownSection
         }
         .pureLineCard()
@@ -71,7 +71,7 @@ struct TrajectoryChartView: View {
 
     private var topDownSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Top-Down View (Curvature)").font(.subheadline.bold())
+            Text("Top-down view (curvature)").font(.subheadline.bold())
             if let capturedWind {
                 let speed = hypot(capturedWind.tail, capturedWind.right)
                 HStack(spacing: 10) {
@@ -92,24 +92,24 @@ struct TrajectoryChartView: View {
             let points = topDownPoints
             Chart {
                 RuleMark(x: .value(L("Target line"), 0))
-                    .foregroundStyle(FairwayVectorColors.slate.opacity(0.5))
+                    .foregroundStyle(PureLineStyle.muted.opacity(0.5))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
                 ForEach(points) { point in
                     let position = TrajectoryChartGeometry.topDown(downrange: point.downrange, lateral: point.value)
                     LineMark(x: .value(L("Lateral"), position.x), y: .value(L("Downrange"), position.y))
-                        .foregroundStyle(FairwayVectorColors.flightBlue)
+                        .foregroundStyle(PureLineStyle.accent)
                     if point.id == points.last?.id {
                         PointMark(x: .value(L("Lateral"), position.x), y: .value(L("Downrange"), position.y))
-                            .foregroundStyle(FairwayVectorColors.orange)
+                            .foregroundStyle(PureLineStyle.ink)
                     }
                 }
                 if let targetDistanceM {
                     let target = TrajectoryChartGeometry.topDown(downrange: displayDistance(targetDistanceM), lateral: 0)
                     RuleMark(y: .value(L("Target distance"), target.y))
-                        .foregroundStyle(FairwayVectorColors.gold)
+                        .foregroundStyle(PureLineStyle.muted)
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
                     PointMark(x: .value(L("Lateral"), target.x), y: .value(L("Downrange"), target.y))
-                        .foregroundStyle(FairwayVectorColors.gold)
+                        .foregroundStyle(PureLineStyle.muted)
                         .annotation(position: .top) { Text("Target").font(.caption2) }
                 }
             }
@@ -149,22 +149,22 @@ struct TrajectoryChartView: View {
                     y: .value(valueLabel, point.value)
                 )
                 .interpolationMethod(.catmullRom)
-                .foregroundStyle(FairwayVectorColors.flightBlue)
+                .foregroundStyle(PureLineStyle.accent)
                 if point.id == points.last?.id {
                     PointMark(
                         x: .value(L("Downrange"), point.downrange),
                         y: .value(valueLabel, point.value)
                     )
-                    .foregroundStyle(FairwayVectorColors.orange)
+                    .foregroundStyle(PureLineStyle.ink)
                 }
                 if point.id == points.first?.id, let targetDistanceM {
                     RuleMark(x: .value(L("Target distance"), displayDistance(targetDistanceM)))
-                        .foregroundStyle(FairwayVectorColors.gold)
+                        .foregroundStyle(PureLineStyle.muted)
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5, 4]))
                     if valueLabel == L("Height"), let targetElevationM {
                         PointMark(x: .value(L("Target distance"), displayDistance(targetDistanceM)),
                                   y: .value(L("Target elevation"), displayDistance(targetElevationM)))
-                            .foregroundStyle(FairwayVectorColors.gold)
+                            .foregroundStyle(PureLineStyle.muted)
                     }
                 }
             }

@@ -13,7 +13,7 @@ enum PressureInputMode: String, CaseIterable, Identifiable {
     var label: String {
         switch self {
         case .pressure: return L("Pressure")
-        case .elevation: return L("Site Elevation")
+        case .elevation: return L("Site elevation")
         }
     }
 }

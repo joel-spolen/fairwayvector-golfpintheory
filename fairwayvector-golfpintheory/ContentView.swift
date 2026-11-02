@@ -578,7 +578,7 @@ struct CourseMapView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { isShowingCourseInfo = false } } }
         }
-        .tint(FairwayVectorColors.navy)
+        .tint(PureLineStyle.accent)
     }
 
     private var roundActionsMenu: some View {

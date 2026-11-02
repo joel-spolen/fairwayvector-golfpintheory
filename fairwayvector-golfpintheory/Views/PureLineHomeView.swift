@@ -11,7 +11,6 @@ struct PureLineHomeView: View {
     let onOpenTrajectory: () -> Void
     let onOpenStatistics: () -> Void
     let onOpenSettings: () -> Void
-    let onOpenAccount: () -> Void
     @ObservedObject var profileStore: PlayerProfileStore
     @Environment(PlayedRoundStore.self) private var roundStore
     @Query private var handicapRounds: [GolfRound]
@@ -153,13 +152,11 @@ struct PureLineHomeView: View {
                         Text("Build your game")
                             .font(.title3.weight(.semibold)).tracking(-0.4)
                             .padding(.bottom, 10)
-                        destination(L("Handicap"), detail: L("Round history & score projections"), symbol: "chart.line.uptrend.xyaxis", action: onOpenHandicap)
-                        Divider().overlay(PureLineStyle.line)
                         destination(L("In the bag"), detail: L("Set up your clubs and wedges"), symbol: "bag", action: onOpenBag)
                         Divider().overlay(PureLineStyle.line)
                         destination(L("Wedge Matrix"), detail: L("Your distances. Every swing."), symbol: "target", action: onOpenWedge)
                         Divider().overlay(PureLineStyle.line)
-                        destination(L("Trajectory"), detail: L("Understand your next shot"), symbol: "chart.xyaxis.line", action: onOpenTrajectory)
+                        destination(L("Trajectory"), detail: L("Club choice and ball flight from your own numbers"), symbol: "chart.xyaxis.line", action: onOpenTrajectory)
                     }
                     .foregroundStyle(PureLineStyle.ink)
 
@@ -169,15 +166,8 @@ struct PureLineHomeView: View {
                             .padding(.bottom, 10)
                         destination(L("Rounds & statistics"), detail: L("Review your scores and spot the trends"), symbol: "chart.xyaxis.line", action: openStatistics)
                             .accessibilityIdentifier("home-rounds-statistics-button")
-                    }
-                    .foregroundStyle(PureLineStyle.ink)
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Account settings")
-                            .font(.title3.weight(.semibold)).tracking(-0.4)
-                            .padding(.bottom, 10)
-                        destination(L("Account"), detail: L("Details about your account"), symbol: "person.crop.circle", action: onOpenAccount)
-                            .accessibilityIdentifier("home-account-button")
+                        Divider().overlay(PureLineStyle.line)
+                        destination(L("Handicap"), detail: L("Round history & score projections"), symbol: "chart.line.uptrend.xyaxis", action: onOpenHandicap)
                     }
                     .foregroundStyle(PureLineStyle.ink)
 

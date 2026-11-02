@@ -219,13 +219,13 @@ struct HCPProviderCourseSelectionView: View {
                     VStack(alignment: .leading, spacing: 14) {
                         Text("Custom · \(match.club.name)").font(.headline)
                         Picker("Course", selection: $customCourseName) {
-                            Text("Select Course").tag("")
+                            Text("Select course").tag("")
                             ForEach(match.courseNames, id: \.self) { Text($0).tag($0) }
                         }
                         .onChange(of: customCourseName) { customTeeID = nil }
                         if !customCourseName.isEmpty {
                             Picker("Tee", selection: $customTeeID) {
-                                Text("Select Tee").tag(Optional<PersistentIdentifier>.none)
+                                Text("Select tee").tag(Optional<PersistentIdentifier>.none)
                                 ForEach(customTees) { tee in
                                     Text("\(tee.name) · \(tee.ratingSex?.label ?? "Universal")")
                                         .tag(Optional(tee.persistentModelID))

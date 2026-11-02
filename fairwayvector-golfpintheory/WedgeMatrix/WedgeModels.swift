@@ -135,9 +135,9 @@ enum FlagPosition: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .short: L("Short Green")
-        case .middle: L("Middle Green")
-        case .long: L("Long Green")
+        case .short: L("Short green")
+        case .middle: L("Middle green")
+        case .long: L("Long green")
         }
     }
 

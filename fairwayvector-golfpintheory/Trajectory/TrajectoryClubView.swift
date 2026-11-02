@@ -169,7 +169,7 @@ struct TrajectoryClubView: View {
     private var selectorCard: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Distance To Target")
+                Text("Distance to target")
                     .font(.headline)
                     .foregroundStyle(PureLineStyle.ink)
                 Spacer()
@@ -230,7 +230,7 @@ struct TrajectoryClubView: View {
                     }
                     .frame(maxWidth: .infinity)
                 } else {
-                    Label("Suggest Club", systemImage: "figure.golf")
+                    Label("Suggest club", systemImage: "figure.golf")
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -307,7 +307,7 @@ struct TrajectoryClubView: View {
 
     private func recommendationCard(_ recommendation: ClubRecommendation) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Recommended Club")
+            Text("Recommended club")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(PureLineStyle.muted)
             Text(recommendation.club.label)
@@ -335,7 +335,7 @@ struct TrajectoryClubView: View {
                 viewModel.calculate(includeAdvancedConditions: true)
                 onOpenTrajectory()
             } label: {
-                Label("View Trajectory", systemImage: "chart.xyaxis.line")
+                Label("View trajectory", systemImage: "chart.xyaxis.line")
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(PureLinePrimaryButtonStyle(minimumHeight: 48))
@@ -348,7 +348,7 @@ struct TrajectoryClubView: View {
 
     private var trajectoryGraph: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Club Trajectories")
+            Text("Club trajectories")
                 .font(.headline)
                 .foregroundStyle(PureLineStyle.ink)
 
@@ -379,7 +379,7 @@ struct TrajectoryClubView: View {
                 ForEach(lateralChartPoints) { point in
                     lateralTrajectoryMark(point)
                 }
-                RuleMark(y: .value(L("Target Line"), 0))
+                RuleMark(y: .value(L("Target line"), 0))
                     .foregroundStyle(.green)
                     .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
             }
@@ -505,16 +505,16 @@ struct TrajectoryClubView: View {
 
     private func color(for recommendation: ClubRecommendation) -> Color {
         switch recommendations.firstIndex(where: { $0.id == recommendation.id }) ?? 0 {
-        case 0: return FairwayVectorColors.flightBlue
-        case 1: return FairwayVectorColors.orange
-        case 2: return FairwayVectorColors.gold
-        default: return FairwayVectorColors.navy
+        case 0: return PureLineStyle.accent
+        case 1: return PureLineStyle.ink
+        case 2: return PureLineStyle.muted
+        default: return PureLineStyle.accent.opacity(0.4)
         }
     }
 
     private var alternativesCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Closest Alternatives")
+            Text("Closest alternatives")
                 .font(.headline)
                 .foregroundStyle(PureLineStyle.ink)
             ForEach(Array(recommendations.dropFirst().prefix(3))) { recommendation in
@@ -989,7 +989,7 @@ private struct ClubAtmosphereField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(pressureInputMode == .elevation ? L("Site Elevation") : L("Pressure"))
+                Text(pressureInputMode == .elevation ? L("Site elevation") : L("Pressure"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Spacer()

@@ -115,11 +115,11 @@ struct TrajectoryCalculatorView: View {
 
     private var launchConditionsCard: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Launch Conditions")
+            Text("Launch conditions")
                 .font(.headline)
                 .foregroundStyle(PureLineStyle.ink)
 
-            Picker("Launch Source", selection: $launchSource) {
+            Picker("Launch source", selection: $launchSource) {
                 ForEach(LaunchConditionSource.allCases) { source in
                     Text(source.label).tag(source)
                 }
@@ -173,7 +173,7 @@ struct TrajectoryCalculatorView: View {
     private var customLaunchFields: some View {
         Group {
             TrajectoryMeasurementField(
-                title: L("Ball Speed"),
+                title: L("Ball speed"),
                 explanation: L("Speed of the ball immediately after impact."),
                 diagram: .ballSpeed,
                 metricValue: $viewModel.ballSpeedMps,
@@ -183,7 +183,7 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 1
             )
             TrajectoryMeasurementField(
-                title: L("Launch Angle"),
+                title: L("Launch angle"),
                 explanation: L("The ball's initial upward angle."),
                 diagram: .launchAngle,
                 metricValue: $viewModel.launchAngleDeg,
@@ -193,7 +193,7 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 1
             )
             TrajectoryMeasurementField(
-                title: L("Launch Direction"),
+                title: L("Launch direction"),
                 explanation: L("Horizontal angle relative to the target line. Negative is left and positive is right."),
                 diagram: .launchDirection,
                 metricValue: $viewModel.launchDirectionDeg,
@@ -203,7 +203,7 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 1
             )
             TrajectoryMeasurementField(
-                title: L("Spin Rate"),
+                title: L("Spin rate"),
                 explanation: L("Backspin rate in revolutions per minute."),
                 diagram: .spinRate,
                 metricValue: $viewModel.spinRateRpm,
@@ -212,7 +212,7 @@ struct TrajectoryCalculatorView: View {
                 metricRange: 500...10000
             )
             TrajectoryMeasurementField(
-                title: L("Spin Axis"),
+                title: L("Spin axis"),
                 explanation: L("Tilt of the spin axis. Zero is pure backspin; positive values curve right."),
                 diagram: .spinAxis,
                 metricValue: $viewModel.spinAxisDeg,
@@ -234,7 +234,7 @@ struct TrajectoryCalculatorView: View {
     private var environmentCard: some View {
         DisclosureGroup(isExpanded: $showConditions) {
             VStack(alignment: .leading, spacing: 12) {
-                Picker("Condition Detail", selection: inputModeBinding) {
+                Picker("Condition detail", selection: inputModeBinding) {
                     ForEach(TrajectoryInputMode.allCases) { mode in
                         Text(mode.label).tag(mode)
                     }
@@ -285,7 +285,7 @@ struct TrajectoryCalculatorView: View {
                 decimalPlaces: 0
             )
             TrajectoryMeasurementField(
-                title: L("Elevation Change"),
+                title: L("Elevation change"),
                 explanation: L("Height difference between the launch point and the landing surface. This is separate from site elevation."),
                 diagram: .elevationChange,
                 metricValue: $viewModel.elevationDeltaM,
@@ -345,7 +345,7 @@ struct TrajectoryCalculatorView: View {
                         decimalPlaces: 0
                     )
                     TrajectoryMeasurementField(
-                        title: L("Elevation Change"),
+                        title: L("Elevation change"),
                         explanation: L("Height difference between the launch point and the landing surface. This is separate from site elevation."),
                         diagram: .elevationChange,
                         metricValue: $viewModel.elevationDeltaM,
@@ -369,7 +369,7 @@ struct TrajectoryCalculatorView: View {
                     }
                     .frame(maxWidth: .infinity)
                 } else {
-                    Label("Calculate Trajectory", systemImage: "arrow.up.right.circle.fill")
+                    Label("Calculate trajectory", systemImage: "arrow.up.right.circle.fill")
                         .frame(maxWidth: .infinity)
                 }
             }
@@ -462,7 +462,7 @@ struct ClubCarouselView: View {
             }
             .padding(.top, 8)
             .background(PureLineStyle.canvas.ignoresSafeArea())
-            .navigationTitle("Club Selector")
+            .navigationTitle("Club selector")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.visible, for: .navigationBar)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)
@@ -565,7 +565,7 @@ private struct AtmosphereField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(pressureInputMode == .elevation ? L("Site Elevation") : L("Pressure"))
+                Text(pressureInputMode == .elevation ? L("Site elevation") : L("Pressure"))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 Button {

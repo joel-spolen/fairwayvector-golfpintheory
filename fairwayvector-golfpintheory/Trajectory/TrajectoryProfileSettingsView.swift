@@ -9,7 +9,7 @@ struct TrajectoryProfileSettingsView: View {
 
     var body: some View {
         Form {
-            Section("Active Level") {
+            Section("Active level") {
                 Picker("Level", selection: detailLevelBinding) {
                     ForEach(ProfileDetailLevel.allCases) { level in
                         Text(level.label).tag(level)
@@ -133,7 +133,7 @@ private struct MediumProfileView: View {
                     )
                 }
             } header: {
-                Text("Club Carry Distances")
+                Text("Club carry distances")
             }
             .listRowBackground(PureLineStyle.surface)
         }
@@ -203,14 +203,14 @@ private struct ExpertProfileView: View {
                 let effective = profileStore.effectiveProfile(for: selectedClub)
                 let override = profileStore.profile.override(for: selectedClub)
                 ProfileSpeedRow(
-                    title: L("Ball Speed"),
+                    title: L("Ball speed"),
                     value: override.ballSpeedMps,
                     unitPreferences: unitPreferences,
                     fallbackMps: effective.ballSpeedMps.value,
                     onChange: { updateOverride(\.ballSpeedMps, value: $0) }
                 )
                 ProfileOptionalNumberRow(
-                    title: L("Launch Angle"),
+                    title: L("Launch angle"),
                     value: override.launchAngleDeg,
                     unit: "deg",
                     defaultValue: override.launchAngleDeg == nil ? String(format: L("%.1f deg"), effective.launchAngleDeg.value) : nil,
@@ -218,7 +218,7 @@ private struct ExpertProfileView: View {
                     onChange: { updateOverride(\.launchAngleDeg, value: $0) }
                 )
                 ProfileOptionalNumberRow(
-                    title: L("Spin Rate"),
+                    title: L("Spin rate"),
                     value: override.spinRateRpm,
                     unit: "rpm",
                     defaultValue: override.spinRateRpm == nil ? String(format: L("%.0f rpm"), effective.spinRateRpm.value) : nil,
@@ -226,7 +226,7 @@ private struct ExpertProfileView: View {
                     onChange: { updateOverride(\.spinRateRpm, value: $0) }
                 )
                 ProfileOptionalNumberRow(
-                    title: L("Spin Axis"),
+                    title: L("Spin axis"),
                     value: override.spinAxisDeg,
                     unit: "deg",
                     defaultValue: override.spinAxisDeg == nil ? String(format: L("%.1f deg"), effective.spinAxisDeg.value) : nil,
@@ -234,7 +234,7 @@ private struct ExpertProfileView: View {
                     onChange: { updateOverride(\.spinAxisDeg, value: $0) }
                 )
             } header: {
-                Text("Launch Data")
+                Text("Launch data")
             }
             .listRowBackground(PureLineStyle.surface)
 

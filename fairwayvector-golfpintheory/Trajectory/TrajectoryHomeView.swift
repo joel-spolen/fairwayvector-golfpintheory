@@ -34,7 +34,7 @@ struct TrajectoryHomeView: View {
                     Button {
                         showHowItWorks = true
                     } label: {
-                        Label("How It Works", systemImage: "questionmark.circle")
+                        Label("How it works", systemImage: "questionmark.circle")
                             .frame(maxWidth: .infinity)
                             .frame(height: 52)
                     }
@@ -61,7 +61,7 @@ struct TrajectoryHomeView: View {
             Button {
                 onOpenClub()
             } label: {
-                Label("Suggest a Club", systemImage: "figure.golf")
+                Label("Suggest a club", systemImage: "figure.golf")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
@@ -72,7 +72,7 @@ struct TrajectoryHomeView: View {
                 onOpenTrajectory()
             } label: {
                 HStack {
-                    Label("Calculate Trajectory", systemImage: "chart.xyaxis.line")
+                    Label("Calculate trajectory", systemImage: "chart.xyaxis.line")
                     Spacer()
                     Image(systemName: "arrow.up.right")
                 }
@@ -96,12 +96,12 @@ struct TrajectoryHomeView: View {
 
     private func lastCalculation(prediction: HybridPrediction) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Latest Calculation")
+            Text("Latest calculation")
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(PureLineStyle.muted)
             HStack {
                 VStack(alignment: .leading) {
-                    Text("Carry Distance")
+                    Text("Carry distance")
                         .font(.caption)
                         .foregroundStyle(PureLineStyle.muted)
                     Text(Units.formattedDistance(meters: prediction.hybrid["carry_m"] ?? 0, system: viewModel.unitPreferences.unitSystem(for: .distance)))
@@ -110,7 +110,7 @@ struct TrajectoryHomeView: View {
                 }
                 Spacer()
                 VStack(alignment: .trailing) {
-                    Text("Ball Speed")
+                    Text("Ball speed")
                         .font(.caption)
                         .foregroundStyle(PureLineStyle.muted)
                     Text(Units.formattedSpeed(mps: viewModel.lastCalculationBallSpeedMps ?? 0, system: viewModel.unitPreferences.unitSystem(for: .ballSpeed)))
@@ -121,7 +121,7 @@ struct TrajectoryHomeView: View {
             Button {
                 onOpenLastCalculation()
             } label: {
-                Label("Open Trajectory", systemImage: "arrow.right")
+                Label("Open trajectory", systemImage: "arrow.right")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
             }
@@ -146,7 +146,7 @@ struct TrajectoryHomeView: View {
             Button {
                 onExampleShot()
             } label: {
-                Label("Try Example Shot", systemImage: "sparkles")
+                Label("Try example shot", systemImage: "sparkles")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
@@ -171,7 +171,7 @@ private struct LiveFlightPreview: View {
                     path.move(to: CGPoint(x: 0, y: proxy.size.height - 12))
                     path.addLine(to: CGPoint(x: proxy.size.width, y: proxy.size.height - 12))
                 }
-                .stroke(FairwayVectorColors.gold.opacity(0.65), style: StrokeStyle(lineWidth: 2, dash: [5, 5]))
+                .stroke(PureLineStyle.muted.opacity(0.5), style: StrokeStyle(lineWidth: 2, dash: [5, 5]))
 
                 Path { path in
                     guard let first = points.first else { return }
@@ -180,11 +180,11 @@ private struct LiveFlightPreview: View {
                         path.addLine(to: point)
                     }
                 }
-                .stroke(FairwayVectorColors.flightBlue, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
+                .stroke(PureLineStyle.accent, style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round))
 
                 if let last = points.last {
                     Circle()
-                        .fill(FairwayVectorColors.orange)
+                        .fill(PureLineStyle.ink)
                         .frame(width: 14, height: 14)
                         .position(last)
                 }
@@ -231,7 +231,7 @@ struct HowItWorksView: View {
                 .padding()
             }
             .background(PureLineStyle.canvas)
-            .navigationTitle("How It Works")
+            .navigationTitle("How it works")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }

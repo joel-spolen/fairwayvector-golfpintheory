@@ -127,6 +127,7 @@ struct ContentView: View {
     @AppStorage("wedgeMatrix.distanceUnit", store: .standard) private var wedgeDistanceUnit = WedgeDistanceUnit.yards.rawValue
     @State private var destination: Destination?
     @State private var showingSettings = false
+    @State private var openAccountAfterSettings = false
     @State private var practiceDestination: PracticeDestination = .trajectory
     @StateObject private var trajectoryModel: TrajectoryCalculatorViewModel
     @State private var roundStore: PlayedRoundStore
@@ -160,7 +161,6 @@ struct ContentView: View {
                 },
                 onOpenStatistics: { destination = .statistics },
                 onOpenSettings: { showingSettings = true },
-                onOpenAccount: { destination = .account },
                 profileStore: trajectoryModel.playerProfileStore
             )
 
@@ -204,8 +204,17 @@ struct ContentView: View {
                 .defaultAppStorage(accountData.defaults)
                 .preferredColorScheme(.light)
         }
-        .sheet(isPresented: $showingSettings) {
-            UnifiedSettingsView()
+        .sheet(isPresented: $showingSettings, onDismiss: {
+            // A full-screen cover can only be presented once the settings sheet is gone.
+            if openAccountAfterSettings {
+                openAccountAfterSettings = false
+                destination = .account
+            }
+        }) {
+            UnifiedSettingsView(onOpenAccount: {
+                openAccountAfterSettings = true
+                showingSettings = false
+            })
             .environmentObject(trajectoryModel)
             .environment(roundStore)
             .modelContainer(accountData.modelContainer)

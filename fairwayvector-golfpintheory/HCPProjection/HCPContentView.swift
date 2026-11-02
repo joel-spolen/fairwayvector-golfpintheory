@@ -250,7 +250,7 @@ private struct HomeView: View {
                                 Image(systemName: "calendar.badge.plus")
                                     .font(.title2)
                                     .foregroundStyle(PureLineStyle.accent)
-                                Text("No Rounds Yet")
+                                Text("No rounds yet")
                                     .font(.headline)
                                 Text("Add a round to start tracking your Handicap Index.")
                                     .font(.subheadline)
@@ -553,13 +553,13 @@ private struct HandicapRoundsView: View {
             }
 
             if roundResults.isEmpty {
-                Section("Counting Rounds") {
+                Section("Counting rounds") {
                     Text("No rounds count yet.")
                         .foregroundStyle(.secondary)
                 }
                 .listRowBackground(PureLineStyle.surface)
             } else {
-                Section("Counting Rounds") {
+                Section("Counting rounds") {
                     ForEach(roundResults, id: \.round.id) { item in
                         NavigationLink(destination: RoundDetailView(round: item.round, handicapIndex: handicapIndex)) {
                             HandicapRoundRow(round: item.round, differential: item.differential)
@@ -569,7 +569,7 @@ private struct HandicapRoundsView: View {
                 .listRowBackground(PureLineStyle.surface)
             }
 
-            Section("How Counting Rounds Work") {
+            Section("How counting rounds work") {
                 Text(countingRuleSummary)
                     .font(.subheadline)
 
@@ -615,7 +615,7 @@ private struct HandicapRoundRow: View {
                 : AnyLayout(HStackLayout(alignment: .top, spacing: 12))
             layout {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(round.courseName.isEmpty ? L("No Course") : round.courseName)
+                    Text(round.courseName.isEmpty ? L("No course") : round.courseName)
                         .font(.body.weight(.semibold))
                         .foregroundStyle(PureLineStyle.ink)
                     if !round.clubName.isEmpty || !round.teeName.isEmpty {
@@ -1288,14 +1288,14 @@ private struct NewRoundView: View {
                 }
 
                 if isManualDifferential || !selectedCourseName.isEmpty {
-                    Section("Round Details") {
+                    Section("Round details") {
                         DatePicker("Date", selection: $roundDate, displayedComponents: .date)
                     }
                     .listRowBackground(PureLineStyle.surface)
                 }
 
                 if isManualDifferential {
-                    Section("No Course") {
+                    Section("No course") {
                         TextField("HCP score", text: $manualDifferentialText)
                             .keyboardType(.decimalPad)
                             .font(.title2.weight(.semibold).monospacedDigit())
@@ -1390,9 +1390,9 @@ private struct NewRoundView: View {
                             courseHandicap: ch
                         )
 
-                        Section("Round Summary") {
+                        Section("Round summary") {
                             HStack {
-                                Text("Total Gross")
+                                Text("Total gross")
                                 Spacer()
                                 Text("\(holeCalc.totalGrossScore)")
                                     .monospacedDigit()
@@ -1407,7 +1407,7 @@ private struct NewRoundView: View {
                             }
                             if canShowStablefordPoints {
                                 HStack {
-                                    Text("Stableford Points")
+                                    Text("Stableford points")
                                     Spacer()
                                     Text("\(holeCalc.totalStablefordPoints) pts")
                                         .monospacedDigit()
@@ -1463,7 +1463,7 @@ private struct NewRoundView: View {
                         .listRowBackground(PureLineStyle.surface)
                     }
 
-                    Section("Conditions & Notes") {
+                    Section("Conditions & notes") {
                         HStack {
                             InfoLabel(
                                 title: L("PCC"),
@@ -1832,7 +1832,7 @@ private struct CustomCoursesView: View {
             if filteredCourses.isEmpty {
                 Section {
                     ContentUnavailableView(
-                        searchQuery.isEmpty ? L("No Custom Courses") : L("No Matches"),
+                        searchQuery.isEmpty ? L("No custom courses") : L("No matches"),
                         systemImage: searchQuery.isEmpty ? "flag.badge.ellipsis" : "magnifyingglass",
                         description: Text(searchQuery.isEmpty
                             ? L("Add a custom course to see it listed here.")
@@ -1843,7 +1843,7 @@ private struct CustomCoursesView: View {
             }
 
             if !filteredCourses.isEmpty {
-                Section(searchQuery.isEmpty ? L("All Courses") : L("Matching Courses")) {
+                Section(searchQuery.isEmpty ? L("All courses") : L("Matching courses")) {
                     ForEach(filteredCourses) { result in
                         NavigationLink {
                             CustomCourseSummaryView(courseName: result.courseName, club: result.club,
@@ -1858,13 +1858,13 @@ private struct CustomCoursesView: View {
             }
         }
         .hcpPureLineList()
-        .navigationTitle("Custom Courses")
+        .navigationTitle("Custom courses")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     showingAddCourse = true
                 } label: {
-                    Label("Add Course", systemImage: "plus")
+                    Label("Add course", systemImage: "plus")
                 }
             }
         }
@@ -2120,7 +2120,7 @@ private struct AddCourseView: View {
                     HCPPureLineIntro(title: L("Add a custom course"), subtitle: L("Use the published ratings for your course, tee and rating category."))
                 }
 
-                Section("Location · Required") {
+                Section("Location · required") {
                     HStack(spacing: 14) {
                         Menu {
                             ForEach(availableRegions) { region in
@@ -2176,7 +2176,7 @@ private struct AddCourseView: View {
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("Course & Tee · Required") {
+                Section("Course & tee · required") {
                     TextField("Course name", text: $courseName)
                         .overlay(alignment: .topLeading) {
                             if !matchingCourses.isEmpty {
@@ -2200,7 +2200,7 @@ private struct AddCourseView: View {
                 .listRowBackground(PureLineStyle.surface)
 
                 Section("WHS Ratings · Required") {
-                    Picker("Tee Rating Category", selection: $selectedRatingSex) {
+                    Picker("Tee rating category", selection: $selectedRatingSex) {
                         ForEach(PlayerSex.allCases) { sex in
                             Text(sex == .male ? L("Men") : L("Women")).tag(sex)
                         }
@@ -2245,13 +2245,13 @@ private struct AddCourseView: View {
                 }
                 .listRowBackground(PureLineStyle.surface)
 
-                Section("Hole Details · Optional") {
+                Section("Hole details · optional") {
                     Toggle("Add hole details", isOn: $addHoleDetails)
                 }
                 .listRowBackground(PureLineStyle.surface)
 
                 if addHoleDetails {
-                    Section("Hole Details") {
+                    Section("Hole details") {
                         Text("Each hole must have a unique HCP from 1 to \(holes).")
                             .font(.caption)
                             .foregroundStyle(PureLineStyle.muted)
@@ -2278,7 +2278,7 @@ private struct AddCourseView: View {
                 }
             }
             .hcpPureLineList()
-            .navigationTitle("Add Custom Course")
+            .navigationTitle("Add custom course")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -2491,7 +2491,7 @@ private struct InfoLabel: View {
                     }
                     .background(PureLineStyle.canvas)
                     .tint(PureLineStyle.accent)
-                    .navigationTitle("How It Works")
+                    .navigationTitle("How it works")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
@@ -2521,7 +2521,7 @@ struct HCPCustomCoursesEntryView: View {
                 ProgressView("Loading course catalog…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(PureLineStyle.canvas)
-                    .navigationTitle("Custom Courses")
+                    .navigationTitle("Custom courses")
                     .navigationBarTitleDisplayMode(.inline)
             }
         }
@@ -2563,9 +2563,9 @@ struct RoundDetailView: View {
 
     var body: some View {
         List {
-            Section(isNoCourseRound ? L("Round") : L("Course & Tee")) {
+            Section(isNoCourseRound ? L("Round") : L("Course & tee")) {
                 if isNoCourseRound {
-                    LabeledContent("Course", value: L("No Course"))
+                    LabeledContent("Course", value: L("No course"))
                 } else {
                     LabeledContent("Course", value: round.courseName)
                     LabeledContent("Club", value: round.clubName)
@@ -2586,7 +2586,7 @@ struct RoundDetailView: View {
                 .listRowBackground(PureLineStyle.surface)
             }
 
-            Section("Handicap Performance") {
+            Section("Handicap performance") {
                 if let differential {
                     LabeledContent("HCP Score", value: WHSCalculator.formatHCPScore(differential))
                         .font(.title3.weight(.semibold).monospacedDigit())
@@ -2612,7 +2612,7 @@ struct RoundDetailView: View {
             .listRowBackground(PureLineStyle.surface)
 
             if !isNoCourseRound {
-                Section("Score Summary") {
+                Section("Score summary") {
                 if let gross = round.adjustedGrossScore {
                     LabeledContent {
                         Text("\(gross)")
@@ -2625,7 +2625,7 @@ struct RoundDetailView: View {
                     }
                 }
                 if let points = round.stablefordPoints {
-                    LabeledContent("Stableford Points", value: L("%@ pts", "\(points)"))
+                    LabeledContent("Stableford points", value: L("%@ pts", "\(points)"))
                 }
                 if !userNotes.isEmpty {
                     LabeledContent("Notes", value: userNotes)
@@ -2741,7 +2741,7 @@ private struct RoundRow: View {
                         ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
                         : AnyLayout(HStackLayout(spacing: 6))
                     titleLayout {
-                        Text(round.courseName.isEmpty ? L("No Course") : round.courseName)
+                        Text(round.courseName.isEmpty ? L("No course") : round.courseName)
                             .font(.body.weight(.semibold))
                             .foregroundStyle(PureLineStyle.ink)
                         if isCountingRound {

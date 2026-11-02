@@ -1180,7 +1180,7 @@ struct RoundReviewView: View {
             } message: {
                 Text((round.isComplete ? "" : L("Some holes have not been played or recorded. Missing scores will remain empty. "))
                      + (includeInHandicap && !PlayedRoundHandicapBridge.isEligible(round)
-                        ? L("This round is not eligible for HCP and will be saved to Statistics only.")
+                        ? L("This round can't count for your handicap. It will be saved to Statistics only.")
                         : L("The round will be saved to Statistics.")))
             }
     }

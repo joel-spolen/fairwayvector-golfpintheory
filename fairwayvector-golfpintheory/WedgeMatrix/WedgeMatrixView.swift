@@ -213,7 +213,7 @@ private struct WedgeHomeOverviewCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
                 WedgeMetricCard(title: L("Wedges"), value: "\(wedges.count)", systemImage: "list.bullet")
-                WedgeMetricCard(title: L("In Bag"), value: "\(bagWedges.count)", systemImage: "bag")
+                WedgeMetricCard(title: L("In bag"), value: "\(bagWedges.count)", systemImage: "bag")
             }
         }
         .pureLineCard()
@@ -226,7 +226,7 @@ private struct WedgeCurrentBagCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Current Bag")
+            Text("Current bag")
                 .font(.headline)
 
             if wedges.isEmpty {
@@ -372,7 +372,7 @@ private struct WedgeMatrixCard: View {
                     Image(systemName: "bag.badge.questionmark")
                         .font(.title2)
                         .foregroundStyle(PureLineStyle.muted)
-                    Text("No Wedges In Bag")
+                    Text("No wedges in bag")
                         .font(.headline)
                     Text("Choose wedges in Clubs in my bag to include them here.")
                         .font(.subheadline)
@@ -455,7 +455,7 @@ private struct WedgeBagManagementList: View {
                                 WedgeClubInventoryRow(wedge: wedge, unit: unit)
                             }
                             .disabled(!wedge.isInBag)
-                            Toggle("In Bag", isOn: wedgeBinding.isInBag)
+                            Toggle("In bag", isOn: wedgeBinding.isInBag)
                                 .labelsHidden()
                                 .tint(PureLineStyle.accent)
                         }
@@ -463,9 +463,9 @@ private struct WedgeBagManagementList: View {
                 }
             } header: {
                 HStack {
-                    Text("Club Inventory")
+                    Text("Club inventory")
                     Spacer()
-                    Text("In Bag")
+                    Text("In bag")
                         .font(.caption.weight(.semibold))
                 }
             }

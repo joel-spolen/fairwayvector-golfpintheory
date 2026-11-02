@@ -140,7 +140,7 @@ private struct CourseWeatherDetail: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
-        .tint(FairwayVectorColors.navy)
+        .tint(PureLineStyle.accent)
     }
 
     private func metric(_ title: String, _ value: Double?, _ unit: String) -> some View {

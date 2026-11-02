@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct UnifiedSettingsView: View {
+    var onOpenAccount: () -> Void = {}
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(PlayedRoundStore.self) private var playedRoundStore
@@ -30,6 +31,14 @@ struct UnifiedSettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    Button(action: onOpenAccount) {
+                        Label(AppLanguage.localized("Account"), systemImage: "person.crop.circle")
+                    }
+                    .accessibilityIdentifier("settings-account-button")
+                }
+                .listRowBackground(PureLineStyle.surface)
+
                 Section(AppLanguage.localized("Language")) {
                     Picker(AppLanguage.localized("App language"), selection: $languagePreference) {
                         Text(AppLanguage.localized("Follow iPhone language")).tag(AppLanguage.followSystemValue)

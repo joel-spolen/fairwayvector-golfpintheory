@@ -28,10 +28,10 @@ enum UnitField: String, CaseIterable, Identifiable {
 
     var label: String {
         switch self {
-        case .ballSpeed: return L("Ball Speed")
-        case .windSpeed: return L("Wind Speed")
-        case .landingSpeed: return L("Landing Speed")
-        case .distance: return L("Distance & Height")
+        case .ballSpeed: return L("Ball speed")
+        case .windSpeed: return L("Wind speed")
+        case .landingSpeed: return L("Landing speed")
+        case .distance: return L("Distance & height")
         case .temperature: return L("Temperature")
         case .pressure: return L("Pressure")
         }
