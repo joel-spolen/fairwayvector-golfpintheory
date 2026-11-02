@@ -162,8 +162,8 @@ final class CourseStore {
                 manifest = try await golfAPIClient.loadCourseBundle(id: courseID).terrain
             }
             bundledTerrain = nil
-            terrain = try await CourseTerrainStore.download(manifest, directory: directory) { id in
-                try await self.golfAPIClient.downloadTerrainTile(id: id)
+            terrain = try await CourseTerrainStore.download(manifest, directory: directory) { tile in
+                try await self.golfAPIClient.downloadTerrainTile(id: tile.id, source: tile.source)
             }
             terrainMessage = manifest.isReady ? nil
                 : L("Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course.")

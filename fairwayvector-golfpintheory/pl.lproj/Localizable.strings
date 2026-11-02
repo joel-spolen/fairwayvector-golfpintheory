@@ -383,6 +383,7 @@
 "Edit name" = "Edytuj imię i nazwisko";
 "Effective user-calibrated Practice wedge carry" = "Efektywny carry wedge'a treningowego skalibrowanego przez użytkownika";
 "Elevation" = "Wysokość";
+"Elevation data" = "Dane wysokościowe";
 "Elevation %+.0f %@" = "Wysokość %+.0f %@";
 "Elevation %lld meters, pin %@" = "Wysokość %lld metrów, flaga %@";
 "Elevation Change" = "Różnica wysokości";

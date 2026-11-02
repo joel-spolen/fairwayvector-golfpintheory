@@ -383,6 +383,7 @@
 "Edit name" = "Modifica nome";
 "Effective user-calibrated Practice wedge carry" = "Carry effettivo del wedge di pratica calibrato dall’utente";
 "Elevation" = "Quota";
+"Elevation data" = "Dati altimetrici";
 "Elevation %+.0f %@" = "Quota %+.0f %@";
 "Elevation %lld meters, pin %@" = "Quota %lld metri, bandiera %@";
 "Elevation Change" = "Dislivello";

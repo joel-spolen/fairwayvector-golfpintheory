@@ -130,6 +130,8 @@ struct UnifiedSettingsView: View {
                     Link(destination: URL(string: "https://golfpintheory.com/privacy-policy/")!) {
                         Label(AppLanguage.localized("Privacy policy"), systemImage: "hand.raised")
                     }
+                    LabeledContent(AppLanguage.localized("Elevation data"), value: "© Lantmäteriet (CC BY 4.0), GPXZ")
+                        .font(.footnote)
                 }
                 .listRowBackground(PureLineStyle.surface)
             }

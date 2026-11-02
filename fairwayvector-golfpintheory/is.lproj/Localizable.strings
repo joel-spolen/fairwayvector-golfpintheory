@@ -383,6 +383,7 @@
 "Edit name" = "Breyta nafni";
 "Effective user-calibrated Practice wedge carry" = "Raunflug æfingafleygjárns sem notandi kvarðaði";
 "Elevation" = "Hæð";
+"Elevation data" = "Hæðargögn";
 "Elevation %+.0f %@" = "Hæð %+.0f %@";
 "Elevation %lld meters, pin %@" = "Hæð %lld metrar, fáni %@";
 "Elevation Change" = "Hæðarmunur";

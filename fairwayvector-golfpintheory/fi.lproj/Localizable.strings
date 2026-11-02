@@ -383,6 +383,7 @@
 "Edit name" = "Muokkaa nimeä";
 "Effective user-calibrated Practice wedge carry" = "Käyttäjän kalibroiman harjoitus-wedgen todellinen carry";
 "Elevation" = "Korkeus";
+"Elevation data" = "Korkeustiedot";
 "Elevation %+.0f %@" = "Korkeus %+.0f %@";
 "Elevation %lld meters, pin %@" = "Korkeus %lld metriä, lippu %@";
 "Elevation Change" = "Korkeusero";

@@ -205,11 +205,12 @@ struct GolfAPIClient {
         return (GolfAPICoursePayload(detail: detail, coordinates: coordinates), terrain)
     }
 
-    func downloadTerrainTile(id: String) async throws -> Data {
+    func downloadTerrainTile(id: String, source: String? = nil) async throws -> Data {
         guard id.range(of: #"^[a-f0-9]{64}$"#, options: .regularExpression) != nil else {
             throw GolfAPIError.invalidResponse("Invalid course elevation tile.")
         }
-        return try await get("/golf/terrain/\(id)", timeout: 120, maxBytes: 64_000_000)
+        let prefix = source == "lantmateriet" ? "/golf/terrain/lm/" : "/golf/terrain/"
+        return try await get(prefix + id, timeout: 120, maxBytes: 64_000_000)
     }
 
     static func normalizedSearchTerm(_ value: String) -> String {

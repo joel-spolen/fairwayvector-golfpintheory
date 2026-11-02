@@ -383,6 +383,7 @@
 "Edit name" = "编辑姓名";
 "Effective user-calibrated Practice wedge carry" = "用户校准的练习挖起杆有效飞行距离";
 "Elevation" = "海拔";
+"Elevation data" = "海拔数据";
 "Elevation %+.0f %@" = "高度 %+.0f %@";
 "Elevation %lld meters, pin %@" = "海拔 %lld 米，旗位 %@";
 "Elevation Change" = "高度差";

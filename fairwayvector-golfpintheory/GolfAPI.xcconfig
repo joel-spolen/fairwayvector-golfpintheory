@@ -1,5 +1,4 @@
 // Course search/downloads use the authenticated Supabase Edge Function.
-// GPXZ remains independently mocked until elevation acquisition is enabled.
 GOLF_API_MODE = live
 #include "GPXZ.xcconfig"
 #include "Accounts.xcconfig"

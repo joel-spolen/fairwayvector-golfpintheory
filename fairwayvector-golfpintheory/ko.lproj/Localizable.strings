@@ -383,6 +383,7 @@
 "Edit name" = "이름 편집";
 "Effective user-calibrated Practice wedge carry" = "사용자가 보정한 연습 웨지의 유효 캐리";
 "Elevation" = "고도";
+"Elevation data" = "고도 데이터";
 "Elevation %+.0f %@" = "높이 %+.0f %@";
 "Elevation %lld meters, pin %@" = "높이 %lld미터, 핀 %@";
 "Elevation Change" = "고저차";

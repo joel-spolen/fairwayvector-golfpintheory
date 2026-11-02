@@ -383,6 +383,7 @@
 "Edit name" = "名前を編集";
 "Effective user-calibrated Practice wedge carry" = "ユーザーがキャリブレーションした練習用ウェッジの実効キャリー";
 "Elevation" = "高低";
+"Elevation data" = "標高データ";
 "Elevation %+.0f %@" = "高さ %+.0f %@";
 "Elevation %lld meters, pin %@" = "高さ %lld メートル、ピン %@";
 "Elevation Change" = "高低差";

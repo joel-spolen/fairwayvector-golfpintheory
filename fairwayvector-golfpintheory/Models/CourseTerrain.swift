@@ -18,6 +18,8 @@ nonisolated struct CourseTerrainManifest: Codable, Sendable {
         var captureDateMax: String?
         var datasetVersion: String?
         var fetchedAt: String?
+        var source: String?
+        var verticalDatum: String?
     }
     let status: String
     var code: String?
@@ -27,7 +29,8 @@ nonisolated struct CourseTerrainManifest: Codable, Sendable {
     /// Busy/pending outcomes are worth retrying on the next course open.
     var isTemporary: Bool {
         let temporary: Set<String> = ["request_pending", "daily_budget_exceeded", "rate_limit", "provider_cooldown",
-                                      "service_unavailable", "storage_unavailable", "cache_write_rejected"]
+                                      "service_unavailable", "storage_unavailable", "cache_write_rejected",
+                                      "provider_unavailable"]
         return status == "pending" || tiles.contains { $0.code.map(temporary.contains) == true }
     }
 }
@@ -140,8 +143,9 @@ nonisolated struct CourseTerrain: Sendable {
 
 /// Saved course elevation lives beside the course geometry and is evicted with it.
 nonisolated enum CourseTerrainStore {
-    private static let manifestName = "terrain-manifest-v1.json"
-    private static func tileName(_ sha256: String) -> String { "terrain-tile-v1-\(sha256).pttr" }
+    // v2: source-aware tiles; v1 (GPXZ 30 m for Swedish courses) is dropped so it re-downloads.
+    private static let manifestName = "terrain-manifest-v2.json"
+    private static func tileName(_ sha256: String) -> String { "terrain-tile-v2-\(sha256).pttr" }
 
     static func read(directory: URL) -> CourseTerrain? {
         guard let data = try? Data(contentsOf: directory.appendingPathComponent(manifestName)),
@@ -158,11 +162,11 @@ nonisolated enum CourseTerrainStore {
 
     /// Downloads every ready tile; saves the set only when the whole course is covered.
     static func download(_ manifest: CourseTerrainManifest, directory: URL,
-                         fetch: (String) async throws -> Data) async throws -> CourseTerrain {
+                         fetch: (CourseTerrainManifest.Tile) async throws -> Data) async throws -> CourseTerrain {
         var tiles: [CourseTerrainTile] = []
         for tile in manifest.tiles where tile.status == "ready" {
             guard let sha256 = tile.sha256 else { continue }
-            let bytes = try await fetch(tile.id)
+            let bytes = try await fetch(tile)
             guard hex(bytes) == sha256 else { throw CourseTerrainError.invalidTile }
             tiles.append(try CourseTerrainTile(packed: bytes, provenance: provenance(tile)))
             if manifest.isReady {
@@ -183,6 +187,10 @@ nonisolated enum CourseTerrainStore {
             try? FileManager.default.removeItem(at: directory.appendingPathComponent(name))
         }
         try? FileManager.default.removeItem(at: accountRoot.deletingLastPathComponent().appendingPathComponent("GPXZ"))
+        let names = (try? FileManager.default.contentsOfDirectory(atPath: directory.path)) ?? []
+        for name in names where name == "terrain-manifest-v1.json" || name.hasPrefix("terrain-tile-v1-") {
+            try? FileManager.default.removeItem(at: directory.appendingPathComponent(name))
+        }
     }
 
     private static func hex(_ data: Data) -> String {
@@ -197,6 +205,7 @@ nonisolated enum CourseTerrainStore {
         return TerrainProvenance(dataSource: (tile.sources ?? []).isEmpty ? "GPXZ" : (tile.sources ?? []).joined(separator: ", "),
             resolutionMeters: resolution, captureDateMin: tile.captureDateMin, captureDateMax: tile.captureDateMax,
             datasetVersion: tile.datasetVersion, fetchedAt: fetchedAt ?? .now,
-            interpolation: "bilinear (on-device grid)", verticalDatum: "EGM2008", providerSampleIntervalMeters: resolution)
+            interpolation: "bilinear (on-device grid)", verticalDatum: tile.verticalDatum ?? "EGM2008",
+            providerSampleIntervalMeters: resolution)
     }
 }

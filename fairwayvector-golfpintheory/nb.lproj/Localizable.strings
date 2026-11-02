@@ -383,6 +383,7 @@
 "Edit name" = "Rediger navn";
 "Effective user-calibrated Practice wedge carry" = "Effektiv brukerkalibrert carry for treningswedge";
 "Elevation" = "Høyde";
+"Elevation data" = "Høydedata";
 "Elevation %+.0f %@" = "Høyde %+.0f %@";
 "Elevation %lld meters, pin %@" = "Høyde %lld meter, flagg %@";
 "Elevation Change" = "Høydeforskjell";

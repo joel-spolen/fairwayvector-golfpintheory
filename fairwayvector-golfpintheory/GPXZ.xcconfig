@@ -1,2 +1,2 @@
-// Development only: live provider access is routed through the authenticated Supabase Edge Function.
-GPXZ_API_MODE = mock
+// Course elevation is downloaded once per course through the authenticated Supabase Edge Function.
+GPXZ_API_MODE = live

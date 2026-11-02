@@ -1,6 +1,6 @@
 import Foundation
 
-// Global GPXZ domain; legacy RH2000 raster packages are never imported.
+// Server-provided course grids (GPXZ, or Lantmäteriet for Sweden).
 nonisolated struct TerrainProvenance: Codable, Hashable, Sendable {
     let dataSource: String
     let resolutionMeters: Double
