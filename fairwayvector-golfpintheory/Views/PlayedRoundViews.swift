@@ -2,6 +2,15 @@ import SwiftData
 import SwiftUI
 import UIKit
 
+/// Last started round's choices; scoped to the account through defaultAppStorage, not synced.
+private struct RoundSetupMemory: Codable {
+    var game: RoundGame
+    var displayOptions: RoundDisplayOptions
+    var ownerKeepsDetailedScore: Bool
+    var ownerUsesHandicapIndex: Bool
+    var guests: [RoundPlayer]
+}
+
 struct RoundSetupView: View {
     let selectedCourseReference: CourseReference
     let course: Course
@@ -21,6 +30,7 @@ struct RoundSetupView: View {
     @State private var scoringMode = RoundDisplayOptions.roundSetupDefault.scoringMode
     @State private var error: String?
     @State private var initialized = false
+    @AppStorage("roundSetup.lastUsed.v1") private var lastSetupData = Data()
 
     init(selectedCourseReference: CourseReference, course: Course, dismissOnCompletion: Bool = true,
          onStarted: @escaping () -> Void, onCancel: @escaping () -> Void) {
@@ -177,6 +187,7 @@ struct RoundSetupView: View {
                     Button("Start round", systemImage: "flag.checkered") {
                         do {
                             try store.start(candidate)
+                            rememberSetup()
                             onStarted()
                             if dismissOnCompletion { dismiss() }
                         } catch { self.error = UserFacingError.message(error) }
@@ -206,8 +217,37 @@ struct RoundSetupView: View {
                 guard !initialized else { return }
                 initialized = true
                 players[0].handicapIndex = defaultOwnerHandicapIndex
+                restoreLastSetup()
             }
         }.tint(PureLineStyle.accent)
+    }
+
+    private func restoreLastSetup() {
+        guard let memory = try? JSONDecoder().decode(RoundSetupMemory.self, from: lastSetupData) else { return }
+        game = memory.game
+        showWind = memory.displayOptions.showWind
+        showElevation = memory.displayOptions.showElevation
+        showClubSelection = memory.displayOptions.showClubSelection
+        scoringMode = memory.displayOptions.scoringMode
+        players[0].keepsDetailedScore = memory.ownerKeepsDetailedScore
+        if !memory.ownerUsesHandicapIndex { players[0].handicapIndex = nil }
+        // Fresh IDs keep each round's players independent of earlier rounds.
+        players += memory.guests.prefix(3).map { guest in
+            var player = guest
+            player.id = UUID()
+            player.isOwner = false
+            return player
+        }
+    }
+
+    private func rememberSetup() {
+        let memory = RoundSetupMemory(game: game,
+            displayOptions: RoundDisplayOptions(showWind: showWind, showElevation: showElevation,
+                                                showClubSelection: showClubSelection, scoringMode: scoringMode),
+            ownerKeepsDetailedScore: players[0].keepsDetailedScore ?? true,
+            ownerUsesHandicapIndex: players[0].handicapIndex != nil,
+            guests: players.filter { !$0.isOwner })
+        lastSetupData = (try? JSONEncoder().encode(memory)) ?? Data()
     }
 }
 
