@@ -175,7 +175,7 @@
 "Calculate Trajectory" = "Balvlucht berekenen";
 "Calculate the flight" = "Bereken de vlucht";
 "Calculates the golf ball's trajectory" = "Berekent de vlucht van de golfbal";
-"Calculating with your Practice bag, captured weather and terrain…" = "Berekenen met je oefentas, gemeten weer en terrein…";
+"Finding the right club…" = "De juiste club zoeken…";
 "Calculating…" = "Berekenen…";
 "Calm" = "Windstil";
 "Calm, %@" = "Windstil, %@";
@@ -212,8 +212,8 @@
 "Downloading course elevation…" = "Hoogtegegevens van de baan downloaden…";
 "Elevation isn't available for this course." = "Er zijn geen hoogtegegevens beschikbaar voor deze baan.";
 "Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "De hoogtegegevens van de baan konden nu niet worden gedownload. Dit wordt opnieuw geprobeerd wanneer je de baan weer opent.";
-"This position is outside the downloaded course elevation." = "Deze positie ligt buiten de gedownloade hoogtegegevens van de baan.";
-"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Kies het handicapbereik dat het best bij je spel past. Dit wordt gebruikt voor de clubkeuze. Om persoonlijke afstanden en lanceergegevens in te voeren, open je In de tas > Clubafstanden & lancering vanaf Start.";
+"No elevation data for this spot." = "Geen hoogtegegevens voor deze plek.";
+"Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag." = "Kies het bereik dat het dichtst bij je handicap ligt. Het wordt gebruikt om clubs voor te stellen totdat je je eigen afstanden toevoegt onder In de tas.";
 "Choose wedges in Clubs in my bag to include them here." = "Kies wedges in Clubs in mijn tas om ze hier op te nemen.";
 "Choose which clubs are available" = "Kies welke clubs beschikbaar zijn";
 "Choose your course and tee." = "Kies je baan en tee.";
@@ -243,7 +243,7 @@
 "Clubs & launch profile" = "Clubs & lanceerprofiel";
 "Clubs in my bag" = "Clubs in mijn tas";
 "Compare carry distances across swing lengths and trajectories." = "Vergelijk carryafstanden over swinglengtes en vluchten.";
-"Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…" = "Laag/Mid/Hoog × 50/75/100% vergelijken voor je gekalibreerde wedges…";
+"Comparing your wedge shots…" = "Je wedgeslagen vergelijken…";
 "Comparing shots…" = "Slagen vergelijken…";
 "Completing account request…" = "Accountaanvraag voltooien…";
 "Completing password recovery…" = "Wachtwoordherstel voltooien…";
@@ -347,7 +347,7 @@
 "Drag the green up or down to set elevation. Drag the flag along the green to set the pin." = "Sleep de green omhoog of omlaag om de hoogte in te stellen. Sleep de vlag langs de green om de vlagpositie in te stellen.";
 "Drag the wind arrow to set the combined headwind, tailwind, and crosswind." = "Sleep de windpijl om gecombineerde tegenwind, meewind en zijwind in te stellen.";
 "Driver" = "Driver";
-"Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique." = "Dubbele identiteiten in de Wedgematrix: maak dubbele items opnieuw aan vóór scoring. Slagidentiteiten moeten uniek zijn.";
+"Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice." = "Sommige wedges staan er dubbel in. Verwijder de dubbele onder In de tas om scoringadvies te krijgen.";
 "E" = "O";
 "Each hole must have a unique HCP from 1 to %lld, and no value may be duplicated or outside that range." = "Elke hole moet een unieke HCP van 1 tot %lld hebben; geen waarde mag dubbel voorkomen of buiten dat bereik liggen.";
 "Each hole must have a unique HCP from 1 to %lld." = "Elke hole moet een unieke HCP van 1 tot %lld hebben.";
@@ -431,7 +431,7 @@
 "Green & Pin" = "Green & vlag";
 "Green in regulation" = "Green in regulation";
 "Green profile" = "Greenprofiel";
-"Gross only. Net score and Stableford points unavailable until an index is supplied." = "Alleen bruto. Nettoscore en Stablefordpunten zijn niet beschikbaar totdat een index is opgegeven.";
+"Strokes only. Turn on Use Handicap Index for net score and points." = "Alleen slagen. Zet Handicap Index gebruiken aan voor nettoscore en punten.";
 "Gross strokes" = "Brutoslagen";
 "Gross · %@" = "Bruto · %@";
 "HCP %@" = "HCP %@";
@@ -454,7 +454,7 @@
 "Handicap tools" = "Handicaptools";
 "Handicap trend" = "Handicaptrend";
 "Handicap trend chart" = "Grafiek handicaptrend";
-"Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary." = "De hoofdwaarden worden geschat met het vluchtmodel en kalibratiecorrecties. Ze kunnen afwijken van de werkelijke vlucht, omdat omstandigheden en metingen kunnen variëren.";
+"These are estimates. Real shots vary with conditions and strike." = "Dit zijn schattingen. Echte slagen variëren met de omstandigheden en hoe je de bal raakt.";
 "Height" = "Hoogte";
 "Height (%@)" = "Hoogte (%@)";
 "Height difference between the launch point and the landing surface. This is separate from site elevation." = "Hoogteverschil tussen het lanceerpunt en het landingsoppervlak. Dit staat los van de hoogte van de locatie.";
@@ -579,9 +579,9 @@
 "Miss" = "Mis";
 "Miss direction (optional)" = "Misrichting (optioneel)";
 "Missed FIR" = "FIR gemist";
-"Modeled Physics Flight Path" = "Gemodelleerde fysische vlucht";
-"Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Gemodelleerde fysische baan. Bij de landing eindigt de bal %@ %@ van de doellijn.";
-"Modeled physics path. Estimated carry is %@ and apex is %@." = "Gemodelleerde fysische baan. Geschatte carry %@, toppunt %@.";
+"Flight path" = "Vluchtbaan";
+"Flight path. At landing, the ball finishes %@ %@ of the target line." = "Vluchtbaan. Bij de landing eindigt de bal %@ %@ van de doellijn.";
+"Flight path. Estimated carry is %@ and apex is %@." = "Vluchtbaan. Geschatte carry %@, toppunt %@.";
 "Move Flag · Hole %lld" = "Vlag verplaatsen · Hole %lld";
 "N" = "N";
 "N/A" = "N.v.t.";
@@ -594,7 +594,7 @@
 "New password" = "Nieuw wachtwoord";
 "Next hole" = "Volgende hole";
 "Next page" = "Volgende pagina";
-"Nine-hole WHS estimate" = "WHS-schatting voor negen holes";
+"9-hole estimate" = "Schatting voor 9 holes";
 "No" = "Nee";
 "No Course" = "Geen baan";
 "No Custom Courses" = "Geen aangepaste banen";
@@ -602,12 +602,11 @@
 "No Rounds Yet" = "Nog geen rondes";
 "No Wedges In Bag" = "Geen wedges in de tas";
 "No change" = "Geen verandering";
-"No club prediction is available. Default club profiles are used until your bag is configured." = "Er is geen clubvoorspelling beschikbaar. Standaard clubprofielen worden gebruikt totdat je tas is geconfigureerd.";
+"No club suggestion is available for this shot." = "Er is geen clubadvies voor deze slag.";
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Geen enkele club bereikt de doelhoogte van %.1f m. Het hoogste gesimuleerde toppunt is %.1f m. Verklein het hoogteverschil of pas de lanceeromstandigheden aan.";
 "No club recommendation is available for this shot." = "Er is geen clubadvies beschikbaar voor deze slag.";
 "No clubs in bag" = "Geen clubs in de tas";
 "No clubs in your Practice bag. Configure your profile first." = "Geen clubs in je oefentas. Configureer eerst je profiel.";
-"No committed shot origin or target is available." = "Er is geen vastgelegd startpunt of doel voor de slag.";
 "No course" = "Geen baan";
 "No courses match \"%@\"." = "Geen banen komen overeen met ‘%@’.";
 "No data" = "Geen gegevens";
@@ -617,7 +616,7 @@
 "No golf clubs matched \"%@\"." = "Geen golfclubs gevonden voor \"%@\".";
 "No green is mapped for this hole yet." = "Er is nog geen green in kaart gebracht voor deze hole.";
 "No impact" = "Geen effect";
-"No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target." = "Geen gemodelleerde vlucht bereikt de doelafstand. Dichtstbijzijnde schatting: %@ voor een doel op %@.";
+"No club reaches the target distance. Closest: %@ for a %@ target." = "Geen club haalt de doelafstand. Dichtstbij: %@ voor een doel op %@.";
 "No outcomes calculated" = "Geen uitkomsten berekend";
 "No rated tee sets were found for %@." = "Er zijn geen tees met rating gevonden voor %@.";
 "No recommendation" = "Geen advies";
@@ -628,7 +627,7 @@
 "No score would raise your Handicap Index." = "Geen enkele score zou je Handicap Index verhogen.";
 "No score yet" = "Nog geen score";
 "No scores yet" = "Nog geen scores";
-"No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range." = "Er is geen scoringcombinatie beschikbaar voor deze hoogte/kalibratie. Bekijk de details; binnen het scoringbereik wordt advies voor de hele tas niet vervangen.";
+"No wedge shot fits this distance. Check your wedge distances in In the bag." = "Geen wedgeslag past bij deze afstand. Controleer je wedgeafstanden onder In de tas.";
 "No tees have been added for this course." = "Er zijn geen tees toegevoegd voor deze baan.";
 "No terrain elevations are available for this %@ profile." = "Er zijn geen terreinhoogtes beschikbaar voor dit profiel (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Er kon geen geldige scoringpositie worden gemaakt. Controleer je doel en je persoonlijke wedgekalibratie.";
@@ -645,12 +644,11 @@
 "Older rounds (past 20-round window)" = "Oudere rondes (buiten het venster van 20 rondes)";
 "On the number" = "Op het getal";
 "Open Trajectory" = "Balvlucht openen";
-"Opens all conditions, source time, cached status, provider errors and manual refresh" = "Opent alle omstandigheden, brontijd, cachestatus, aanbiederfouten en handmatig vernieuwen";
+"Opens the full weather details" = "Opent alle weerdetails";
 "Opens an enlarged green where you can tap to place the flag" = "Opent een vergrote green waarop je kunt tikken om de vlag te plaatsen";
 "Opens course, tee and hole information" = "Opent informatie over baan, tee en hole";
-"Opens the full chart, source, budget, errors and confirmed retry" = "Opent de volledige grafiek, bron, budget, fouten en bevestigde nieuwe poging";
+"Opens the elevation chart" = "Opent de hoogtegrafiek";
 "Opens the suggested club and flight details" = "Opent de voorgestelde club en vluchtdetails";
-"Opens the suggested club and modeled flight details" = "Opent de voorgestelde club en details van de gemodelleerde vlucht";
 "Optional" = "Optioneel";
 "Other" = "Overig";
 "Other Options" = "Andere opties";
@@ -687,7 +685,7 @@
 "Player" = "Speler";
 "Player %@" = "Speler %@";
 "Player name" = "Spelersnaam";
-"Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate." = "Spelers zonder index kunnen brutoslagen vastleggen, maar hebben geen netto Stablefordtotaal. Schakel een index in en kies expliciet 0 voor scratch indien van toepassing.";
+"Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch)." = "Spelers zonder Handicap Index krijgen geen Stablefordpunten. Zet Handicap Index gebruiken voor hen aan (0 voor scratch).";
 "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal." = "Playing Conditions Calculation. Past je handicapdifferentiaal aan voor ongewoon makkelijke of moeilijke baanomstandigheden, zoals wind, regen, greensnelheid of baanopzet. Een positieve waarde betekent zwaardere omstandigheden dan normaal; een negatieve waarde makkelijkere.";
 "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions." = "Playing Conditions Calculation. Past de scoredifferentiaal aan wanneer de baan door weer, opzet of baanconditie merkbaar makkelijker of moeilijker speelt dan normaal.";
 "Playing Handicap Index" = "Speelhandicapindex";
@@ -721,7 +719,7 @@
 "Random scoring position" = "Willekeurige scoringpositie";
 "Random scoring position, reset to device GPS, and personal wedge calibration" = "Willekeurige scoringpositie, terugzetten naar GPS van het apparaat en persoonlijke wedgekalibratie";
 "Range" = "Bereik";
-"Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown." = "Bereik −10 tot 54. Een plus 2-index voer je in als −2. Nul betekent scratch, niet onbekend.";
+"Enter a plus handicap with a + sign, e.g. +2. 0 means scratch." = "Voer een plushandicap in met een +-teken, bijv. +2. 0 betekent scratch.";
 "Rating / slope" = "Rating / slope";
 "Rating category" = "Ratingcategorie";
 "Rating category information" = "Informatie over ratingcategorie";
@@ -738,7 +736,7 @@
 "Region" = "Regio";
 "Relative humidity" = "Relatieve luchtvochtigheid";
 "Relative humidity of the air, expressed as a percentage." = "Relatieve luchtvochtigheid, als percentage.";
-"Release a point on the map to choose a shot target." = "Laat een punt op de kaart los om een doel voor de slag te kiezen.";
+"Tap the map to choose a target." = "Tik op de kaart om een doel te kiezen.";
 "Release target to calculate" = "Laat het doel los om te berekenen";
 "Remove player" = "Speler verwijderen";
 "Replace All Data With Test Data" = "Alle gegevens vervangen door testgegevens";
@@ -812,7 +810,7 @@
 "Scorecard" = "Scorekaart";
 "Scoring" = "Scoring";
 "Scoring by par" = "Score per par";
-"Scoring mode prioritizes calibrated wedge shots when the target is within your personal range." = "De scoringmodus geeft voorrang aan gekalibreerde wedgeslagen wanneer het doel binnen je persoonlijke bereik ligt.";
+"Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Binnen je wedgebereik worden de wedge, vluchtbaan en zwaailengte voor de slag voorgesteld.";
 "Scoring mode recommendations" = "Adviezen in scoringmodus";
 "Scoring range · ≤ %@" = "Scoringbereik · ≤ %@";
 "Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Scoring ondersteunt maximaal 14 wedges in de tas. Verklein de tas in de Wedgematrix.";
@@ -889,7 +887,7 @@
 "Slope rating" = "Slope rating";
 "Some holes are unplayed. You can still save this round to Statistics." = "Sommige holes zijn niet gespeeld. Je kunt deze ronde toch in Statistieken opslaan.";
 "Some holes have not been played or recorded. Missing scores will remain empty. " = "Sommige holes zijn niet gespeeld of vastgelegd. Ontbrekende scores blijven leeg. ";
-"Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data." = "Sommige pars, strokeindexen of toepasselijke tee-ratings ontbreken. Brutoscoring is beschikbaar; netto-, punten- en HCP-berekeningen vereisen volledige baangegevens.";
+"This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available." = "Bij deze baan ontbreken enkele hole- of ratinggegevens, dus alleen slagen kunnen worden geteld. Nettoscore, punten en handicapresultaten zijn niet beschikbaar.";
 "Speed of the ball immediately after impact." = "Snelheid van de bal direct na de impact.";
 "Spin Axis" = "Spinas";
 "Spin Rate" = "Spin";
@@ -930,9 +928,8 @@
 "Target Line" = "Doellijn";
 "Target distance" = "Doelafstand";
 "Target elevation" = "Doelhoogte";
-"Target is being moved. Release to load its terrain." = "Het doel wordt verplaatst. Laat los om het terrein te laden.";
+"Release to see the elevation." = "Laat los om de hoogte te zien.";
 "Target line" = "Doellijn";
-"Target movement cancelled. Tap the map and release a target to commit its terrain." = "Verplaatsen van het doel geannuleerd. Tik op de kaart en laat een doel los om het terrein vast te leggen.";
 "Target moving · release to calculate." = "Doel wordt verplaatst · laat los om te berekenen.";
 "Target: %@ · %@" = "Doel: %@ · %@";
 "Tee" = "Tee";
@@ -955,15 +952,15 @@
 "Test Data" = "Testgegevens";
 "The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it." = "Het hoogteverschil (%@) beïnvloedt zowel uitrol als carry: bergop vergroot de verwachte uitrol, bergaf verkleint die.";
 "The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies." = "De %@-swing verandert de uitrolafstand, dus het advies houdt rekening met zowel hoe hard je zwaait als hoe de bal vliegt.";
-"The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider." = "De 9-holes scoredifferentiaal wordt gecombineerd met de verwachte 9-holesdifferentiaal volgens het WHS op basis van je huidige Handicap Index. Dit is een lokale schatting; bevestig de officiële registratie bij je handicapaanbieder.";
+"Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ." = "Je score over 9 holes wordt gecombineerd met een verwachte score voor de andere 9 holes, op basis van je Handicap Index. Het is een schatting; je officiële handicap kan afwijken.";
 "The Men/Women rating category follows your player settings. Change it in Settings." = "De ratingcategorie Heren/Dames volgt je spelersinstellingen. Wijzig dit in Instellingen.";
-"The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential." = "De verwachte 9-holesdifferentiaal volgens het WHS vereist een vastgestelde Handicap Index. Tot die er is, kan deze ronde geen geschatte differentiaal opleveren.";
+"A 9-hole round can only count once you have a Handicap Index." = "Een ronde van 9 holes telt pas mee zodra je een Handicap Index hebt.";
 "The account request could not be completed. Please try again." = "De accountaanvraag kon niet worden voltooid. Probeer het opnieuw.";
 "The account service could not complete your request. Please try again later." = "De accountdienst kon je aanvraag niet voltooien. Probeer het later opnieuw.";
-"The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result." = "De app schat GIR wanneer totaal aantal slagen − putts ≤ par − 2. Dit is afgeleid, geen gemeten aankomst op de green; strafslagen en reddingsslagen kunnen het resultaat beïnvloeden.";
+"GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it." = "GIR wordt berekend uit je score en putts, dus het is een schatting. Een ingechipte bal of een strafslag kan het beïnvloeden.";
 "The ball finishes on the target line." = "De bal eindigt op de doellijn.";
 "The ball's initial upward angle." = "De aanvankelijke opwaartse hoek van de bal.";
-"The chart shows the modeled path. Values above include calibration corrections." = "De grafiek toont de gemodelleerde baan. De waarden hierboven bevatten kalibratiecorrecties.";
+"The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart." = "De waarden hierboven zijn verfijnd met echte slaggegevens en kunnen daardoor iets afwijken van de grafiek.";
 "The course information appears incomplete. Please try again later." = "De baaninformatie lijkt onvolledig. Probeer het later opnieuw.";
 "The dashed line shows your overall average." = "De stippellijn toont je totale gemiddelde.";
 "The data service supplied no usable detail." = "De gegevensdienst leverde geen bruikbare details.";
@@ -985,7 +982,7 @@
 "This action is available only for accounts with an email sign-in method." = "Deze actie is alleen beschikbaar voor accounts met inloggen via e-mail.";
 "This cannot be undone. Your online account and saved golf records on this device will be removed." = "Dit kan niet ongedaan worden gemaakt. Je online account en opgeslagen golfgegevens op dit apparaat worden verwijderd.";
 "This clears local sign-in credentials, not your golf records. You’ll return to sign in and can request another reset email. It does not sign out other devices." = "Hiermee worden lokale inloggegevens gewist, niet je golfgegevens. Je gaat terug naar inloggen en kunt een nieuwe herstelmail aanvragen. Andere apparaten worden niet uitgelogd.";
-"This course cannot be used for Handicap. Choose a rated course or an explicitly custom course." = "Deze baan kan niet worden gebruikt voor de handicap. Kies een baan met rating of expliciet een aangepaste baan.";
+"This course can't be used for Handicap. Choose a rated course or add it as a custom course." = "Deze baan kan niet worden gebruikt voor de handicap. Kies een baan met rating of voeg hem toe als aangepaste baan.";
 "This course is temporarily unavailable. Please try another course or come back later." = "Deze baan is tijdelijk niet beschikbaar. Probeer een andere baan of kom later terug.";
 "This discards the unsaved round and its scores. Saved scorecards are not affected." = "Hiermee wordt de niet-opgeslagen ronde met de scores verwijderd. Opgeslagen scorekaarten blijven ongewijzigd.";
 "This permanently deletes your account and removes its saved golf data from this device. This cannot be undone." = "Hiermee wordt je account definitief verwijderd en worden de opgeslagen golfgegevens van dit apparaat gewist. Dit kan niet ongedaan worden gemaakt.";
@@ -1041,8 +1038,8 @@
 "WHS Adjusted Score" = "WHS-aangepaste score";
 "WHS Ratings · Required" = "WHS-ratings · Verplicht";
 "WHS counting rules" = "WHS-telregels";
-"Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback." = "Wachten op volledig baanweer: temperatuur, luchtdruk aan de grond, luchtvochtigheid en wind. Geen terugval op vlak/windstil.";
-"Waiting for matching origin/target terrain…" = "Wachten op overeenkomend terrein voor start/doel…";
+"Waiting for the course weather…" = "Wachten op het weer op de baan…";
+"Loading elevation…" = "Hoogte laden…";
 "We bring together course information, handicap planning, club setup and shot insights to help golfers make more informed decisions on and off the course." = "We brengen baaninformatie, handicapplanning, clubinstellingen en slaginzichten samen om golfers te helpen beter geïnformeerde beslissingen te nemen op en buiten de baan.";
 "We couldn't load this course just now. Please wait a few minutes, then try again." = "De baan kon niet worden geladen. Wacht een paar minuten en probeer het opnieuw.";
 "We couldn't load this course right now. Check your connection and try again." = "We konden deze baan nu niet laden. Controleer je verbinding en probeer het opnieuw.";
@@ -1057,7 +1054,7 @@
 "Weather: %@" = "Weer: %@";
 "Wedge Matrix" = "Wedge-matrix";
 "Wedge bag" = "Wedgetas";
-"Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch." = "Carrywaarden voor wedges bewerk je in de Wedgetas. Ze zijn niet te bewerken in Clubafstanden & lancering.";
+"Edit wedge distances in Wedge bag." = "Bewerk wedgeafstanden in de Wedgetas.";
 "Wedge matrix" = "Wedgematrix";
 "Wedge tools" = "Wedgetools";
 "Wedges" = "Wedges";
@@ -1077,6 +1074,8 @@
 "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings." = "Met je toestemming helpt je locatie om afstanden en omstandigheden op de baan te tonen. Sommige functies delen locatiegegevens met hun aanbieders. Je kunt locatietoegang wijzigen in de Instellingen van je apparaat.";
 "Women" = "Vrouwen";
 "From tee" = "Vanaf de tee";
+"From your GPS position" = "Vanaf je gps-positie";
+"From the tee" = "Vanaf de tee";
 "YOUR NEXT SHOT" = "JE VOLGENDE SLAG";
 "Yards" = "Yards";
 "Yes" = "Ja";
@@ -1124,7 +1123,7 @@
 "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind." = "fairwayvector-hcp-projection verzamelt geen gegevens. Alle handicapberekeningen en prognoses worden volledig op je apparaat uitgevoerd. De app gebruikt geen netwerk, analyses, advertenties of tracking van welke aard dan ook.";
 "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks." = "fairwayvector-hcp-projection integreert geen SDK's van derden, analyseaanbieders of advertentienetwerken.";
 "fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data." = "fairwayvector-hcp-projection is een offline calculator voor handicapprognoses. Hij verzamelt, bewaart, verzendt of deelt geen persoonsgegevens.";
-"fairwayvector-trajectory combines a flight simulation with calibrated corrections." = "fairwayvector-trajectory combineert een vluchtsimulatie met gekalibreerde correcties.";
+"Golf PinTheory simulates the ball flight and fine-tunes it with real shot data." = "Golf PinTheory simuleert de balvlucht en verfijnt die met echte slaggegevens.";
 "from %.0f degrees true north" = "uit %.0f graden ten opzichte van het geografische noorden";
 "holes" = "holes";
 "left" = "links";

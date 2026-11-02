@@ -35,7 +35,7 @@ struct ScoringShotPlan: Equatable {
             return Self(shots: [], maxFullCarryM: nil, guidance: L("Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag."))
         }
         guard Set(matrixBag.map(\.id)).count == matrixBag.count else {
-            return Self(shots: [], maxFullCarryM: nil, guidance: L("Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique."))
+            return Self(shots: [], maxFullCarryM: nil, guidance: L("Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice."))
         }
         var shots: [ScoringShotSpec] = []
         var fullCarries: [Double] = []

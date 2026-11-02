@@ -33,9 +33,9 @@ struct TrajectoryChartView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Modeled Physics Flight Path")
+                Text("Flight path")
                     .font(.headline)
-                Text("The chart shows the modeled path. Values above include calibration corrections.")
+                Text("The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart.")
                     .font(.caption)
                     .foregroundStyle(PureLineStyle.muted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -181,11 +181,11 @@ struct TrajectoryChartView: View {
     }
 
     private var sideViewSummary: String {
-        L("Modeled physics path. Estimated carry is %@ and apex is %@.", "\(formattedDistance(lastDownrange))", "\(formattedDistance(apexHeight))")
+        L("Flight path. Estimated carry is %@ and apex is %@.", "\(formattedDistance(lastDownrange))", "\(formattedDistance(apexHeight))")
     }
 
     private var topDownSummary: String {
-        L("Modeled physics path. At landing, the ball finishes %@ %@ of the target line.", "\(formattedDistance(abs(lastLateral)))", "\(lastLateralDirection)")
+        L("Flight path. At landing, the ball finishes %@ %@ of the target line.", "\(formattedDistance(abs(lastLateral)))", "\(lastLateralDirection)")
     }
 
     private var lastDownrange: Double {

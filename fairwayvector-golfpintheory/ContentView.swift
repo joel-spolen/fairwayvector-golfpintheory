@@ -508,7 +508,7 @@ struct CourseMapView: View {
         .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         .accessibilityIdentifier("terrain-profile-button")
         .accessibilityLabel("Terrain details, \(terrainSummary)")
-        .accessibilityHint("Opens the full chart, source, budget, errors and confirmed retry")
+        .accessibilityHint("Opens the elevation chart")
     }
 
     private var terrainSummary: String {

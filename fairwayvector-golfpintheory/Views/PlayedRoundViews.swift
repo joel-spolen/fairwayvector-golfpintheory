@@ -11,6 +11,25 @@ private struct RoundSetupMemory: Codable {
     var guests: [RoundPlayer]
 }
 
+/// Golfers write plus handicaps as "+2"; the model stores them as negative values.
+private struct HandicapIndexFormat: ParseableFormatStyle {
+    var parseStrategy: Strategy { Strategy() }
+
+    func format(_ value: Double) -> String {
+        let number = abs(value).formatted(.number.precision(.fractionLength(0...1)))
+        return value < 0 ? "+" + number : number
+    }
+
+    struct Strategy: ParseStrategy {
+        func parse(_ value: String) throws -> Double {
+            let trimmed = value.trimmingCharacters(in: .whitespaces)
+            let isPlus = trimmed.hasPrefix("+")
+            let number = try Double(isPlus ? String(trimmed.dropFirst()) : trimmed, format: .number)
+            return isPlus ? -abs(number) : number
+        }
+    }
+}
+
 struct RoundSetupView: View {
     let selectedCourseReference: CourseReference
     let course: Course
@@ -92,7 +111,7 @@ struct RoundSetupView: View {
                     Text("Uses this course's loaded holes and selected tee. To change tees, return to Choose Course.")
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
                     if candidate.tee == nil || candidate.strokeRanks == nil {
-                        Label("Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data.", systemImage: "info.circle")
+                        Label("This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available.", systemImage: "info.circle")
                             .font(.caption).foregroundStyle(PureLineStyle.muted)
                     }
                 }
@@ -115,7 +134,7 @@ struct RoundSetupView: View {
                     Toggle("Club selection", isOn: $showClubSelection)
                     Toggle("Scoring mode recommendations", isOn: $scoringMode)
                         .disabled(!showClubSelection)
-                    Text("Scoring mode prioritizes calibrated wedge shots when the target is within your personal range.")
+                    Text("Inside your wedge range, suggests the wedge, trajectory and swing length for the shot.")
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
                 .font(.subheadline)
@@ -147,7 +166,7 @@ struct RoundSetupView: View {
                             LabeledContent("Handicap Index") {
                                 TextField("Handicap Index", value: Binding(
                                     get: { playerBinding.wrappedValue.handicapIndex ?? 0 },
-                                    set: { playerBinding.wrappedValue.handicapIndex = $0 }), format: .number)
+                                    set: { playerBinding.wrappedValue.handicapIndex = $0 }), format: HandicapIndexFormat())
                                     .keyboardType(.numbersAndPunctuation)
                                     .multilineTextAlignment(.trailing)
                                     .frame(width: 90)
@@ -156,10 +175,10 @@ struct RoundSetupView: View {
                                     .accessibilityLabel("Handicap Index")
                             }
                             .font(.subheadline)
-                            Text("Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown.")
+                            Text("Enter a plus handicap with a + sign, e.g. +2. 0 means scratch.")
                                 .font(.caption).foregroundStyle(PureLineStyle.muted)
                         } else {
-                            Text("Gross only. Net score and Stableford points unavailable until an index is supplied.")
+                            Text("Strokes only. Turn on Use Handicap Index for net score and points.")
                                 .font(.caption).foregroundStyle(PureLineStyle.muted)
                         }
                         if !player.isOwner {
@@ -180,7 +199,7 @@ struct RoundSetupView: View {
                     .overlay { RoundedRectangle(cornerRadius: 14).strokeBorder(PureLineStyle.line, lineWidth: 1) }
                     .disabled(players.count >= 4)
                     if game == .stableford, players.contains(where: { $0.handicapIndex == nil }) {
-                        Text("Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate.")
+                        Text("Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch).")
                             .font(.caption).foregroundStyle(PureLineStyle.muted)
                     }
                     if let error { Text(error).foregroundStyle(.red) }
@@ -473,7 +492,7 @@ struct RoundHoleEntryView: View {
                             .font(.subheadline.weight(.semibold))
                     }
                     Text("GIR means reaching the green in no more than par minus two strokes: 1 on a par 3, 2 on a par 4, or 3 on a par 5.")
-                    Text("The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result.")
+                    Text("GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it.")
                         .foregroundStyle(PureLineStyle.muted)
                 }
                 .font(.subheadline)

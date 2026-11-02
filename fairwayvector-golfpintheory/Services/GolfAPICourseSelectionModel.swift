@@ -268,7 +268,7 @@ final class GolfAPICourseSelectionModel {
         selectedTeeID = nil
         errorMessage = nil
         guard purpose != .handicap || !DevelopmentAPIConfiguration.isDemoCourse(course.courseID) else {
-            errorMessage = L("This course cannot be used for Handicap. Choose a rated course or an explicitly custom course.")
+            errorMessage = L("This course can't be used for Handicap. Choose a rated course or add it as a custom course.")
             return
         }
         guard purpose != .map || course.hasGPS else {

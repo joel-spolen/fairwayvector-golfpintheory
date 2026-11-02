@@ -175,7 +175,7 @@
 "Calculate Trajectory" = "Calcola traiettoria";
 "Calculate the flight" = "Calcola il volo";
 "Calculates the golf ball's trajectory" = "Calcola la traiettoria della pallina da golf";
-"Calculating with your Practice bag, captured weather and terrain…" = "Calcolo con la sacca di pratica, il meteo e il terreno rilevati…";
+"Finding the right club…" = "Ricerca del bastone giusto…";
 "Calculating…" = "Calcolo…";
 "Calm" = "Calma";
 "Calm, %@" = "Calma, %@";
@@ -212,8 +212,8 @@
 "Downloading course elevation…" = "Download dell’altimetria del percorso…";
 "Elevation isn't available for this course." = "L’altimetria non è disponibile per questo percorso.";
 "Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Non è stato possibile scaricare l’altimetria del percorso in questo momento. Verrà riprovato alla prossima apertura del percorso.";
-"This position is outside the downloaded course elevation." = "Questa posizione è fuori dall’altimetria scaricata del percorso.";
-"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Scegli l’intervallo di handicap più adatto al tuo gioco. Viene usato per la scelta del bastone. Per inserire distanze e dati di lancio personali, apri Nella sacca > Distanze dei bastoni e lancio dalla Home.";
+"No elevation data for this spot." = "Nessun dato altimetrico per questo punto.";
+"Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag." = "Scegli l’intervallo più vicino al tuo handicap. Serve a suggerire i bastoni finché non aggiungi le tue distanze in Nella sacca.";
 "Choose wedges in Clubs in my bag to include them here." = "Scegli i wedge in Bastoni nella mia sacca per includerli qui.";
 "Choose which clubs are available" = "Scegli i bastoni disponibili";
 "Choose your course and tee." = "Scegli percorso e tee.";
@@ -243,7 +243,7 @@
 "Clubs & launch profile" = "Bastoni e profilo di lancio";
 "Clubs in my bag" = "Bastoni nella mia sacca";
 "Compare carry distances across swing lengths and trajectories." = "Confronta le distanze di carry per ampiezza dello swing e traiettoria.";
-"Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…" = "Confronto Basso/Mid/Alto × 50/75/100 % per i tuoi wedge calibrati…";
+"Comparing your wedge shots…" = "Confronto dei tuoi colpi di wedge…";
 "Comparing shots…" = "Confronto dei colpi…";
 "Completing account request…" = "Completamento della richiesta dell’account…";
 "Completing password recovery…" = "Completamento del recupero della password…";
@@ -347,7 +347,7 @@
 "Drag the green up or down to set elevation. Drag the flag along the green to set the pin." = "Trascina il green in alto o in basso per impostare la quota. Trascina la bandiera lungo il green per posizionarla.";
 "Drag the wind arrow to set the combined headwind, tailwind, and crosswind." = "Trascina la freccia del vento per impostare vento contrario, a favore e laterale combinati.";
 "Driver" = "Driver";
-"Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique." = "Identità duplicate nella Matrice wedge: ricrea le voci duplicate prima dello scoring. Le identità dei colpi devono essere uniche.";
+"Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice." = "Alcuni wedge compaiono due volte. Rimuovi i duplicati in Nella sacca per ricevere consigli di scoring.";
 "E" = "E";
 "Each hole must have a unique HCP from 1 to %lld, and no value may be duplicated or outside that range." = "Ogni buca deve avere un HCP unico da 1 a %lld, senza valori duplicati o fuori da questo intervallo.";
 "Each hole must have a unique HCP from 1 to %lld." = "Ogni buca deve avere un HCP unico da 1 a %lld.";
@@ -431,7 +431,7 @@
 "Green & Pin" = "Green e bandiera";
 "Green in regulation" = "Green in regulation";
 "Green profile" = "Profilo del green";
-"Gross only. Net score and Stableford points unavailable until an index is supplied." = "Solo lordo. Punteggio netto e punti Stableford non sono disponibili finché non viene indicato un indice.";
+"Strokes only. Turn on Use Handicap Index for net score and points." = "Solo colpi. Attiva Usa Handicap Index per punteggio netto e punti.";
 "Gross strokes" = "Colpi lordi";
 "Gross · %@" = "Lordo · %@";
 "HCP %@" = "HCP %@";
@@ -454,7 +454,7 @@
 "Handicap tools" = "Strumenti handicap";
 "Handicap trend" = "Tendenza dell’handicap";
 "Handicap trend chart" = "Grafico della tendenza dell’handicap";
-"Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary." = "I valori principali sono stimati con il modello di volo e correzioni di calibrazione. Possono differire dal volo reale perché condizioni e misurazioni possono variare.";
+"These are estimates. Real shots vary with conditions and strike." = "Sono stime. I colpi reali variano in base alle condizioni e all’impatto.";
 "Height" = "Altezza";
 "Height (%@)" = "Altezza (%@)";
 "Height difference between the launch point and the landing surface. This is separate from site elevation." = "Differenza di altezza tra il punto di partenza e la superficie di atterraggio. È distinta dall’altitudine del sito.";
@@ -579,9 +579,9 @@
 "Miss" = "Mancato";
 "Miss direction (optional)" = "Direzione dell’errore (facoltativa)";
 "Missed FIR" = "FIR mancato";
-"Modeled Physics Flight Path" = "Traiettoria fisica modellata";
-"Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Traiettoria fisica modellata. All’atterraggio, la palla finisce %@ a %@ della linea dell’obiettivo.";
-"Modeled physics path. Estimated carry is %@ and apex is %@." = "Traiettoria fisica modellata. Carry stimato %@, apice %@.";
+"Flight path" = "Traiettoria di volo";
+"Flight path. At landing, the ball finishes %@ %@ of the target line." = "Traiettoria di volo. All’atterraggio, la palla finisce %@ a %@ della linea dell’obiettivo.";
+"Flight path. Estimated carry is %@ and apex is %@." = "Traiettoria di volo. Carry stimato %@, apice %@.";
 "Move Flag · Hole %lld" = "Sposta bandiera · Buca %lld";
 "N" = "N";
 "N/A" = "N/D";
@@ -594,7 +594,7 @@
 "New password" = "Nuova password";
 "Next hole" = "Buca successiva";
 "Next page" = "Pagina successiva";
-"Nine-hole WHS estimate" = "Stima WHS su nove buche";
+"9-hole estimate" = "Stima su 9 buche";
 "No" = "No";
 "No Course" = "Nessun percorso";
 "No Custom Courses" = "Nessun percorso personalizzato";
@@ -602,12 +602,11 @@
 "No Rounds Yet" = "Ancora nessun giro";
 "No Wedges In Bag" = "Nessun wedge nella sacca";
 "No change" = "Nessuna variazione";
-"No club prediction is available. Default club profiles are used until your bag is configured." = "Nessuna previsione del bastone disponibile. Vengono usati profili predefiniti finché la sacca non è configurata.";
+"No club suggestion is available for this shot." = "Nessun bastone suggerito per questo colpo.";
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Nessun bastone raggiunge la quota obiettivo di %.1f m. Il punto più alto simulato è %.1f m. Riduci il dislivello o regola le condizioni di lancio.";
 "No club recommendation is available for this shot." = "Nessun consiglio sul bastone disponibile per questo colpo.";
 "No clubs in bag" = "Nessun bastone nella sacca";
 "No clubs in your Practice bag. Configure your profile first." = "Nessun bastone nella sacca di pratica. Configura prima il profilo.";
-"No committed shot origin or target is available." = "Non è disponibile alcuna origine o obiettivo del colpo confermati.";
 "No course" = "Nessun percorso";
 "No courses match \"%@\"." = "Nessun percorso corrisponde a «%@».";
 "No data" = "Nessun dato";
@@ -617,7 +616,7 @@
 "No golf clubs matched \"%@\"." = "Nessun circolo di golf corrisponde a \"%@\".";
 "No green is mapped for this hole yet." = "Nessun green ancora mappato per questa buca.";
 "No impact" = "Nessun impatto";
-"No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target." = "Nessun volo modellato raggiunge la distanza dell’obiettivo. Stima più vicina: %@ per un obiettivo a %@.";
+"No club reaches the target distance. Closest: %@ for a %@ target." = "Nessun bastone raggiunge la distanza dell’obiettivo. Il più vicino: %@ per un obiettivo a %@.";
 "No outcomes calculated" = "Nessun esito calcolato";
 "No rated tee sets were found for %@." = "Nessun tee con rating trovato per %@.";
 "No recommendation" = "Nessun consiglio";
@@ -628,7 +627,7 @@
 "No score would raise your Handicap Index." = "Nessun punteggio aumenterebbe il tuo Handicap Index.";
 "No score yet" = "Ancora nessun punteggio";
 "No scores yet" = "Ancora nessun punteggio";
-"No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range." = "Nessuna combinazione di scoring disponibile per questa quota/calibrazione. Controlla i dettagli; i consigli per l’intera sacca non vengono sostituiti nell’intervallo di scoring.";
+"No wedge shot fits this distance. Check your wedge distances in In the bag." = "Nessun colpo di wedge è adatto a questa distanza. Controlla le distanze dei tuoi wedge in Nella sacca.";
 "No tees have been added for this course." = "Non sono stati aggiunti tee per questo percorso.";
 "No terrain elevations are available for this %@ profile." = "Nessuna quota del terreno disponibile per questo profilo (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Impossibile generare una posizione di scoring valida. Controlla l’obiettivo e la calibrazione personale dei wedge.";
@@ -645,12 +644,11 @@
 "Older rounds (past 20-round window)" = "Giri precedenti (oltre la finestra di 20 giri)";
 "On the number" = "Sul numero";
 "Open Trajectory" = "Apri Traiettoria";
-"Opens all conditions, source time, cached status, provider errors and manual refresh" = "Apre tutte le condizioni, l’ora della fonte, lo stato della cache, gli errori del fornitore e l’aggiornamento manuale";
+"Opens the full weather details" = "Apre tutti i dettagli del meteo";
 "Opens an enlarged green where you can tap to place the flag" = "Apre un green ingrandito in cui puoi toccare per posizionare la bandiera";
 "Opens course, tee and hole information" = "Apre le informazioni su percorso, tee e buca";
-"Opens the full chart, source, budget, errors and confirmed retry" = "Apre il grafico completo, la fonte, il budget, gli errori e il nuovo tentativo confermato";
+"Opens the elevation chart" = "Apre il grafico altimetrico";
 "Opens the suggested club and flight details" = "Apre il bastone suggerito e i dettagli del volo";
-"Opens the suggested club and modeled flight details" = "Apre il bastone suggerito e i dettagli del volo modellato";
 "Optional" = "Facoltativo";
 "Other" = "Altro";
 "Other Options" = "Altre opzioni";
@@ -687,7 +685,7 @@
 "Player" = "Giocatore";
 "Player %@" = "Giocatore %@";
 "Player name" = "Nome del giocatore";
-"Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate." = "I giocatori senza indice possono registrare i colpi lordi, ma non hanno un totale Stableford netto. Attiva un indice e scegli esplicitamente 0 per scratch se appropriato.";
+"Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch)." = "I giocatori senza Handicap Index non ricevono punti Stableford. Attiva Usa Handicap Index per loro (0 per scratch).";
 "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal." = "Playing Conditions Calculation. Adegua il differenziale di handicap a condizioni di gioco insolitamente facili o difficili, come vento, pioggia, velocità dei green o allestimento del percorso. Un valore positivo indica condizioni più difficili del normale; uno negativo, più facili.";
 "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions." = "Playing Conditions Calculation. Corregge il differenziale di punteggio quando il percorso gioca sensibilmente più facile o difficile del normale a causa del meteo, dell’allestimento o delle condizioni del percorso.";
 "Playing Handicap Index" = "Handicap Index di gioco";
@@ -721,7 +719,7 @@
 "Random scoring position" = "Posizione di scoring casuale";
 "Random scoring position, reset to device GPS, and personal wedge calibration" = "Posizione di scoring casuale, ripristino al GPS del dispositivo e calibrazione personale dei wedge";
 "Range" = "Intervallo";
-"Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown." = "Intervallo da −10 a 54. Un indice plus 2 si inserisce come −2. Zero significa scratch, non sconosciuto.";
+"Enter a plus handicap with a + sign, e.g. +2. 0 means scratch." = "Inserisci un handicap plus con il segno +, ad es. +2. 0 significa scratch.";
 "Rating / slope" = "Rating / slope";
 "Rating category" = "Categoria di rating";
 "Rating category information" = "Informazioni sulla categoria di rating";
@@ -738,7 +736,7 @@
 "Region" = "Regione";
 "Relative humidity" = "Umidità relativa";
 "Relative humidity of the air, expressed as a percentage." = "Umidità relativa dell’aria, in percentuale.";
-"Release a point on the map to choose a shot target." = "Rilascia un punto sulla mappa per scegliere l’obiettivo del colpo.";
+"Tap the map to choose a target." = "Tocca la mappa per scegliere un obiettivo.";
 "Release target to calculate" = "Rilascia l’obiettivo per calcolare";
 "Remove player" = "Rimuovi giocatore";
 "Replace All Data With Test Data" = "Sostituisci tutti i dati con i dati di test";
@@ -812,7 +810,7 @@
 "Scorecard" = "Score card";
 "Scoring" = "Scoring";
 "Scoring by par" = "Punteggio per par";
-"Scoring mode prioritizes calibrated wedge shots when the target is within your personal range." = "La modalità scoring dà priorità ai colpi di wedge calibrati quando l’obiettivo è nel tuo intervallo personale.";
+"Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Nel tuo intervallo dei wedge, suggerisce il wedge, la traiettoria e la lunghezza dello swing per il colpo.";
 "Scoring mode recommendations" = "Consigli in modalità scoring";
 "Scoring range · ≤ %@" = "Intervallo di scoring · ≤ %@";
 "Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Lo scoring supporta al massimo 14 wedge nella sacca. Riduci la sacca nella Matrice wedge.";
@@ -889,7 +887,7 @@
 "Slope rating" = "Slope rating";
 "Some holes are unplayed. You can still save this round to Statistics." = "Alcune buche non sono state giocate. Puoi comunque salvare questo giro nelle Statistiche.";
 "Some holes have not been played or recorded. Missing scores will remain empty. " = "Alcune buche non sono state giocate o registrate. I punteggi mancanti resteranno vuoti. ";
-"Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data." = "Mancano alcuni par, indici di difficoltà o rating dei tee applicabili. Il punteggio lordo è disponibile; i calcoli netti, a punti e HCP richiedono dati completi del percorso.";
+"This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available." = "A questo percorso mancano alcuni dati delle buche o del rating, quindi si possono contare solo i colpi. Punteggio netto, punti e risultati handicap non sono disponibili.";
 "Speed of the ball immediately after impact." = "Velocità della palla subito dopo l’impatto.";
 "Spin Axis" = "Asse di spin";
 "Spin Rate" = "Spin";
@@ -930,9 +928,8 @@
 "Target Line" = "Linea dell’obiettivo";
 "Target distance" = "Distanza dall’obiettivo";
 "Target elevation" = "Quota dell’obiettivo";
-"Target is being moved. Release to load its terrain." = "L’obiettivo è in movimento. Rilascia per caricarne il terreno.";
+"Release to see the elevation." = "Rilascia per vedere l’altimetria.";
 "Target line" = "Linea dell’obiettivo";
-"Target movement cancelled. Tap the map and release a target to commit its terrain." = "Spostamento dell’obiettivo annullato. Tocca la mappa e rilascia un obiettivo per confermarne il terreno.";
 "Target moving · release to calculate." = "Obiettivo in movimento · rilascia per calcolare.";
 "Target: %@ · %@" = "Obiettivo: %@ · %@";
 "Tee" = "Tee";
@@ -955,15 +952,15 @@
 "Test Data" = "Dati di test";
 "The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it." = "Il dislivello (%@) modifica sia il rotolo sia il carry: la salita aumenta il rotolo previsto, la discesa lo riduce.";
 "The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies." = "Lo swing %@ cambia la distanza di rotolo, quindi il consiglio tiene conto sia della forza dello swing sia del volo della palla.";
-"The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider." = "Il differenziale di punteggio su 9 buche viene combinato con il differenziale atteso su 9 buche secondo il WHS in base al tuo Handicap Index attuale. È una stima locale; conferma la registrazione ufficiale con il tuo ente handicap.";
+"Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ." = "Il tuo punteggio su 9 buche viene combinato con un punteggio atteso per le altre 9 buche, in base al tuo Handicap Index. È una stima; il tuo handicap ufficiale può essere diverso.";
 "The Men/Women rating category follows your player settings. Change it in Settings." = "La categoria di rating Uomini/Donne segue le impostazioni del giocatore. Modificala in Impostazioni.";
-"The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential." = "Il differenziale atteso su 9 buche secondo il WHS richiede un Handicap Index stabilito. Finché non è disponibile, questo giro non può fornire un differenziale stimato.";
+"A 9-hole round can only count once you have a Handicap Index." = "Un giro da 9 buche può contare solo quando hai un Handicap Index.";
 "The account request could not be completed. Please try again." = "Impossibile completare la richiesta dell’account. Riprova.";
 "The account service could not complete your request. Please try again later." = "Il servizio account non è riuscito a completare la richiesta. Riprova più tardi.";
-"The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result." = "L’app stima il GIR quando colpi totali − putt ≤ par − 2. È una deduzione, non un arrivo sul green misurato; penalità e colpi di recupero possono influire sul risultato.";
+"GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it." = "Il GIR viene calcolato dal tuo punteggio e dai putt, quindi è una stima. Un chip in buca o una penalità possono influire.";
 "The ball finishes on the target line." = "La palla finisce sulla linea dell’obiettivo.";
 "The ball's initial upward angle." = "L’angolo iniziale di salita della palla.";
-"The chart shows the modeled path. Values above include calibration corrections." = "Il grafico mostra la traiettoria modellata. I valori sopra includono correzioni di calibrazione.";
+"The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart." = "I valori sopra sono perfezionati con dati di colpi reali, quindi possono differire leggermente dal grafico.";
 "The course information appears incomplete. Please try again later." = "Le informazioni del percorso sembrano incomplete. Riprova più tardi.";
 "The dashed line shows your overall average." = "La linea tratteggiata mostra la tua media complessiva.";
 "The data service supplied no usable detail." = "Il servizio dati non ha fornito dettagli utilizzabili.";
@@ -985,7 +982,7 @@
 "This action is available only for accounts with an email sign-in method." = "Questa azione è disponibile solo per gli account con accesso via email.";
 "This cannot be undone. Your online account and saved golf records on this device will be removed." = "L’operazione non può essere annullata. Il tuo account online e i dati di golf salvati su questo dispositivo verranno rimossi.";
 "This clears local sign-in credentials, not your golf records. You’ll return to sign in and can request another reset email. It does not sign out other devices." = "Cancella le credenziali di accesso locali, non i tuoi dati di golf. Tornerai all’accesso e potrai richiedere un’altra email di reimpostazione. Gli altri dispositivi non vengono disconnessi.";
-"This course cannot be used for Handicap. Choose a rated course or an explicitly custom course." = "Questo percorso non può essere usato per l’handicap. Scegli un percorso con rating o esplicitamente un percorso personalizzato.";
+"This course can't be used for Handicap. Choose a rated course or add it as a custom course." = "Questo percorso non può essere usato per l’handicap. Scegli un percorso con rating o aggiungilo come percorso personalizzato.";
 "This course is temporarily unavailable. Please try another course or come back later." = "Questo percorso non è temporaneamente disponibile. Prova un altro percorso o torna più tardi.";
 "This discards the unsaved round and its scores. Saved scorecards are not affected." = "Elimina il giro non salvato e i suoi punteggi. Le score card salvate non vengono modificate.";
 "This permanently deletes your account and removes its saved golf data from this device. This cannot be undone." = "Elimina definitivamente il tuo account e rimuove i dati di golf salvati da questo dispositivo. L’operazione non può essere annullata.";
@@ -1041,8 +1038,8 @@
 "WHS Adjusted Score" = "Punteggio corretto WHS";
 "WHS Ratings · Required" = "Rating WHS · Obbligatorio";
 "WHS counting rules" = "Regole di conteggio WHS";
-"Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback." = "In attesa del meteo completo del percorso: temperatura, pressione al suolo, umidità e vento. Nessun valore di riserva piatto/senza vento.";
-"Waiting for matching origin/target terrain…" = "In attesa del terreno corrispondente di origine/obiettivo…";
+"Waiting for the course weather…" = "In attesa del meteo del percorso…";
+"Loading elevation…" = "Caricamento dell’altimetria…";
 "We bring together course information, handicap planning, club setup and shot insights to help golfers make more informed decisions on and off the course." = "Riuniamo informazioni sui percorsi, pianificazione dell’handicap, configurazione dei bastoni e analisi dei colpi per aiutare i golfisti a prendere decisioni più informate dentro e fuori dal percorso.";
 "We couldn't load this course just now. Please wait a few minutes, then try again." = "Impossibile caricare il campo. Attendi qualche minuto e riprova.";
 "We couldn't load this course right now. Check your connection and try again." = "Non è stato possibile caricare il percorso al momento. Controlla la connessione e riprova.";
@@ -1057,7 +1054,7 @@
 "Weather: %@" = "Meteo: %@";
 "Wedge Matrix" = "Matrice wedge";
 "Wedge bag" = "Sacca dei wedge";
-"Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch." = "I valori di carry dei wedge si modificano nella Sacca dei wedge. Non sono modificabili in Distanze dei bastoni e lancio.";
+"Edit wedge distances in Wedge bag." = "Modifica le distanze dei wedge in Sacca dei wedge.";
 "Wedge matrix" = "Matrice wedge";
 "Wedge tools" = "Strumenti wedge";
 "Wedges" = "Wedge";
@@ -1077,6 +1074,8 @@
 "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings." = "Con il tuo permesso, la tua posizione aiuta a mostrare distanze e condizioni sul percorso. Alcune funzioni condividono informazioni sulla posizione con i rispettivi fornitori. Puoi modificare l’accesso alla posizione nelle Impostazioni del dispositivo.";
 "Women" = "Donne";
 "From tee" = "Dal tee";
+"From the tee" = "Dal tee";
+"From your GPS position" = "Dalla tua posizione GPS";
 "YOUR NEXT SHOT" = "IL TUO PROSSIMO COLPO";
 "Yards" = "Yard";
 "Yes" = "Sì";
@@ -1124,7 +1123,7 @@
 "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind." = "fairwayvector-hcp-projection non raccoglie alcun dato. Tutti i calcoli e le proiezioni dell’handicap vengono eseguiti interamente sul tuo dispositivo. L’app non usa rete, analisi, pubblicità o tracciamento di alcun tipo.";
 "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks." = "fairwayvector-hcp-projection non integra SDK di terze parti, fornitori di analisi o reti pubblicitarie.";
 "fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data." = "fairwayvector-hcp-projection è un calcolatore offline di proiezioni dell’handicap. Non raccoglie, archivia, trasmette né condivide alcun dato personale.";
-"fairwayvector-trajectory combines a flight simulation with calibrated corrections." = "fairwayvector-trajectory combina una simulazione di volo con correzioni calibrate.";
+"Golf PinTheory simulates the ball flight and fine-tunes it with real shot data." = "Golf PinTheory simula il volo della palla e lo perfeziona con dati di colpi reali.";
 "from %.0f degrees true north" = "da %.0f gradi rispetto al nord geografico";
 "holes" = "buche";
 "left" = "sinistra";

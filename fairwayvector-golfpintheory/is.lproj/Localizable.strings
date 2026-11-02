@@ -175,7 +175,7 @@
 "Calculate Trajectory" = "Reikna feril";
 "Calculate the flight" = "Reiknaðu ferilinn";
 "Calculates the golf ball's trajectory" = "Reiknar feril golfboltans";
-"Calculating with your Practice bag, captured weather and terrain…" = "Reiknar með æfingapokanum, skráðu veðri og landslagi…";
+"Finding the right club…" = "Finnur réttu kylfuna…";
 "Calculating…" = "Reiknar…";
 "Calm" = "Logn";
 "Calm, %@" = "Logn, %@";
@@ -212,8 +212,8 @@
 "Downloading course elevation…" = "Sæki hæðargögn vallarins…";
 "Elevation isn't available for this course." = "Hæðargögn eru ekki tiltæk fyrir þennan völl.";
 "Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Ekki tókst að sækja hæðargögn vallarins núna. Reynt verður aftur næst þegar þú opnar völlinn.";
-"This position is outside the downloaded course elevation." = "Þessi staðsetning er utan niðurhalaðra hæðargagna vallarins.";
-"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Veldu forgjafarbilið sem passar best við leikinn. Það er notað við val á kylfu. Til að slá inn eigin vegalengdir og upphafsgögn skaltu opna Í pokanum > Kylfuvegalengdir og upphaf á Heim.";
+"No elevation data for this spot." = "Engin hæðargögn fyrir þennan stað.";
+"Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag." = "Veldu bilið sem er næst forgjöfinni þinni. Það er notað til að stinga upp á kylfum þar til þú bætir við eigin vegalengdum í „Í pokanum“.";
 "Choose wedges in Clubs in my bag to include them here." = "Veldu fleygjárn í Kylfur í pokanum mínum til að taka þau með hér.";
 "Choose which clubs are available" = "Veldu hvaða kylfur eru tiltækar";
 "Choose your course and tee." = "Veldu völl og teig.";
@@ -243,7 +243,7 @@
 "Clubs & launch profile" = "Kylfur og upphafsprófíll";
 "Clubs in my bag" = "Kylfur í pokanum mínum";
 "Compare carry distances across swing lengths and trajectories." = "Berðu saman flugvegalengdir eftir sveiflulengd og ferli.";
-"Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…" = "Ber saman Lágt/Mid/Hátt × 50/75/100 % fyrir kvörðuðu fleygjárnin þín…";
+"Comparing your wedge shots…" = "Ber saman fleygjárnshöggin þín…";
 "Comparing shots…" = "Ber saman högg…";
 "Completing account request…" = "Lýkur reikningsbeiðni…";
 "Completing password recovery…" = "Lýkur endurheimt lykilorðs…";
@@ -347,7 +347,7 @@
 "Drag the green up or down to set elevation. Drag the flag along the green to set the pin." = "Dragðu flötina upp eða niður til að stilla hæð. Dragðu fánann eftir flötinni til að stilla fánastöðu.";
 "Drag the wind arrow to set the combined headwind, tailwind, and crosswind." = "Dragðu vindörina til að stilla samanlagðan mótvind, meðvind og hliðarvind.";
 "Driver" = "Dræver";
-"Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique." = "Tvítekin auðkenni í Fleygjárnsfylki: búðu tvíteknu færslurnar til aftur áður en skor er reiknað. Auðkenni högga verða að vera einkvæm.";
+"Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice." = "Sum fleygjárn koma fyrir tvisvar. Fjarlægðu tvítekningarnar í „Í pokanum“ til að fá skorráð.";
 "E" = "A";
 "Each hole must have a unique HCP from 1 to %lld, and no value may be duplicated or outside that range." = "Hver hola verður að hafa einkvæmt HCP frá 1 til %lld og ekkert gildi má vera tvítekið eða utan þess bils.";
 "Each hole must have a unique HCP from 1 to %lld." = "Hver hola verður að hafa einkvæmt HCP frá 1 til %lld.";
@@ -431,7 +431,7 @@
 "Green & Pin" = "Flöt og fáni";
 "Green in regulation" = "Flöt í reglu";
 "Green profile" = "Prófíll flatar";
-"Gross only. Net score and Stableford points unavailable until an index is supplied." = "Aðeins brúttó. Nettóskor og Stableford-stig eru ekki tiltæk fyrr en vísir er gefinn upp.";
+"Strokes only. Turn on Use Handicap Index for net score and points." = "Aðeins högg. Kveiktu á „Nota forgjafarvísi“ til að fá nettóskor og stig.";
 "Gross strokes" = "Brúttóhögg";
 "Gross · %@" = "Brúttó · %@";
 "HCP %@" = "HCP %@";
@@ -454,7 +454,7 @@
 "Handicap tools" = "Forgjafartól";
 "Handicap trend" = "Forgjafarþróun";
 "Handicap trend chart" = "Graf yfir forgjafarþróun";
-"Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary." = "Helstu gildin eru áætluð með fluglíkaninu og kvörðunarleiðréttingum. Þau geta vikið frá raunverulegu flugi því aðstæður og mælingar geta verið breytilegar.";
+"These are estimates. Real shots vary with conditions and strike." = "Þetta eru áætlanir. Raunveruleg högg eru breytileg eftir aðstæðum og hittni.";
 "Height" = "Hæð";
 "Height (%@)" = "Hæð (%@)";
 "Height difference between the launch point and the landing surface. This is separate from site elevation." = "Hæðarmunur milli upphafspunkts og lendingarflatar. Þetta er óháð hæð staðarins yfir sjávarmáli.";
@@ -579,9 +579,9 @@
 "Miss" = "Missti";
 "Miss direction (optional)" = "Stefna misheppnaðs höggs (valfrjálst)";
 "Missed FIR" = "FIR missti";
-"Modeled Physics Flight Path" = "Líkanaður eðlisfræðilegur ferill";
-"Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Líkanaður eðlisfræðiferill. Við lendingu endar boltinn %@ %@ við marklínuna.";
-"Modeled physics path. Estimated carry is %@ and apex is %@." = "Líkanaður eðlisfræðiferill. Áætlað flug %@ og toppur %@.";
+"Flight path" = "Flugferill";
+"Flight path. At landing, the ball finishes %@ %@ of the target line." = "Flugferill. Við lendingu endar boltinn %@ %@ við marklínuna.";
+"Flight path. Estimated carry is %@ and apex is %@." = "Flugferill. Áætlað flug %@ og toppur %@.";
 "Move Flag · Hole %lld" = "Færa fána · Hola %lld";
 "N" = "N";
 "N/A" = "Á ekki við";
@@ -594,7 +594,7 @@
 "New password" = "Nýtt lykilorð";
 "Next hole" = "Næsta hola";
 "Next page" = "Næsta síða";
-"Nine-hole WHS estimate" = "WHS-mat fyrir níu holur";
+"9-hole estimate" = "Mat fyrir 9 holur";
 "No" = "Nei";
 "No Course" = "Enginn völlur";
 "No Custom Courses" = "Engir sérsniðnir vellir";
@@ -602,12 +602,11 @@
 "No Rounds Yet" = "Engir hringir enn";
 "No Wedges In Bag" = "Engin fleygjárn í pokanum";
 "No change" = "Engin breyting";
-"No club prediction is available. Default club profiles are used until your bag is configured." = "Engin kylfuspá er tiltæk. Sjálfgefnir kylfuprófílar eru notaðir þar til pokinn hefur verið stilltur.";
+"No club suggestion is available for this shot." = "Engin tillaga að kylfu er tiltæk fyrir þetta högg.";
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Engin kylfa nær markhæðinni %.1f m. Hæsti hermdi toppur er %.1f m. Minnkaðu hæðarmuninn eða stilltu upphafsgildin.";
 "No club recommendation is available for this shot." = "Engin kylfuráðlegging er tiltæk fyrir þetta högg.";
 "No clubs in bag" = "Engar kylfur í pokanum";
 "No clubs in your Practice bag. Configure your profile first." = "Engar kylfur í æfingapokanum. Settu fyrst upp prófílinn.";
-"No committed shot origin or target is available." = "Enginn fastur upphafspunktur eða mark fyrir höggið er tiltækt.";
 "No course" = "Enginn völlur";
 "No courses match \"%@\"." = "Enginn völlur passar við „%@“.";
 "No data" = "Engin gögn";
@@ -617,7 +616,7 @@
 "No golf clubs matched \"%@\"." = "Engir golfklúbbar fundust fyrir \"%@\".";
 "No green is mapped for this hole yet." = "Engin flöt hefur enn verið kortlögð fyrir þessa holu.";
 "No impact" = "Engin áhrif";
-"No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target." = "Enginn líkanaður ferill nær vegalengdinni að marki. Næsta áætlun: %@ fyrir mark í %@.";
+"No club reaches the target distance. Closest: %@ for a %@ target." = "Engin kylfa nær vegalengdinni að marki. Næst: %@ fyrir mark í %@.";
 "No outcomes calculated" = "Engar niðurstöður reiknaðar";
 "No rated tee sets were found for %@." = "Engir metnir teigar fundust fyrir %@.";
 "No recommendation" = "Engin ráðlegging";
@@ -628,7 +627,7 @@
 "No score would raise your Handicap Index." = "Ekkert skor myndi hækka forgjafarvísinn þinn.";
 "No score yet" = "Ekkert skor enn";
 "No scores yet" = "Engin skor enn";
-"No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range." = "Engin skorsamsetning er tiltæk fyrir þessa hæð/kvörðun. Farðu yfir smáatriðin; ráð fyrir allan pokann koma ekki í staðinn innan skorbilsins.";
+"No wedge shot fits this distance. Check your wedge distances in In the bag." = "Ekkert fleygjárnshögg passar við þessa vegalengd. Athugaðu vegalengdir fleygjárnanna í „Í pokanum“.";
 "No tees have been added for this course." = "Engum teigum hefur verið bætt við þennan völl.";
 "No terrain elevations are available for this %@ profile." = "Engar landslagshæðir eru tiltækar fyrir þennan prófíl (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Ekki tókst að búa til gilda skorstöðu. Farðu yfir markið og persónulega fleygjárnskvörðun.";
@@ -645,12 +644,11 @@
 "Older rounds (past 20-round window)" = "Eldri hringir (utan 20 hringja glugga)";
 "On the number" = "Á tölunni";
 "Open Trajectory" = "Opna Feril";
-"Opens all conditions, source time, cached status, provider errors and manual refresh" = "Opnar allar aðstæður, tíma uppruna, stöðu skyndiminnis, villur veitanda og handvirka endurnýjun";
+"Opens the full weather details" = "Opnar allar veðurupplýsingar";
 "Opens an enlarged green where you can tap to place the flag" = "Opnar stækkaða flöt þar sem þú getur ýtt til að setja fánann";
 "Opens course, tee and hole information" = "Opnar upplýsingar um völl, teig og holu";
-"Opens the full chart, source, budget, errors and confirmed retry" = "Opnar allt grafið, uppruna, kvóta, villur og staðfesta endurtekningu";
+"Opens the elevation chart" = "Opnar hæðargrafið";
 "Opens the suggested club and flight details" = "Opnar tillögu að kylfu og upplýsingar um feril";
-"Opens the suggested club and modeled flight details" = "Opnar tillögu að kylfu og upplýsingar um líkanaðan feril";
 "Optional" = "Valfrjálst";
 "Other" = "Annað";
 "Other Options" = "Aðrir valkostir";
@@ -687,7 +685,7 @@
 "Player" = "Leikmaður";
 "Player %@" = "Leikmaður %@";
 "Player name" = "Nafn leikmanns";
-"Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate." = "Leikmenn án vísis geta skráð brúttóhögg en hafa enga nettó Stableford-samtölu. Virkjaðu vísi og veldu sérstaklega 0 fyrir scratch ef við á.";
+"Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch)." = "Leikmenn án forgjafarvísis fá engin Stableford-stig. Kveiktu á „Nota forgjafarvísi“ fyrir þá (0 fyrir scratch).";
 "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal." = "Playing Conditions Calculation. Leiðréttir forgjafarmismun fyrir óvenju auðveldar eða erfiðar vallaraðstæður, svo sem vind, rigningu, flathraða eða uppsetningu vallar. Jákvætt gildi þýðir erfiðari aðstæður en venjulega; neikvætt auðveldari.";
 "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions." = "Playing Conditions Calculation. Leiðréttir skormismun þegar völlurinn spilast greinilega auðveldar eða erfiðar en venjulega vegna veðurs, uppsetningar eða ástands vallar.";
 "Playing Handicap Index" = "Leikforgjafarvísir";
@@ -721,7 +719,7 @@
 "Random scoring position" = "Handahófskennd skorstaða";
 "Random scoring position, reset to device GPS, and personal wedge calibration" = "Handahófskennd skorstaða, endurstilla á GPS tækis og persónuleg fleygjárnskvörðun";
 "Range" = "Bil";
-"Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown." = "Bil −10 til 54. Plús 2 vísir er sleginn inn sem −2. Núll þýðir scratch, ekki óþekkt.";
+"Enter a plus handicap with a + sign, e.g. +2. 0 means scratch." = "Sláðu inn plúsforgjöf með +-merki, t.d. +2. 0 þýðir scratch.";
 "Rating / slope" = "Rating / slope";
 "Rating category" = "Flokkun vallarmats";
 "Rating category information" = "Upplýsingar um matsflokk";
@@ -738,7 +736,7 @@
 "Region" = "Svæði";
 "Relative humidity" = "Hlutfallslegur raki";
 "Relative humidity of the air, expressed as a percentage." = "Hlutfallslegur raki loftsins í prósentum.";
-"Release a point on the map to choose a shot target." = "Slepptu punkti á kortinu til að velja mark fyrir höggið.";
+"Tap the map to choose a target." = "Ýttu á kortið til að velja mark.";
 "Release target to calculate" = "Slepptu markinu til að reikna";
 "Remove player" = "Fjarlægja leikmann";
 "Replace All Data With Test Data" = "Skipta öllum gögnum út fyrir prófunargögn";
@@ -812,7 +810,7 @@
 "Scorecard" = "Skorkort";
 "Scoring" = "Skor";
 "Scoring by par" = "Skor eftir pari";
-"Scoring mode prioritizes calibrated wedge shots when the target is within your personal range." = "Skorstilling setur kvörðuð fleygjárnshögg í forgang þegar markið er innan persónulega bilsins.";
+"Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Innan fleygjárnsbilsins þíns er stungið upp á fleygjárni, ferli og sveiflulengd fyrir höggið.";
 "Scoring mode recommendations" = "Ráðleggingar í skorstillingu";
 "Scoring range · ≤ %@" = "Skorbil · ≤ %@";
 "Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Skor styður að hámarki 14 fleygjárn í pokanum. Minnkaðu pokann í Fleygjárnsfylki.";
@@ -889,7 +887,7 @@
 "Slope rating" = "Slope rating";
 "Some holes are unplayed. You can still save this round to Statistics." = "Sumar holur eru óspilaðar. Þú getur samt vistað þennan hring í Tölfræði.";
 "Some holes have not been played or recorded. Missing scores will remain empty. " = "Sumar holur hafa ekki verið spilaðar eða skráðar. Skor sem vantar verða áfram auð. ";
-"Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data." = "Sum pör, holuvísar eða viðeigandi teigamat vantar. Brúttóskor er tiltækt; nettó-, stiga- og HCP-útreikningar krefjast fullkominna vallargagna.";
+"This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available." = "Sumar upplýsingar um holur eða vallarmat vantar fyrir þennan völl, svo aðeins er hægt að telja högg. Nettóskor, stig og forgjafarniðurstöður eru ekki tiltæk.";
 "Speed of the ball immediately after impact." = "Hraði boltans strax eftir höggið.";
 "Spin Axis" = "Snúningsás";
 "Spin Rate" = "Snúningur";
@@ -930,9 +928,8 @@
 "Target Line" = "Marklína";
 "Target distance" = "Fjarlægð að marki";
 "Target elevation" = "Hæð marks";
-"Target is being moved. Release to load its terrain." = "Verið er að færa markið. Slepptu til að hlaða landslagi þess.";
+"Release to see the elevation." = "Slepptu til að sjá hæðina.";
 "Target line" = "Marklína";
-"Target movement cancelled. Tap the map and release a target to commit its terrain." = "Hætt var við að færa markið. Ýttu á kortið og slepptu marki til að festa landslag þess.";
 "Target moving · release to calculate." = "Mark á hreyfingu · slepptu til að reikna.";
 "Target: %@ · %@" = "Mark: %@ · %@";
 "Tee" = "Upphafsteigur";
@@ -955,15 +952,15 @@
 "Test Data" = "Prófunargögn";
 "The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it." = "Hæðarmunurinn (%@) breytir bæði rúlli og flugi: upp í móti eykur vænt rúll, niður í móti minnkar það.";
 "The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies." = "%@-sveiflan breytir rúlllengdinni, svo ráðleggingin tekur mið bæði af því hversu fast þú sveiflar og hvernig boltinn flýgur.";
-"The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider." = "Skormismunur fyrir 9 holur er sameinaður væntum 9 holu mismun samkvæmt WHS miðað við núverandi forgjafarvísi. Þetta er staðbundið mat; staðfestu opinbera skráningu hjá forgjafarþjónustunni.";
+"Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ." = "Skorið þitt á 9 holum er sameinað væntu skori fyrir hinar 9 holurnar, miðað við forgjafarvísinn þinn. Þetta er áætlun; opinbera forgjöfin þín getur verið önnur.";
 "The Men/Women rating category follows your player settings. Change it in Settings." = "Matsflokkurinn Karlar/Konur fylgir leikmannsstillingunum. Breyttu honum í Stillingum.";
-"The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential." = "Væntur 9 holu mismunur samkvæmt WHS krefst staðfests forgjafarvísis. Þar til hann liggur fyrir getur þessi hringur ekki skilað áætluðum mismun.";
+"A 9-hole round can only count once you have a Handicap Index." = "9 holu hringur telur aðeins þegar þú hefur forgjafarvísi.";
 "The account request could not be completed. Please try again." = "Ekki tókst að ljúka reikningsbeiðninni. Reyndu aftur.";
 "The account service could not complete your request. Please try again later." = "Reikningsþjónustan gat ekki lokið beiðninni. Reyndu aftur síðar.";
-"The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result." = "Forritið áætlar GIR þegar heildarhögg − pútt ≤ par − 2. Þetta er ályktað, ekki mæld koma á flöt; víti og björgunarhögg geta haft áhrif á niðurstöðuna.";
+"GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it." = "GIR er reiknað út frá skori og púttum, svo það er áætlun. Vipp ofan í holu eða víti getur haft áhrif á það.";
 "The ball finishes on the target line." = "Boltinn endar á marklínunni.";
 "The ball's initial upward angle." = "Upphaflegt hækkunarhorn boltans.";
-"The chart shows the modeled path. Values above include calibration corrections." = "Grafið sýnir líkanaða ferilinn. Gildin hér að ofan innihalda kvörðunarleiðréttingar.";
+"The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart." = "Tölurnar hér að ofan eru fínstilltar með raunverulegum höggögnum, svo þær geta vikið aðeins frá grafinu.";
 "The course information appears incomplete. Please try again later." = "Upplýsingar um völlinn virðast ófullkomnar. Reyndu aftur síðar.";
 "The dashed line shows your overall average." = "Brotalínan sýnir heildarmeðaltalið þitt.";
 "The data service supplied no usable detail." = "Gagnaþjónustan veitti engar nothæfar upplýsingar.";
@@ -985,7 +982,7 @@
 "This action is available only for accounts with an email sign-in method." = "Þessi aðgerð er aðeins í boði fyrir reikninga með innskráningu með tölvupósti.";
 "This cannot be undone. Your online account and saved golf records on this device will be removed." = "Ekki er hægt að afturkalla þetta. Netreikningurinn þinn og vistuð golfgögn á þessu tæki verða fjarlægð.";
 "This clears local sign-in credentials, not your golf records. You’ll return to sign in and can request another reset email. It does not sign out other devices." = "Þetta hreinsar innskráningarupplýsingar á tækinu, ekki golfgögnin. Þú ferð aftur í innskráningu og getur beðið um nýjan endurstillingarpóst. Önnur tæki eru ekki skráð út.";
-"This course cannot be used for Handicap. Choose a rated course or an explicitly custom course." = "Ekki er hægt að nota þennan völl fyrir forgjöf. Veldu metinn völl eða sérstaklega sérsniðinn völl.";
+"This course can't be used for Handicap. Choose a rated course or add it as a custom course." = "Ekki er hægt að nota þennan völl fyrir forgjöf. Veldu metinn völl eða bættu honum við sem sérsniðnum velli.";
 "This course is temporarily unavailable. Please try another course or come back later." = "Þessi völlur er tímabundið ótiltækur. Prófaðu annan völl eða komdu aftur síðar.";
 "This discards the unsaved round and its scores. Saved scorecards are not affected." = "Þetta hendir óvistaða hringnum og skorum hans. Vistuð skorkort verða ekki fyrir áhrifum.";
 "This permanently deletes your account and removes its saved golf data from this device. This cannot be undone." = "Þetta eyðir reikningnum varanlega og fjarlægir vistuð golfgögn hans af þessu tæki. Ekki er hægt að afturkalla þetta.";
@@ -1041,8 +1038,8 @@
 "WHS Adjusted Score" = "WHS-leiðrétt skor";
 "WHS Ratings · Required" = "WHS-mat · Áskilið";
 "WHS counting rules" = "WHS-talningarreglur";
-"Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback." = "Bíður eftir fullu vallarveðri: hita, yfirborðsþrýstingi, raka og vindi. Ekkert varagildi fyrir slétt/logn.";
-"Waiting for matching origin/target terrain…" = "Bíður eftir samsvarandi landslagi upphafs/marks…";
+"Waiting for the course weather…" = "Bíður eftir veðri á vellinum…";
+"Loading elevation…" = "Hleður hæð…";
 "We bring together course information, handicap planning, club setup and shot insights to help golfers make more informed decisions on and off the course." = "Við sameinum vallarupplýsingar, forgjafarskipulag, kylfuuppsetningu og innsýn í högg til að hjálpa kylfingum að taka upplýstari ákvarðanir á og utan vallar.";
 "We couldn't load this course just now. Please wait a few minutes, then try again." = "Ekki tókst að hlaða vellinum. Bíddu í nokkrar mínútur og reyndu aftur.";
 "We couldn't load this course right now. Check your connection and try again." = "Ekki tókst að hlaða þessum velli núna. Athugaðu tenginguna og reyndu aftur.";
@@ -1057,7 +1054,7 @@
 "Weather: %@" = "Veður: %@";
 "Wedge Matrix" = "Wedge-tafla";
 "Wedge bag" = "Fleygjárnspoki";
-"Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch." = "Fluggildum fleygjárna er breytt í Fleygjárnspokanum. Ekki er hægt að breyta þeim í Kylfuvegalengdum og upphafi.";
+"Edit wedge distances in Wedge bag." = "Breyttu vegalengdum fleygjárna í Fleygjárnspoka.";
 "Wedge matrix" = "Fleygjárnsfylki";
 "Wedge tools" = "Fleygjárnstól";
 "Wedges" = "Fleygjárn";
@@ -1077,6 +1074,8 @@
 "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings." = "Með þínu leyfi hjálpar staðsetningin þín við að sýna vegalengdir og aðstæður á vellinum. Sumir eiginleikar deila staðsetningarupplýsingum með þjónustuveitendum sínum. Þú getur breytt aðgangi að staðsetningu í Stillingum tækisins.";
 "Women" = "Konur";
 "From tee" = "Frá teig";
+"From your GPS position" = "Frá GPS-staðsetningu þinni";
+"From the tee" = "Frá teignum";
 "YOUR NEXT SHOT" = "NÆSTA HÖGGIÐ ÞITT";
 "Yards" = "Yard";
 "Yes" = "Já";
@@ -1124,7 +1123,7 @@
 "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind." = "fairwayvector-hcp-projection safnar engum gögnum. Allir forgjafarútreikningar og spár fara eingöngu fram á tækinu þínu. Forritið notar hvorki net, greiningar, auglýsingar né rakningu af neinu tagi.";
 "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks." = "fairwayvector-hcp-projection notar engin SDK þriðju aðila, greiningarþjónustur eða auglýsinganet.";
 "fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data." = "fairwayvector-hcp-projection er reiknivél fyrir forgjafarspár án nettengingar. Hún safnar hvorki, geymir, sendir né deilir persónuupplýsingum.";
-"fairwayvector-trajectory combines a flight simulation with calibrated corrections." = "fairwayvector-trajectory sameinar flughermun og kvarðaðar leiðréttingar.";
+"Golf PinTheory simulates the ball flight and fine-tunes it with real shot data." = "Golf PinTheory hermir eftir flugi boltans og fínstillir það með raunverulegum höggögnum.";
 "from %.0f degrees true north" = "úr %.0f gráðum frá réttu norðri";
 "holes" = "holur";
 "left" = "til vinstri";

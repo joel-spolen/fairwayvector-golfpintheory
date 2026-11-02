@@ -25,7 +25,7 @@ struct TrajectoryProfileSetupWizardView: View {
                         .font(.title2.bold())
                         .foregroundStyle(PureLineStyle.ink)
 
-                    Text("Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home.")
+                    Text("Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag.")
                         .font(.subheadline)
                         .foregroundStyle(PureLineStyle.muted)
                         .fixedSize(horizontal: false, vertical: true)

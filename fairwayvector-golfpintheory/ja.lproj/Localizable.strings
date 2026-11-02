@@ -175,7 +175,7 @@
 "Calculate Trajectory" = "弾道を計算";
 "Calculate the flight" = "弾道を計算";
 "Calculates the golf ball's trajectory" = "ゴルフボールの弾道を計算します";
-"Calculating with your Practice bag, captured weather and terrain…" = "練習用バッグ、取得した天気と地形で計算中…";
+"Finding the right club…" = "最適なクラブを探しています…";
 "Calculating…" = "計算中…";
 "Calm" = "無風";
 "Calm, %@" = "無風、%@";
@@ -212,8 +212,8 @@
 "Downloading course elevation…" = "コースの標高データをダウンロード中…";
 "Elevation isn't available for this course." = "このコースの標高データはありません。";
 "Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "現在コースの標高データをダウンロードできませんでした。次回コースを開いたときに再試行します。";
-"This position is outside the downloaded course elevation." = "この位置はダウンロードしたコースの標高データの範囲外です。";
-"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "あなたのプレーに最も合うハンディキャップ範囲を選んでください。クラブ選択に使用されます。個人の距離と打ち出しデータを入力するには、ホームから「バッグ > クラブの距離と打ち出し」を開いてください。";
+"No elevation data for this spot." = "この地点の標高データはありません。";
+"Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag." = "ハンディキャップに最も近い範囲を選んでください。「クラブバッグ」で自分の距離を追加するまで、クラブの提案に使用されます。";
 "Choose wedges in Clubs in my bag to include them here." = "「バッグのクラブ」でウェッジを選ぶと、ここに含まれます。";
 "Choose which clubs are available" = "使用可能なクラブを選択";
 "Choose your course and tee." = "コースとティーを選んでください。";
@@ -243,7 +243,7 @@
 "Clubs & launch profile" = "クラブと打ち出しプロフィール";
 "Clubs in my bag" = "バッグのクラブ";
 "Compare carry distances across swing lengths and trajectories." = "振り幅と弾道ごとのキャリー距離を比較します。";
-"Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…" = "キャリブレーション済みウェッジで Low/Mid/High × 50/75/100% を比較中…";
+"Comparing your wedge shots…" = "ウェッジショットを比較中…";
 "Comparing shots…" = "ショットを比較中…";
 "Completing account request…" = "アカウントのリクエストを完了しています…";
 "Completing password recovery…" = "パスワードの回復を完了しています…";
@@ -347,7 +347,7 @@
 "Drag the green up or down to set elevation. Drag the flag along the green to set the pin." = "グリーンを上下にドラッグして高さを設定します。ピンをグリーンに沿ってドラッグしてピン位置を設定します。";
 "Drag the wind arrow to set the combined headwind, tailwind, and crosswind." = "風の矢印をドラッグして、向かい風、追い風、横風の組み合わせを設定します。";
 "Driver" = "ドライバー";
-"Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique." = "ウェッジマトリクスの ID が重複しています：スコアリングの前に重複した項目を作り直してください。ショットの ID は一意である必要があります。";
+"Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice." = "一部のウェッジが重複しています。スコアリングのアドバイスを受けるには、「クラブバッグ」で重複を削除してください。";
 "E" = "東";
 "Each hole must have a unique HCP from 1 to %lld, and no value may be duplicated or outside that range." = "各ホールには 1〜%lld の一意の HCP が必要で、重複や範囲外の値は使用できません。";
 "Each hole must have a unique HCP from 1 to %lld." = "各ホールには 1〜%lld の一意の HCP が必要です。";
@@ -431,7 +431,7 @@
 "Green & Pin" = "グリーンとピン";
 "Green in regulation" = "パーオン";
 "Green profile" = "グリーンのプロファイル";
-"Gross only. Net score and Stableford points unavailable until an index is supplied." = "グロスのみ。インデックスを入力するまで、ネットスコアとステーブルフォードポイントは利用できません。";
+"Strokes only. Turn on Use Handicap Index for net score and points." = "打数のみ。ネットスコアとポイントを使うには「Handicap Index を使用」をオンにしてください。";
 "Gross strokes" = "グロス打数";
 "Gross · %@" = "グロス · %@";
 "HCP %@" = "HCP %@";
@@ -454,7 +454,7 @@
 "Handicap tools" = "ハンディキャップツール";
 "Handicap trend" = "ハンディキャップの傾向";
 "Handicap trend chart" = "ハンディキャップの傾向グラフ";
-"Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary." = "主な値は飛行モデルとキャリブレーション補正で推定しています。条件や測定は変動するため、実際の弾道と異なる場合があります。";
+"These are estimates. Real shots vary with conditions and strike." = "これらは推定値です。実際のショットはコンディションやインパクトによって変わります。";
 "Height" = "高さ";
 "Height (%@)" = "高さ（%@）";
 "Height difference between the launch point and the landing surface. This is separate from site elevation." = "打ち出し地点と着地面の高さの差。地点の標高とは別です。";
@@ -579,9 +579,9 @@
 "Miss" = "ミス";
 "Miss direction (optional)" = "ミスの方向（任意）";
 "Missed FIR" = "FIR ミス";
-"Modeled Physics Flight Path" = "モデル化した物理弾道";
-"Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "モデル化した物理弾道。着地時、ボールはターゲットラインの%2$@ %1$@ の位置に止まります。";
-"Modeled physics path. Estimated carry is %@ and apex is %@." = "モデル化した物理弾道。推定キャリーは %@、最高点は %@ です。";
+"Flight path" = "弾道";
+"Flight path. At landing, the ball finishes %@ %@ of the target line." = "弾道。着地時、ボールはターゲットラインの%2$@ %1$@ の位置に止まります。";
+"Flight path. Estimated carry is %@ and apex is %@." = "弾道。推定キャリーは %@、最高点は %@ です。";
 "Move Flag · Hole %lld" = "ピンを移動 · ホール %lld";
 "N" = "北";
 "N/A" = "該当なし";
@@ -594,7 +594,7 @@
 "New password" = "新しいパスワード";
 "Next hole" = "次のホール";
 "Next page" = "次のページ";
-"Nine-hole WHS estimate" = "9 ホールの WHS 推定";
+"9-hole estimate" = "9 ホールの推定";
 "No" = "いいえ";
 "No Course" = "コースなし";
 "No Custom Courses" = "カスタムコースなし";
@@ -602,12 +602,11 @@
 "No Rounds Yet" = "ラウンドはまだありません";
 "No Wedges In Bag" = "バッグにウェッジがありません";
 "No change" = "変化なし";
-"No club prediction is available. Default club profiles are used until your bag is configured." = "クラブの予測がありません。バッグを設定するまで標準のクラブプロフィールを使用します。";
+"No club suggestion is available for this shot." = "このショットに提案できるクラブがありません。";
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "目標の高さ %.1f m に届くクラブはありません。シミュレーション上の最高点は %.1f m です。高低差を小さくするか、打ち出し条件を調整してください。";
 "No club recommendation is available for this shot." = "このショットに推奨できるクラブはありません。";
 "No clubs in bag" = "バッグにクラブがありません";
 "No clubs in your Practice bag. Configure your profile first." = "練習用バッグにクラブがありません。まずプロフィールを設定してください。";
-"No committed shot origin or target is available." = "確定したショットの起点またはターゲットがありません。";
 "No course" = "コースなし";
 "No courses match \"%@\"." = "「%@」に一致するコースはありません。";
 "No data" = "データなし";
@@ -617,7 +616,7 @@
 "No golf clubs matched \"%@\"." = "「%@」に一致するゴルフクラブはありません。";
 "No green is mapped for this hole yet." = "このホールにはまだグリーンがマッピングされていません。";
 "No impact" = "影響なし";
-"No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target." = "モデル化した弾道でターゲット距離に届くものはありません。最も近い推定：ターゲット %2$@ に対して %1$@。";
+"No club reaches the target distance. Closest: %@ for a %@ target." = "ターゲット距離に届くクラブがありません。最も近いもの：ターゲット %2$@ に対して %1$@。";
 "No outcomes calculated" = "算出された結果はありません";
 "No rated tee sets were found for %@." = "%@ にレーティング付きのティーが見つかりませんでした。";
 "No recommendation" = "推奨なし";
@@ -628,7 +627,7 @@
 "No score would raise your Handicap Index." = "Handicap Index が上がるスコアはありません。";
 "No score yet" = "スコアなし";
 "No scores yet" = "スコアはまだありません";
-"No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range." = "この高さ/キャリブレーションで使えるスコアリングの組み合わせはありません。詳細を確認してください。スコアリング範囲内ではバッグ全体のアドバイスで代用しません。";
+"No wedge shot fits this distance. Check your wedge distances in In the bag." = "この距離に合うウェッジショットがありません。「クラブバッグ」でウェッジの距離を確認してください。";
 "No tees have been added for this course." = "このコースにはティーが追加されていません。";
 "No terrain elevations are available for this %@ profile." = "このプロファイル（%@）の地形の高さはありません。";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "有効なスコアリング位置を生成できませんでした。ターゲットと個人のウェッジキャリブレーションを確認してください。";
@@ -645,12 +644,11 @@
 "Older rounds (past 20-round window)" = "それ以前のラウンド（20 ラウンドの範囲外）";
 "On the number" = "表示距離どおり";
 "Open Trajectory" = "弾道を開く";
-"Opens all conditions, source time, cached status, provider errors and manual refresh" = "すべての状況、取得時刻、キャッシュ状態、提供元のエラー、手動更新を開きます";
+"Opens the full weather details" = "天気の詳細を開きます";
 "Opens an enlarged green where you can tap to place the flag" = "拡大したグリーンを開き、タップしてピンを配置できます";
 "Opens course, tee and hole information" = "コース、ティー、ホールの情報を開きます";
-"Opens the full chart, source, budget, errors and confirmed retry" = "完全なグラフ、ソース、予算、エラー、確認済みの再試行を開きます";
+"Opens the elevation chart" = "高低差のグラフを開きます";
 "Opens the suggested club and flight details" = "推奨クラブと弾道の詳細を開きます";
-"Opens the suggested club and modeled flight details" = "推奨クラブとモデル化した弾道の詳細を開きます";
 "Optional" = "任意";
 "Other" = "その他";
 "Other Options" = "ほかの選択肢";
@@ -687,7 +685,7 @@
 "Player" = "プレーヤー";
 "Player %@" = "プレーヤー %@";
 "Player name" = "プレーヤー名";
-"Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate." = "インデックスのないプレーヤーはグロス打数を記録できますが、ネットのステーブルフォード合計はありません。インデックスを有効にし、スクラッチの場合は明示的に 0 を選んでください。";
+"Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch)." = "Handicap Index のないプレーヤーにはステーブルフォードポイントが付きません。そのプレーヤーの「Handicap Index を使用」をオンにしてください（スクラッチは 0）。";
 "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal." = "Playing Conditions Calculation。風、雨、グリーンの速さ、コースセッティングなど、通常より極端に易しい、または難しいコース状況に合わせてハンディキャップディファレンシャルを調整します。正の値は通常より難しい状況、負の値は易しい状況を示します。";
 "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions." = "Playing Conditions Calculation。天候、セッティング、コースコンディションにより、コースが通常より明らかに易しい、または難しい場合にスコアディファレンシャルを調整します。";
 "Playing Handicap Index" = "プレー用 Handicap Index";
@@ -721,7 +719,7 @@
 "Random scoring position" = "ランダムなスコアリング位置";
 "Random scoring position, reset to device GPS, and personal wedge calibration" = "ランダムなスコアリング位置、デバイス GPS へのリセット、個人のウェッジキャリブレーション";
 "Range" = "範囲";
-"Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown." = "範囲は −10〜54 です。プラス 2 のインデックスは −2 と入力します。0 はスクラッチを意味し、不明ではありません。";
+"Enter a plus handicap with a + sign, e.g. +2. 0 means scratch." = "プラスハンディキャップは +2 のように + を付けて入力します。0 はスクラッチです。";
 "Rating / slope" = "レーティング / スロープ";
 "Rating category" = "レーティング区分";
 "Rating category information" = "レーティング区分について";
@@ -738,7 +736,7 @@
 "Region" = "地域";
 "Relative humidity" = "相対湿度";
 "Relative humidity of the air, expressed as a percentage." = "空気の相対湿度（パーセント）。";
-"Release a point on the map to choose a shot target." = "地図上の点で離して、ショットのターゲットを選びます。";
+"Tap the map to choose a target." = "地図をタップしてターゲットを選んでください。";
 "Release target to calculate" = "ターゲットを離して計算";
 "Remove player" = "プレーヤーを削除";
 "Replace All Data With Test Data" = "すべてのデータをテストデータに置き換える";
@@ -812,7 +810,7 @@
 "Scorecard" = "スコアカード";
 "Scoring" = "スコアリング";
 "Scoring by par" = "パー別スコア";
-"Scoring mode prioritizes calibrated wedge shots when the target is within your personal range." = "スコアリングモードでは、ターゲットが個人範囲内にあるとき、キャリブレーション済みのウェッジショットを優先します。";
+"Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "ウェッジの距離範囲内では、ショットに合うウェッジ、弾道、スイング幅を提案します。";
 "Scoring mode recommendations" = "スコアリングモードの推奨";
 "Scoring range · ≤ %@" = "スコアリング範囲 · ≤ %@";
 "Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "スコアリングではバッグ内のウェッジは最大 14 本です。ウェッジマトリクスのバッグを減らしてください。";
@@ -889,7 +887,7 @@
 "Slope rating" = "スロープレーティング";
 "Some holes are unplayed. You can still save this round to Statistics." = "未プレーのホールがあります。それでもこのラウンドを統計に保存できます。";
 "Some holes have not been played or recorded. Missing scores will remain empty. " = "プレーまたは記録されていないホールがあります。未入力のスコアは空欄のままになります。 ";
-"Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data." = "一部のパー、ハンディキャップインデックス、該当するティーのレーティングがありません。グロスのスコアリングは利用できますが、ネット、ポイント、HCP の計算には完全なコースデータが必要です。";
+"This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available." = "このコースはホールやレーティングの情報が一部不足しているため、打数のみ記録できます。ネットスコア、ポイント、ハンディキャップの結果は利用できません。";
 "Speed of the ball immediately after impact." = "インパクト直後のボールの速度。";
 "Spin Axis" = "スピン軸";
 "Spin Rate" = "スピン量";
@@ -930,9 +928,8 @@
 "Target Line" = "ターゲットライン";
 "Target distance" = "ターゲットまでの距離";
 "Target elevation" = "ターゲットの高さ";
-"Target is being moved. Release to load its terrain." = "ターゲットを移動中です。離すと地形を読み込みます。";
+"Release to see the elevation." = "指を離すと高低差が表示されます。";
 "Target line" = "ターゲットライン";
-"Target movement cancelled. Tap the map and release a target to commit its terrain." = "ターゲットの移動をキャンセルしました。地図をタップしてターゲットを離し、地形を確定してください。";
 "Target moving · release to calculate." = "ターゲット移動中 · 離して計算します。";
 "Target: %@ · %@" = "ターゲット：%@ · %@";
 "Tee" = "ティー";
@@ -955,15 +952,15 @@
 "Test Data" = "テストデータ";
 "The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it." = "高低差（%@）はキャリーだけでなくランも変えます：打ち上げでは想定ランが増え、打ち下ろしでは減ります。";
 "The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies." = "%@ スイングはランの距離を変えるため、推奨はスイングの強さとボールの飛び方の両方を考慮しています。";
-"The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider." = "9 ホールのスコアディファレンシャルは、現在の Handicap Index に基づく WHS の想定 9 ホールディファレンシャルと組み合わされます。これはローカルな推定です。正式な登録はハンディキャップ提供元で確認してください。";
+"Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ." = "9 ホールのスコアは、Handicap Index に基づく残り 9 ホールの想定スコアと組み合わされます。推定値のため、正式なハンディキャップとは異なる場合があります。";
 "The Men/Women rating category follows your player settings. Change it in Settings." = "男性/女性のレーティング区分はプレーヤー設定に従います。設定で変更してください。";
-"The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential." = "WHS の想定 9 ホールディファレンシャルには、確定した Handicap Index が必要です。それまでは、このラウンドで推定ディファレンシャルを算出できません。";
+"A 9-hole round can only count once you have a Handicap Index." = "9 ホールのラウンドは、Handicap Index を取得してからカウントされます。";
 "The account request could not be completed. Please try again." = "アカウントのリクエストを完了できませんでした。もう一度お試しください。";
 "The account service could not complete your request. Please try again later." = "アカウントサービスがリクエストを完了できませんでした。後でもう一度お試しください。";
-"The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result." = "アプリは総打数 − パット数 ≤ パー − 2 の場合に GIR と推定します。これは推定であり、グリーンへの到達を計測したものではありません。ペナルティやリカバリーショットが結果に影響する場合があります。";
+"GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it." = "GIR はスコアとパット数から算出する推定値です。チップインやペナルティが影響する場合があります。";
 "The ball finishes on the target line." = "ボールはターゲットライン上に止まります。";
 "The ball's initial upward angle." = "ボールの最初の上昇角度。";
-"The chart shows the modeled path. Values above include calibration corrections." = "グラフはモデル化した弾道を示します。上の値にはキャリブレーション補正が含まれます。";
+"The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart." = "上の数値は実際のショットデータで微調整されているため、グラフと少し異なる場合があります。";
 "The course information appears incomplete. Please try again later." = "コース情報が不完全なようです。後でもう一度お試しください。";
 "The dashed line shows your overall average." = "破線は全体の平均を示します。";
 "The data service supplied no usable detail." = "データサービスから有用な詳細は提供されませんでした。";
@@ -985,7 +982,7 @@
 "This action is available only for accounts with an email sign-in method." = "この操作はメールでサインインするアカウントでのみ利用できます。";
 "This cannot be undone. Your online account and saved golf records on this device will be removed." = "この操作は取り消せません。オンラインアカウントと、このデバイスに保存されたゴルフの記録が削除されます。";
 "This clears local sign-in credentials, not your golf records. You’ll return to sign in and can request another reset email. It does not sign out other devices." = "ローカルのサインイン情報を消去します。ゴルフの記録は消去されません。サインイン画面に戻り、リセットメールを再リクエストできます。ほかのデバイスはサインアウトされません。";
-"This course cannot be used for Handicap. Choose a rated course or an explicitly custom course." = "このコースはハンディキャップに使用できません。レーティング付きコースか、明示的にカスタムコースを選択してください。";
+"This course can't be used for Handicap. Choose a rated course or add it as a custom course." = "このコースはハンディキャップに使用できません。レーティング付きコースを選ぶか、カスタムコースとして追加してください。";
 "This course is temporarily unavailable. Please try another course or come back later." = "このコースは一時的に利用できません。別のコースを試すか、後でもう一度お越しください。";
 "This discards the unsaved round and its scores. Saved scorecards are not affected." = "未保存のラウンドとそのスコアを破棄します。保存済みのスコアカードには影響しません。";
 "This permanently deletes your account and removes its saved golf data from this device. This cannot be undone." = "アカウントを完全に削除し、保存されたゴルフデータをこのデバイスから消去します。この操作は取り消せません。";
@@ -1041,8 +1038,8 @@
 "WHS Adjusted Score" = "WHS 調整済みスコア";
 "WHS Ratings · Required" = "WHS レーティング · 必須";
 "WHS counting rules" = "WHS の算定ルール";
-"Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback." = "コースの完全な気象データを待っています：気温、地上気圧、湿度、風。平坦/無風での代用はしません。";
-"Waiting for matching origin/target terrain…" = "起点/ターゲットに一致する地形を待っています…";
+"Waiting for the course weather…" = "コースの天気を待っています…";
+"Loading elevation…" = "高低差を読み込み中…";
 "We bring together course information, handicap planning, club setup and shot insights to help golfers make more informed decisions on and off the course." = "コース情報、ハンディキャップの計画、クラブ設定、ショット分析をひとつにまとめ、コースの内外でゴルファーがより的確な判断を下せるようにします。";
 "We couldn't load this course just now. Please wait a few minutes, then try again." = "コースを読み込めませんでした。数分待ってからもう一度お試しください。";
 "We couldn't load this course right now. Check your connection and try again." = "現在このコースを読み込めませんでした。接続を確認して、もう一度お試しください。";
@@ -1057,7 +1054,7 @@
 "Weather: %@" = "天気：%@";
 "Wedge Matrix" = "ウェッジマトリックス";
 "Wedge bag" = "ウェッジバッグ";
-"Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch." = "ウェッジのキャリー値はウェッジバッグで編集します。「クラブの距離と打ち出し」では編集できません。";
+"Edit wedge distances in Wedge bag." = "ウェッジの距離は「ウェッジバッグ」で編集します。";
 "Wedge matrix" = "ウェッジマトリクス";
 "Wedge tools" = "ウェッジツール";
 "Wedges" = "ウェッジ";
@@ -1077,6 +1074,8 @@
 "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings." = "許可いただいた場合、位置情報はコース上の距離や状況の表示に役立ちます。一部の機能は位置情報を各提供元と共有します。位置情報へのアクセスはデバイスの設定で変更できます。";
 "Women" = "女性";
 "From tee" = "ティーから";
+"From your GPS position" = "GPS の現在地から";
+"From the tee" = "ティーから";
 "YOUR NEXT SHOT" = "次のショット";
 "Yards" = "ヤード";
 "Yes" = "はい";
@@ -1124,7 +1123,7 @@
 "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind." = "fairwayvector-hcp-projection はデータを一切収集しません。ハンディキャップの計算と予測はすべてデバイス上で行われます。アプリはネットワーク、分析、広告、トラッキングを一切使用しません。";
 "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks." = "fairwayvector-hcp-projection は、第三者の SDK、分析プロバイダ、広告ネットワークと統合していません。";
 "fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data." = "fairwayvector-hcp-projection はオフラインのハンディキャップ予測計算ツールです。個人データの収集、保存、送信、共有は一切行いません。";
-"fairwayvector-trajectory combines a flight simulation with calibrated corrections." = "fairwayvector-trajectory は飛行シミュレーションとキャリブレーション補正を組み合わせます。";
+"Golf PinTheory simulates the ball flight and fine-tunes it with real shot data." = "Golf PinTheory はボールの弾道をシミュレーションし、実際のショットデータで微調整します。";
 "from %.0f degrees true north" = "真北から %.0f 度の方向から";
 "holes" = "ホール";
 "left" = "左";

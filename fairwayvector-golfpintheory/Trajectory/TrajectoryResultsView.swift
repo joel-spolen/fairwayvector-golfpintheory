@@ -34,7 +34,7 @@ struct TrajectoryResultsView: View {
 
             if showsEstimationInfo {
                 Label(
-                    L("Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary."),
+                    L("These are estimates. Real shots vary with conditions and strike."),
                     systemImage: "info.circle"
                 )
                 .font(.caption)

@@ -21,7 +21,7 @@ struct CourseWeatherCard: View {
         .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         .accessibilityLabel("Course weather details")
         .accessibilityValue(accessibilitySummary)
-        .accessibilityHint("Opens all conditions, source time, cached status, provider errors and manual refresh")
+        .accessibilityHint("Opens the full weather details")
         .accessibilityIdentifier("course-weather-summary")
         .sheet(isPresented: $isShowingDetails) {
             CourseWeatherDetail(location: location, store: store)

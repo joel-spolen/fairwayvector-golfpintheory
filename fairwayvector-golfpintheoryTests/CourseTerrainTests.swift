@@ -83,7 +83,7 @@ import Testing
         let outside = TerrainRequest(courseID: "golfapi:A", holeNumber: 1, path: [tee, green], flag: green,
             origin: GeoPoint(lat: 57.01, lon: 12.0), target: green, usesPointOnlyGeometry: true, usesGPS: true)
         store.commitShot(outside)
-        #expect(store.shotMessage == L("This position is outside the downloaded course elevation."))
+        #expect(store.shotMessage == L("No elevation data for this spot."))
         store.setTerrain(nil, unavailableMessage: "Unavailable")
         store.open(request)
         #expect(store.holeMessage == "Unavailable" && store.snapshot.holeProfile == nil)

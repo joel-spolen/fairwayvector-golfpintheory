@@ -304,7 +304,7 @@ struct BagClubsView: View {
             } header: {
                 Text("Wedges")
             } footer: {
-                Text("Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch.")
+                Text("Edit wedge distances in Wedge bag.")
             }
         }
         .scrollContentBackground(.hidden)

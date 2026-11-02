@@ -565,7 +565,7 @@ struct TrajectoryClubView: View {
             ($0.trajectory.xM.last ?? 0) + 0.1 >= targetCarryMeters
         }
         guard !hasClubWithinPracticalRange, !hasFlightReachingTarget else { return nil }
-        return L("No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target.", "\(formattedDistance(closest.estimatedCarryM))", "\(formattedDistance(targetCarryMeters))")
+        return L("No club reaches the target distance. Closest: %@ for a %@ target.", "\(formattedDistance(closest.estimatedCarryM))", "\(formattedDistance(targetCarryMeters))")
     }
 
     private func elevationWarning(for recommendation: ClubRecommendation) -> String? {

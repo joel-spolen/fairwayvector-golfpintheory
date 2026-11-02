@@ -62,12 +62,12 @@ private struct HCPNineHoleNotice: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label("Nine-hole WHS estimate", systemImage: "info.circle")
+            Label("9-hole estimate", systemImage: "info.circle")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(PureLineStyle.accent)
             Text(currentHandicap == nil
-                 ? L("The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential.")
-                 : L("The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider."))
+                 ? L("A 9-hole round can only count once you have a Handicap Index.")
+                 : L("Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ."))
                 .font(.caption)
                 .foregroundStyle(PureLineStyle.ink)
                 .fixedSize(horizontal: false, vertical: true)

@@ -175,7 +175,7 @@
 "Calculate Trajectory" = "计算弹道";
 "Calculate the flight" = "计算弹道";
 "Calculates the golf ball's trajectory" = "计算高尔夫球的弹道";
-"Calculating with your Practice bag, captured weather and terrain…" = "正在使用你的练习球包、实测天气和地形计算…";
+"Finding the right club…" = "正在寻找合适的球杆…";
 "Calculating…" = "正在计算…";
 "Calm" = "无风";
 "Calm, %@" = "无风，%@";
@@ -212,8 +212,8 @@
 "Downloading course elevation…" = "正在下载球场高程数据…";
 "Elevation isn't available for this course." = "此球场暂无高程数据。";
 "Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "目前无法下载球场高程数据。下次打开球场时将重试。";
-"This position is outside the downloaded course elevation." = "此位置超出已下载的球场高程数据范围。";
-"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "选择最符合你水平的差点范围。用于选择球杆。如需输入个人距离和出球数据，请在主页打开“球包 > 球杆距离与出球”。";
+"No elevation data for this spot." = "此位置没有高程数据。";
+"Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag." = "选择最接近你差点的范围。在你于“球包”中添加自己的距离之前，它将用于建议球杆。";
 "Choose wedges in Clubs in my bag to include them here." = "在“我的球包中的球杆”中选择挖起杆，即可将其包含在这里。";
 "Choose which clubs are available" = "选择可用的球杆";
 "Choose your course and tee." = "选择你的球场和发球台。";
@@ -243,7 +243,7 @@
 "Clubs & launch profile" = "球杆与出球档案";
 "Clubs in my bag" = "我的球包中的球杆";
 "Compare carry distances across swing lengths and trajectories." = "比较不同挥杆幅度和弹道的飞行距离。";
-"Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…" = "正在为你已校准的挖起杆比较 Low/Mid/High × 50/75/100%…";
+"Comparing your wedge shots…" = "正在比较你的挖起杆击球…";
 "Comparing shots…" = "正在比较击球…";
 "Completing account request…" = "正在完成账户请求…";
 "Completing password recovery…" = "正在完成密码恢复…";
@@ -347,7 +347,7 @@
 "Drag the green up or down to set elevation. Drag the flag along the green to set the pin." = "上下拖动果岭以设置高度。沿果岭拖动旗杆以设置旗位。";
 "Drag the wind arrow to set the combined headwind, tailwind, and crosswind." = "拖动风向箭头以设置逆风、顺风和侧风的组合。";
 "Driver" = "一号木";
-"Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique." = "挖起杆矩阵标识重复：请在计算得分前重新创建重复条目。击球标识必须唯一。";
+"Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice." = "有些挖起杆重复出现。请在“球包”中删除重复项以获取得分建议。";
 "E" = "东";
 "Each hole must have a unique HCP from 1 to %lld, and no value may be duplicated or outside that range." = "每个洞必须有 1 到 %lld 之间唯一的 HCP，不能重复或超出该范围。";
 "Each hole must have a unique HCP from 1 to %lld." = "每个洞必须有 1 到 %lld 之间唯一的 HCP。";
@@ -431,7 +431,7 @@
 "Green & Pin" = "果岭与旗位";
 "Green in regulation" = "标准上果岭";
 "Green profile" = "果岭剖面";
-"Gross only. Net score and Stableford points unavailable until an index is supplied." = "仅总杆。在提供指数之前，净杆成绩和 Stableford 积分不可用。";
+"Strokes only. Turn on Use Handicap Index for net score and points." = "仅记录杆数。开启“使用差点指数”即可查看净杆成绩和积分。";
 "Gross strokes" = "总杆数";
 "Gross · %@" = "总杆 · %@";
 "HCP %@" = "HCP %@";
@@ -454,7 +454,7 @@
 "Handicap tools" = "差点工具";
 "Handicap trend" = "差点趋势";
 "Handicap trend chart" = "差点趋势图";
-"Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary." = "主要数值通过飞行模型和校准修正估算。由于条件和测量可能不同，结果可能与实际飞行有差异。";
+"These are estimates. Real shots vary with conditions and strike." = "以上均为估算值。实际击球会因场地条件和击球质量而不同。";
 "Height" = "高度";
 "Height (%@)" = "高度（%@）";
 "Height difference between the launch point and the landing surface. This is separate from site elevation." = "出球点与落地面之间的高度差。这与场地海拔是分开的。";
@@ -579,9 +579,9 @@
 "Miss" = "未命中";
 "Miss direction (optional)" = "偏离方向（可选）";
 "Missed FIR" = "未命中 FIR";
-"Modeled Physics Flight Path" = "模拟物理飞行路径";
-"Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "模拟物理弹道。落地时，球停在目标线%2$@ %1$@ 处。";
-"Modeled physics path. Estimated carry is %@ and apex is %@." = "模拟物理弹道。预计飞行距离 %@，最高点 %@。";
+"Flight path" = "飞行路径";
+"Flight path. At landing, the ball finishes %@ %@ of the target line." = "飞行路径。落地时，球停在目标线%2$@ %1$@ 处。";
+"Flight path. Estimated carry is %@ and apex is %@." = "飞行路径。预计飞行距离 %@，最高点 %@。";
 "Move Flag · Hole %lld" = "移动旗杆 · 第 %lld 洞";
 "N" = "北";
 "N/A" = "不适用";
@@ -594,7 +594,7 @@
 "New password" = "新密码";
 "Next hole" = "下一洞";
 "Next page" = "下一页";
-"Nine-hole WHS estimate" = "九洞 WHS 估算";
+"9-hole estimate" = "9 洞估算";
 "No" = "否";
 "No Course" = "无球场";
 "No Custom Courses" = "没有自定义球场";
@@ -602,12 +602,11 @@
 "No Rounds Yet" = "暂无轮次";
 "No Wedges In Bag" = "球包中没有挖起杆";
 "No change" = "无变化";
-"No club prediction is available. Default club profiles are used until your bag is configured." = "没有可用的球杆预测。在配置球包前将使用默认球杆档案。";
+"No club suggestion is available for this shot." = "此击球暂无球杆建议。";
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "没有球杆能达到 %.1f 米的目标高度。模拟最高点为 %.1f 米。请减小高度差或调整出球条件。";
 "No club recommendation is available for this shot." = "此击球没有可用的球杆建议。";
 "No clubs in bag" = "球包中没有球杆";
 "No clubs in your Practice bag. Configure your profile first." = "你的练习球包中没有球杆。请先配置档案。";
-"No committed shot origin or target is available." = "没有已确认的击球起点或目标。";
 "No course" = "无球场";
 "No courses match \"%@\"." = "没有与“%@”匹配的球场。";
 "No data" = "无数据";
@@ -617,7 +616,7 @@
 "No golf clubs matched \"%@\"." = "没有找到与“%@”匹配的高尔夫俱乐部。";
 "No green is mapped for this hole yet." = "此洞尚未绘制果岭。";
 "No impact" = "无影响";
-"No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target." = "没有模拟弹道能达到目标距离。最接近的估算：目标 %2$@ 时为 %1$@。";
+"No club reaches the target distance. Closest: %@ for a %@ target." = "没有球杆能达到目标距离。最接近：目标 %2$@ 时为 %1$@。";
 "No outcomes calculated" = "未计算出结果";
 "No rated tee sets were found for %@." = "未找到 %@ 的已评级发球台。";
 "No recommendation" = "无建议";
@@ -628,7 +627,7 @@
 "No score would raise your Handicap Index." = "没有任何成绩会提高你的差点指数。";
 "No score yet" = "暂无成绩";
 "No scores yet" = "暂无成绩";
-"No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range." = "此高度/校准下没有可用的得分组合。请查看详情；在得分范围内不会以全球包建议替代。";
+"No wedge shot fits this distance. Check your wedge distances in In the bag." = "没有适合此距离的挖起杆击球。请在“球包”中检查你的挖起杆距离。";
 "No tees have been added for this course." = "此球场尚未添加发球台。";
 "No terrain elevations are available for this %@ profile." = "此剖面（%@）没有可用的地形高度。";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "无法生成有效的得分位置。请检查目标和个人挖起杆校准。";
@@ -645,12 +644,11 @@
 "Older rounds (past 20-round window)" = "较早的轮次（20 轮窗口之外）";
 "On the number" = "正好数字";
 "Open Trajectory" = "打开弹道";
-"Opens all conditions, source time, cached status, provider errors and manual refresh" = "打开所有条件、来源时间、缓存状态、提供方错误和手动刷新";
+"Opens the full weather details" = "打开完整天气详情";
 "Opens an enlarged green where you can tap to place the flag" = "打开放大的果岭，轻点即可放置旗杆";
 "Opens course, tee and hole information" = "打开球场、发球台和球洞信息";
-"Opens the full chart, source, budget, errors and confirmed retry" = "打开完整图表、来源、配额、错误和已确认的重试";
+"Opens the elevation chart" = "打开高度差图表";
 "Opens the suggested club and flight details" = "打开建议球杆和弹道详情";
-"Opens the suggested club and modeled flight details" = "打开建议球杆和模拟弹道详情";
 "Optional" = "可选";
 "Other" = "其他";
 "Other Options" = "其他选项";
@@ -687,7 +685,7 @@
 "Player" = "球员";
 "Player %@" = "球员 %@";
 "Player name" = "球员姓名";
-"Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate." = "没有指数的球员可以记录总杆数，但没有净杆 Stableford 合计。如适用，请启用指数并明确选择 0 表示零差点。";
+"Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch)." = "没有差点指数的球员不会获得 Stableford 积分。请为他们开启“使用差点指数”（零差点填 0）。";
 "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal." = "Playing Conditions Calculation。它会根据异常容易或困难的球场条件（如风、雨、果岭速度或球场设置）调整你的差点差值。正值表示条件比平常更难；负值表示更容易。";
 "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions." = "Playing Conditions Calculation。当球场因天气、设置或球场状况明显比平常更容易或更难时，用于调整成绩差值。";
 "Playing Handicap Index" = "击球差点指数";
@@ -721,7 +719,7 @@
 "Random scoring position" = "随机得分位置";
 "Random scoring position, reset to device GPS, and personal wedge calibration" = "随机得分位置、重置为设备 GPS 以及个人挖起杆校准";
 "Range" = "范围";
-"Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown." = "范围为 −10 到 54。正 2 指数输入为 −2。零表示零差点，而不是未知。";
+"Enter a plus handicap with a + sign, e.g. +2. 0 means scratch." = "正差点请加 + 号输入，例如 +2。0 表示零差点。";
 "Rating / slope" = "评级 / 坡度";
 "Rating category" = "差点评级类别";
 "Rating category information" = "评级类别信息";
@@ -738,7 +736,7 @@
 "Region" = "地区";
 "Relative humidity" = "相对湿度";
 "Relative humidity of the air, expressed as a percentage." = "空气的相对湿度，以百分比表示。";
-"Release a point on the map to choose a shot target." = "在地图上松开一个点以选择击球目标。";
+"Tap the map to choose a target." = "轻点地图以选择目标。";
 "Release target to calculate" = "松开目标以计算";
 "Remove player" = "移除球员";
 "Replace All Data With Test Data" = "用测试数据替换所有数据";
@@ -812,7 +810,7 @@
 "Scorecard" = "记分卡";
 "Scoring" = "得分";
 "Scoring by par" = "按标准杆的成绩";
-"Scoring mode prioritizes calibrated wedge shots when the target is within your personal range." = "当目标在你的个人范围内时，得分模式会优先使用已校准的挖起杆击球。";
+"Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "在你的挖起杆距离范围内，为这杆建议挖起杆、弹道和挥杆幅度。";
 "Scoring mode recommendations" = "得分模式建议";
 "Scoring range · ≤ %@" = "得分范围 · ≤ %@";
 "Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "得分功能最多支持球包中的 14 支挖起杆。请减少挖起杆矩阵中的球包。";
@@ -889,7 +887,7 @@
 "Slope rating" = "坡度评级";
 "Some holes are unplayed. You can still save this round to Statistics." = "有些球洞未打。你仍可将此轮保存到统计中。";
 "Some holes have not been played or recorded. Missing scores will remain empty. " = "有些球洞尚未打或未记录。缺失的成绩将保持空白。 ";
-"Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data." = "部分标准杆、球洞难度指数或适用的发球台评级缺失。可以使用总杆计分；净杆、积分和 HCP 计算需要完整的球场数据。";
+"This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available." = "此球场缺少部分球洞或评级信息，只能记录杆数。净杆成绩、积分和差点结果不可用。";
 "Speed of the ball immediately after impact." = "击球后瞬间的球速。";
 "Spin Axis" = "旋转轴";
 "Spin Rate" = "旋转速率";
@@ -930,9 +928,8 @@
 "Target Line" = "目标线";
 "Target distance" = "目标距离";
 "Target elevation" = "目标高度";
-"Target is being moved. Release to load its terrain." = "正在移动目标。松开以加载其地形。";
+"Release to see the elevation." = "松开即可查看高度差。";
 "Target line" = "目标线";
-"Target movement cancelled. Tap the map and release a target to commit its terrain." = "已取消移动目标。轻点地图并松开目标以确认其地形。";
 "Target moving · release to calculate." = "目标移动中 · 松开以计算。";
 "Target: %@ · %@" = "目标：%@ · %@";
 "Tee" = "发球台";
@@ -955,15 +952,15 @@
 "Test Data" = "测试数据";
 "The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it." = "高度差（%@）会同时影响滚动和飞行距离：上坡会增加预期滚动，下坡则会减少。";
 "The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies." = "%@ 挥杆会改变滚动距离，因此建议同时考虑挥杆力度和球的飞行方式。";
-"The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider." = "9 洞成绩差值会与基于你当前差点指数的 WHS 预期 9 洞差值合并。这是本地估算；请向你的差点机构确认正式登记。";
+"Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ." = "你的 9 洞成绩会与根据差点指数得出的另外 9 洞预期成绩合并。这只是估算，可能与你的正式差点不同。";
 "The Men/Women rating category follows your player settings. Change it in Settings." = "男子/女子评级类别跟随你的球员设置。请在“设置”中更改。";
-"The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential." = "WHS 预期 9 洞差值需要已确定的差点指数。在此之前，此轮无法提供估算差值。";
+"A 9-hole round can only count once you have a Handicap Index." = "你有差点指数后，9 洞比赛才会计入。";
 "The account request could not be completed. Please try again." = "无法完成账户请求。请重试。";
 "The account service could not complete your request. Please try again later." = "账户服务无法完成你的请求。请稍后再试。";
-"The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result." = "当总杆数 − 推杆数 ≤ 标准杆 − 2 时，App 会估算为 GIR。这是推断结果，而非实测的上果岭；罚杆和救球可能影响结果。";
+"GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it." = "GIR 根据你的杆数和推杆数推算，因此只是估算。切杆进洞或罚杆可能会影响结果。";
 "The ball finishes on the target line." = "球停在目标线上。";
 "The ball's initial upward angle." = "球最初的上升角度。";
-"The chart shows the modeled path. Values above include calibration corrections." = "图表显示模拟路径。上方数值包含校准修正。";
+"The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart." = "上方数值已用真实击球数据微调，因此可能与图表略有不同。";
 "The course information appears incomplete. Please try again later." = "球场信息似乎不完整。请稍后再试。";
 "The dashed line shows your overall average." = "虚线表示你的总体平均值。";
 "The data service supplied no usable detail." = "数据服务未提供可用的详细信息。";
@@ -985,7 +982,7 @@
 "This action is available only for accounts with an email sign-in method." = "此操作仅适用于使用邮箱登录的账户。";
 "This cannot be undone. Your online account and saved golf records on this device will be removed." = "此操作无法撤销。你的在线账户和此设备上保存的高尔夫记录将被移除。";
 "This clears local sign-in credentials, not your golf records. You’ll return to sign in and can request another reset email. It does not sign out other devices." = "这会清除本地登录凭据，而不是你的高尔夫记录。你将返回登录界面，并可以再次请求重设邮件。其他设备不会退出登录。";
-"This course cannot be used for Handicap. Choose a rated course or an explicitly custom course." = "此球场不能用于差点。请选择已评级球场或明确选择自定义球场。";
+"This course can't be used for Handicap. Choose a rated course or add it as a custom course." = "此球场不能用于差点。请选择已评级球场，或将其添加为自定义球场。";
 "This course is temporarily unavailable. Please try another course or come back later." = "此球场暂时不可用。请尝试其他球场或稍后再来。";
 "This discards the unsaved round and its scores. Saved scorecards are not affected." = "这将放弃未保存的轮次及其成绩。已保存的记分卡不受影响。";
 "This permanently deletes your account and removes its saved golf data from this device. This cannot be undone." = "这将永久删除你的账户，并从此设备移除其保存的高尔夫数据。此操作无法撤销。";
@@ -1041,8 +1038,8 @@
 "WHS Adjusted Score" = "WHS 调整成绩";
 "WHS Ratings · Required" = "WHS 评级 · 必填";
 "WHS counting rules" = "WHS 计入规则";
-"Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback." = "正在等待完整的球场天气：温度、地面气压、湿度和风。不使用平地/无风作为备用。";
-"Waiting for matching origin/target terrain…" = "正在等待匹配的起点/目标地形…";
+"Waiting for the course weather…" = "正在等待球场天气…";
+"Loading elevation…" = "正在加载高度差…";
 "We bring together course information, handicap planning, club setup and shot insights to help golfers make more informed decisions on and off the course." = "我们整合球场信息、差点规划、球杆设置和击球洞察，帮助球员在球场内外做出更明智的决策。";
 "We couldn't load this course just now. Please wait a few minutes, then try again." = "球场暂时无法加载，请等待几分钟后重试。";
 "We couldn't load this course right now. Check your connection and try again." = "目前无法加载此球场。请检查网络连接后重试。";
@@ -1057,7 +1054,7 @@
 "Weather: %@" = "天气：%@";
 "Wedge Matrix" = "挖起杆矩阵";
 "Wedge bag" = "挖起杆球包";
-"Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch." = "挖起杆的飞行距离在“挖起杆球包”中编辑，无法在“球杆距离与出球”中编辑。";
+"Edit wedge distances in Wedge bag." = "请在“挖起杆球包”中编辑挖起杆距离。";
 "Wedge matrix" = "挖起杆矩阵";
 "Wedge tools" = "挖起杆工具";
 "Wedges" = "挖起杆";
@@ -1077,6 +1074,8 @@
 "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings." = "经你允许后，你的位置可用于显示球场上的距离和状况。部分功能会与其提供方共享位置信息。你可以在设备的“设置”中更改位置访问权限。";
 "Women" = "女子";
 "From tee" = "从发球台";
+"From your GPS position" = "来自你的 GPS 位置";
+"From the tee" = "来自发球台";
 "YOUR NEXT SHOT" = "你的下一杆";
 "Yards" = "码";
 "Yes" = "是";
@@ -1124,7 +1123,7 @@
 "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind." = "fairwayvector-hcp-projection 不收集任何数据。所有差点计算和预测完全在你的设备上进行。此 App 不使用网络、分析、广告或任何形式的跟踪。";
 "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks." = "fairwayvector-hcp-projection 不集成任何第三方 SDK、分析服务商或广告网络。";
 "fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data." = "fairwayvector-hcp-projection 是一款离线差点预测计算器。它不会收集、存储、传输或共享任何个人数据。";
-"fairwayvector-trajectory combines a flight simulation with calibrated corrections." = "fairwayvector-trajectory 将飞行模拟与校准修正相结合。";
+"Golf PinTheory simulates the ball flight and fine-tunes it with real shot data." = "Golf PinTheory 会模拟球的飞行，并用真实击球数据进行微调。";
 "from %.0f degrees true north" = "来自真北 %.0f 度";
 "holes" = "洞";
 "left" = "左侧";

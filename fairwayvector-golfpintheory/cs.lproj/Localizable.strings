@@ -175,7 +175,7 @@
 "Calculate Trajectory" = "Vypočítat dráhu letu";
 "Calculate the flight" = "Vypočítejte let";
 "Calculates the golf ball's trajectory" = "Vypočítá dráhu letu golfového míčku";
-"Calculating with your Practice bag, captured weather and terrain…" = "Výpočet s vaším tréninkovým bagem, zaznamenaným počasím a terénem…";
+"Finding the right club…" = "Hledání vhodné hole…";
 "Calculating…" = "Výpočet…";
 "Calm" = "Bezvětří";
 "Calm, %@" = "Bezvětří, %@";
@@ -212,8 +212,8 @@
 "Downloading course elevation…" = "Stahování výškových dat hřiště…";
 "Elevation isn't available for this course." = "Pro toto hřiště nejsou výšková data k dispozici.";
 "Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "Výšková data hřiště se teď nepodařilo stáhnout. Při dalším otevření hřiště to zkusíme znovu.";
-"This position is outside the downloaded course elevation." = "Tato poloha je mimo stažená výšková data hřiště.";
-"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "Vyberte rozsah handicapu, který nejlépe odpovídá vaší hře. Používá se pro výběr hole. Pro zadání osobních vzdáleností a výletových dat otevřete na Domovské obrazovce V bagu > Vzdálenosti holí a výlet.";
+"No elevation data for this spot." = "Pro toto místo nejsou výšková data.";
+"Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag." = "Vyberte rozsah nejbližší vašemu handicapu. Používá se k navrhování holí, dokud nezadáte vlastní vzdálenosti v sekci Ve výbavě.";
 "Choose wedges in Clubs in my bag to include them here." = "Vyberte wedge v Holích v mém bagu, aby se sem zahrnuly.";
 "Choose which clubs are available" = "Vyberte dostupné hole";
 "Choose your course and tee." = "Vyberte hřiště a odpaliště.";
@@ -243,7 +243,7 @@
 "Clubs & launch profile" = "Hole a výletový profil";
 "Clubs in my bag" = "Hole v mém bagu";
 "Compare carry distances across swing lengths and trajectories." = "Porovnejte vzdálenosti carry napříč délkami švihu a dráhami letu.";
-"Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…" = "Porovnávání Nízko/Mid/Vysoko × 50/75/100 % pro vaše kalibrované wedge…";
+"Comparing your wedge shots…" = "Porovnávání vašich ran wedgí…";
 "Comparing shots…" = "Porovnávání ran…";
 "Completing account request…" = "Dokončuje se požadavek na účet…";
 "Completing password recovery…" = "Dokončuje se obnovení hesla…";
@@ -347,7 +347,7 @@
 "Drag the green up or down to set elevation. Drag the flag along the green to set the pin." = "Táhněte green nahoru nebo dolů a nastavte výšku. Táhněte praporek po greenu a nastavte jeho pozici.";
 "Drag the wind arrow to set the combined headwind, tailwind, and crosswind." = "Táhněte šipku větru a nastavte kombinovaný protivítr, vítr v zádech a boční vítr.";
 "Driver" = "Driver";
-"Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique." = "Duplicitní identity v Matici wedgí: před scoringem duplicitní položky vytvořte znovu. Identity ran musí být jedinečné.";
+"Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice." = "Některé wedge jsou uvedeny dvakrát. Odstraňte duplicity v sekci Ve výbavě a získáte doporučení pro scoring.";
 "E" = "V";
 "Each hole must have a unique HCP from 1 to %lld, and no value may be duplicated or outside that range." = "Každá jamka musí mít jedinečné HCP od 1 do %lld a žádná hodnota se nesmí opakovat ani být mimo tento rozsah.";
 "Each hole must have a unique HCP from 1 to %lld." = "Každá jamka musí mít jedinečné HCP od 1 do %lld.";
@@ -431,7 +431,7 @@
 "Green & Pin" = "Green a praporek";
 "Green in regulation" = "Green v regulaci";
 "Green profile" = "Profil greenu";
-"Gross only. Net score and Stableford points unavailable until an index is supplied." = "Jen brutto. Netto skóre a body Stableford nejsou k dispozici, dokud nezadáte index.";
+"Strokes only. Turn on Use Handicap Index for net score and points." = "Jen rány. Pro netto skóre a body zapněte Použít Handicap Index.";
 "Gross strokes" = "Brutto rány";
 "Gross · %@" = "Brutto · %@";
 "HCP %@" = "HCP %@";
@@ -454,7 +454,7 @@
 "Handicap tools" = "Handicapové nástroje";
 "Handicap trend" = "Trend handicapu";
 "Handicap trend chart" = "Graf trendu handicapu";
-"Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary." = "Hlavní hodnoty se odhadují pomocí modelu letu a kalibračních korekcí. Mohou se lišit od skutečného letu, protože podmínky a měření se mohou lišit.";
+"These are estimates. Real shots vary with conditions and strike." = "Jde o odhady. Skutečné rány se liší podle podmínek a zásahu míčku.";
 "Height" = "Výška";
 "Height (%@)" = "Výška (%@)";
 "Height difference between the launch point and the landing surface. This is separate from site elevation." = "Výškový rozdíl mezi výchozím bodem a dopadovou plochou. Je nezávislý na nadmořské výšce místa.";
@@ -579,9 +579,9 @@
 "Miss" = "Minutí";
 "Miss direction (optional)" = "Směr minutí (volitelné)";
 "Missed FIR" = "FIR minut";
-"Modeled Physics Flight Path" = "Modelovaná fyzikální dráha letu";
-"Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "Modelovaná fyzikální dráha. Při dopadu končí míček %@ %@ od cílové linie.";
-"Modeled physics path. Estimated carry is %@ and apex is %@." = "Modelovaná fyzikální dráha. Odhadované carry %@, vrchol %@.";
+"Flight path" = "Dráha letu";
+"Flight path. At landing, the ball finishes %@ %@ of the target line." = "Dráha letu. Při dopadu končí míček %@ %@ od cílové linie.";
+"Flight path. Estimated carry is %@ and apex is %@." = "Dráha letu. Odhadované carry %@, vrchol %@.";
 "Move Flag · Hole %lld" = "Přesunout praporek · Jamka %lld";
 "N" = "S";
 "N/A" = "N/A";
@@ -594,7 +594,7 @@
 "New password" = "Nové heslo";
 "Next hole" = "Další jamka";
 "Next page" = "Další stránka";
-"Nine-hole WHS estimate" = "Odhad WHS pro devět jamek";
+"9-hole estimate" = "Odhad pro 9 jamek";
 "No" = "Ne";
 "No Course" = "Bez hřiště";
 "No Custom Courses" = "Žádná vlastní hřiště";
@@ -602,12 +602,11 @@
 "No Rounds Yet" = "Zatím žádná kola";
 "No Wedges In Bag" = "V bagu nejsou žádné wedge";
 "No change" = "Beze změny";
-"No club prediction is available. Default club profiles are used until your bag is configured." = "Předpověď hole není k dispozici. Dokud nenastavíte bag, používají se výchozí profily holí.";
+"No club suggestion is available for this shot." = "Pro tuto ránu není k dispozici žádný návrh hole.";
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Žádná hůl nedosáhne cílové výšky %.1f m. Nejvyšší simulovaný vrchol je %.1f m. Snižte výškový rozdíl nebo upravte výletové podmínky.";
 "No club recommendation is available for this shot." = "Pro tuto ránu není k dispozici žádné doporučení hole.";
 "No clubs in bag" = "V bagu nejsou žádné hole";
 "No clubs in your Practice bag. Configure your profile first." = "Ve vašem tréninkovém bagu nejsou žádné hole. Nejprve nastavte profil.";
-"No committed shot origin or target is available." = "Není k dispozici žádný potvrzený výchozí bod ani cíl rány.";
 "No course" = "Bez hřiště";
 "No courses match \"%@\"." = "Žádné hřiště neodpovídá „%@“.";
 "No data" = "Žádná data";
@@ -617,7 +616,7 @@
 "No golf clubs matched \"%@\"." = "Žádné golfové kluby neodpovídají výrazu \"%@\".";
 "No green is mapped for this hole yet." = "Pro tuto jamku zatím není zmapován žádný green.";
 "No impact" = "Bez vlivu";
-"No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target." = "Žádný modelovaný let nedosáhne vzdálenosti cíle. Nejbližší odhad: %@ pro cíl ve vzdálenosti %@.";
+"No club reaches the target distance. Closest: %@ for a %@ target." = "Žádná hůl nedosáhne vzdálenosti cíle. Nejblíže: %@ pro cíl ve vzdálenosti %@.";
 "No outcomes calculated" = "Nebyly vypočteny žádné výsledky";
 "No rated tee sets were found for %@." = "Pro %@ nebyla nalezena žádná odpaliště s ratingem.";
 "No recommendation" = "Žádné doporučení";
@@ -628,7 +627,7 @@
 "No score would raise your Handicap Index." = "Žádné skóre by nezvýšilo váš Handicap Index.";
 "No score yet" = "Zatím bez skóre";
 "No scores yet" = "Zatím žádná skóre";
-"No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range." = "Pro tuto výšku/kalibraci není k dispozici žádná scoringová kombinace. Zkontrolujte podrobnosti; v rámci scoringového rozsahu se doporučení pro celý bag nenahrazují.";
+"No wedge shot fits this distance. Check your wedge distances in In the bag." = "Na tuto vzdálenost se nehodí žádná rána wedgí. Zkontrolujte vzdálenosti wedgí v sekci Ve výbavě.";
 "No tees have been added for this course." = "K tomuto hřišti nebyla přidána žádná odpaliště.";
 "No terrain elevations are available for this %@ profile." = "Pro tento profil (%@) nejsou k dispozici žádné výšky terénu.";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Nepodařilo se vytvořit platnou scoringovou pozici. Zkontrolujte cíl a osobní kalibraci wedgí.";
@@ -645,12 +644,11 @@
 "Older rounds (past 20-round window)" = "Starší kola (mimo okno 20 kol)";
 "On the number" = "Na číslo";
 "Open Trajectory" = "Otevřít Dráhu letu";
-"Opens all conditions, source time, cached status, provider errors and manual refresh" = "Otevře všechny podmínky, čas zdroje, stav mezipaměti, chyby poskytovatele a ruční obnovení";
+"Opens the full weather details" = "Otevře podrobnosti o počasí";
 "Opens an enlarged green where you can tap to place the flag" = "Otevře zvětšený green, na kterém můžete klepnutím umístit praporek";
 "Opens course, tee and hole information" = "Otevře informace o hřišti, odpališti a jamce";
-"Opens the full chart, source, budget, errors and confirmed retry" = "Otevře celý graf, zdroj, rozpočet, chyby a potvrzené opakování";
+"Opens the elevation chart" = "Otevře graf výškového rozdílu";
 "Opens the suggested club and flight details" = "Otevře navrženou hůl a podrobnosti letu";
-"Opens the suggested club and modeled flight details" = "Otevře navrženou hůl a podrobnosti modelovaného letu";
 "Optional" = "Volitelné";
 "Other" = "Ostatní";
 "Other Options" = "Další možnosti";
@@ -687,7 +685,7 @@
 "Player" = "Hráč";
 "Player %@" = "Hráč %@";
 "Player name" = "Jméno hráče";
-"Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate." = "Hráči bez indexu mohou zapisovat brutto rány, ale nemají netto součet Stableford. Zapněte index a pro scratch případně výslovně zvolte 0.";
+"Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch)." = "Hráči bez Handicap Indexu nezískají body Stableford. Zapněte jim Použít Handicap Index (0 pro scratch).";
 "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal." = "Playing Conditions Calculation. Upravuje váš handicapový diferenciál při neobvykle snadných nebo obtížných podmínkách na hřišti, jako je vítr, déšť, rychlost greenů nebo nastavení hřiště. Kladná hodnota znamená těžší podmínky než obvykle; záporná snazší.";
 "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions." = "Playing Conditions Calculation. Upravuje diferenciál skóre, když se hřiště kvůli počasí, nastavení nebo stavu hraje znatelně snáze nebo obtížněji než obvykle.";
 "Playing Handicap Index" = "Hrací Handicap Index";
@@ -721,7 +719,7 @@
 "Random scoring position" = "Náhodná scoringová pozice";
 "Random scoring position, reset to device GPS, and personal wedge calibration" = "Náhodná scoringová pozice, obnovení GPS zařízení a osobní kalibrace wedgí";
 "Range" = "Rozsah";
-"Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown." = "Rozsah −10 až 54. Index plus 2 se zadává jako −2. Nula znamená scratch, ne neznámou hodnotu.";
+"Enter a plus handicap with a + sign, e.g. +2. 0 means scratch." = "Plusový handicap zadejte se znaménkem +, např. +2. 0 znamená scratch.";
 "Rating / slope" = "Rating / slope";
 "Rating category" = "Kategorie hodnocení";
 "Rating category information" = "Informace o kategorii ratingu";
@@ -738,7 +736,7 @@
 "Region" = "Oblast";
 "Relative humidity" = "Relativní vlhkost";
 "Relative humidity of the air, expressed as a percentage." = "Relativní vlhkost vzduchu v procentech.";
-"Release a point on the map to choose a shot target." = "Pusťte bod na mapě a vyberte cíl rány.";
+"Tap the map to choose a target." = "Klepněte na mapu a vyberte cíl.";
 "Release target to calculate" = "Pusťte cíl pro výpočet";
 "Remove player" = "Odebrat hráče";
 "Replace All Data With Test Data" = "Nahradit všechna data testovacími daty";
@@ -812,7 +810,7 @@
 "Scorecard" = "Karta skóre";
 "Scoring" = "Scoring";
 "Scoring by par" = "Skóre podle paru";
-"Scoring mode prioritizes calibrated wedge shots when the target is within your personal range." = "Scoringový režim upřednostňuje kalibrované rány wedgí, když je cíl ve vašem osobním rozsahu.";
+"Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Ve vašem rozsahu wedgí navrhne wedge, trajektorii a délku švihu pro ránu.";
 "Scoring mode recommendations" = "Doporučení scoringového režimu";
 "Scoring range · ≤ %@" = "Scoringový rozsah · ≤ %@";
 "Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Scoring podporuje nejvýše 14 wedgí v bagu. Zmenšete bag v Matici wedgí.";
@@ -889,7 +887,7 @@
 "Slope rating" = "Slope rating";
 "Some holes are unplayed. You can still save this round to Statistics." = "Některé jamky nebyly odehrány. Kolo můžete přesto uložit do Statistik.";
 "Some holes have not been played or recorded. Missing scores will remain empty. " = "Některé jamky nebyly odehrány ani zapsány. Chybějící skóre zůstanou prázdná. ";
-"Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data." = "Chybí některé pary, indexy jamek nebo příslušné ratingy odpaliště. Brutto scoring je k dispozici; výpočty netto, bodů a HCP vyžadují úplná data hřiště.";
+"This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available." = "Tomuto hřišti chybí některé údaje o jamkách nebo ratingu, proto lze počítat jen rány. Netto skóre, body a výsledky handicapu nejsou k dispozici.";
 "Speed of the ball immediately after impact." = "Rychlost míčku bezprostředně po zásahu.";
 "Spin Axis" = "Osa rotace";
 "Spin Rate" = "Rotace";
@@ -930,9 +928,8 @@
 "Target Line" = "Cílová linie";
 "Target distance" = "Vzdálenost cíle";
 "Target elevation" = "Výška cíle";
-"Target is being moved. Release to load its terrain." = "Cíl se přesouvá. Pusťte ho, aby se načetl jeho terén.";
+"Release to see the elevation." = "Pusťte a zobrazí se výškový rozdíl.";
 "Target line" = "Cílová linie";
-"Target movement cancelled. Tap the map and release a target to commit its terrain." = "Přesun cíle byl zrušen. Klepněte na mapu a pusťte cíl, abyste potvrdili jeho terén.";
 "Target moving · release to calculate." = "Cíl se přesouvá · pusťte pro výpočet.";
 "Target: %@ · %@" = "Cíl: %@ · %@";
 "Tee" = "Odpaliště";
@@ -955,15 +952,15 @@
 "Test Data" = "Testovací data";
 "The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it." = "Výškový rozdíl (%@) mění dokulení i carry: do kopce se očekávané dokulení zvyšuje, z kopce snižuje.";
 "The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies." = "Švih %@ mění délku dokulení, takže doporučení zohledňuje jak sílu švihu, tak let míčku.";
-"The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider." = "Diferenciál skóre za 9 jamek se kombinuje s očekávaným 9jamkovým diferenciálem podle WHS na základě vašeho aktuálního Handicap Indexu. Jde o místní odhad; oficiální zápis potvrďte u svého poskytovatele handicapu.";
+"Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ." = "Vaše skóre za 9 jamek se zkombinuje s očekávaným skóre za zbylých 9 jamek podle vašeho Handicap Indexu. Jde o odhad; váš oficiální handicap se může lišit.";
 "The Men/Women rating category follows your player settings. Change it in Settings." = "Kategorie ratingu Muži/Ženy se řídí nastavením hráče. Změňte ji v Nastavení.";
-"The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential." = "Očekávaný 9jamkový diferenciál podle WHS vyžaduje stanovený Handicap Index. Dokud ho nemáte, toto kolo nemůže přispět odhadovaným diferenciálem.";
+"A 9-hole round can only count once you have a Handicap Index." = "Kolo na 9 jamek se započítá, až budete mít Handicap Index.";
 "The account request could not be completed. Please try again." = "Požadavek na účet se nepodařilo dokončit. Zkuste to znovu.";
 "The account service could not complete your request. Please try again later." = "Služba účtů nemohla dokončit váš požadavek. Zkuste to později.";
-"The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result." = "Aplikace odhaduje GIR, když celkový počet ran − putty ≤ par − 2. Jde o odvozenou hodnotu, ne o naměřený příchod na green; tresty a záchranné rány mohou výsledek ovlivnit.";
+"GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it." = "GIR se počítá z vašeho skóre a puttů, takže jde o odhad. Může ho ovlivnit chip do jamky nebo trestná rána.";
 "The ball finishes on the target line." = "Míček končí na cílové linii.";
 "The ball's initial upward angle." = "Počáteční úhel stoupání míčku.";
-"The chart shows the modeled path. Values above include calibration corrections." = "Graf ukazuje modelovanou dráhu. Hodnoty výše zahrnují kalibrační korekce.";
+"The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart." = "Hodnoty výše jsou doladěné podle skutečných dat z ran, takže se mohou mírně lišit od grafu.";
 "The course information appears incomplete. Please try again later." = "Informace o hřišti se zdají neúplné. Zkuste to později.";
 "The dashed line shows your overall average." = "Přerušovaná čára ukazuje váš celkový průměr.";
 "The data service supplied no usable detail." = "Datová služba neposkytla žádné použitelné podrobnosti.";
@@ -985,7 +982,7 @@
 "This action is available only for accounts with an email sign-in method." = "Tato akce je dostupná jen pro účty s přihlášením e-mailem.";
 "This cannot be undone. Your online account and saved golf records on this device will be removed." = "Tuto akci nelze vrátit. Váš online účet a uložená golfová data v tomto zařízení budou odstraněny.";
 "This clears local sign-in credentials, not your golf records. You’ll return to sign in and can request another reset email. It does not sign out other devices." = "Tím vymažete místní přihlašovací údaje, ne golfová data. Vrátíte se k přihlášení a můžete si vyžádat další e-mail pro obnovení. Ostatní zařízení se neodhlásí.";
-"This course cannot be used for Handicap. Choose a rated course or an explicitly custom course." = "Toto hřiště nelze použít pro handicap. Vyberte hřiště s ratingem nebo výslovně vlastní hřiště.";
+"This course can't be used for Handicap. Choose a rated course or add it as a custom course." = "Toto hřiště nelze použít pro handicap. Vyberte hřiště s ratingem nebo ho přidejte jako vlastní hřiště.";
 "This course is temporarily unavailable. Please try another course or come back later." = "Toto hřiště je dočasně nedostupné. Zkuste jiné hřiště nebo se vraťte později.";
 "This discards the unsaved round and its scores. Saved scorecards are not affected." = "Tím zahodíte neuložené kolo a jeho skóre. Uložené karty nejsou ovlivněny.";
 "This permanently deletes your account and removes its saved golf data from this device. This cannot be undone." = "Tím trvale smažete účet a odstraníte jeho uložená golfová data z tohoto zařízení. Tuto akci nelze vrátit.";
@@ -1041,8 +1038,8 @@
 "WHS Adjusted Score" = "Skóre upravené podle WHS";
 "WHS Ratings · Required" = "Ratingy WHS · Povinné";
 "WHS counting rules" = "Pravidla započítání WHS";
-"Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback." = "Čeká se na úplné počasí na hřišti: teplotu, tlak u povrchu, vlhkost a vítr. Bez náhrady rovinou/bezvětřím.";
-"Waiting for matching origin/target terrain…" = "Čeká se na odpovídající terén výchozího bodu/cíle…";
+"Waiting for the course weather…" = "Čeká se na počasí na hřišti…";
+"Loading elevation…" = "Načítání výškového rozdílu…";
 "We bring together course information, handicap planning, club setup and shot insights to help golfers make more informed decisions on and off the course." = "Spojujeme informace o hřištích, plánování handicapu, nastavení holí a analýzu ran, aby golfisté mohli dělat informovanější rozhodnutí na hřišti i mimo něj.";
 "We couldn't load this course just now. Please wait a few minutes, then try again." = "Hřiště se právě nepodařilo načíst. Počkejte prosím několik minut a zkuste to znovu.";
 "We couldn't load this course right now. Check your connection and try again." = "Toto hřiště teď nelze načíst. Zkontrolujte připojení a zkuste to znovu.";
@@ -1057,7 +1054,7 @@
 "Weather: %@" = "Počasí: %@";
 "Wedge Matrix" = "Tabulka wedge";
 "Wedge bag" = "Bag wedgí";
-"Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch." = "Hodnoty carry wedgí se upravují v Bagu wedgí. Ve Vzdálenostech holí a výletu je upravit nelze.";
+"Edit wedge distances in Wedge bag." = "Vzdálenosti wedgí upravte v sekci Bag wedgí.";
 "Wedge matrix" = "Matice wedgí";
 "Wedge tools" = "Nástroje wedgí";
 "Wedges" = "Wedge";
@@ -1077,6 +1074,8 @@
 "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings." = "S vaším svolením pomáhá vaše poloha zobrazovat vzdálenosti a podmínky na hřišti. Některé funkce sdílejí informace o poloze se svými poskytovateli. Přístup k poloze můžete změnit v Nastavení zařízení.";
 "Women" = "Ženy";
 "From tee" = "Od odpaliště";
+"From your GPS position" = "Z vaší polohy GPS";
+"From the tee" = "Z odpaliště";
 "YOUR NEXT SHOT" = "VAŠE DALŠÍ RÁNA";
 "Yards" = "Yardy";
 "Yes" = "Ano";
@@ -1124,7 +1123,7 @@
 "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind." = "fairwayvector-hcp-projection neshromažďuje žádná data. Všechny výpočty a projekce handicapu probíhají výhradně ve vašem zařízení. Aplikace nepoužívá síť, analytiku, reklamu ani sledování jakéhokoli druhu.";
 "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks." = "fairwayvector-hcp-projection neintegruje žádné SDK třetích stran, poskytovatele analytiky ani reklamní sítě.";
 "fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data." = "fairwayvector-hcp-projection je offline kalkulačka projekcí handicapu. Neshromažďuje, neukládá, nepřenáší ani nesdílí žádné osobní údaje.";
-"fairwayvector-trajectory combines a flight simulation with calibrated corrections." = "fairwayvector-trajectory kombinuje simulaci letu s kalibrovanými korekcemi.";
+"Golf PinTheory simulates the ball flight and fine-tunes it with real shot data." = "Golf PinTheory simuluje let míčku a dolaďuje ho podle skutečných dat z ran.";
 "from %.0f degrees true north" = "od %.0f stupňů od zeměpisného severu";
 "holes" = "jamky";
 "left" = "vlevo";

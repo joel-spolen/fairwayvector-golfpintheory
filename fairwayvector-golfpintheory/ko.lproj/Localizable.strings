@@ -175,7 +175,7 @@
 "Calculate Trajectory" = "궤적 계산";
 "Calculate the flight" = "비행 계산";
 "Calculates the golf ball's trajectory" = "골프공의 궤적을 계산합니다";
-"Calculating with your Practice bag, captured weather and terrain…" = "연습 백, 측정된 날씨와 지형으로 계산 중…";
+"Finding the right club…" = "알맞은 클럽을 찾는 중…";
 "Calculating…" = "계산 중…";
 "Calm" = "무풍";
 "Calm, %@" = "무풍, %@";
@@ -212,8 +212,8 @@
 "Downloading course elevation…" = "코스 고도 데이터 다운로드 중…";
 "Elevation isn't available for this course." = "이 코스의 고도 데이터를 사용할 수 없습니다.";
 "Course elevation couldn't be downloaded right now. It will be tried again the next time you open the course." = "지금은 코스 고도 데이터를 다운로드할 수 없습니다. 다음에 코스를 열 때 다시 시도합니다.";
-"This position is outside the downloaded course elevation." = "이 위치는 다운로드한 코스 고도 데이터 범위를 벗어났습니다.";
-"Choose the handicap range that best matches your game. It is used for club selection. To enter personal distances and launch data, open In the bag > Club distances & launch from Home." = "내 게임에 가장 잘 맞는 핸디캡 범위를 선택하세요. 클럽 선택에 사용됩니다. 개인 거리와 발사 데이터를 입력하려면 홈에서 백 > 클럽 거리 및 발사를 여세요.";
+"No elevation data for this spot." = "이 지점의 고도 데이터가 없습니다.";
+"Pick the range closest to your handicap. It's used to suggest clubs until you add your own distances in In the bag." = "내 핸디캡에 가장 가까운 범위를 선택하세요. 골프백에 내 거리를 추가할 때까지 클럽 추천에 사용됩니다.";
 "Choose wedges in Clubs in my bag to include them here." = "내 백의 클럽에서 웨지를 선택하면 여기에 포함됩니다.";
 "Choose which clubs are available" = "사용 가능한 클럽 선택";
 "Choose your course and tee." = "코스와 티를 선택하세요.";
@@ -243,7 +243,7 @@
 "Clubs & launch profile" = "클럽 및 발사 프로필";
 "Clubs in my bag" = "내 백의 클럽";
 "Compare carry distances across swing lengths and trajectories." = "스윙 크기와 탄도별 캐리 거리를 비교하세요.";
-"Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…" = "보정된 웨지로 Low/Mid/High × 50/75/100% 비교 중…";
+"Comparing your wedge shots…" = "웨지 샷을 비교하는 중…";
 "Comparing shots…" = "샷 비교 중…";
 "Completing account request…" = "계정 요청을 완료하는 중…";
 "Completing password recovery…" = "비밀번호 복구를 완료하는 중…";
@@ -347,7 +347,7 @@
 "Drag the green up or down to set elevation. Drag the flag along the green to set the pin." = "그린을 위아래로 드래그해 높이를 설정하고, 깃대를 그린을 따라 드래그해 핀 위치를 설정하세요.";
 "Drag the wind arrow to set the combined headwind, tailwind, and crosswind." = "바람 화살표를 드래그해 맞바람, 뒷바람, 옆바람을 함께 설정하세요.";
 "Driver" = "드라이버";
-"Duplicate Wedge Matrix identities: recreate duplicate entries before scoring. Shot identities must be unique." = "웨지 매트릭스 ID가 중복되었습니다: 스코어링 전에 중복 항목을 다시 만드세요. 샷 ID는 고유해야 합니다.";
+"Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice." = "일부 웨지가 중복되었습니다. 스코어링 추천을 받으려면 골프백에서 중복 항목을 삭제하세요.";
 "E" = "동";
 "Each hole must have a unique HCP from 1 to %lld, and no value may be duplicated or outside that range." = "각 홀은 1부터 %lld까지 고유한 HCP를 가져야 하며, 중복되거나 범위를 벗어난 값은 사용할 수 없습니다.";
 "Each hole must have a unique HCP from 1 to %lld." = "각 홀은 1부터 %lld까지 고유한 HCP를 가져야 합니다.";
@@ -431,7 +431,7 @@
 "Green & Pin" = "그린 및 핀";
 "Green in regulation" = "그린 레귤레이션";
 "Green profile" = "그린 프로필";
-"Gross only. Net score and Stableford points unavailable until an index is supplied." = "그로스만 가능합니다. 인덱스를 입력할 때까지 네트 스코어와 스테이블포드 점수를 사용할 수 없습니다.";
+"Strokes only. Turn on Use Handicap Index for net score and points." = "타수만 기록됩니다. 네트 스코어와 점수를 보려면 Handicap Index 사용을 켜세요.";
 "Gross strokes" = "그로스 타수";
 "Gross · %@" = "그로스 · %@";
 "HCP %@" = "HCP %@";
@@ -454,7 +454,7 @@
 "Handicap tools" = "핸디캡 도구";
 "Handicap trend" = "핸디캡 추세";
 "Handicap trend chart" = "핸디캡 추세 차트";
-"Headline values are estimated using the flight model and calibration corrections. They may differ from real-world flight because conditions and measurements can vary." = "주요 값은 비행 모델과 보정 수정치로 추정합니다. 조건과 측정값이 달라질 수 있으므로 실제 비행과 다를 수 있습니다.";
+"These are estimates. Real shots vary with conditions and strike." = "추정치입니다. 실제 샷은 컨디션과 타격에 따라 달라집니다.";
 "Height" = "높이";
 "Height (%@)" = "높이 (%@)";
 "Height difference between the launch point and the landing surface. This is separate from site elevation." = "발사 지점과 착지면의 높이 차이입니다. 지점 고도와는 별개입니다.";
@@ -579,9 +579,9 @@
 "Miss" = "실패";
 "Miss direction (optional)" = "미스 방향 (선택 사항)";
 "Missed FIR" = "FIR 실패";
-"Modeled Physics Flight Path" = "모델링된 물리 비행 경로";
-"Modeled physics path. At landing, the ball finishes %@ %@ of the target line." = "모델링된 물리 궤적입니다. 착지 시 공은 목표선 %2$@ %1$@ 지점에 멈춥니다.";
-"Modeled physics path. Estimated carry is %@ and apex is %@." = "모델링된 물리 궤적입니다. 예상 캐리는 %@, 최고점은 %@입니다.";
+"Flight path" = "비행 경로";
+"Flight path. At landing, the ball finishes %@ %@ of the target line." = "비행 경로입니다. 착지 시 공은 목표선 %2$@ %1$@ 지점에 멈춥니다.";
+"Flight path. Estimated carry is %@ and apex is %@." = "비행 경로입니다. 예상 캐리는 %@, 최고점은 %@입니다.";
 "Move Flag · Hole %lld" = "깃대 이동 · %lld번 홀";
 "N" = "북";
 "N/A" = "해당 없음";
@@ -594,7 +594,7 @@
 "New password" = "새 비밀번호";
 "Next hole" = "다음 홀";
 "Next page" = "다음 페이지";
-"Nine-hole WHS estimate" = "9홀 WHS 추정";
+"9-hole estimate" = "9홀 추정";
 "No" = "아니요";
 "No Course" = "코스 없음";
 "No Custom Courses" = "사용자 지정 코스 없음";
@@ -602,12 +602,11 @@
 "No Rounds Yet" = "아직 라운드 없음";
 "No Wedges In Bag" = "백에 웨지 없음";
 "No change" = "변동 없음";
-"No club prediction is available. Default club profiles are used until your bag is configured." = "클럽 예측이 없습니다. 백을 설정할 때까지 기본 클럽 프로필을 사용합니다.";
+"No club suggestion is available for this shot." = "이 샷에 추천할 클럽이 없습니다.";
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "목표 높이 %.1fm에 도달하는 클럽이 없습니다. 시뮬레이션 최고점은 %.1fm입니다. 고저차를 줄이거나 발사 조건을 조정하세요.";
 "No club recommendation is available for this shot." = "이 샷에 대한 클럽 추천이 없습니다.";
 "No clubs in bag" = "백에 클럽 없음";
 "No clubs in your Practice bag. Configure your profile first." = "연습 백에 클럽이 없습니다. 먼저 프로필을 설정하세요.";
-"No committed shot origin or target is available." = "확정된 샷 출발점이나 목표가 없습니다.";
 "No course" = "코스 없음";
 "No courses match \"%@\"." = "“%@”과(와) 일치하는 코스가 없습니다.";
 "No data" = "데이터 없음";
@@ -617,7 +616,7 @@
 "No golf clubs matched \"%@\"." = "‘%@’에 해당하는 골프 클럽이 없습니다.";
 "No green is mapped for this hole yet." = "이 홀에는 아직 매핑된 그린이 없습니다.";
 "No impact" = "영향 없음";
-"No modeled flight reaches the target distance. Closest estimate: %@ for a %@ target." = "모델링된 비행 중 목표 거리에 도달하는 것이 없습니다. 가장 가까운 예상: 목표 %2$@에 대해 %1$@.";
+"No club reaches the target distance. Closest: %@ for a %@ target." = "목표 거리에 도달하는 클럽이 없습니다. 가장 가까운 값: 목표 %2$@에 대해 %1$@.";
 "No outcomes calculated" = "계산된 결과 없음";
 "No rated tee sets were found for %@." = "%@에서 레이팅된 티를 찾을 수 없습니다.";
 "No recommendation" = "추천 없음";
@@ -628,7 +627,7 @@
 "No score would raise your Handicap Index." = "Handicap Index를 올리는 스코어는 없습니다.";
 "No score yet" = "아직 스코어 없음";
 "No scores yet" = "아직 스코어 없음";
-"No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range." = "이 높이/보정에서 사용할 수 있는 스코어링 조합이 없습니다. 세부 정보를 확인하세요. 스코어링 범위 안에서는 전체 백 추천으로 대체하지 않습니다.";
+"No wedge shot fits this distance. Check your wedge distances in In the bag." = "이 거리에 맞는 웨지 샷이 없습니다. 골프백에서 웨지 거리를 확인하세요.";
 "No tees have been added for this course." = "이 코스에 추가된 티가 없습니다.";
 "No terrain elevations are available for this %@ profile." = "이 프로필(%@)에 사용할 수 있는 지형 고도가 없습니다.";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "유효한 스코어링 위치를 생성할 수 없습니다. 목표와 개인 웨지 보정을 확인하세요.";
@@ -645,12 +644,11 @@
 "Older rounds (past 20-round window)" = "이전 라운드 (20라운드 범위 밖)";
 "On the number" = "거리 일치";
 "Open Trajectory" = "궤적 열기";
-"Opens all conditions, source time, cached status, provider errors and manual refresh" = "모든 조건, 출처 시각, 캐시 상태, 제공업체 오류, 수동 새로 고침을 엽니다";
+"Opens the full weather details" = "날씨 세부 정보를 엽니다";
 "Opens an enlarged green where you can tap to place the flag" = "확대된 그린을 열어 탭으로 깃대를 배치할 수 있습니다";
 "Opens course, tee and hole information" = "코스, 티, 홀 정보를 엽니다";
-"Opens the full chart, source, budget, errors and confirmed retry" = "전체 차트, 출처, 예산, 오류, 확인된 재시도를 엽니다";
+"Opens the elevation chart" = "고저차 차트를 엽니다";
 "Opens the suggested club and flight details" = "추천 클럽과 비행 세부 정보를 엽니다";
-"Opens the suggested club and modeled flight details" = "추천 클럽과 모델링된 비행 세부 정보를 엽니다";
 "Optional" = "선택 사항";
 "Other" = "기타";
 "Other Options" = "다른 옵션";
@@ -687,7 +685,7 @@
 "Player" = "플레이어";
 "Player %@" = "플레이어 %@";
 "Player name" = "플레이어 이름";
-"Players without an index can record gross strokes but have no net Stableford total. Enable an index and explicitly choose 0 for scratch if appropriate." = "인덱스가 없는 플레이어는 그로스 타수를 기록할 수 있지만 네트 스테이블포드 합계는 없습니다. 인덱스를 활성화하고 스크래치라면 0을 직접 선택하세요.";
+"Players without a Handicap Index get no Stableford points. Turn on Use Handicap Index for them (0 for scratch)." = "Handicap Index가 없는 플레이어는 스테이블포드 점수를 받지 못합니다. 해당 플레이어의 Handicap Index 사용을 켜세요(스크래치는 0).";
 "Playing Conditions Calculation. It adjusts your handicap differential for unusually easy or difficult course conditions, such as wind, rain, green speed, or setup. A positive value means conditions were harder than normal; a negative value means easier than normal." = "Playing Conditions Calculation. 바람, 비, 그린 스피드, 코스 세팅처럼 평소보다 유난히 쉽거나 어려운 코스 상태에 맞춰 핸디캡 디퍼렌셜을 조정합니다. 양수는 평소보다 어려운 상태, 음수는 쉬운 상태를 의미합니다.";
 "Playing Conditions Calculation. This adjusts the score differential when the course is playing noticeably easier or harder than normal because of weather, setup, or course conditions." = "Playing Conditions Calculation. 날씨, 세팅, 코스 상태로 인해 코스가 평소보다 눈에 띄게 쉽거나 어려울 때 스코어 디퍼렌셜을 조정합니다.";
 "Playing Handicap Index" = "플레이 Handicap Index";
@@ -721,7 +719,7 @@
 "Random scoring position" = "임의 스코어링 위치";
 "Random scoring position, reset to device GPS, and personal wedge calibration" = "임의 스코어링 위치, 기기 GPS로 재설정, 개인 웨지 보정";
 "Range" = "범위";
-"Range −10 to 54. A plus 2 index is entered as −2. Zero means scratch, not unknown." = "범위는 −10부터 54까지입니다. 플러스 2 인덱스는 −2로 입력합니다. 0은 스크래치를 의미하며 알 수 없음이 아닙니다.";
+"Enter a plus handicap with a + sign, e.g. +2. 0 means scratch." = "플러스 핸디캡은 +2처럼 + 기호를 붙여 입력하세요. 0은 스크래치입니다.";
 "Rating / slope" = "레이팅 / 슬로프";
 "Rating category" = "레이팅 구분";
 "Rating category information" = "레이팅 분류 정보";
@@ -738,7 +736,7 @@
 "Region" = "지역";
 "Relative humidity" = "상대 습도";
 "Relative humidity of the air, expressed as a percentage." = "공기의 상대 습도(%)입니다.";
-"Release a point on the map to choose a shot target." = "지도에서 한 지점을 놓아 샷 목표를 선택하세요.";
+"Tap the map to choose a target." = "지도를 탭해 목표를 선택하세요.";
 "Release target to calculate" = "목표를 놓아 계산";
 "Remove player" = "플레이어 삭제";
 "Replace All Data With Test Data" = "모든 데이터를 테스트 데이터로 바꾸기";
@@ -812,7 +810,7 @@
 "Scorecard" = "스코어카드";
 "Scoring" = "스코어링";
 "Scoring by par" = "파별 스코어";
-"Scoring mode prioritizes calibrated wedge shots when the target is within your personal range." = "스코어링 모드에서는 목표가 개인 범위 안에 있을 때 보정된 웨지 샷을 우선합니다.";
+"Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "웨지 거리 안에서는 샷에 맞는 웨지, 탄도, 스윙 크기를 추천합니다.";
 "Scoring mode recommendations" = "스코어링 모드 추천";
 "Scoring range · ≤ %@" = "스코어링 범위 · ≤ %@";
 "Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "스코어링은 백에 웨지를 최대 14개까지 지원합니다. 웨지 매트릭스 백을 줄이세요.";
@@ -889,7 +887,7 @@
 "Slope rating" = "슬로프 레이팅";
 "Some holes are unplayed. You can still save this round to Statistics." = "플레이하지 않은 홀이 있습니다. 그래도 이 라운드를 통계에 저장할 수 있습니다.";
 "Some holes have not been played or recorded. Missing scores will remain empty. " = "일부 홀은 플레이하거나 기록하지 않았습니다. 누락된 스코어는 빈칸으로 남습니다. ";
-"Some par, stroke indexes or applicable tee ratings are missing. Gross scoring is available; net, points and HCP calculations need complete course data." = "일부 파, 홀 핸디캡 인덱스 또는 해당 티 레이팅이 없습니다. 그로스 스코어링은 가능하지만 네트, 점수, HCP 계산에는 완전한 코스 데이터가 필요합니다.";
+"This course is missing some hole or rating details, so only strokes can be counted. Net score, points and handicap results aren't available." = "이 코스는 일부 홀 또는 레이팅 정보가 없어 타수만 기록할 수 있습니다. 네트 스코어, 점수, 핸디캡 결과는 사용할 수 없습니다.";
 "Speed of the ball immediately after impact." = "임팩트 직후 공의 속도입니다.";
 "Spin Axis" = "스핀 축";
 "Spin Rate" = "스핀량";
@@ -930,9 +928,8 @@
 "Target Line" = "목표선";
 "Target distance" = "목표 거리";
 "Target elevation" = "목표 높이";
-"Target is being moved. Release to load its terrain." = "목표를 이동하는 중입니다. 놓으면 지형을 불러옵니다.";
+"Release to see the elevation." = "손을 떼면 고저차가 표시됩니다.";
 "Target line" = "목표선";
-"Target movement cancelled. Tap the map and release a target to commit its terrain." = "목표 이동이 취소되었습니다. 지도를 탭하고 목표를 놓아 지형을 확정하세요.";
 "Target moving · release to calculate." = "목표 이동 중 · 놓으면 계산합니다.";
 "Target: %@ · %@" = "목표: %@ · %@";
 "Tee" = "티";
@@ -955,15 +952,15 @@
 "Test Data" = "테스트 데이터";
 "The %@ elevation changes rollout as well as carry: uphill increases the expected release, while downhill reduces it." = "고저차(%@)는 캐리뿐 아니라 런에도 영향을 줍니다. 오르막은 예상 런을 늘리고 내리막은 줄입니다.";
 "The %@ swing changes the release distance, so the recommendation accounts for both how hard you swing and how the ball flies." = "%@ 스윙은 런 거리를 바꾸므로, 추천은 스윙 강도와 공의 비행을 모두 고려합니다.";
-"The 9-hole Score Differential is combined with the WHS expected 9-hole differential based on your current Handicap Index. This is a local estimate; confirm official posting with your handicap provider." = "9홀 스코어 디퍼렌셜은 현재 Handicap Index를 기반으로 한 WHS 예상 9홀 디퍼렌셜과 합산됩니다. 이는 로컬 추정치이므로 공식 등록은 핸디캡 제공기관에서 확인하세요.";
+"Your 9-hole score is combined with an expected score for the other 9 holes, based on your Handicap Index. It's an estimate; your official handicap may differ." = "9홀 스코어는 Handicap Index를 기반으로 한 나머지 9홀의 예상 스코어와 합산됩니다. 추정치이므로 공식 핸디캡과 다를 수 있습니다.";
 "The Men/Women rating category follows your player settings. Change it in Settings." = "남성/여성 레이팅 분류는 플레이어 설정을 따릅니다. 설정에서 변경하세요.";
-"The WHS expected 9-hole differential requires an established Handicap Index. Until one is available, this round cannot contribute an estimated differential." = "WHS 예상 9홀 디퍼렌셜에는 확정된 Handicap Index가 필요합니다. 그 전까지 이 라운드는 예상 디퍼렌셜을 산출할 수 없습니다.";
+"A 9-hole round can only count once you have a Handicap Index." = "9홀 라운드는 Handicap Index가 있어야 반영됩니다.";
 "The account request could not be completed. Please try again." = "계정 요청을 완료할 수 없습니다. 다시 시도하세요.";
 "The account service could not complete your request. Please try again later." = "계정 서비스가 요청을 완료하지 못했습니다. 나중에 다시 시도하세요.";
-"The app estimates GIR when total strokes − putts ≤ par − 2. This is inferred, not measured green arrival; penalties and recovery play can affect the result." = "앱은 총 타수 − 퍼트 수 ≤ 파 − 2일 때 GIR로 추정합니다. 이는 추정값이며 그린 도달을 측정한 것이 아닙니다. 벌타와 리커버리 샷이 결과에 영향을 줄 수 있습니다.";
+"GIR is worked out from your score and putts, so it's an estimate. A chip-in or a penalty can affect it." = "GIR은 스코어와 퍼트 수로 계산한 추정값입니다. 칩인이나 벌타가 영향을 줄 수 있습니다.";
 "The ball finishes on the target line." = "공은 목표선 위에 멈춥니다.";
 "The ball's initial upward angle." = "공의 초기 상승 각도입니다.";
-"The chart shows the modeled path. Values above include calibration corrections." = "차트는 모델링된 경로를 보여 줍니다. 위의 값에는 보정 수정치가 포함됩니다.";
+"The numbers above are fine-tuned with real shot data, so they can differ slightly from the chart." = "위의 수치는 실제 샷 데이터로 미세 조정되므로 차트와 약간 다를 수 있습니다.";
 "The course information appears incomplete. Please try again later." = "코스 정보가 불완전한 것 같습니다. 나중에 다시 시도하세요.";
 "The dashed line shows your overall average." = "점선은 전체 평균을 나타냅니다.";
 "The data service supplied no usable detail." = "데이터 서비스에서 유용한 세부 정보를 제공하지 않았습니다.";
@@ -985,7 +982,7 @@
 "This action is available only for accounts with an email sign-in method." = "이 작업은 이메일 로그인 방식의 계정에서만 사용할 수 있습니다.";
 "This cannot be undone. Your online account and saved golf records on this device will be removed." = "이 작업은 취소할 수 없습니다. 온라인 계정과 이 기기에 저장된 골프 기록이 삭제됩니다.";
 "This clears local sign-in credentials, not your golf records. You’ll return to sign in and can request another reset email. It does not sign out other devices." = "로컬 로그인 자격 증명을 지우며 골프 기록은 지우지 않습니다. 로그인 화면으로 돌아가 재설정 이메일을 다시 요청할 수 있습니다. 다른 기기는 로그아웃되지 않습니다.";
-"This course cannot be used for Handicap. Choose a rated course or an explicitly custom course." = "이 코스는 핸디캡에 사용할 수 없습니다. 레이팅된 코스나 명시적인 사용자 지정 코스를 선택하세요.";
+"This course can't be used for Handicap. Choose a rated course or add it as a custom course." = "이 코스는 핸디캡에 사용할 수 없습니다. 레이팅된 코스를 선택하거나 사용자 지정 코스로 추가하세요.";
 "This course is temporarily unavailable. Please try another course or come back later." = "이 코스는 일시적으로 사용할 수 없습니다. 다른 코스를 선택하거나 나중에 다시 방문하세요.";
 "This discards the unsaved round and its scores. Saved scorecards are not affected." = "저장되지 않은 라운드와 스코어가 삭제됩니다. 저장된 스코어카드에는 영향이 없습니다.";
 "This permanently deletes your account and removes its saved golf data from this device. This cannot be undone." = "계정이 영구적으로 삭제되고 이 기기에 저장된 골프 데이터가 제거됩니다. 이 작업은 취소할 수 없습니다.";
@@ -1041,8 +1038,8 @@
 "WHS Adjusted Score" = "WHS 조정 스코어";
 "WHS Ratings · Required" = "WHS 레이팅 · 필수";
 "WHS counting rules" = "WHS 반영 규칙";
-"Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback." = "완전한 코스 날씨를 기다리는 중: 기온, 지표 기압, 습도, 바람. 평지/무풍 대체값은 사용하지 않습니다.";
-"Waiting for matching origin/target terrain…" = "일치하는 출발점/목표 지형을 기다리는 중…";
+"Waiting for the course weather…" = "코스 날씨를 기다리는 중…";
+"Loading elevation…" = "고저차를 불러오는 중…";
 "We bring together course information, handicap planning, club setup and shot insights to help golfers make more informed decisions on and off the course." = "코스 정보, 핸디캡 계획, 클럽 설정, 샷 인사이트를 한데 모아 골퍼가 코스 안팎에서 더 나은 결정을 내리도록 돕습니다.";
 "We couldn't load this course just now. Please wait a few minutes, then try again." = "코스를 불러오지 못했습니다. 몇 분 기다린 후 다시 시도해 주세요.";
 "We couldn't load this course right now. Check your connection and try again." = "지금은 이 코스를 불러올 수 없습니다. 연결을 확인한 후 다시 시도하세요.";
@@ -1057,7 +1054,7 @@
 "Weather: %@" = "날씨: %@";
 "Wedge Matrix" = "웨지 매트릭스";
 "Wedge bag" = "웨지 백";
-"Wedge carry values are edited in the Wedge Bag. They are not editable in Club Distances & Launch." = "웨지 캐리 값은 웨지 백에서 편집합니다. 클럽 거리 및 발사에서는 편집할 수 없습니다.";
+"Edit wedge distances in Wedge bag." = "웨지 거리는 웨지 백에서 편집하세요.";
 "Wedge matrix" = "웨지 매트릭스";
 "Wedge tools" = "웨지 도구";
 "Wedges" = "웨지";
@@ -1077,6 +1074,8 @@
 "With your permission, your location helps show distances and conditions on the course. Some features share location information with their providers. You can change location access in your device’s Settings." = "허용하는 경우 위치 정보는 코스의 거리와 상태를 표시하는 데 도움이 됩니다. 일부 기능은 위치 정보를 해당 제공업체와 공유합니다. 위치 접근 권한은 기기 설정에서 변경할 수 있습니다.";
 "Women" = "여성";
 "From tee" = "티에서";
+"From your GPS position" = "내 GPS 위치에서";
+"From the tee" = "티에서";
 "YOUR NEXT SHOT" = "다음 샷";
 "Yards" = "야드";
 "Yes" = "예";
@@ -1124,7 +1123,7 @@
 "fairwayvector-hcp-projection does not collect any data. All handicap calculations and projections are performed entirely on your device. The app does not use the network, analytics, advertising, or tracking of any kind." = "fairwayvector-hcp-projection은 어떠한 데이터도 수집하지 않습니다. 모든 핸디캡 계산과 예측은 전적으로 기기에서 수행됩니다. 이 앱은 네트워크, 분석, 광고 또는 어떠한 종류의 추적도 사용하지 않습니다.";
 "fairwayvector-hcp-projection does not integrate with any third-party SDKs, analytics providers, or advertising networks." = "fairwayvector-hcp-projection은 제3자 SDK, 분석 제공업체 또는 광고 네트워크와 통합되지 않습니다.";
 "fairwayvector-hcp-projection is an offline golf handicap projection calculator. It does not collect, store, transmit, or share any personal data." = "fairwayvector-hcp-projection은 오프라인 핸디캡 예측 계산기입니다. 개인 데이터를 수집, 저장, 전송 또는 공유하지 않습니다.";
-"fairwayvector-trajectory combines a flight simulation with calibrated corrections." = "fairwayvector-trajectory는 비행 시뮬레이션과 보정된 수정치를 결합합니다.";
+"Golf PinTheory simulates the ball flight and fine-tunes it with real shot data." = "Golf PinTheory는 공의 비행을 시뮬레이션하고 실제 샷 데이터로 미세 조정합니다.";
 "from %.0f degrees true north" = "진북 기준 %.0f도 방향에서";
 "holes" = "홀";
 "left" = "왼쪽";

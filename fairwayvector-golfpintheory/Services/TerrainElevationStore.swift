@@ -59,7 +59,7 @@ final class TerrainElevationStore {
         guard targetInteractionActive else { return }
         targetInteractionActive = false
         shotPending = false
-        shotMessage = L("Target movement cancelled. Tap the map and release a target to commit its terrain.")
+        shotMessage = L("Tap the map to choose a target.")
     }
 
     func invalidateShot(showHole: Bool = true) {
@@ -69,7 +69,7 @@ final class TerrainElevationStore {
         committedRequest = nil
         // Invalidating cached advice (hole change/deactivation) is not a held gesture.
         shotPending = targetInteractionActive
-        shotMessage = targetInteractionActive ? L("Target is being moved. Release to load its terrain.") : nil
+        shotMessage = targetInteractionActive ? L("Release to see the elevation.") : nil
     }
 
     func commitShot(_ request: TerrainRequest, selectShot: Bool = true) {
@@ -78,7 +78,7 @@ final class TerrainElevationStore {
         committedRequest = request // labels use this immutable origin, NOT a newer live GPS fix
         if selectShot { mode = .shot }
         guard let origin = request.origin, let target = request.target else {
-            shotMessage = L("No committed shot origin or target is available.")
+            shotMessage = L("Tap the map to choose a target.")
             return
         }
         snapshot.shotProfile = profile([origin, target], straight: true)
@@ -96,7 +96,7 @@ final class TerrainElevationStore {
         guard terrain != nil else { return isHoleLoading ? nil : unavailableMessage ?? L("Terrain unavailable") }
         guard let profile, profile.samples.first?.elevationMeters != nil,
               profile.samples.last?.elevationMeters != nil else {
-            return L("This position is outside the downloaded course elevation.")
+            return L("No elevation data for this spot.")
         }
         return nil
     }

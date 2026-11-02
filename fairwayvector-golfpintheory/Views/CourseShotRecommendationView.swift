@@ -134,7 +134,7 @@ struct CourseShotRecommendationView: View {
         .padding(.bottom, compact ? 0 : 16)
         .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
         .accessibilityIdentifier("course-club-recommendation")
-        .accessibilityHint("Opens the suggested club and modeled flight details")
+        .accessibilityHint("Opens the suggested club and flight details")
         .task(id: calculationKey) {
             result = nil
             failedInput = nil
@@ -175,8 +175,8 @@ struct CourseShotRecommendationView: View {
                 if recommendations.isEmpty {
                     failedInput = captured
                     errorMessage = useScoringRecommendations
-                        ? L("No scoring combination is available at this elevation/calibration. Review details; full-bag advice is not substituted inside scoring range.")
-                        : L("No club prediction is available. Default club profiles are used until your bag is configured.")
+                        ? L("No wedge shot fits this distance. Check your wedge distances in In the bag.")
+                        : L("No club suggestion is available for this shot.")
                 }
                 result = CourseShotRecommendationResult(input: captured, recommendations: recommendations,
                     unavailableScoringShots: unavailable)
@@ -300,18 +300,18 @@ struct CourseShotRecommendationView: View {
     }
 
     private var status: String {
-        if selectedTarget == nil { return L("Release a point on the map to choose a shot target.") }
+        if selectedTarget == nil { return L("Tap the map to choose a target.") }
         if terrainStore.shotPending { return L("Target moving · release to calculate.") }
         if capturedWeather.map({ CourseShotRecommendationInput.valid($0) }) != true {
-            return L("Waiting for complete course weather: temperature, surface pressure, humidity and wind. No flat/calm fallback.")
+            return L("Waiting for the course weather…")
         }
         if input == nil {
-            return terrainStore.isShotLoading ? L("Waiting for matching origin/target terrain…")
+            return terrainStore.isShotLoading ? L("Loading elevation…")
                 : terrainStore.shotMessage ?? L("Terrain unavailable")
         }
         if failedInput == input { return errorMessage ?? L("Club predictions unavailable.") }
-        return isScoringMode ? L("Comparing Low/Mid/High × 50/75/100% for your calibrated wedges…")
-            : L("Calculating with your Practice bag, captured weather and terrain…")
+        return isScoringMode ? L("Comparing your wedge shots…")
+            : L("Finding the right club…")
     }
 
     private func recommendationRow(_ choice: CourseClubRecommendation, target: Double) -> some View {

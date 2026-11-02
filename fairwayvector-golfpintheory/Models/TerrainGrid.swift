@@ -49,7 +49,7 @@ nonisolated struct TerrainRequest: Hashable, Sendable {
 
     var originLabel: String {
         L(isSimulatedOrigin ? "Simulated golfer · Development"
-            : usesGPS ? "Captured GPS" : "Captured tee fallback")
+            : usesGPS ? "From your GPS position" : "From the tee")
     }
 }
 
