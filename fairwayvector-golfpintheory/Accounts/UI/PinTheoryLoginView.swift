@@ -5,6 +5,9 @@ import AuthenticationServices
 /// callbacks return directly to the service through the actual-window broker.
 @MainActor
 struct PinTheoryLoginView: View {
+    // Hidden until Sign in with Apple is configured; the service code remains for re-enabling.
+    private static let showsAppleSignIn = false
+
     @ObservedObject private var auth: PinTheoryAuthService
     @StateObject private var browser: PinTheoryWebAuthenticationBroker
     @State private var email = ""
@@ -100,14 +103,15 @@ struct PinTheoryLoginView: View {
                 .disabled(unavailable || !browser.hasPresentationAnchor)
                 .accessibilityIdentifier("account-google-sign-in")
 
-                // Apple sign-in is paused until the Apple Developer membership migration is complete.
-                SignInWithAppleButton(.signIn, onRequest: { _ in }, onCompletion: { _ in })
-                    .signInWithAppleButtonStyle(.black)
-                    .frame(height: 44)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .disabled(true)
-                    .accessibilityLabel("Sign in with Apple, coming soon")
-                    .accessibilityIdentifier("account-apple-sign-in-placeholder")
+                if Self.showsAppleSignIn {
+                    SignInWithAppleButton(.signIn, onRequest: { _ in }, onCompletion: { _ in })
+                        .signInWithAppleButtonStyle(.black)
+                        .frame(height: 44)
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
+                        .disabled(true)
+                        .accessibilityLabel("Sign in with Apple, coming soon")
+                        .accessibilityIdentifier("account-apple-sign-in-placeholder")
+                }
 
                 HStack(spacing: 12) {
                     Rectangle().fill(PureLineStyle.line).frame(height: 1)
