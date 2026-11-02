@@ -134,6 +134,8 @@ struct CourseMapView: View {
             handleStartRequest()
         }
         .onChange(of: requestStartRound) { handleStartRequest() }
+        // Golfers glance at the map between shots; auto-lock would force an unlock each time.
+        .onAppear { UIApplication.shared.isIdleTimerDisabled = true }
         .onChange(of: holeIndex) {
             clearSimulation()
             tapPoint = nil
@@ -143,7 +145,10 @@ struct CourseMapView: View {
                 do { try roundStore.updateDraft(round) } catch { roundError = UserFacingError.message(error) }
             }
         }
-        .onDisappear { clearSimulation(); terrainStore.deactivate() }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+            clearSimulation(); terrainStore.deactivate()
+        }
         .fullScreenCover(item: $finishingRound, onDismiss: {
             if roundStore.active == nil {
                 roundModeEnabled = false
