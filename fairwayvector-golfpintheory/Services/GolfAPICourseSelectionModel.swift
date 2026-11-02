@@ -175,7 +175,7 @@ final class GolfAPICourseSelectionModel {
             }
         } catch {
             guard generation == searchGeneration else { return }
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(error)
         }
     }
 
@@ -209,7 +209,7 @@ final class GolfAPICourseSelectionModel {
             hasMoreClubs = result.hasMore
         } catch {
             guard generation == searchGeneration else { return }
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(error)
         }
     }
 
@@ -272,7 +272,8 @@ final class GolfAPICourseSelectionModel {
             return
         }
         guard purpose != .map || course.hasGPS else {
-            errorMessage = L("%@: GPS data not available. GolfAPI lists this course without map coordinates, so it cannot be explored. No download was requested.", "\(course.courseName)")
+            errorMessage = AppLanguage.localized("Map data isn't available for %@. You can still use it for Handicap.",
+                arguments: [course.courseName])
             return
         }
         isLoadingCourse = true
@@ -293,20 +294,20 @@ final class GolfAPICourseSelectionModel {
             if selectableTees.isEmpty {
                 errorMessage = purpose == .handicap
                     ? L(selectedSex == "female" ? "No eligible Women tees with valid ratings and complete hole pars. Use Custom course or an official differential." : "No eligible Men tees with valid ratings and complete hole pars. Use Custom course or an official differential.")
-                    : L("Course data was downloaded, but the provider returned no tee sets. A tee is needed to open this course.")
+                    : L("No tees were found for this course, so it can't be opened. Try another course.")
             } else {
                 // Map keeps its default; Handicap requires explicit tee confirmation.
                 selectedTeeID = purpose == .map ? (ratedTees.first ?? selectableTees.first)?.teeID : nil
             }
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(error)
         }
     }
 
     /// Explicit recent selection always revalidates the exact provider ID and current rating sex.
     func selectReference(_ reference: CourseReference) async {
         guard let id = reference.golfAPICourseID else {
-            errorMessage = L("This recent course has no Golf API identity. Select a provider course or use Custom course.")
+            errorMessage = L("This course can't be opened from Recent. Search for it again or use Custom course.")
             return
         }
         let summary = GolfAPICourseSummary(courseID: id, courseName: reference.courseName,

@@ -139,7 +139,7 @@ struct CourseMapView: View {
             terrainStore.invalidateShot()
             if var round = activeRound, round.currentHole != holeIndex {
                 round.currentHole = holeIndex
-                do { try roundStore.updateDraft(round) } catch { roundError = error.localizedDescription }
+                do { try roundStore.updateDraft(round) } catch { roundError = UserFacingError.message(error) }
             }
         }
         .onDisappear { clearSimulation(); terrainStore.deactivate() }
@@ -192,7 +192,7 @@ struct CourseMapView: View {
         }
         .alert("Round could not be stored", isPresented: Binding(get: { roundError != nil }, set: { if !$0 { roundError = nil } })) {
             Button("Retry draft save") {
-                do { try roundStore.retryDraft(); roundError = nil } catch { roundError = error.localizedDescription }
+                do { try roundStore.retryDraft(); roundError = nil } catch { roundError = UserFacingError.message(error) }
             }
             Button("Keep draft", role: .cancel) { roundError = nil }
         } message: { Text(roundError ?? "") }
@@ -203,7 +203,7 @@ struct CourseMapView: View {
                     roundModeEnabled = false
                     onHome()
                 } catch {
-                    roundError = error.localizedDescription
+                    roundError = UserFacingError.message(error)
                 }
             }
         } message: {

@@ -179,7 +179,7 @@ struct RoundSetupView: View {
                             try store.start(candidate)
                             onStarted()
                             if dismissOnCompletion { dismiss() }
-                        } catch { self.error = error.localizedDescription }
+                        } catch { self.error = UserFacingError.message(error) }
                     }
                     .buttonStyle(PureLinePrimaryButtonStyle())
                     .disabled(!PlayedRoundStore.validStructure(candidate) || store.active != nil)
@@ -384,7 +384,7 @@ struct RoundHoleEntryView: View {
                                 onNavigateHole(round.holes[holePosition + 1].number)
                             }
                         }
-                        catch { self.error = L("Score could not be saved: %@", "\(error.localizedDescription)") }
+                        catch { self.error = UserFacingError.message(error) }
                     } label: {
                         Label("Save hole", systemImage: "checkmark")
                             .font(.subheadline.weight(.semibold))
@@ -1080,7 +1080,7 @@ struct RoundReviewView: View {
             }
             dismiss()
         } catch {
-            self.error = error.localizedDescription
+            self.error = UserFacingError.message(error)
         }
     }
 

@@ -186,7 +186,7 @@ struct CourseShotRecommendationView: View {
             } catch {
                 guard !Task.isCancelled, input == captured else { return }
                 failedInput = captured
-                errorMessage = error.localizedDescription
+                errorMessage = UserFacingError.message(error)
             }
         }
         .sheet(isPresented: $isShowingDetails) {

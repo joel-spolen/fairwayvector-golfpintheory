@@ -91,7 +91,7 @@ final class CourseStore {
             course = built
             writeCache(built)
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(error)
         }
     }
 

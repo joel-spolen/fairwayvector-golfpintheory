@@ -62,7 +62,7 @@ nonisolated struct TerrainSnapshot: Sendable {
 nonisolated enum TerrainError: Error, LocalizedError, Sendable {
     case invalidPath
     var errorDescription: String? {
-        L("Terrain path must contain valid WGS84 points (maximum 5,000).")
+        L("Elevation couldn't be calculated for this hole.")
     }
 }
 

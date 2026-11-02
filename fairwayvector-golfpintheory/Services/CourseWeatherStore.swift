@@ -26,9 +26,8 @@ enum CourseWeatherError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidResponse: L("The weather service returned an unreadable response.")
+        case .invalidResponse, .httpStatus: L("Weather couldn't be loaded right now. Please try again later.")
         case .missingCurrentConditions: L("Current weather is not available for this course.")
-        case .httpStatus(let status): L("The weather service returned HTTP %@.", "\(status)")
         }
     }
 }
@@ -98,7 +97,7 @@ final class CourseWeatherStore {
             writeCache(CachedCourseWeather(fetchedAt: savedAt, weather: current), for: locationKey)
         } catch {
             guard activeRequestID == requestID else { return }
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(error)
         }
         if activeRequestID == requestID {
             activeRequestID = nil

@@ -348,7 +348,7 @@ struct PinTheoryAccountView: View {
             lastName = details?.lastName ?? ""
             errorMessage = nil
         } catch {
-            if details == nil { errorMessage = error.localizedDescription }
+            if details == nil { errorMessage = UserFacingError.message(error) }
         }
     }
 
@@ -363,7 +363,7 @@ struct PinTheoryAccountView: View {
             try await action()
             notice = successMessage
         } catch {
-            errorMessage = error.localizedDescription
+            errorMessage = UserFacingError.message(error)
         }
     }
 

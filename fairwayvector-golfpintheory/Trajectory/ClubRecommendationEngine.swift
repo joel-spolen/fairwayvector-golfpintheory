@@ -35,7 +35,7 @@ actor ClubRecommendationEngine {
         guard targetCarryM.isFinite, targetCarryM > 0 else { return [] }
         try Task.checkCancellation()
         if predictor == nil { predictor = try HybridPredictor() }
-        guard let predictor else { throw HybridPredictorError.nonFiniteOutput(L("Prediction models failed to load.")) }
+        guard let predictor else { throw HybridPredictorError.missingResource("predictor") }
         var recommendations: [ClubRecommendation] = []
         var highestApexM = 0.0
         for launch in launches {
@@ -44,12 +44,12 @@ actor ClubRecommendationEngine {
             guard shot.ballSpeedMps.isFinite, shot.ballSpeedMps > 0,
                   shot.launchAngleDeg.isFinite, shot.spinRateRpm.isFinite, shot.spinRateRpm >= 0,
                   shot.spinAxisDeg.isFinite else {
-                throw HybridPredictorError.nonFiniteOutput(L("Invalid club launch profile; configure Clubs & launch profile."))
+                throw HybridPredictorError.unavailable(L("Check this club's launch settings in Clubs & launch profile."))
             }
             do {
                 let prediction = try predictor.predict(shot)
                 guard let carryM = prediction.hybrid["carry_m"], carryM.isFinite, carryM > 0 else {
-                    throw HybridPredictorError.nonFiniteOutput(L("Missing or invalid predicted carry; no yardage fallback is used."))
+                    throw HybridPredictorError.unavailable(L("A carry distance couldn't be calculated for this club."))
                 }
                 recommendations.append(ClubRecommendation(
                     club: launch.club, estimatedCarryM: carryM, differenceM: abs(carryM - targetCarryM),

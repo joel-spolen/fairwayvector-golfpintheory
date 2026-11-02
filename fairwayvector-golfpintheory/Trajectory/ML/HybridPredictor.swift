@@ -3,18 +3,21 @@ import Foundation
 nonisolated enum HybridPredictorError: Error, LocalizedError {
     case missingResource(String)
     case invalidManifest(String)
+    /// Internal detail for logs only; the golfer sees a generic message.
     case nonFiniteOutput(String)
+    /// Already localized, plain-language reason shown to the golfer as-is.
+    case unavailable(String)
     case targetElevationExceedsApex(targetM: Double, apexM: Double)
     case noClubCanReachTargetElevation(targetM: Double, highestApexM: Double)
 
     var errorDescription: String? {
         switch self {
-        case .missingResource(let name):
-            return L("Missing bundled ML resource: %@", "\(name)")
-        case .invalidManifest(let reason):
-            return L("Bundled ML manifest is invalid: %@", "\(reason)")
-        case .nonFiniteOutput(let reason):
-            return L("Prediction produced a non-finite value: %@", "\(reason)")
+        case .missingResource, .invalidManifest:
+            return L("Shot calculations aren't available right now. Restart the app and try again.")
+        case .nonFiniteOutput:
+            return L("This shot couldn't be calculated. Check your club settings and try again.")
+        case .unavailable(let reason):
+            return reason
         case .targetElevationExceedsApex(let targetM, let apexM):
             return String(format: L("The target is %.1f m above the launch point, but this shot peaks at %.1f m. Lower the elevation change or increase the launch conditions."), targetM, apexM)
         case .noClubCanReachTargetElevation(let targetM, let highestApexM):

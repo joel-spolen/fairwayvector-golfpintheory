@@ -19,7 +19,7 @@ nonisolated enum AtmosphereError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidAltitude:
-            return L("Site elevation is outside the supported standard-atmosphere range.")
+            return L("The course elevation is outside the supported range.")
         case .invalidPressure:
             return L("Pressure must be greater than zero.")
         }

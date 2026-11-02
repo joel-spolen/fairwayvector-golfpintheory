@@ -48,7 +48,7 @@ struct PinTheoryAccountRootView: View {
             PinTheoryAuthenticatedGate(session: session, auth: auth)
         } else {
             ContentUnavailableView("Sign-in unavailable", systemImage: "person.crop.circle.badge.exclamationmark",
-                description: Text(session.message ?? L("Account configuration is unavailable.")))
+                description: Text(session.message ?? L("Sign-in isn't available right now. Please try again later.")))
         }
     }
 }
@@ -69,7 +69,7 @@ private struct PinTheoryAuthenticatedGate: View {
                     ContentUnavailableView {
                         Label("Secure account storage unavailable", systemImage: "lock.shield")
                     } description: {
-                        Text(session.message ?? L("Unlock this device and retry. Existing credentials have been preserved where possible."))
+                        Text(session.message ?? L("Unlock your device and try again."))
                     } actions: {
                         Button("Retry secure storage") { Task { await session.retrySecureStorage() } }
                         Button("Clear sign-in and retry", role: .destructive) { confirmingReset = true }

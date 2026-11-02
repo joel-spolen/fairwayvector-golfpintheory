@@ -6,8 +6,8 @@ enum CourseBuilderError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .noHoles: L("No mapped holes were found for this course in OpenStreetMap.")
-        case .missingOSMRelation: L("The selected course has no matching OpenStreetMap area.")
+        case .noHoles: L("No hole layout is available for this course yet.")
+        case .missingOSMRelation: L("Map data isn't available for this course.")
         }
     }
 }

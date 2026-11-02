@@ -174,7 +174,7 @@ struct PinTheoryPasswordRecoveryView: View {
             // Root observes signedOut and detaches all account-bound content.
         } catch {
             localError = (error as? PinTheoryAuthError)?.localizedDescription
-                ?? L("Local sign-in credentials could not be cleared. Please try again.")
+                ?? L("Sign-out couldn't finish. Please try again.")
         }
     }
 }

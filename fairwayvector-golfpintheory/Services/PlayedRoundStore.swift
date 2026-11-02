@@ -44,7 +44,7 @@ final class PlayedRoundStore {
 
     func load() {
         guard !draftNeedsRetry else {
-            errorMessage = L("The latest draft is still in memory. Retry saving it before reloading; reloading must not erase unsaved edits.")
+            errorMessage = L("Your latest changes aren't saved yet. Try saving again before reloading.")
             return
         }
         do {
@@ -67,7 +67,7 @@ final class PlayedRoundStore {
             loadFailed = false; errorMessage = nil
         } catch {
             loadFailed = true
-            errorMessage = L("Round storage could not be read. Existing files are preserved; no overwrite is allowed. Retry loading after restoring storage.")
+            errorMessage = L("Your saved rounds couldn't be loaded. Nothing has been deleted. Restart the app and try again.")
         }
     }
 
@@ -93,9 +93,13 @@ final class PlayedRoundStore {
     private func persist(saved: [PlayedRound], draft: PlayedRound?, deletedIDs: Set<UUID>? = nil) throws {
         guard !loadFailed else { throw RoundStorageError.invalidArchive }
         let archive = Archive(saved: saved, draft: draft, deletedIDs: Array(deletedIDs ?? pendingCloudDeletions).sorted { $0.uuidString < $1.uuidString })
-        let data = try JSONEncoder().encode(archive)
-        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-        try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        do {
+            let data = try JSONEncoder().encode(archive)
+            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        } catch {
+            throw RoundStorageError.saveFailed
+        }
     }
 
     func start(_ round: PlayedRound) throws {
@@ -114,7 +118,7 @@ final class PlayedRoundStore {
             draftNeedsRetry = false; errorMessage = nil
         } catch {
             draftNeedsRetry = true
-            errorMessage = L("Draft storage failed. Latest edits are retained in memory only; retry saving before quitting the app. The prior disk archive is preserved.")
+            errorMessage = L("Your latest changes couldn't be saved. Try again before closing the app.")
             throw error
         }
     }
@@ -187,13 +191,14 @@ final class PlayedRoundStore {
 }
 
 enum RoundStorageError: LocalizedError {
-    case invalidArchive, activeDraft, incomplete, unavailableHandicap
+    case invalidArchive, activeDraft, incomplete, unavailableHandicap, saveFailed
     var errorDescription: String? {
         switch self {
-        case .invalidArchive: L("Round data is unavailable or invalid. Existing storage has not been replaced.")
+        case .invalidArchive: L("Something went wrong with your saved rounds. Nothing has been deleted. Please try again.")
         case .activeDraft: L("Resume or discard your existing round before starting another.")
         case .incomplete: L("Record valid strokes for every player on every hole before finishing.")
-        case .unavailableHandicap: L("HCP import needs a completed, genuinely rated 9- or 18-hole round, a Handicap Index, par and all stroke indexes. Demo rounds cannot enter handicap history.")
+        case .unavailableHandicap: L("Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history.")
+        case .saveFailed: L("Your round couldn't be saved on this device. Please try again.")
         }
     }
 }

@@ -392,7 +392,7 @@ struct GolfAPITests {
         #expect(model.selectedCourseID == unavailable.courseID)
         #expect(model.selection == nil)
         #expect(model.courseDetail == nil)
-        #expect(model.errorMessage?.contains("GPS data not available") == true)
+        #expect(model.errorMessage?.contains("Map data isn't available") == true)
         #expect(GolfAPIStubProtocol.requestCount == count)
         GolfAPIStubProtocol.handler = nil
     }

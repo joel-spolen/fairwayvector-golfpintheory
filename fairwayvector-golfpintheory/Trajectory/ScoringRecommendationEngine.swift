@@ -60,7 +60,7 @@ struct ScoringShotPlan: Equatable {
                 }
             }
             guard validCells else {
-                issues.append(L("Review invalid carry cells for %@; this wedge is excluded, not replaced by defaults.", "\(name)"))
+                issues.append(L("Check the carry distances for %@. This wedge is left out until they're fixed.", "\(name)"))
                 return
             }
             fullCarries.append(fullM)
@@ -89,12 +89,12 @@ struct ScoringShotPlan: Equatable {
 
         for wedge in matrixBag {
             guard let club = club(named: wedge.name) else {
-                issues.append(L("Map %@ to PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60; unknown loft is not guessed.", "\(wedge.name)"))
+                issues.append(L("%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix.", "\(wedge.name)"))
                 continue
             }
             let entered = wedge.overrideCarry(for: .stock, swing: .full)
             guard entered != nil || wedge.fullCarryUserProvided else {
-                issues.append(L("Enter Mid/Stock Full carry for %@ in Wedge Matrix; legacy/default full carries are unverified.", "\(wedge.name)"))
+                issues.append(L("Enter your full-swing carry for %@ in Wedge Matrix.", "\(wedge.name)"))
                 continue
             }
             append(id: wedge.id.uuidString, name: wedge.name, club: club,
@@ -111,7 +111,7 @@ struct ScoringShotPlan: Equatable {
             return Self(shots: [], maxFullCarryM: nil, guidance: L("Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag."))
         }
         if fullCarries.isEmpty {
-            issues.insert(L("Scoring range unavailable: enter a personal full wedge carry in Wedge Matrix or calibrate a Practice wedge. Ordinary full-bag advice remains available; no stock distance threshold is assumed."), at: 0)
+            issues.insert(L("Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice."), at: 0)
         }
         return Self(shots: shots, maxFullCarryM: fullCarries.max(), guidance: issues.joined(separator: " "))
     }
@@ -146,7 +146,7 @@ actor ScoringRecommendationEngine {
         try Task.checkCancellation()
         if let cached = calibrated[spec.id], cached.0 == spec { return cached.1 }
         if predictor == nil { predictor = try HybridPredictor() }
-        guard let predictor else { throw HybridPredictorError.nonFiniteOutput(L("Scoring models unavailable")) }
+        guard let predictor else { throw HybridPredictorError.missingResource("predictor") }
         var shot = ShotInputs(ballSpeedMps: 2, launchAngleDeg: spec.launchAngleDeg,
             launchDirectionDeg: 0, spinRateRpm: spec.spinRateRpm, spinAxisDeg: spec.spinAxisDeg)
         // Reference: 20°C, 1013.25 hPa, 50% RH, calm, level. Solve speed,
@@ -155,7 +155,7 @@ actor ScoringRecommendationEngine {
             try Task.checkCancellation()
             shot.ballSpeedMps = speed
             guard let value = try predictor.predict(shot).hybrid["carry_m"], value.isFinite else {
-                throw HybridPredictorError.nonFiniteOutput(L("Invalid scoring reference carry"))
+                throw HybridPredictorError.unavailable(L("Check the carry distance entered for this wedge."))
             }
             return value
         }
@@ -173,7 +173,7 @@ actor ScoringRecommendationEngine {
             lowCarry = highCarry
         }
         guard lowCarry <= spec.nominalCarryM, highCarry >= spec.nominalCarryM else {
-            throw HybridPredictorError.nonFiniteOutput(L("%@: reference carry cannot be calibrated within 2–90 m/s. Review wedge carry/launch data.", "\(spec.title)"))
+            throw HybridPredictorError.unavailable(L("%@: this carry distance doesn't look right. Check the wedge's carry and launch settings.", "\(spec.title)"))
         }
         var bestSpeed = abs(lowCarry - spec.nominalCarryM) < abs(highCarry - spec.nominalCarryM) ? low : high
         var bestError = min(abs(lowCarry - spec.nominalCarryM), abs(highCarry - spec.nominalCarryM))
@@ -185,7 +185,7 @@ actor ScoringRecommendationEngine {
             if value < spec.nominalCarryM { low = speed } else { high = speed }
         }
         guard bestError <= 0.5 else {
-            throw HybridPredictorError.nonFiniteOutput(L("%@: residual model cannot match entered carry within 0.5 m; no fabricated exact calibration is shown.", "\(spec.title)"))
+            throw HybridPredictorError.unavailable(L("%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings.", "\(spec.title)"))
         }
         shot.ballSpeedMps = bestSpeed
         if calibrated.count >= 126 { calibrated.removeAll(keepingCapacity: true) }
@@ -194,7 +194,7 @@ actor ScoringRecommendationEngine {
     }
 
     func recommend(targetM: Double, specs: [ScoringShotSpec], conditions: ShotInputs) async throws -> ScoringEvaluation {
-        guard specs.count <= 126 else { throw HybridPredictorError.nonFiniteOutput(L("Scoring bag exceeds 126 combinations")) }
+        guard specs.count <= 126 else { throw HybridPredictorError.nonFiniteOutput("Scoring bag exceeds 126 combinations") }
         var results: [(Int, CourseClubRecommendation)] = []
         var unavailable: [UnavailableScoringShot] = []
         for (index, spec) in specs.enumerated() {
@@ -203,7 +203,10 @@ actor ScoringRecommendationEngine {
             do {
                 shot = try referenceLaunch(for: spec)
             } catch let error as HybridPredictorError {
-                guard case .nonFiniteOutput = error else { throw error }
+                switch error {
+                case .nonFiniteOutput, .unavailable: break
+                default: throw error
+                }
                 unavailable.append(UnavailableScoringShot(spec: spec, reason: error.localizedDescription))
                 continue
             }

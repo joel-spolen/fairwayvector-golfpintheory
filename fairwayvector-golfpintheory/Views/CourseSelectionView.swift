@@ -59,7 +59,7 @@ struct CourseSelectionView: View {
                         Text(message).font(.footnote).foregroundStyle(PureLineStyle.ink)
                         if roundStore.draftNeedsRetry {
                             Button("Retry saving draft") {
-                                do { try roundStore.retryDraft() } catch { roundStore.errorMessage = error.localizedDescription }
+                                do { try roundStore.retryDraft() } catch { roundStore.errorMessage = UserFacingError.message(error) }
                             }
                         } else { Button("Retry loading round storage") { roundStore.load() } }
                     }
@@ -118,7 +118,7 @@ struct CourseSelectionView: View {
         }
         .confirmationDialog("Discard the unsaved round?", isPresented: $confirmDiscardRound, titleVisibility: .visible) {
             Button("Discard round", role: .destructive) {
-                do { try roundStore.discardDraft() } catch { roundStore.errorMessage = error.localizedDescription }
+                do { try roundStore.discardDraft() } catch { roundStore.errorMessage = UserFacingError.message(error) }
             }
         } message: {
             Text("All unsaved player scores will be removed. Saved Statistics and Handicap history remain.")

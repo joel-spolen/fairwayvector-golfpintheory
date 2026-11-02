@@ -271,7 +271,7 @@ enum GolfAPIError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .localStorageUnavailable:
-            return AppLanguage.localized("The course could not be saved on this device. Free up storage and select it again; the server copy remains cached.")
+            return AppLanguage.localized("The course couldn't be saved on this device. Free up some storage and select it again.")
         case .missingDataServiceConfiguration:
             return AppLanguage.localized("Course information is temporarily unavailable. Please try again later.")
         case .unauthorized:

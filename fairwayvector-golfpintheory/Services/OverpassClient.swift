@@ -39,15 +39,10 @@ enum OverpassError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .badStatus(let code):
-            return L("OpenStreetMap returned status %@. Try again shortly.", "\(code)")
-        case .allServersFailed(let failures):
-            let details = failures.joined(separator: "; ")
-            return details.isEmpty
-                ? L("Course map data is temporarily unavailable. Try again shortly.")
-                : L("Course map data is temporarily unavailable. Try again shortly. Details: %@", "\(details)")
+        case .badStatus, .allServersFailed:
+            return L("Course map data is temporarily unavailable. Try again shortly.")
         case .courseNotFound(let course):
-            return L("No OpenStreetMap course area was found for %@. Try a different course or retry later.", "\(course)")
+            return L("No map was found for %@. Try a different course or try again later.", "\(course)")
         }
     }
 }

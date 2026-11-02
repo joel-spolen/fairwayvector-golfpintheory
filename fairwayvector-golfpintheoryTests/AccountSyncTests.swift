@@ -86,7 +86,7 @@ struct AccountSyncTests {
     }
 
     @Test func missingServerContractFailsClosedWithLocalDataNotice() {
-        #expect(AccountSyncError.serverContractUnavailable.localizedDescription.contains("remains on this device"))
+        #expect(AccountSyncError.serverContractUnavailable.localizedDescription.contains("still saved on this device"))
     }
 
     @Test func golferProfileSyncDTOContainsOnlyPersonalFactsAndUsesStableOwnerKey() throws {

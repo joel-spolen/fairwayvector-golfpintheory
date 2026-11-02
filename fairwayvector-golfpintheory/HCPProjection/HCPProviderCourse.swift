@@ -24,7 +24,7 @@ struct HCPProviderCourse: Hashable {
         // Par must be complete to calculate a total. Missing SI disables hole-by-hole;
         // incomplete/invalid supplied SI is never replaced with invented sequential indices.
         guard pars.count == detail.numHoles, pars.allSatisfy({ (3...6).contains($0) }) else {
-            throw GolfAPIError.invalidResponse(L("Complete provider hole pars are required; use Custom course or an official differential instead."))
+            throw GolfAPIError.invalidResponse("missing hole pars")
         }
         let validIndices = indices.count == detail.numHoles
             && Set(indices).count == detail.numHoles && indices.allSatisfy { (1...18).contains($0) }

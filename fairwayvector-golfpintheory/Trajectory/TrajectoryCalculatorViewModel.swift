@@ -130,7 +130,6 @@ final class TrajectoryCalculatorViewModel: ObservableObject {
 
     private var predictor: HybridPredictor?
     private let recommendationEngine = ClubRecommendationEngine()
-    private var loadError: Error?
     private var cancellables = Set<AnyCancellable>()
     private var isSyncingAtmosphere = false
     private var isRestoringPersistedConditions = false
@@ -140,11 +139,7 @@ final class TrajectoryCalculatorViewModel: ObservableObject {
     init(playerProfileStore: PlayerProfileStore? = nil, userDefaults: UserDefaults = .standard) {
         self.playerProfileStore = playerProfileStore ?? PlayerProfileStore(userDefaults: userDefaults)
         self.userDefaults = userDefaults
-        do {
-            predictor = try HybridPredictor()
-        } catch {
-            loadError = error
-        }
+        predictor = try? HybridPredictor()
         // Forward nested UnitPreferences changes so views observing this view model re-render.
         unitPreferences.objectWillChange
             .sink { [weak self] _ in self?.objectWillChange.send() }
@@ -290,7 +285,7 @@ final class TrajectoryCalculatorViewModel: ObservableObject {
         guard !isCalculating else { return }
         errorMessage = nil
         guard let predictor else {
-            errorMessage = loadError?.localizedDescription ?? L("Prediction models failed to load.")
+            errorMessage = L("Shot calculations aren't available right now. Restart the app and try again.")
             return
         }
         guard ballSpeedMps > 0 else {
@@ -325,7 +320,7 @@ final class TrajectoryCalculatorViewModel: ObservableObject {
                 lastCalculationInputs = inputSnapshot
                 lastCalculationBallSpeedMps = inputSnapshot.ballSpeedMps
             } catch {
-                errorMessage = error.localizedDescription
+                errorMessage = UserFacingError.message(error)
                 prediction = nil
             }
             isCalculating = false

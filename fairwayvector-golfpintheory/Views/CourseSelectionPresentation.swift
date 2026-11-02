@@ -322,7 +322,7 @@ struct CourseSelectionStatus: View {
 
     var body: some View {
         if !model.isConfigured {
-            message(L("Supabase provider data is not configured in this app build."), image: "key.horizontal")
+            message(L("Course information is temporarily unavailable. Please try again later."), image: "exclamationmark.triangle")
         }
         if let error = model.errorMessage,
               model.searchValidationMessage == nil,

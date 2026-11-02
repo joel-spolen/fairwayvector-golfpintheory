@@ -19,16 +19,12 @@ nonisolated enum SupabaseProviderError: Error, LocalizedError, Sendable {
 
     var errorDescription: String? {
         switch self {
-        case .configurationUnavailable:
-            L("Supabase data service is not configured.")
         case .authenticationRequired:
-            L("Sign in and reconnect before requesting provider data.")
-        case .requestRejected:
-            L("Supabase rejected the provider-data request.")
+            L("Please connect and sign in again.")
         case .transportUnavailable:
-            L("Supabase provider data could not be reached. No provider credential was sent by this device.")
-        case .httpStatus(_, _, let message):
-            message ?? L("Supabase provider data is temporarily unavailable.")
+            L("We couldn't connect. Check your internet connection and try again.")
+        case .configurationUnavailable, .requestRejected, .httpStatus:
+            L("This information is temporarily unavailable. Please try again later.")
         }
     }
 }

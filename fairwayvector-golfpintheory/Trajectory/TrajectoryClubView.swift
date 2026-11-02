@@ -628,7 +628,7 @@ struct TrajectoryClubView: View {
             } catch {
                 guard !Task.isCancelled, recommendationGeneration == generation,
                       recommendationInput == captured else { return }
-                errorMessage = error.localizedDescription
+                errorMessage = UserFacingError.message(error)
             }
         }
     }

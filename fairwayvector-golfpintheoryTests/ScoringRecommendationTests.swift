@@ -95,12 +95,12 @@ final class ScoringRecommendationTests: XCTestCase {
     func testUnknownLoftInvalidCellAndOversizeBagFailExplicitly() {
         let unknown = ScoringShotPlan.make(profile: profile(), wedges: [wedge(name: "My custom wedge")])
         XCTAssertNil(unknown.maxFullCarryM)
-        XCTAssertTrue(unknown.guidance.contains("unknown loft"))
+        XCTAssertTrue(unknown.guidance.contains("isn't recognized as a wedge"))
         var invalid = wedge()
         invalid.setCarry(-10, for: .high, swing: .half)
         let invalidPlan = ScoringShotPlan.make(profile: profile(), wedges: [invalid])
         XCTAssertTrue(invalidPlan.shots.isEmpty)
-        XCTAssertTrue(invalidPlan.guidance.contains("invalid carry cells"))
+        XCTAssertTrue(invalidPlan.guidance.contains("Check the carry distances"))
         let large = ScoringShotPlan.make(profile: profile(), wedges: (0..<15).map { _ in
             var value = wedge()
             value.id = UUID()

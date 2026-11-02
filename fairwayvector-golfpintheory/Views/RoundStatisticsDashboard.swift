@@ -122,7 +122,7 @@ struct RoundStatisticsDashboard: View {
                             Text(message).font(.footnote).foregroundStyle(.red)
                             Button("Try again") {
                                 if store.draftNeedsRetry {
-                                    do { try store.retryDraft() } catch { self.error = error.localizedDescription }
+                                    do { try store.retryDraft() } catch { self.error = UserFacingError.message(error) }
                                 } else { store.load() }
                             }
                         }.pureLineCard()
@@ -161,7 +161,7 @@ struct RoundStatisticsDashboard: View {
             ), titleVisibility: .visible) {
                 Button("Delete scorecard", role: .destructive) {
                     guard let id = deleting else { return }
-                    do { try store.delete(id) } catch { self.error = error.localizedDescription }
+                    do { try store.delete(id) } catch { self.error = UserFacingError.message(error) }
                     deleting = nil
                 }
             } message: {

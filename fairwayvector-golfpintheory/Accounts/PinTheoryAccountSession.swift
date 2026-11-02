@@ -60,7 +60,7 @@ final class PinTheoryAccountSession: ObservableObject {
         do {
             guard let configuration = try PinTheoryAuthConfiguration.load() else {
                 auth = nil; projectHost = nil
-                message = L("Account sign-in is not configured in this build.")
+                message = L("Sign-in isn't available right now. Please try again later.")
                 return
             }
             projectHost = configuration.projectURL.host
@@ -76,7 +76,7 @@ final class PinTheoryAccountSession: ObservableObject {
             }
         } catch {
             auth = nil; projectHost = nil
-            message = L("Account configuration is unavailable. Please contact the developer.")
+            message = L("Sign-in isn't available right now. Please try again later.")
         }
     }
 
@@ -106,7 +106,7 @@ final class PinTheoryAccountSession: ObservableObject {
             AccountCourseStorage.configure(accountDirectory: data.directory)
             accountData = data
         } catch {
-            message = L("Your account storage could not be opened. Existing records have been preserved. Retry or sign out.")
+            message = L("Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out.")
         }
     }
 
@@ -264,7 +264,7 @@ final class PinTheoryAccountSession: ObservableObject {
         accountData.defaults.set(true, forKey: Self.syncOptInKey)
         savedDataSyncFailure = nil
         savedDataSyncMessage = L("Preparing secure sync…")
-        var syncStage = L("opening account sync storage")
+        var syncStage = "opening account sync storage"
         defer {
             isSyncingSavedData = false
             activeSyncCoordinator = nil
@@ -308,17 +308,17 @@ final class PinTheoryAccountSession: ObservableObject {
                 }
             }
             savedDataSyncMessage = L("Checking saved data in the cloud…")
-            syncStage = L("verifying your sign-in")
+            syncStage = "verifying your sign-in"
             let accessToken = try await auth.authenticatedAccessToken(for: identity.userID)
             // Refuse all sync traffic until strict payload validation and the
             // timestamp-aware club-profile migration are installed.
-            syncStage = L("checking the server sync version")
+            syncStage = "checking the server sync version"
             syncLogger.info("Checking server sync capabilities")
             try await transport.validateServerContract(accessToken: accessToken)
             try Task.checkCancellation()
             guard case .authenticated(let validatedIdentity) = auth.state,
                 validatedIdentity.userID == identity.userID else { throw AccountSyncError.staleOperation }
-            syncStage = L("reading cloud records or retrying queued changes")
+            syncStage = "reading cloud records or retrying queued changes"
             syncLogger.info("Reading remote journal and processing queued mutations")
             _ = try await coordinator.synchronize(ownerID: identity.userID, accessToken: accessToken)
             try Task.checkCancellation()
@@ -655,7 +655,7 @@ final class PinTheoryAccountSession: ObservableObject {
             } else {
                 savedDataSyncMessage = L("Cloud sync complete. %@ saved scorecards are available on this device.", "\(roundStore.saved.count)")
                 if activeCloudRecordCount == 0 && cloudTombstoneCount > 0 {
-                    savedDataSyncFailure = L("Cloud sync completed, but this account has no active records and %@ deleted record(s). If the original device still shows the missing entry, install this app update there, turn Sync across devices off and back on, then sync the iPad again.", "\(cloudTombstoneCount)")
+                    savedDataSyncFailure = L("No saved data was found in the cloud for this account. If another device still has your data, update the app there and sync it first, then sync here again.")
                 }
             }
         } catch {
@@ -664,15 +664,17 @@ final class PinTheoryAccountSession: ObservableObject {
             } else {
                 syncLogger.error("Sync failed during \(syncStage, privacy: .public) with an unexpected error")
             }
-            savedDataSyncMessage = error.localizedDescription
+            savedDataSyncMessage = UserFacingError.message(error)
             if !(error is CancellationError) {
                 let details: String
                 if error as? AccountSyncError == .staleOperation {
-                    details = L("Your account or sign-in state changed during sync. Turn sync off and on again while connected.")
+                    details = L("Your sign-in changed during sync. Turn Sync across devices off and on again.")
+                } else if error is AccountSyncError || error is PinTheoryAuthError {
+                    details = UserFacingError.message(error)
                 } else {
-                    details = error.localizedDescription
+                    details = L("Sync couldn't finish right now. Your data is still saved on this device.")
                 }
-                savedDataSyncFailure = L("Sync stopped while %@. %@ Do not uninstall the app or clear its saved data.", "\(syncStage)", "\(details)")
+                savedDataSyncFailure = details + " " + L("Keep the app installed until sync has finished.")
             }
         }
     }
@@ -832,7 +834,7 @@ final class PinTheoryAccountSession: ObservableObject {
             } catch {
                 accountData = nil
                 AccountCourseStorage.configure(accountDirectory: nil)
-                message = L("Your account storage could not be opened. Existing records have been preserved. Retry or sign out.")
+                message = L("Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out.")
             }
         case .signedOut, .restoring, .passwordRecovery:
             AccountCourseStorage.configure(accountDirectory: nil)

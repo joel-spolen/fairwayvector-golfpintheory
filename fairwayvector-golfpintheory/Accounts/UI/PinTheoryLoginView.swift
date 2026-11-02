@@ -141,6 +141,7 @@ struct PinTheoryLoginView: View {
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("account-sign-in-error")
                 }
+                #if DEBUG
                 if let diagnostic = auth.lastNetworkDiagnostic, !auth.isBusy {
                     DisclosureGroup("Connection details") {
                         Text(diagnostic)
@@ -150,6 +151,7 @@ struct PinTheoryLoginView: View {
                     }
                     .accessibilityIdentifier("account-network-diagnostic")
                 }
+                #endif
 
                 Link("Privacy policy", destination: URL(string: "https://golfpintheory.com/privacy-policy/")!)
                     .font(.subheadline.weight(.medium)).frame(minHeight: 44)
