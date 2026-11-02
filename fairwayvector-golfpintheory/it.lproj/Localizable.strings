@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "Nessuna quota del terreno disponibile per questo profilo (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Impossibile generare una posizione di scoring valida. Controlla l’obiettivo e la calibrazione personale dei wedge.";
 "No wedges selected for the bag." = "Nessun wedge selezionato per la sacca.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Non valido per l’HCP. Completa il percorso da 9 o 18 buche con rating selezionato con il tuo Handicap Index. Buche sparse non valgono; i giri da nove buche richiedono un rating da nove buche. I percorsi demo sono esclusi.";
 "Not recorded" = "Non registrato";
 "Not set" = "Non impostato";
 "Not supplied" = "Non fornito";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Basato su 1 giro";
 "Based on all %@ rounds" = "Basato su tutti i %@ giri";
 "Based on your last %@ rounds" = "Basato sui tuoi ultimi %@ giri";
+"Even" = "Par";
+"Saved in your handicap history" = "Salvato nel tuo storico handicap";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap Index %@ → %@ se salvato nell’HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Questo giro non può contare per il tuo handicap. Gioca tutte le buche di un percorso da 9 o 18 buche con rating e aggiungi il tuo Handicap Index.";
+"Compared with your usual game" = "Rispetto al tuo gioco abituale";
+"In line with your usual game." = "In linea con il tuo gioco abituale.";
+"Better than usual" = "Meglio del solito";
+"Worse than usual" = "Peggio del solito";
+"%@ putts per hole · your average %@" = "%@ putt per buca · la tua media %@";
+"%@ per 18 holes · your average %@" = "%@ su 18 buche · la tua media %@";
+"%@ · your average %@" = "%@ · la tua media %@";

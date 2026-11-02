@@ -634,7 +634,6 @@
 "No terrain elevations are available for this %@ profile." = "Ingen terrenghøyder er tilgjengelige for denne profilen (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Det kunne ikke lages en gyldig scoringposisjon. Gå gjennom målet og den personlige wedgekalibreringen.";
 "No wedges selected for the bag." = "Ingen wedger valgt for bagen.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Ikke gyldig for HCP. Fullfør den valgte ratede 9- eller 18-hullssløyfen med handicapindeksen din. Spredte hull teller ikke; nihullsrunder krever en nihullsrating. Demobaner er utelatt.";
 "Not recorded" = "Ikke registrert";
 "Not set" = "Ikke angitt";
 "Not supplied" = "Ikke oppgitt";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Basert på 1 runde";
 "Based on all %@ rounds" = "Basert på alle %@ runder";
 "Based on your last %@ rounds" = "Basert på de siste %@ rundene dine";
+"Even" = "Par";
+"Saved in your handicap history" = "Lagret i handicaphistorikken din";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicapindeks %@ → %@ hvis runden lagres i HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Denne runden kan ikke telle for handicapet ditt. Spill alle hullene på en ratet 9- eller 18-hullsbane, og legg til handicapindeksen din.";
+"Compared with your usual game" = "Sammenlignet med ditt vanlige spill";
+"In line with your usual game." = "På nivå med ditt vanlige spill.";
+"Better than usual" = "Bedre enn vanlig";
+"Worse than usual" = "Dårligere enn vanlig";
+"%@ putts per hole · your average %@" = "%@ putter per hull · snittet ditt %@";
+"%@ per 18 holes · your average %@" = "%@ per 18 hull · snittet ditt %@";
+"%@ · your average %@" = "%@ · snittet ditt %@";

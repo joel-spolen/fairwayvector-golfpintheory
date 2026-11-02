@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "Pro tento profil (%@) nejsou k dispozici žádné výšky terénu.";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Nepodařilo se vytvořit platnou scoringovou pozici. Zkontrolujte cíl a osobní kalibraci wedgí.";
 "No wedges selected for the bag." = "Do bagu nejsou vybrány žádné wedge.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Nezpůsobilé pro HCP. Dokončete vybraný okruh 9 nebo 18 jamek s ratingem se svým Handicap Indexem. Rozptýlené jamky se nepočítají; devítijamková kola vyžadují devítijamkový rating. Ukázková hřiště jsou vyloučena.";
 "Not recorded" = "Nezapsáno";
 "Not set" = "Nenastaveno";
 "Not supplied" = "Neuvedeno";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Na základě 1 kola";
 "Based on all %@ rounds" = "Na základě všech %@ kol";
 "Based on your last %@ rounds" = "Na základě vašich posledních %@ kol";
+"Even" = "Par";
+"Saved in your handicap history" = "Uloženo do vaší historie handicapu";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap Index %@ → %@ při uložení do HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Toto kolo se nemůže započítat do vašeho handicapu. Odehrajte všechny jamky hřiště na 9 nebo 18 jamek s ratingem a zadejte svůj Handicap Index.";
+"Compared with your usual game" = "Ve srovnání s vaší obvyklou hrou";
+"In line with your usual game." = "Odpovídá vaší obvyklé hře.";
+"Better than usual" = "Lépe než obvykle";
+"Worse than usual" = "Hůře než obvykle";
+"%@ putts per hole · your average %@" = "%@ puttu na jamku · váš průměr %@";
+"%@ per 18 holes · your average %@" = "%@ na 18 jamek · váš průměr %@";
+"%@ · your average %@" = "%@ · váš průměr %@";

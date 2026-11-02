@@ -221,34 +221,11 @@ struct RoundStatisticsDashboard: View {
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 3) {
                 Text(label).font(.caption.weight(.semibold)).foregroundStyle(PureLineStyle.muted)
-                Text(formAreaTitle(change.area)).font(.headline)
-                Text(formValueText(change)).font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
+                Text(change.area.title).font(.headline)
+                Text(change.valueText(comparedWithAverage: false)).font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
             }
         }
         .accessibilityElement(children: .combine)
-    }
-
-    private func formAreaTitle(_ area: RecentFormAnalysis.Area) -> String {
-        switch area {
-        case .putting: L("Putting")
-        case .approach: L("Approach (GIR)")
-        case .driving: L("Driving (fairways)")
-        case .shortGame: L("Short game (scrambling)")
-        case .penalties: L("Penalties")
-        }
-    }
-
-    private func formValueText(_ change: RecentFormAnalysis.Change) -> String {
-        let decimal: (Double) -> String = { $0.formatted(.number.precision(.fractionLength(1))) }
-        let percent: (Double) -> String = { "\(Int($0.rounded()))%" }
-        switch change.area {
-        case .putting:
-            return L("%@ putts per hole (was %@)", decimal(change.recent), decimal(change.earlier))
-        case .penalties:
-            return L("%@ per 18 holes (was %@)", decimal(change.recent), decimal(change.earlier))
-        case .approach, .driving, .shortGame:
-            return L("%@ (was %@)", percent(change.recent), percent(change.earlier))
-        }
     }
 
     private var rangePicker: some View {

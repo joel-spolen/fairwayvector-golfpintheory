@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "Er zijn geen terreinhoogtes beschikbaar voor dit profiel (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Er kon geen geldige scoringpositie worden gemaakt. Controleer je doel en je persoonlijke wedgekalibratie.";
 "No wedges selected for the bag." = "Geen wedges gekozen voor de tas.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Niet geldig voor HCP. Speel de gekozen 9- of 18-holeslus met rating volledig met je Handicap Index. Losse holes tellen niet; negenholesrondes vereisen een negenholesrating. Demobanen zijn uitgesloten.";
 "Not recorded" = "Niet vastgelegd";
 "Not set" = "Niet ingesteld";
 "Not supplied" = "Niet opgegeven";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Gebaseerd op 1 ronde";
 "Based on all %@ rounds" = "Gebaseerd op alle %@ rondes";
 "Based on your last %@ rounds" = "Gebaseerd op je laatste %@ rondes";
+"Even" = "Par";
+"Saved in your handicap history" = "Opgeslagen in je handicapgeschiedenis";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap Index %@ → %@ als je de ronde opslaat in HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Deze ronde kan niet meetellen voor je handicap. Speel alle holes van een 9- of 18-holesbaan met rating en voeg je Handicap Index toe.";
+"Compared with your usual game" = "Vergeleken met je gebruikelijke spel";
+"In line with your usual game." = "In lijn met je gebruikelijke spel.";
+"Better than usual" = "Beter dan normaal";
+"Worse than usual" = "Slechter dan normaal";
+"%@ putts per hole · your average %@" = "%@ putts per hole · je gemiddelde %@";
+"%@ per 18 holes · your average %@" = "%@ per 18 holes · je gemiddelde %@";
+"%@ · your average %@" = "%@ · je gemiddelde %@";

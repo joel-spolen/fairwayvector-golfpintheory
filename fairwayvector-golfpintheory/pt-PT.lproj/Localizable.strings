@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "Não existem altitudes do terreno disponíveis para este perfil (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Não foi possível gerar uma posição de scoring válida. Reveja o alvo e a calibração pessoal dos wedges.";
 "No wedges selected for the bag." = "Nenhum wedge selecionado para o saco.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Não elegível para o HCP. Complete o percurso de 9 ou 18 buracos com rating selecionado com o seu Handicap Index. Buracos soltos não contam; as voltas de nove buracos exigem um rating de nove buracos. Os campos de demonstração estão excluídos.";
 "Not recorded" = "Não registado";
 "Not set" = "Não definido";
 "Not supplied" = "Não fornecido";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Com base em 1 volta";
 "Based on all %@ rounds" = "Com base em todas as %@ voltas";
 "Based on your last %@ rounds" = "Com base nas suas últimas %@ voltas";
+"Even" = "Par";
+"Saved in your handicap history" = "Guardada no seu histórico de handicap";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap Index %@ → %@ se a guardar no HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Esta volta não pode contar para o seu handicap. Jogue todos os buracos de um campo de 9 ou 18 buracos com rating e adicione o seu Handicap Index.";
+"Compared with your usual game" = "Em comparação com o seu jogo habitual";
+"In line with your usual game." = "Em linha com o seu jogo habitual.";
+"Better than usual" = "Melhor do que o habitual";
+"Worse than usual" = "Pior do que o habitual";
+"%@ putts per hole · your average %@" = "%@ putts por buraco · a sua média %@";
+"%@ per 18 holes · your average %@" = "%@ por 18 buracos · a sua média %@";
+"%@ · your average %@" = "%@ · a sua média %@";

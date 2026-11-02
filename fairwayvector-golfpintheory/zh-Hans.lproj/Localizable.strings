@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "此剖面（%@）没有可用的地形高度。";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "无法生成有效的得分位置。请检查目标和个人挖起杆校准。";
 "No wedges selected for the bag." = "未为球包选择挖起杆。";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "不符合 HCP 条件。请使用你的差点指数打完所选的已评级 9 洞或 18 洞路线。零散的球洞不计入；九洞轮次需要九洞评级。演示球场不计入。";
 "Not recorded" = "未记录";
 "Not set" = "未设置";
 "Not supplied" = "未提供";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "基于 1 轮";
 "Based on all %@ rounds" = "基于全部 %@ 轮";
 "Based on your last %@ rounds" = "基于最近 %@ 轮";
+"Even" = "平标准杆";
+"Saved in your handicap history" = "已保存到你的差点历史";
+"Handicap Index %@ → %@ if saved in HCP" = "保存到 HCP 后，差点指数 %@ → %@";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "这一轮无法计入你的差点。请打完有评级的 9 洞或 18 洞球场的所有球洞，并添加你的差点指数。";
+"Compared with your usual game" = "与你的平时水平相比";
+"In line with your usual game." = "与你的平时水平相当。";
+"Better than usual" = "好于平时";
+"Worse than usual" = "差于平时";
+"%@ putts per hole · your average %@" = "每洞推杆 %@ 次 · 你的平均 %@";
+"%@ per 18 holes · your average %@" = "每 18 洞 %@ 次 · 你的平均 %@";
+"%@ · your average %@" = "%@ · 你的平均 %@";

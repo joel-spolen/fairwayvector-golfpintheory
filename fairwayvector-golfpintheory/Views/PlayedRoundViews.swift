@@ -1043,6 +1043,7 @@ struct RoundReviewView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Query private var hcpRounds: [GolfRound]
+    @Query private var profiles: [PlayerProfile]
     @State private var playerID: UUID?
     @State private var error: String?
 
@@ -1054,6 +1055,11 @@ struct RoundReviewView: View {
     private var player: RoundPlayer? { round.players.first { $0.id == playerID } ?? round.owner }
     private var imported: Bool { hcpRounds.contains { $0.sourceSavedRoundID == round.id.uuidString } }
     private var hcpEligible: Bool { PlayedRoundHandicapBridge.isEligible(round) }
+    private var lowHandicapIndex: Double? { profiles.first?.lowHandicapIndex }
+    private var currentHandicapIndex: Double? {
+        WHSCalculator.handicapIndex(from: WHSCalculator.scoringEntries(from: hcpRounds, lowHandicapIndex: lowHandicapIndex),
+                                    lowHandicapIndex: lowHandicapIndex)
+    }
 
     @ViewBuilder
     var body: some View {
@@ -1068,11 +1074,28 @@ struct RoundReviewView: View {
 
     private var reviewContent: some View {
             Form {
-                Section {
-                    if store.draftNeedsRetry {
-                        Text("Latest draft changes are in memory only. Retry saving before quitting.").foregroundStyle(.red).font(.footnote)
+                if store.draftNeedsRetry || round.players.count > 1 {
+                    Section {
+                        if store.draftNeedsRetry {
+                            Text("Latest draft changes are in memory only. Retry saving before quitting.").foregroundStyle(.red).font(.footnote)
+                        }
+                        if round.players.count > 1 {
+                            Picker("Player", selection: Binding(get: { player?.id ?? round.players[0].id }, set: { playerID = $0 })) {
+                                ForEach(round.players) { Text($0.isOwner ? L("You") : $0.name).tag($0.id) }
+                            }
+                        }
                     }
-                    Text(round.reference.courseName).font(.headline)
+                    .listRowBackground(PureLineStyle.canvas)
+                }
+                if let player {
+                    resultSection(player)
+                    if player.isOwner { highlightsSection }
+                    totalsSection(player)
+                    Section("Scorecard") { scorecardGrid }
+                        .listRowBackground(PureLineStyle.canvas)
+                }
+                Section("Course & tee") {
+                    LabeledContent("Course", value: round.reference.courseName)
                     LabeledContent("Tee", value: round.reference.teeName)
                     LabeledContent("Holes", value: String(round.holes.count))
                     LabeledContent("Par", value: String(round.reference.totalPar))
@@ -1082,39 +1105,12 @@ struct RoundReviewView: View {
                     LabeledContent("Date") {
                         Text(round.date, format: .dateTime.day().month().year())
                     }
-                    if round.players.count > 1 {
-                        Picker("Player", selection: Binding(get: { player?.id ?? round.players[0].id }, set: { playerID = $0 })) {
-                            ForEach(round.players) { Text($0.isOwner ? L("You") : $0.name).tag($0.id) }
-                        }
-                    }
                 }
                 .listRowBackground(PureLineStyle.canvas)
-                if let player {
-                    totalsSection(player)
-                    Section("Scorecard") { scorecardGrid }
-                        .listRowBackground(PureLineStyle.canvas)
-                }
                 if !isSaved {
                     Section("Notes") {
                         TextField("Add a note (optional)", text: $notes, axis: .vertical)
                             .lineLimit(3...6)
-                    }
-                    .listRowBackground(PureLineStyle.canvas)
-                    Section {
-                        Toggle("Save your round in HCP", isOn: Binding(
-                            get: { hcpEligible && includeInHandicap },
-                            set: { includeInHandicap = hcpEligible && $0 }
-                        ))
-                            .disabled(!hcpEligible)
-                            .tint(PureLineStyle.accent)
-                        if !hcpEligible {
-                            Text("Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded.")
-                                .font(.footnote).foregroundStyle(PureLineStyle.muted)
-                        }
-                        if !round.isComplete {
-                            Text("Some holes are unplayed. You can still save this round to Statistics.")
-                                .font(.footnote).foregroundStyle(PureLineStyle.muted)
-                        }
                     }
                     .listRowBackground(PureLineStyle.canvas)
                 }
@@ -1299,6 +1295,98 @@ struct RoundReviewView: View {
                 .font(.system(size: 13, weight: .regular).monospacedDigit())
                 .foregroundStyle(PureLineStyle.muted)
                 .frame(width: 44, height: 42)
+        }
+    }
+
+    @ViewBuilder private func resultSection(_ player: RoundPlayer) -> some View {
+        let totals = PlayedRoundCalculator.totals(round: round, player: player)
+        let toPar = round.holes.reduce(into: (scored: 0, difference: 0)) { result, hole in
+            guard let par = hole.par, let score = round.score(player: player.id, hole: hole.number), score.isValid else { return }
+            result.scored += 1
+            result.difference += score.strokes - par
+        }
+        Section {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .firstTextBaseline, spacing: 10) {
+                    Text(verbatim: "\(totals.gross)").font(.largeTitle.weight(.bold)).monospacedDigit()
+                    if toPar.scored > 0 {
+                        Text(toPar.difference == 0 ? L("Even") : String(format: "%+d", toPar.difference))
+                            .font(.title3.weight(.semibold)).monospacedDigit()
+                            .foregroundStyle(PureLineStyle.muted)
+                    }
+                }
+                Text(verbatim: "\(round.reference.courseName) · \(round.date.formatted(date: .abbreviated, time: .omitted))")
+                    .font(.subheadline).foregroundStyle(PureLineStyle.muted)
+            }
+            .accessibilityElement(children: .combine)
+            if let differential = totals.differential {
+                LabeledContent(L("HCP score"), value: WHSCalculator.formatHCPScore(differential))
+                    .font(.headline)
+            }
+            if round.game == .stableford, let points = totals.stableford {
+                LabeledContent(L("Stableford"), value: L("%@ points", "\(points)"))
+            }
+            if player.isOwner { handicapRows }
+        }
+        .listRowBackground(PureLineStyle.canvas)
+    }
+
+    @ViewBuilder private var handicapRows: some View {
+        if imported {
+            Label("Saved in your handicap history", systemImage: "checkmark.circle")
+                .font(.subheadline).foregroundStyle(PureLineStyle.accent)
+        } else if !isSaved {
+            Toggle("Save your round in HCP", isOn: Binding(
+                get: { hcpEligible && includeInHandicap },
+                set: { includeInHandicap = hcpEligible && $0 }
+            ))
+                .disabled(!hcpEligible)
+                .tint(PureLineStyle.accent)
+            if hcpEligible, let current = currentHandicapIndex,
+               let projected = PlayedRoundHandicapBridge.projectedIndex(round, history: hcpRounds,
+                                                                       lowHandicapIndex: lowHandicapIndex) {
+                Text(L("Handicap Index %@ → %@ if saved in HCP", WHSCalculator.formatHCPScore(current),
+                       WHSCalculator.formatHCPScore(projected)))
+                    .font(.subheadline.weight(.semibold)).monospacedDigit()
+            }
+            if !hcpEligible {
+                Text("This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index.")
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
+            }
+            if !round.isComplete {
+                Text("Some holes are unplayed. You can still save this round to Statistics.")
+                    .font(.footnote).foregroundStyle(PureLineStyle.muted)
+            }
+        }
+    }
+
+    @ViewBuilder private var highlightsSection: some View {
+        if let current = RoundPerformanceRecord.combined(played: [round], handicap: []).first,
+           let changes = RecentFormAnalysis.roundHighlights(current, earlier: RoundPerformanceRecord.combined(
+                played: store.saved.filter { $0.id != round.id }, handicap: hcpRounds).filter { $0.date < round.date }) {
+            Section(L("Compared with your usual game")) {
+                if changes.isEmpty {
+                    Text("In line with your usual game.")
+                        .font(.subheadline).foregroundStyle(PureLineStyle.muted)
+                }
+                ForEach(changes, id: \.area) { change in
+                    HStack(alignment: .top, spacing: 12) {
+                        Image(systemName: change.steps > 0 ? "arrow.up.right" : "scope")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(PureLineStyle.accent)
+                            .frame(width: 24)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(change.steps > 0 ? L("Better than usual") : L("Worse than usual"))
+                                .font(.caption.weight(.semibold)).foregroundStyle(PureLineStyle.muted)
+                            Text(change.area.title).font(.subheadline.weight(.semibold))
+                            Text(change.valueText(comparedWithAverage: true))
+                                .font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
+                        }
+                    }
+                    .accessibilityElement(children: .combine)
+                }
+            }
+            .listRowBackground(PureLineStyle.canvas)
         }
     }
 

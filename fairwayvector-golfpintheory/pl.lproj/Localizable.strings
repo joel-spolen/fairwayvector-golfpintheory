@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "Brak wysokości terenu dla tego profilu (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Nie udało się wygenerować prawidłowej pozycji scoringowej. Sprawdź cel i osobistą kalibrację wedge'y.";
 "No wedges selected for the bag." = "Nie wybrano wedge'y do torby.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Nie kwalifikuje się do HCP. Ukończ wybraną pętlę 9 lub 18 dołków z ratingiem, używając swojego Handicap Index. Rozproszone dołki się nie liczą; rundy 9-dołkowe wymagają ratingu dla dziewięciu dołków. Pola demonstracyjne są wykluczone.";
 "Not recorded" = "Nie zapisano";
 "Not set" = "Nie ustawiono";
 "Not supplied" = "Nie podano";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Na podstawie 1 rundy";
 "Based on all %@ rounds" = "Na podstawie wszystkich %@ rund";
 "Based on your last %@ rounds" = "Na podstawie ostatnich %@ rund";
+"Even" = "Par";
+"Saved in your handicap history" = "Zapisano w historii handicapu";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap Index %@ → %@ po zapisaniu w HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Ta runda nie może liczyć się do handicapu. Zagraj wszystkie dołki na polu 9- lub 18-dołkowym z ratingiem i dodaj swój Handicap Index.";
+"Compared with your usual game" = "W porównaniu z Twoją zwykłą grą";
+"In line with your usual game." = "Na poziomie Twojej zwykłej gry.";
+"Better than usual" = "Lepiej niż zwykle";
+"Worse than usual" = "Gorzej niż zwykle";
+"%@ putts per hole · your average %@" = "%@ putta na dołek · Twoja średnia %@";
+"%@ per 18 holes · your average %@" = "%@ na 18 dołków · Twoja średnia %@";
+"%@ · your average %@" = "%@ · Twoja średnia %@";

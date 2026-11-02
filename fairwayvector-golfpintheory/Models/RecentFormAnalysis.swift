@@ -30,17 +30,11 @@ enum RecentFormAnalysis {
         for area in Area.allCases {
             let rounds = ordered.compactMap { sample(area, in: $0) }.filter { $0.holes > 0 }
             mostRoundsWithData = max(mostRoundsWithData, rounds.count)
-            guard rounds.count >= recentRounds + minimumEarlierRounds else { continue }
-            let recent = rounds.suffix(recentRounds)
-            let earlier = rounds.dropLast(recentRounds)
-            let recentHoles = recent.reduce(0) { $0 + $1.holes }
-            let earlierHoles = earlier.reduce(0) { $0 + $1.holes }
-            guard recentHoles >= minimumHoles(area), earlierHoles >= minimumHoles(area) else { continue }
-            let recentValue = value(area, total: recent.reduce(0) { $0 + $1.total }, holes: recentHoles)
-            let earlierValue = value(area, total: earlier.reduce(0) { $0 + $1.total }, holes: earlierHoles)
-            let direction = lowerIsBetter(area) ? -1.0 : 1.0
-            changes.append(Change(area: area, recent: recentValue, earlier: earlierValue,
-                                  steps: (recentValue - earlierValue) / step(area) * direction))
+            guard rounds.count >= recentRounds + minimumEarlierRounds,
+                  let change = change(area, recent: Array(rounds.suffix(recentRounds)),
+                                      earlier: Array(rounds.dropLast(recentRounds)),
+                                      minimumRecentHoles: minimumHoles(area)) else { continue }
+            changes.append(change)
         }
         guard !changes.isEmpty else {
             return .notEnoughData(roundsNeeded: max(1, recentRounds + minimumEarlierRounds - mostRoundsWithData))
@@ -48,6 +42,33 @@ enum RecentFormAnalysis {
         let workOn = changes.filter { $0.steps <= -1 }.min { $0.steps < $1.steps }
         let goingWell = changes.filter { $0.steps >= 1 }.max { $0.steps < $1.steps }
         return workOn == nil && goingWell == nil ? .steady : .changes(workOn: workOn, goingWell: goingWell)
+    }
+
+    /// Up to three clear differences between one round and the golfer's earlier rounds, biggest first.
+    /// Nil when no area has enough data to compare.
+    static func roundHighlights(_ round: RoundPerformanceRecord, earlier: [RoundPerformanceRecord]) -> [Change]? {
+        let changes = Area.allCases.compactMap { area -> Change? in
+            guard let current = sample(area, in: round), current.holes > 0 else { return nil }
+            let previous = earlier.compactMap { sample(area, in: $0) }.filter { $0.holes > 0 }
+            // A single round has fewer fairways and missed greens than five rounds.
+            return change(area, recent: [current], earlier: previous,
+                          minimumRecentHoles: area == .driving || area == .shortGame ? 5 : 9)
+        }
+        guard !changes.isEmpty else { return nil }
+        return Array(changes.filter { abs($0.steps) >= 1 }.sorted { abs($0.steps) > abs($1.steps) }.prefix(3))
+    }
+
+    private static func change(_ area: Area, recent: [(total: Int, holes: Int)], earlier: [(total: Int, holes: Int)],
+                               minimumRecentHoles: Int) -> Change? {
+        let recentHoles = recent.reduce(0) { $0 + $1.holes }
+        let earlierHoles = earlier.reduce(0) { $0 + $1.holes }
+        guard earlier.count >= minimumEarlierRounds, recentHoles >= minimumRecentHoles,
+              earlierHoles >= minimumHoles(area) else { return nil }
+        let recentValue = value(area, total: recent.reduce(0) { $0 + $1.total }, holes: recentHoles)
+        let earlierValue = value(area, total: earlier.reduce(0) { $0 + $1.total }, holes: earlierHoles)
+        let direction = lowerIsBetter(area) ? -1.0 : 1.0
+        return Change(area: area, recent: recentValue, earlier: earlierValue,
+                      steps: (recentValue - earlierValue) / step(area) * direction)
     }
 
     private static func sample(_ area: Area, in record: RoundPerformanceRecord) -> (total: Int, holes: Int)? {
@@ -87,5 +108,33 @@ enum RecentFormAnalysis {
     // Fairways only exist on par 4s and 5s, and scrambling only on missed greens.
     private static func minimumHoles(_ area: Area) -> Int {
         area == .driving || area == .shortGame ? 10 : 18
+    }
+}
+
+extension RecentFormAnalysis.Area {
+    var title: String {
+        switch self {
+        case .putting: L("Putting")
+        case .approach: L("Approach (GIR)")
+        case .driving: L("Driving (fairways)")
+        case .shortGame: L("Short game (scrambling)")
+        case .penalties: L("Penalties")
+        }
+    }
+}
+
+extension RecentFormAnalysis.Change {
+    /// "2.1 putts per hole (was 1.9)" for recent form, "… · your average 1.9" for a single round.
+    func valueText(comparedWithAverage: Bool) -> String {
+        let decimal: (Double) -> String = { $0.formatted(.number.precision(.fractionLength(1))) }
+        let percent: (Double) -> String = { "\(Int($0.rounded()))%" }
+        switch (area, comparedWithAverage) {
+        case (.putting, false): return L("%@ putts per hole (was %@)", decimal(recent), decimal(earlier))
+        case (.putting, true): return L("%@ putts per hole · your average %@", decimal(recent), decimal(earlier))
+        case (.penalties, false): return L("%@ per 18 holes (was %@)", decimal(recent), decimal(earlier))
+        case (.penalties, true): return L("%@ per 18 holes · your average %@", decimal(recent), decimal(earlier))
+        case (_, false): return L("%@ (was %@)", percent(recent), percent(earlier))
+        case (_, true): return L("%@ · your average %@", percent(recent), percent(earlier))
+        }
     }
 }

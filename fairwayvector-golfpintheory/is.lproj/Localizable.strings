@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "Engar landslagshæðir eru tiltækar fyrir þennan prófíl (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Ekki tókst að búa til gilda skorstöðu. Farðu yfir markið og persónulega fleygjárnskvörðun.";
 "No wedges selected for the bag." = "Engin fleygjárn valin í pokann.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Ekki gilt fyrir HCP. Ljúktu völdum metnum 9 eða 18 holu hring með forgjafarvísinum. Dreifðar holur gilda ekki; níu holu hringir þurfa níu holu mat. Prufuvellir eru undanskildir.";
 "Not recorded" = "Ekki skráð";
 "Not set" = "Ekki stillt";
 "Not supplied" = "Ekki gefið upp";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Byggt á 1 hring";
 "Based on all %@ rounds" = "Byggt á öllum %@ hringjunum";
 "Based on your last %@ rounds" = "Byggt á síðustu %@ hringjunum þínum";
+"Even" = "Á pari";
+"Saved in your handicap history" = "Vistað í forgjafarsögunni þinni";
+"Handicap Index %@ → %@ if saved in HCP" = "Forgjafarvísir %@ → %@ ef vistað í HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Þessi hringur getur ekki gilt til forgjafar. Spilaðu allar holur á metnum 9 eða 18 holu velli og bættu við forgjafarvísinum þínum.";
+"Compared with your usual game" = "Miðað við venjulega spilamennsku þína";
+"In line with your usual game." = "Í takt við venjulega spilamennsku þína.";
+"Better than usual" = "Betra en venjulega";
+"Worse than usual" = "Verra en venjulega";
+"%@ putts per hole · your average %@" = "%@ pútt á holu · meðaltal þitt %@";
+"%@ per 18 holes · your average %@" = "%@ á 18 holur · meðaltal þitt %@";
+"%@ · your average %@" = "%@ · meðaltal þitt %@";

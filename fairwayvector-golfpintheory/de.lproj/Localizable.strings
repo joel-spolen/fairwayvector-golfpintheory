@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "Für dieses Profil (%@) sind keine Geländehöhen verfügbar.";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Es konnte keine gültige Scoring-Position erzeugt werden. Prüfe dein Ziel und deine persönliche Wedge-Kalibrierung.";
 "No wedges selected for the bag." = "Keine Wedges für das Bag ausgewählt.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Nicht HCP-fähig. Spiele die ausgewählte, geratete 9- oder 18-Loch-Runde mit deinem Handicap-Index vollständig. Verstreute Löcher zählen nicht; Neun-Loch-Runden brauchen ein Neun-Loch-Rating. Demoplätze sind ausgeschlossen.";
 "Not recorded" = "Nicht erfasst";
 "Not set" = "Nicht festgelegt";
 "Not supplied" = "Nicht angegeben";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Basierend auf 1 Runde";
 "Based on all %@ rounds" = "Basierend auf allen %@ Runden";
 "Based on your last %@ rounds" = "Basierend auf deinen letzten %@ Runden";
+"Even" = "Par";
+"Saved in your handicap history" = "In deiner Handicap-Historie gespeichert";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap-Index %@ → %@, wenn im HCP gespeichert";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Diese Runde kann nicht für dein Handicap zählen. Spiele alle Löcher eines bewerteten 9- oder 18-Loch-Platzes und trage deinen Handicap-Index ein.";
+"Compared with your usual game" = "Im Vergleich zu deinem gewohnten Spiel";
+"In line with your usual game." = "Im Rahmen deines gewohnten Spiels.";
+"Better than usual" = "Besser als sonst";
+"Worse than usual" = "Schlechter als sonst";
+"%@ putts per hole · your average %@" = "%@ Putts pro Loch · dein Schnitt %@";
+"%@ per 18 holes · your average %@" = "%@ pro 18 Löcher · dein Schnitt %@";
+"%@ · your average %@" = "%@ · dein Schnitt %@";

@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "このプロファイル（%@）の地形の高さはありません。";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "有効なスコアリング位置を生成できませんでした。ターゲットと個人のウェッジキャリブレーションを確認してください。";
 "No wedges selected for the bag." = "バッグに選択されたウェッジはありません。";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "HCP の対象外です。選択したレーティング付きの 9 ホールまたは 18 ホールを Handicap Index でプレーし終えてください。飛び飛びのホールは対象外で、9 ホールのラウンドには 9 ホールのレーティングが必要です。デモコースは除外されます。";
 "Not recorded" = "未記録";
 "Not set" = "未設定";
 "Not supplied" = "未提供";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "1 ラウンドに基づく";
 "Based on all %@ rounds" = "全 %@ ラウンドに基づく";
 "Based on your last %@ rounds" = "直近 %@ ラウンドに基づく";
+"Even" = "イーブン";
+"Saved in your handicap history" = "ハンディキャップ履歴に保存済み";
+"Handicap Index %@ → %@ if saved in HCP" = "HCP に保存すると Handicap Index %@ → %@";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "このラウンドはハンディキャップの対象になりません。レーティングのある 9 ホールまたは 18 ホールのコースで全ホールをプレーし、Handicap Index を追加してください。";
+"Compared with your usual game" = "いつものプレーとの比較";
+"In line with your usual game." = "いつもどおりのプレーです。";
+"Better than usual" = "いつもより良い";
+"Worse than usual" = "いつもより悪い";
+"%@ putts per hole · your average %@" = "1 ホールあたり %@ パット · 平均 %@";
+"%@ per 18 holes · your average %@" = "18 ホールあたり %@ · 平均 %@";
+"%@ · your average %@" = "%@ · 平均 %@";

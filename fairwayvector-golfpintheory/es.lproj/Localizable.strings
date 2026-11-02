@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "No hay alturas del terreno disponibles para este perfil (%@).";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "No se pudo generar una posición de scoring válida. Revisa tu objetivo y la calibración personal de wedges.";
 "No wedges selected for the bag." = "No hay wedges seleccionados para la bolsa.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "No válida para el HCP. Completa el recorrido de 9 o 18 hoyos con rating seleccionado con tu Handicap Index. Los hoyos sueltos no cuentan; las vueltas de nueve hoyos necesitan un rating de nueve hoyos. Se excluyen los campos de demostración.";
 "Not recorded" = "No registrado";
 "Not set" = "Sin definir";
 "Not supplied" = "No proporcionado";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Basado en 1 vuelta";
 "Based on all %@ rounds" = "Basado en las %@ vueltas";
 "Based on your last %@ rounds" = "Basado en tus últimas %@ vueltas";
+"Even" = "Al par";
+"Saved in your handicap history" = "Guardada en tu historial de hándicap";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap Index %@ → %@ si la guardas en el HCP";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Esta vuelta no puede contar para tu hándicap. Juega todos los hoyos de un campo de 9 o 18 hoyos con rating y añade tu Handicap Index.";
+"Compared with your usual game" = "Comparado con tu juego habitual";
+"In line with your usual game." = "En la línea de tu juego habitual.";
+"Better than usual" = "Mejor de lo habitual";
+"Worse than usual" = "Peor de lo habitual";
+"%@ putts per hole · your average %@" = "%@ putts por hoyo · tu media %@";
+"%@ per 18 holes · your average %@" = "%@ por 18 hoyos · tu media %@";
+"%@ · your average %@" = "%@ · tu media %@";

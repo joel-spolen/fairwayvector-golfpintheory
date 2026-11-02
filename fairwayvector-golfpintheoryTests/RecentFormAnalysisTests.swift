@@ -79,4 +79,20 @@ struct RecentFormAnalysisTests {
         #expect(workOn?.recent == 25)
         #expect(workOn?.earlier == 50)
     }
+
+    @Test func roundHighlightsCompareOneRoundWithEarlierRounds() throws {
+        let earlier = (1...3).map { round($0, putts: 36, penalties: 1) }
+        // Putting 1.8 vs 2.0 per hole (+2 steps), penalties 3 vs 1 per 18 (−4 steps).
+        let highlights = try #require(RecentFormAnalysis.roundHighlights(round(4, putts: 32, penalties: 3), earlier: earlier))
+        #expect(highlights.map(\.area) == [.penalties, .putting])
+        #expect(highlights.first?.steps ?? 0 < 0)
+        #expect(highlights.last?.steps ?? 0 > 0)
+    }
+
+    @Test func roundHighlightsNeedThreeEarlierRounds() {
+        let earlier = (1...2).map { round($0, putts: 36) }
+        #expect(RecentFormAnalysis.roundHighlights(round(3, putts: 30), earlier: earlier) == nil)
+        let steady = (1...3).map { round($0, putts: 36) }
+        #expect(RecentFormAnalysis.roundHighlights(round(4, putts: 37), earlier: steady) == [])
+    }
 }

@@ -634,7 +634,6 @@
 "No terrain elevations are available for this %@ profile." = "Tälle profiilille (%@) ei ole maaston korkeuksia.";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "Kelvollista scoring-sijaintia ei voitu luoda. Tarkista kohde ja henkilökohtainen wedge-kalibrointi.";
 "No wedges selected for the bag." = "Bägiin ei ole valittu wedgejä.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "Ei kelpaa HCP:hen. Pelaa valittu luokiteltu 9 tai 18 reiän lenkki loppuun Handicap Indexilläsi. Hajanaiset reiät eivät kelpaa; yhdeksän reiän kierrokset edellyttävät yhdeksän reiän luokitusta. Demokentät eivät kelpaa.";
 "Not recorded" = "Ei kirjattu";
 "Not set" = "Ei asetettu";
 "Not supplied" = "Ei annettu";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "Perustuu 1 kierrokseen";
 "Based on all %@ rounds" = "Perustuu kaikkiin %@ kierrokseen";
 "Based on your last %@ rounds" = "Perustuu viimeisimpään %@ kierrokseesi";
+"Even" = "Par";
+"Saved in your handicap history" = "Tallennettu tasoitushistoriaasi";
+"Handicap Index %@ → %@ if saved in HCP" = "Handicap Index %@ → %@, jos tallennat HCP:hen";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "Tämä kierros ei voi vaikuttaa tasoitukseesi. Pelaa kaikki reiät luokitellulla 9 tai 18 reiän kentällä ja lisää Handicap Indexisi.";
+"Compared with your usual game" = "Verrattuna tavalliseen peliisi";
+"In line with your usual game." = "Tavallisen pelisi tasolla.";
+"Better than usual" = "Tavallista parempi";
+"Worse than usual" = "Tavallista heikompi";
+"%@ putts per hole · your average %@" = "%@ puttia reikää kohden · keskiarvosi %@";
+"%@ per 18 holes · your average %@" = "%@ 18 reikää kohden · keskiarvosi %@";
+"%@ · your average %@" = "%@ · keskiarvosi %@";

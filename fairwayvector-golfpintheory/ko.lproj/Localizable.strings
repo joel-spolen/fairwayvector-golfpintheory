@@ -632,7 +632,6 @@
 "No terrain elevations are available for this %@ profile." = "이 프로필(%@)에 사용할 수 있는 지형 고도가 없습니다.";
 "No valid scoring position could be generated. Review your target and personal wedge calibration." = "유효한 스코어링 위치를 생성할 수 없습니다. 목표와 개인 웨지 보정을 확인하세요.";
 "No wedges selected for the bag." = "백에 선택된 웨지가 없습니다.";
-"Not eligible for HCP. Complete the selected rated 9- or 18-hole layout with your Handicap Index. Scattered holes do not qualify; nine-hole rounds need a nine-hole rating. Demo courses are excluded." = "HCP 대상이 아닙니다. 선택한 레이팅된 9홀 또는 18홀 코스를 Handicap Index로 모두 플레이하세요. 흩어진 홀은 인정되지 않으며, 9홀 라운드에는 9홀 레이팅이 필요합니다. 데모 코스는 제외됩니다.";
 "Not recorded" = "기록 안 됨";
 "Not set" = "설정되지 않음";
 "Not supplied" = "제공되지 않음";
@@ -1208,3 +1207,14 @@
 "Based on 1 round" = "라운드 1개 기준";
 "Based on all %@ rounds" = "전체 라운드 %@개 기준";
 "Based on your last %@ rounds" = "최근 라운드 %@개 기준";
+"Even" = "이븐";
+"Saved in your handicap history" = "핸디캡 기록에 저장됨";
+"Handicap Index %@ → %@ if saved in HCP" = "HCP에 저장하면 Handicap Index %@ → %@";
+"This round can't count for your handicap. Play all holes of a rated 9- or 18-hole course and add your Handicap Index." = "이 라운드는 핸디캡에 반영될 수 없습니다. 레이팅된 9홀 또는 18홀 코스의 모든 홀을 플레이하고 Handicap Index를 추가하세요.";
+"Compared with your usual game" = "평소 플레이와 비교";
+"In line with your usual game." = "평소 플레이와 비슷합니다.";
+"Better than usual" = "평소보다 좋음";
+"Worse than usual" = "평소보다 아쉬움";
+"%@ putts per hole · your average %@" = "홀당 %@퍼트 · 평균 %@";
+"%@ per 18 holes · your average %@" = "18홀당 %@ · 평균 %@";
+"%@ · your average %@" = "%@ · 평균 %@";
