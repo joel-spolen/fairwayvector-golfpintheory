@@ -15,8 +15,6 @@ struct HoleMapView: View {
     var onTargetCommitted: (GeoPoint) -> Void = { _ in }
     var simulatedUserLocation: GeoPoint? = nil
 
-    private var hasPlayerOrigin: Bool { usesGPS || simulatedUserLocation != nil }
-
     @State private var position: MapCameraPosition = .automatic
     @State private var cameraRevision = 0
     @State private var isDraggingTarget = false
@@ -46,9 +44,9 @@ struct HoleMapView: View {
                 #endif
 
                 if let tee = hole.tee {
-                    Annotation(hasPlayerOrigin ? "Tee" : "You", coordinate: tee.coordinate, anchor: .bottom) {
+                    Annotation("Tee", coordinate: tee.coordinate, anchor: .bottom) {
                         VStack(spacing: 3) {
-                            Text(hasPlayerOrigin ? "TEE" : "YOU")
+                            Text("TEE")
                                 .font(.caption2.bold())
                                 .foregroundStyle(PureLineStyle.ink)
                                 .padding(.horizontal, 7)

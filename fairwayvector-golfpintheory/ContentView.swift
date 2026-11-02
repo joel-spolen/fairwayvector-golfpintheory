@@ -663,6 +663,7 @@ struct CourseMapView: View {
 
     private func distanceSidebar(hole: Hole, origin: DistanceOrigin?, flag: GeoPoint?) -> some View {
         VStack(spacing: 6) {
+            originBadge(origin)
             sidebarDistance(L("FRONT"), from: origin?.point, to: hole.greenFront ?? hole.greenCenter, style: .secondary)
             sidebarDistance(L("CENTER"), from: origin?.point, to: hole.greenCenter, style: .primary)
             sidebarDistance(L("BACK"), from: origin?.point, to: hole.greenBack ?? hole.greenCenter, style: .secondary)
@@ -681,6 +682,27 @@ struct CourseMapView: View {
     }
 
     private enum SidebarDistanceStyle { case primary, secondary, target }
+
+    @ViewBuilder
+    private func originBadge(_ origin: DistanceOrigin?) -> some View {
+        if let origin {
+            // Above 20 m the fix is too coarse for trustworthy yardages, so show the uncertainty.
+            let (text, symbol, trusted): (String, String, Bool) = switch origin.source {
+            case .gps(let accuracy):
+                accuracy > 20 ? ("GPS ±\(unit.format(accuracy))", "location", false) : ("GPS", "location.fill", true)
+            case .simulated: ("DEV", "figure.golf", true)
+            case .teeNoFix, .teeFarAway: (L("From tee"), "mappin", false)
+            }
+            Label(text, systemImage: symbol)
+                .font(.caption2.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .foregroundStyle(trusted ? PureLineStyle.accent : PureLineStyle.ink)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 3)
+                .background(trusted ? PureLineStyle.accent.opacity(0.1) : PureLineStyle.surface, in: Capsule())
+        }
+    }
 
     private func sidebarDistance(_ title: String, from start: GeoPoint?, to end: GeoPoint?,
                                  style: SidebarDistanceStyle) -> some View {
