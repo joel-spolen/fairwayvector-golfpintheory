@@ -113,6 +113,7 @@ struct ContentView: View {
 
     private enum Destination: String, Identifiable {
         case course
+        case resumeRound
         case handicap
         case practice
         case statistics
@@ -146,6 +147,7 @@ struct ContentView: View {
             PureLineHomeView(
                 onOpenCourseMap: { requestStartRound = false; destination = .course },
                 onStartRound: { requestStartRound = true; destination = .course },
+                onResumeRound: { requestStartRound = false; destination = .resumeRound },
                 onOpenHandicap: { destination = .handicap },
                 onOpenBag: { destination = .bag },
                 onOpenWedge: {
@@ -226,6 +228,9 @@ struct ContentView: View {
         switch screen {
         case .course:
             CourseMapFlowView(onHome: { destination = nil }, requestStartRound: $requestStartRound)
+        case .resumeRound:
+            CourseMapFlowView(onHome: { destination = nil }, requestStartRound: $requestStartRound,
+                              initialRound: roundStore.active)
         case .handicap:
             HCPProjectionEntryView(onHome: { destination = nil })
         case .practice:
@@ -283,6 +288,13 @@ private struct CourseMapFlowView: View {
     @Binding var requestStartRound: Bool
     @Environment(PlayedRoundStore.self) private var roundStore
     @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
+
+    init(onHome: @escaping () -> Void, requestStartRound: Binding<Bool>, initialRound: PlayedRound? = nil) {
+        self.onHome = onHome
+        _requestStartRound = requestStartRound
+        _resumedRound = State(initialValue: initialRound)
+        _selection = State(initialValue: initialRound?.reference)
+    }
 
     var body: some View {
         if let setupReference, let setupCourse {

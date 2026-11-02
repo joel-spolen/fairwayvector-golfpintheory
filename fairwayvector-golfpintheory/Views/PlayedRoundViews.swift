@@ -263,11 +263,10 @@ struct RoundHoleEntryView: View {
             let savedScore = currentRound.score(player: player.id, hole: number)
             var score = savedScore
                 ?? PlayedHoleScore(strokes: round.holes.first(where: { $0.number == number })?.par ?? 4)
+            // Putts and fairway stay unrecorded until entered; defaults would skew GIR and fairway stats.
             if round.recordsDetailedScore(for: player) {
-                score.putts = score.putts ?? min(2, max(0, score.strokes - (score.penalties ?? 0)))
                 score.bunkerShots = score.bunkerShots ?? 0
                 score.penalties = score.penalties ?? 0
-                if savedScore == nil { score.fairway = .hit }
             }
             if round.holes.first(where: { $0.number == number })?.par == 3 { score.fairway = .notApplicable }
             entries[player.id] = score
@@ -327,9 +326,12 @@ struct RoundHoleEntryView: View {
                                     .foregroundStyle(PureLineStyle.accent)
                             }
                         }
+                        if let par = hole?.par {
+                            quickScoreRow(score.strokes, par: par)
+                        }
                         if round.recordsDetailedScore(for: player) {
                             Divider().overlay(PureLineStyle.line)
-                            detailCount(L("Putts"), value: score.putts, maximum: score.wrappedValue.strokes)
+                            puttsSelector(score.putts, maximum: score.wrappedValue.strokes)
                             if hole?.par == 3 {
                                 LabeledContent("Fairway", value: L("N/A · par 3"))
                             } else {
@@ -378,13 +380,17 @@ struct RoundHoleEntryView: View {
                     Button {
                         do {
                             try saveCurrentHole()
+                            UINotificationFeedbackGenerator().notificationOccurred(.success)
                             if holePosition == round.holes.count - 1 {
                                 onFinish()
                             } else {
                                 onNavigateHole(round.holes[holePosition + 1].number)
                             }
                         }
-                        catch { self.error = UserFacingError.message(error) }
+                        catch {
+                            UINotificationFeedbackGenerator().notificationOccurred(.error)
+                            self.error = UserFacingError.message(error)
+                        }
                     } label: {
                         Label("Save hole", systemImage: "checkmark")
                             .font(.subheadline.weight(.semibold))
@@ -471,6 +477,65 @@ struct RoundHoleEntryView: View {
     private func detailCount(_ title: String, value: Binding<Int?>, maximum: Int) -> some View {
         Stepper("\(title): \(value.wrappedValue ?? 0)", value: Binding(
             get: { value.wrappedValue ?? 0 }, set: { value.wrappedValue = $0 }), in: 0...maximum)
+    }
+
+    private func quickScoreRow(_ strokes: Binding<Int>, par: Int) -> some View {
+        HStack(spacing: 6) {
+            ForEach(-1...2, id: \.self) { offset in
+                let value = par + offset
+                let selected = strokes.wrappedValue == value
+                Button { strokes.wrappedValue = value } label: {
+                    VStack(spacing: 2) {
+                        Text("\(value)").font(.title3.weight(.semibold)).monospacedDigit()
+                        Text(scoreName(strokes: value, par: par))
+                            .font(.caption2.weight(.medium))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                    }
+                    .padding(.horizontal, 2)
+                    .frame(maxWidth: .infinity, minHeight: 56)
+                    .foregroundStyle(selected ? Color.white : PureLineStyle.accent)
+                    .background(selected ? PureLineStyle.accent : PureLineStyle.canvas,
+                                in: RoundedRectangle(cornerRadius: 12))
+                    .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(PureLineStyle.line, lineWidth: selected ? 0 : 1) }
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(value), \(scoreName(strokes: value, par: par))")
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
+        }
+    }
+
+    /// 0–3 cover almost every hole; "4+" counts up from 4 on repeated taps.
+    private func puttsSelector(_ value: Binding<Int?>, maximum: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Putts").font(.subheadline.weight(.semibold))
+            HStack(spacing: 6) {
+                ForEach(0...4, id: \.self) { count in
+                    let current = value.wrappedValue
+                    let selected = count < 4 ? current == count : (current ?? 0) >= 4
+                    Button {
+                        if count < 4 {
+                            value.wrappedValue = selected ? nil : count
+                        } else {
+                            value.wrappedValue = selected ? min((current ?? 4) + 1, maximum) : 4
+                        }
+                    } label: {
+                        Text(count < 4 ? "\(count)" : selected ? "\(current ?? 4)" : "4+")
+                            .font(.headline.monospacedDigit())
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                            .foregroundStyle(selected ? Color.white : PureLineStyle.accent)
+                            .background(selected ? PureLineStyle.accent : PureLineStyle.canvas,
+                                        in: RoundedRectangle(cornerRadius: 12))
+                            .overlay { RoundedRectangle(cornerRadius: 12).strokeBorder(PureLineStyle.line, lineWidth: selected ? 0 : 1) }
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(count > maximum)
+                    .accessibilityLabel(L("Putts") + " " + (count < 4 ? "\(count)" : "4+"))
+                    .accessibilityAddTraits(selected ? .isSelected : [])
+                }
+            }
+        }
     }
 
     private func fairwaySelector(_ selection: Binding<RoundFairway>) -> some View {

@@ -1,8 +1,10 @@
+import SwiftData
 import SwiftUI
 
 struct PureLineHomeView: View {
     let onOpenCourseMap: () -> Void
     let onStartRound: () -> Void
+    let onResumeRound: () -> Void
     let onOpenHandicap: () -> Void
     let onOpenBag: () -> Void
     let onOpenWedge: () -> Void
@@ -10,6 +12,15 @@ struct PureLineHomeView: View {
     let onOpenStatistics: () -> Void
     let onOpenSettings: () -> Void
     let onOpenAccount: () -> Void
+    @Environment(PlayedRoundStore.self) private var roundStore
+    @Query private var handicapRounds: [GolfRound]
+    @Query private var profiles: [PlayerProfile]
+
+    private var handicapIndex: Double? {
+        let low = profiles.first?.lowHandicapIndex
+        return WHSCalculator.handicapIndex(
+            from: WHSCalculator.scoringEntries(from: handicapRounds, lowHandicapIndex: low), lowHandicapIndex: low)
+    }
 
     var body: some View {
         NavigationStack {
@@ -34,6 +45,19 @@ struct PureLineHomeView: View {
                     .foregroundStyle(PureLineStyle.muted)
                     .padding(.top, 12)
 
+                    if let round = roundStore.active {
+                        VStack(alignment: .leading, spacing: 14) {
+                            Label("Round in progress", systemImage: "flag.checkered").font(.headline)
+                            Text("\(round.reference.courseName) · \(round.reference.teeName) · hole \(round.holes[round.currentHole].number)")
+                                .font(.subheadline).foregroundStyle(PureLineStyle.muted)
+                            Button("Resume round", action: onResumeRound)
+                                .buttonStyle(PureLinePrimaryButtonStyle())
+                                .accessibilityIdentifier("home-resume-round")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .pureLineCard(padding: 24)
+                    }
+
                     VStack(alignment: .leading, spacing: 12) {
                         Text("A clearer way\nto play.")
                             .font(.system(.largeTitle, design: .default).weight(.semibold))
@@ -42,6 +66,30 @@ struct PureLineHomeView: View {
                         Text("Your course. Your game. One place.")
                             .font(.subheadline)
                             .foregroundStyle(PureLineStyle.muted)
+                    }
+
+                    if let handicapIndex {
+                        Button(action: onOpenHandicap) {
+                            HStack(spacing: 12) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Handicap Index")
+                                        .font(.caption.weight(.medium))
+                                        .foregroundStyle(PureLineStyle.muted)
+                                    Text(WHSCalculator.formatHCPScore(handicapIndex))
+                                        .font(.title.weight(.semibold)).monospacedDigit()
+                                        .foregroundStyle(PureLineStyle.ink)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(PureLineStyle.muted)
+                            }
+                            .contentShape(Rectangle())
+                            .pureLineCard(padding: 16)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityIdentifier("home-handicap-index")
                     }
 
                     VStack(alignment: .leading, spacing: 22) {
