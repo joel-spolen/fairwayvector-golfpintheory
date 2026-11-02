@@ -126,7 +126,7 @@ struct GolfAPIClient {
         if mode == .live, !forceRefresh, let cached = cache.readCourseDetail(id: id) {
             let detail = try Self.decodeDetail(from: cached)
             guard detail.courseID == id else { throw GolfAPIError.invalidResponse("Saved detail course ID mismatch.") }
-            await retainSelectedCourse(id)
+            retainSelectedCourse(id)
             return detail
         }
         if (mode == .mock || !forceRefresh), let cached = cache.readCourseDetail(id: id),
@@ -143,7 +143,7 @@ struct GolfAPIClient {
         }
         if mode == .live {
             try cache.persistCourseDetail(data, id: id)
-            await retainSelectedCourse(id)
+            retainSelectedCourse(id)
         }
         return detail
     }
@@ -200,7 +200,7 @@ struct GolfAPIClient {
             from: JSONSerialization.data(withJSONObject: terrainObject))
         try cache.persistCourseDetail(detailData, id: id)
         try cache.persistCoordinates(coordinatesData, id: id)
-        await retainSelectedCourse(id)
+        retainSelectedCourse(id)
         return (GolfAPICoursePayload(detail: detail, coordinates: coordinates), terrain)
     }
 
@@ -524,7 +524,7 @@ struct GolfAPICache {
         // (possibly empty) search. Only trim + NFC are equivalent to the server.
         // Do not trust legacy lossy filenames; the shared server cache still
         // prevents a new provider call for previously cached requests.
-        let fields = [country, region, query].map(GolfAPIClient.normalizedSearchTerm)
+        let fields = [country, region, query].map { GolfAPIClient.normalizedSearchTerm($0) }
         let bytes = (try? JSONEncoder().encode(fields)) ?? Data()
         let digest = SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
         return "search-v2-\(digest).json"

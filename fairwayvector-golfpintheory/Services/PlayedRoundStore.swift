@@ -156,7 +156,7 @@ final class PlayedRoundStore {
     /// Active drafts are local-only and are deliberately left untouched.
     func mergeCloudRecords(_ remote: [PlayedRound], deletedIDs: Set<UUID>,
                            acknowledgedDeletionIDs: Set<UUID> = []) throws {
-        guard !loadFailed, remote.allSatisfy(Self.validStructure),
+        guard !loadFailed, remote.allSatisfy({ Self.validStructure($0) }),
               Set(remote.map(\.id)).count == remote.count else { throw RoundStorageError.invalidArchive }
         var merged = saved.filter { !deletedIDs.contains($0.id) }
         for round in remote {

@@ -362,7 +362,7 @@ enum AccountSyncDomainAdapter {
               wedge.syncCarryOverrides.values.allSatisfy({ $0.isFinite && $0 >= 0 }) else {
             throw AccountSyncError.invalidWire
         }
-        let payload = WedgePayload(clientUpdatedAt: modifiedAt.map(isoTimestamp),
+        let payload = WedgePayload(clientUpdatedAt: modifiedAt.map { isoTimestamp($0) },
             name: wedge.name, brand: wedge.brand, notes: wedge.notes,
             fullCarry: wedge.fullCarry, isInBag: wedge.isInBag,
             fullCarryUserProvided: wedge.fullCarryUserProvided, carryOverrides: wedge.syncCarryOverrides)
