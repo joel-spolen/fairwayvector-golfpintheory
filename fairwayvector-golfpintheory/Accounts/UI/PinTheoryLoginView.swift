@@ -72,6 +72,9 @@ struct PinTheoryLoginView: View {
                         .accessibilityHidden(true)
                     Text("Golf PinTheory").font(.largeTitle.weight(.semibold)).tracking(-0.6)
                         .accessibilityAddTraits(.isHeader)
+                    Text("Distances, club advice and stats that show where your strokes go.")
+                        .font(.subheadline).foregroundStyle(PureLineStyle.muted)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text("Sign in to continue").font(.headline).padding(.top, 8)
                 }
 
