@@ -96,7 +96,8 @@ struct CourseMapView: View {
                 }
                 .offset(x: horizontalPageOffset(width: width))
                 .frame(width: width, height: geometry.size.height, alignment: .leading)
-                .clipped()
+                // Clips the sliding pages at the sides only, so the map can run up under the status bar.
+                .clipShape(OpenTopRectangle())
                 .allowsHitTesting(transitionTargetPage == nil)
             }
                 .background(PureLineStyle.canvas)
@@ -332,24 +333,29 @@ struct CourseMapView: View {
             let origin = distanceOrigin(for: hole)
             let holeRequest = terrainRequest(for: hole, origin: nil, target: nil)
             GeometryReader { geometry in
-                HoleMapView(
-                    hole: hole,
-                    flag: flagPosition(for: hole),
-                    origin: origin?.point,
-                    usesGPS: origin?.usesGPS == true,
-                    tapPoint: $tapPoint,
-                    onDoubleTapGreen: { point in saveFlagPosition(point, for: hole) },
-                    onHeadingChange: { mapHeading = $0 },
-                    terrainInspection: terrainInspection,
-                    onTargetInteractionBegan: { terrainStore.beginTargetInteraction() },
-                    onTargetInteractionCancelled: { terrainStore.cancelTargetInteraction() },
-                    onTargetCommitted: { point in
-                        terrainInspection.point = nil
-                        commitSelectedShot(for: hole, target: point)
-                    },
-                    simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
-                )
-                .frame(width: geometry.size.width, height: geometry.size.height)
+                // A background, so only the map runs up under the status bar; controls keep the safe area.
+                Color.clear
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .background {
+                        HoleMapView(
+                            hole: hole,
+                            flag: flagPosition(for: hole),
+                            origin: origin?.point,
+                            usesGPS: origin?.usesGPS == true,
+                            tapPoint: $tapPoint,
+                            onDoubleTapGreen: { point in saveFlagPosition(point, for: hole) },
+                            onHeadingChange: { mapHeading = $0 },
+                            terrainInspection: terrainInspection,
+                            onTargetInteractionBegan: { terrainStore.beginTargetInteraction() },
+                            onTargetInteractionCancelled: { terrainStore.cancelTargetInteraction() },
+                            onTargetCommitted: { point in
+                                terrainInspection.point = nil
+                                commitSelectedShot(for: hole, target: point)
+                            },
+                            simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
+                        )
+                        .ignoresSafeArea(.container, edges: .top)
+                    }
                 // Ready before the switch is used, so showing it is instant; redone when the outline arrives.
                 .task(id: isShowingFlagEditor && courseDisplayOptions.showGreenSlope ? GreenSlopeMap.region(for: hole) : nil) {
                     guard isShowingFlagEditor, courseDisplayOptions.showGreenSlope, let terrain = store.terrain,
@@ -763,6 +769,13 @@ struct CourseMapView: View {
             .foregroundStyle(unavailable ? PureLineStyle.muted.opacity(0.4) : PureLineStyle.accent)
         .disabled(unavailable)
         .accessibilityLabel(isPrevious ? L("Previous hole") : activeRound == nil ? L("Next hole") : L("Enter score for this hole"))
+    }
+}
+
+/// Clips left, right and bottom, but leaves room above for content drawn under the status bar.
+private struct OpenTopRectangle: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path(CGRect(x: rect.minX, y: rect.minY - 200, width: rect.width, height: rect.height + 200))
     }
 }
 
