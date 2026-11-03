@@ -24,7 +24,7 @@ struct SplashView: View {
             .accessibilityAddTraits(.isHeader)
         }
         .ignoresSafeArea()
-        .background(Color(red: 0.012, green: 0.043, blue: 0.034).ignoresSafeArea())
+        .background(PureLineStyle.canvas.ignoresSafeArea())
         .onAppear(perform: startAnimation)
     }
 
