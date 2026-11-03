@@ -363,11 +363,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "E-mailadressen kunnen niet in de app worden gewijzigd. Neem contact op met support als je hulp nodig hebt.";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "E-mailwijziging wacht op bevestiging: %@. Neem contact op met support voordat je deze bevestigt.";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "Schakel locatie in voor live GPS-afstanden. Geladen baangegevens blijven offline beschikbaar.";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "Voer een carrykalibratie voor de club in bij Oefenen / Profiel voordat je je gemiddelde profiel gebruikt.";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "Voeg een carryafstand toe voor minstens één club bij In de tas › Clubafstanden & lancering.";
 "Enter a number between −20 and 54." = "Voer een getal in tussen −20 en 54.";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "Voer een persoonlijke Mid/Stock Full-carry in bij Wedgekalibratie & matrix, of kalibreer een oefenwedge. Er wordt geen standaardbereik aangenomen. %@";
 "Enter at least 2 characters to search for a club." = "Typ minstens 2 tekens om een club te zoeken.";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "Voer lanceergegevens of een carrykalibratie voor de club in bij Oefenen / Profiel voordat je je geavanceerde profiel gebruikt.";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "Voeg carry- of lanceergegevens toe voor minstens één club bij In de tas › Clubafstanden & lancering.";
 "Enter launch conditions and course factors to estimate carry and flight." = "Voer lanceeromstandigheden en baanfactoren in om carry en vlucht te schatten.";
 "Enter score for this hole" = "Score voor deze hole invoeren";
 "Enter shot conditions to estimate carry distance and trajectory." = "Voer slagomstandigheden in om carryafstand en vlucht te schatten.";
@@ -598,7 +598,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Geen enkele club bereikt de doelhoogte van %.1f m. Het hoogste gesimuleerde toppunt is %.1f m. Verklein het hoogteverschil of pas de lanceeromstandigheden aan.";
 "No club recommendation is available for this shot." = "Er is geen clubadvies beschikbaar voor deze slag.";
 "No clubs in bag" = "Geen clubs in de tas";
-"No clubs in your Practice bag. Configure your profile first." = "Geen clubs in je oefentas. Configureer eerst je profiel.";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "Geen clubs geselecteerd. Kies je clubs bij In de tas › Clubs in mijn tas.";
 "No course" = "Geen baan";
 "No courses match \"%@\"." = "Geen banen komen overeen met ‘%@’.";
 "No data" = "Geen gegevens";
@@ -802,7 +802,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Binnen je wedgebereik worden de wedge, vluchtbaan en zwaailengte voor de slag voorgesteld.";
 "Scoring mode recommendations" = "Adviezen in scoringmodus";
 "Scoring range · ≤ %@" = "Scoringbereik · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Scoring ondersteunt maximaal 14 wedges in de tas. Verklein de tas in de Wedgematrix.";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "Scoring ondersteunt maximaal 14 wedges in de tas. Verwijder er een paar bij In de tas › Wedgetas.";
 "Scoring trend" = "Scoretrend";
 "Scrambling" = "Scrambling";
 "Sea-level pressure" = "Luchtdruk op zeeniveau";
@@ -830,7 +830,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "Stel afstand, greenhoogte en vlagpositie in om een club en swing te vinden.";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "Stel Oefenen / Profiel in en voer daarna een persoonlijke Mid/Stock Full-carry voor de wedge in.";
 "Set up a profile to use club defaults." = "Stel een profiel in om standaardwaarden voor clubs te gebruiken.";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "Stel eerst je golferprofiel in bij Oefenen; er wordt geen algemene voorspelling getoond.";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "Stel je clubs in bij In de tas › Clubafstanden & lancering om clubadvies te krijgen.";
 "Set up your clubs and wedges" = "Stel je clubs en wedges in";
 "Set your profile" = "Stel je profiel in";
 "Set your starting profile" = "Stel je startprofiel in";
@@ -1131,7 +1131,7 @@
 "uphill" = "bergop";
 "uploading saved changes and downloading updates" = "opgeslagen wijzigingen uploaden en updates downloaden";
 "±0.0 (Score not used)" = "±0,0 (score niet gebruikt)";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "%@ wordt niet herkend als wedge. Geef hem in de Wedge-matrix de naam PW, AW/48, GW/50, 52, SW/54, 56, 58 of LW/60.";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "%@ wordt niet herkend als wedge. Geef hem bij In de tas › Wedgetas de naam PW, AW/48, GW/50, 52, SW/54, 56, 58 of LW/60.";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@: de ingevoerde carryafstand kon niet worden verwerkt. Controleer de carry- en lanceerinstellingen van de wedge.";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@: deze carryafstand lijkt niet te kloppen. Controleer de carry- en lanceerinstellingen van de wedge.";
 "A carry distance couldn't be calculated for this club." = "Er kon geen carryafstand worden berekend voor deze club.";
@@ -1141,7 +1141,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "Controleer de lanceerinstellingen van deze club bij Clubs & lanceerprofiel.";
 "Elevation couldn't be calculated for this hole." = "De hoogte kon niet worden berekend voor deze hole.";
 "Email sign-in isn't available right now. Please try again later." = "Inloggen met e-mail is nu niet beschikbaar. Probeer het later opnieuw.";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "Voer je carry met een volle swing voor %@ in bij de Wedge-matrix.";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "Voer je carry met een volle swing voor %@ in bij In de tas › Wedgetas.";
 "Google sign-in couldn't be completed. Please try again." = "Inloggen met Google kon niet worden voltooid. Probeer het opnieuw.";
 "Keep the app installed until sync has finished." = "Houd de app geïnstalleerd totdat de synchronisatie klaar is.";
 "Map data isn't available for this course." = "Er zijn geen kaartgegevens beschikbaar voor deze baan.";
@@ -1152,7 +1152,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "Er zijn geen tees gevonden voor deze baan, dus hij kan niet worden geopend. Probeer een andere baan.";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "Alleen voltooide rondes van 9 of 18 holes op een baan met rating, met je Handicap Index ingesteld, kunnen aan je handicapgeschiedenis worden toegevoegd.";
 "Please choose a stronger password." = "Kies een sterker wachtwoord.";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "Voor scoringadvies zijn je wedgeafstanden nodig. Voer een carry met een volle swing in bij de Wedge-matrix of kalibreer een wedge bij Oefenen.";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "Voor scoringadvies zijn je wedgeafstanden nodig. Voeg ze toe bij In de tas › Wedgetas.";
 "Shot calculations aren't available right now. Restart the app and try again." = "Slagberekeningen zijn nu niet beschikbaar. Start de app opnieuw en probeer het nog eens.";
 "Sign-in isn't available right now. Please try again later." = "Inloggen is nu niet beschikbaar. Probeer het later opnieuw.";
 "Sign-out couldn't finish. Please try again." = "Uitloggen kon niet worden voltooid. Probeer het opnieuw.";

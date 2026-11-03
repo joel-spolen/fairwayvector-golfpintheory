@@ -365,11 +365,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "E-postadresser kan ikke endres i appen. Kontakt kundestøtte hvis du trenger hjelp.";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "E-postendring venter på bekreftelse: %@. Kontakt kundestøtte før du bekrefter den.";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "Slå på posisjon for GPS-avstander i sanntid. Innlastede banedata er fortsatt tilgjengelige uten nett.";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "Angi en carrykalibrering for køllen under Trening / Profil før du bruker mellomprofilen.";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "Legg til en carryavstand for minst én kølle under I bagen › Kølleavstander & utgang.";
 "Enter a number between −20 and 54." = "Angi et tall mellom −20 og 54.";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "Angi en personlig Mid/Stock Full-carry i Wedgekalibrering & matrise, eller kalibrer en treningswedge. Det antas ikke noe standardintervall. %@";
 "Enter at least 2 characters to search for a club." = "Skriv minst 2 tegn for å søke etter en klubb.";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "Angi køllens utgangsdata eller carrykalibrering under Trening / Profil før du bruker den avanserte profilen.";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "Legg til carry- eller utgangsdata for minst én kølle under I bagen › Kølleavstander & utgang.";
 "Enter launch conditions and course factors to estimate carry and flight." = "Angi utgangsverdier og banefaktorer for å anslå carry og ballbane.";
 "Enter score for this hole" = "Angi score for dette hullet";
 "Enter shot conditions to estimate carry distance and trajectory." = "Angi slagforhold for å anslå carryavstand og ballbane.";
@@ -600,7 +600,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Ingen kølle når målhøyden på %.1f m. Det høyeste simulerte toppunktet er %.1f m. Reduser høydeforskjellen eller juster utgangsverdiene.";
 "No club recommendation is available for this shot." = "Ingen køllanbefaling er tilgjengelig for dette slaget.";
 "No clubs in bag" = "Ingen køller i bagen";
-"No clubs in your Practice bag. Configure your profile first." = "Ingen køller i treningsbagen. Konfigurer profilen først.";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "Ingen køller valgt. Velg køllene dine under I bagen › Køller i bagen min.";
 "No course" = "Ingen bane";
 "No courses match \"%@\"." = "Ingen baner samsvarer med «%@».";
 "No data" = "Ingen data";
@@ -804,7 +804,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Innenfor wedgeavstanden din foreslås wedge, ballbane og svinglengde for slaget.";
 "Scoring mode recommendations" = "Anbefalinger i scoringmodus";
 "Scoring range · ≤ %@" = "Scoringintervall · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Scoring støtter maksimalt 14 wedger i bagen. Reduser bagen i Wedgematrisen.";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "Scoring støtter maksimalt 14 wedger i bagen. Fjern noen under I bagen › Wedgebag.";
 "Scoring trend" = "Scoretrend";
 "Scrambling" = "Scrambling";
 "Sea-level pressure" = "Lufttrykk ved havnivå";
@@ -832,7 +832,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "Angi avstand, greenens høyde og flaggposisjon for å finne kølle og sving.";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "Sett opp Trening / Profil, og angi deretter en personlig Mid/Stock Full-carry for wedge.";
 "Set up a profile to use club defaults." = "Sett opp en profil for å bruke køllestandarder.";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "Sett først opp golferprofilen under Trening; ingen generell prediksjon vises.";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "Sett opp køllene dine under I bagen › Kølleavstander & utgang for å få kølleråd.";
 "Set up your clubs and wedges" = "Sett opp køllene og wedgene dine";
 "Set your profile" = "Sett opp profilen";
 "Set your starting profile" = "Angi startprofilen din";
@@ -1131,7 +1131,7 @@
 "uphill" = "oppover";
 "uploading saved changes and downloading updates" = "laster opp lagrede endringer og laster ned oppdateringer";
 "±0.0 (Score not used)" = "±0,0 (score ikke brukt)";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "%@ gjenkjennes ikke som en wedge. Gi den navnet PW, AW/48, GW/50, 52, SW/54, 56, 58 eller LW/60 i Wedge-matrise.";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "%@ gjenkjennes ikke som en wedge. Gi den navnet PW, AW/48, GW/50, 52, SW/54, 56, 58 eller LW/60 under I bagen › Wedgebag.";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@: den angitte carrylengden kunne ikke matches. Sjekk wedgens innstillinger for carry og utgang.";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@: denne carrylengden ser ikke riktig ut. Sjekk wedgens innstillinger for carry og utgang.";
 "A carry distance couldn't be calculated for this club." = "Det gikk ikke å beregne en carrylengde for denne køllen.";
@@ -1141,7 +1141,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "Sjekk køllens utgangsinnstillinger i Køller & utgangsprofil.";
 "Elevation couldn't be calculated for this hole." = "Høyden kunne ikke beregnes for dette hullet.";
 "Email sign-in isn't available right now. Please try again later." = "Pålogging med e-post er ikke tilgjengelig akkurat nå. Prøv igjen senere.";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "Angi carry med full sving for %@ i Wedge-matrise.";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "Angi carry med full sving for %@ under I bagen › Wedgebag.";
 "Google sign-in couldn't be completed. Please try again." = "Google-påloggingen kunne ikke fullføres. Prøv igjen.";
 "Keep the app installed until sync has finished." = "Behold appen installert til synkroniseringen er ferdig.";
 "Map data isn't available for this course." = "Kartdata er ikke tilgjengelig for denne banen.";
@@ -1152,7 +1152,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "Fant ingen utslagssteder for denne banen, så den kan ikke åpnes. Prøv en annen bane.";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "Bare fullførte runder på 9 eller 18 hull på en ratet bane, med Handicapindeks angitt, kan legges til i handicaphistorikken din.";
 "Please choose a stronger password." = "Velg et sterkere passord.";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "Scoringråd krever wedgelengdene dine. Angi carry med full sving i Wedge-matrise eller kalibrer en wedge under Trening.";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "Scoringråd krever wedgelengdene dine. Legg dem til under I bagen › Wedgebag.";
 "Shot calculations aren't available right now. Restart the app and try again." = "Slagberegninger er ikke tilgjengelige akkurat nå. Start appen på nytt og prøv igjen.";
 "Sign-in isn't available right now. Please try again later." = "Pålogging er ikke tilgjengelig akkurat nå. Prøv igjen senere.";
 "Sign-out couldn't finish. Please try again." = "Utloggingen kunne ikke fullføres. Prøv igjen.";

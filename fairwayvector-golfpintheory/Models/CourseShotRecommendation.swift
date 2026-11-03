@@ -83,21 +83,21 @@ struct CourseShotRecommendationInput: Equatable {
     }
 
     static func profileIssue(_ profile: TrajectoryPlayerProfile) -> String? {
-        guard profile.isSetupComplete else { return L("Set up your Practice golfer profile first; no generic prediction is shown.") }
-        guard !profile.availableClubs.isEmpty else { return L("No clubs in your Practice bag. Configure your profile first.") }
+        guard profile.isSetupComplete else { return L("Set up your clubs in In the bag › Club distances & launch to get club advice.") }
+        guard !profile.availableClubs.isEmpty else { return L("No clubs selected. Choose your clubs in In the bag › Clubs in my bag.") }
         // Simple is an explicitly chosen handicap-default mode. The other levels
         // must have an anchor consumed by Practice's actual effective-profile logic.
         let hasCarry = profile.clubOverrides.values.contains {
             ($0.carryDistanceM.map { $0.isFinite && $0 > 0 }) == true
         }
         if profile.detailLevel == .medium, !hasCarry {
-            return L("Enter a club carry calibration in Practice / Profile before using your Medium profile.")
+            return L("Add a carry distance for at least one club in In the bag › Club distances & launch.")
         }
         let hasLaunch = profile.clubOverrides.values.contains {
             [$0.ballSpeedMps, $0.launchAngleDeg, $0.spinRateRpm, $0.spinAxisDeg].contains { $0?.isFinite == true }
         }
         if profile.detailLevel == .expert, !hasCarry, !hasLaunch {
-            return L("Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile.")
+            return L("Add carry or launch data for at least one club in In the bag › Club distances & launch.")
         }
         return nil
     }

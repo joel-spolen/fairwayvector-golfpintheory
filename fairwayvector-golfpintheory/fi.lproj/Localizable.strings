@@ -365,11 +365,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "Sähköpostiosoitteita ei voi vaihtaa sovelluksessa. Ota yhteyttä tukeen, jos tarvitset apua.";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "Sähköpostin muutos odottaa vahvistusta: %@. Ota yhteyttä tukeen ennen sen vahvistamista.";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "Ota sijainti käyttöön reaaliaikaisia GPS-matkoja varten. Ladatut kenttätiedot pysyvät käytettävissä offline-tilassa.";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "Syötä mailan carry-kalibrointi kohtaan Harjoitus / Profiili ennen keskitason profiilin käyttöä.";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "Lisää carry-matka vähintään yhdelle mailalle kohdassa Bägissä › Mailojen matkat ja lähtö.";
 "Enter a number between −20 and 54." = "Syötä luku väliltä −20–54.";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "Syötä henkilökohtainen Mid/Stock Full -carry kohtaan Wedgen kalibrointi ja matriisi tai kalibroi harjoitus-wedge. Vakioväliä ei oleteta. %@";
 "Enter at least 2 characters to search for a club." = "Hae seuraa kirjoittamalla vähintään 2 merkkiä.";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "Syötä mailan lähtötiedot tai carry-kalibrointi kohtaan Harjoitus / Profiili ennen edistyneen profiilin käyttöä.";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "Lisää carry- tai lähtötiedot vähintään yhdelle mailalle kohdassa Bägissä › Mailojen matkat ja lähtö.";
 "Enter launch conditions and course factors to estimate carry and flight." = "Syötä lähtöarvot ja kentän tekijät arvioidaksesi carryn ja lennon.";
 "Enter score for this hole" = "Syötä tämän reiän tulos";
 "Enter shot conditions to estimate carry distance and trajectory." = "Syötä lyönnin olosuhteet arvioidaksesi carry-matkan ja lentoradan.";
@@ -600,7 +600,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Mikään maila ei yllä %.1f m kohdekorkeuteen. Korkein simuloitu lakipiste on %.1f m. Pienennä korkeuseroa tai säädä lähtöarvoja.";
 "No club recommendation is available for this shot." = "Tälle lyönnille ei ole mailasuositusta.";
 "No clubs in bag" = "Bägissä ei ole mailoja";
-"No clubs in your Practice bag. Configure your profile first." = "Harjoitusbägissäsi ei ole mailoja. Määritä ensin profiilisi.";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "Mailoja ei ole valittu. Valitse mailasi kohdassa Bägissä › Mailat bägissäni.";
 "No course" = "Ei kenttää";
 "No courses match \"%@\"." = "Mikään kenttä ei vastaa hakua ”%@”.";
 "No data" = "Ei tietoja";
@@ -804,7 +804,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Wedge-alueellasi sovellus ehdottaa lyöntiin wedgen, lentoradan ja svingin pituuden.";
 "Scoring mode recommendations" = "Scoring-tilan suositukset";
 "Scoring range · ≤ %@" = "Scoring-alue · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Scoring tukee enintään 14 wedgeä bägissä. Pienennä Wedge-matriisin bägiä.";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "Scoring tukee enintään 14 wedgeä bägissä. Poista osa kohdassa Bägissä › Wedge-bägi.";
 "Scoring trend" = "Tulostrendi";
 "Scrambling" = "Scrambling";
 "Sea-level pressure" = "Merenpinnan paine";
@@ -832,7 +832,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "Aseta matka, griinin korkeus ja lipun paikka löytääksesi mailan ja swingin.";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "Määritä Harjoitus / Profiili ja syötä sitten henkilökohtainen Mid/Stock Full -carry wedgelle.";
 "Set up a profile to use club defaults." = "Määritä profiili käyttääksesi mailojen oletusarvoja.";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "Määritä ensin golfprofiilisi Harjoitus-osiossa; yleistä ennustetta ei näytetä.";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "Määritä mailasi kohdassa Bägissä › Mailojen matkat ja lähtö saadaksesi mailasuosituksia.";
 "Set up your clubs and wedges" = "Määritä mailasi ja wedgesi";
 "Set your profile" = "Määritä profiilisi";
 "Set your starting profile" = "Määritä aloitusprofiilisi";
@@ -1131,7 +1131,7 @@
 "uphill" = "ylämäkeen";
 "uploading saved changes and downloading updates" = "lähetetään tallennetut muutokset ja ladataan päivitykset";
 "±0.0 (Score not used)" = "±0,0 (tulosta ei käytetty)";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "%@ ei tunnistu wedgeksi. Nimeä se Wedge-matriisissa: PW, AW/48, GW/50, 52, SW/54, 56, 58 tai LW/60.";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "%@ ei tunnistu wedgeksi. Nimeä se kohdassa Bägissä › Wedge-bägi: PW, AW/48, GW/50, 52, SW/54, 56, 58 tai LW/60.";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@: syötettyä carry-matkaa ei voitu sovittaa. Tarkista wedgen carry- ja lähtöasetukset.";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@: tämä carry-matka ei näytä oikealta. Tarkista wedgen carry- ja lähtöasetukset.";
 "A carry distance couldn't be calculated for this club." = "Tälle mailalle ei voitu laskea carry-matkaa.";
@@ -1141,7 +1141,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "Tarkista tämän mailan lähtöasetukset kohdassa Mailat ja lähtöprofiili.";
 "Elevation couldn't be calculated for this hole." = "Tämän reiän korkeutta ei voitu laskea.";
 "Email sign-in isn't available right now. Please try again later." = "Sähköpostikirjautuminen ei ole juuri nyt käytettävissä. Yritä myöhemmin uudelleen.";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "Syötä mailan %@ täyden svingin carry Wedge-matriisiin.";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "Syötä mailan %@ täyden svingin carry kohdassa Bägissä › Wedge-bägi.";
 "Google sign-in couldn't be completed. Please try again." = "Google-kirjautumista ei voitu suorittaa loppuun. Yritä uudelleen.";
 "Keep the app installed until sync has finished." = "Pidä sovellus asennettuna, kunnes synkronointi on valmis.";
 "Map data isn't available for this course." = "Tälle kentälle ei ole saatavilla karttatietoja.";
@@ -1152,7 +1152,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "Tälle kentälle ei löytynyt tiiauspaikkoja, joten sitä ei voi avata. Kokeile toista kenttää.";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "Tasoitushistoriaan voi lisätä vain valmiita 9 tai 18 reiän kierroksia luokitellulla kentällä, kun Handicap Index on asetettu.";
 "Please choose a stronger password." = "Valitse vahvempi salasana.";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "Scoring-neuvot tarvitsevat wedge-matkasi. Syötä täyden svingin carry Wedge-matriisiin tai kalibroi wedge kohdassa Harjoitus.";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "Scoring-neuvot tarvitsevat wedge-matkasi. Lisää ne kohdassa Bägissä › Wedge-bägi.";
 "Shot calculations aren't available right now. Restart the app and try again." = "Lyöntilaskelmat eivät ole juuri nyt käytettävissä. Käynnistä sovellus uudelleen ja yritä sitten uudestaan.";
 "Sign-in isn't available right now. Please try again later." = "Kirjautuminen ei ole juuri nyt käytettävissä. Yritä myöhemmin uudelleen.";
 "Sign-out couldn't finish. Please try again." = "Uloskirjautumista ei voitu suorittaa loppuun. Yritä uudelleen.";

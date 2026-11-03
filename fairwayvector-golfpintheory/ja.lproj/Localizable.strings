@@ -363,11 +363,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "メールアドレスはアプリ内で変更できません。サポートが必要な場合はお問い合わせください。";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "メールアドレスの変更が確認待ちです：%@。確認する前にサポートに連絡してください。";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "位置情報を有効にすると、リアルタイムの GPS 距離を利用できます。読み込み済みのコースデータはオフラインでも利用できます。";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "ミディアムプロフィールを使う前に、練習 / プロフィールでクラブのキャリーのキャリブレーションを入力してください。";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "「クラブバッグ › クラブの距離と打ち出し」で、少なくとも 1 本のクラブのキャリー距離を追加してください。";
 "Enter a number between −20 and 54." = "−20〜54 の数値を入力してください。";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "「ウェッジのキャリブレーションとマトリクス」で個人の Mid/Stock Full キャリーを入力するか、練習用ウェッジをキャリブレーションしてください。標準範囲は想定しません。%@";
 "Enter at least 2 characters to search for a club." = "クラブを検索するには2文字以上入力してください。";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "アドバンスプロフィールを使う前に、練習 / プロフィールでクラブの打ち出しデータまたはキャリーのキャリブレーションを入力してください。";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "「クラブバッグ › クラブの距離と打ち出し」で、少なくとも 1 本のクラブのキャリーまたは打ち出しデータを追加してください。";
 "Enter launch conditions and course factors to estimate carry and flight." = "打ち出し条件とコース要因を入力して、キャリーと弾道を推定します。";
 "Enter score for this hole" = "このホールのスコアを入力";
 "Enter shot conditions to estimate carry distance and trajectory." = "ショット条件を入力して、キャリー距離と弾道を推定します。";
@@ -598,7 +598,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "目標の高さ %.1f m に届くクラブはありません。シミュレーション上の最高点は %.1f m です。高低差を小さくするか、打ち出し条件を調整してください。";
 "No club recommendation is available for this shot." = "このショットに推奨できるクラブはありません。";
 "No clubs in bag" = "バッグにクラブがありません";
-"No clubs in your Practice bag. Configure your profile first." = "練習用バッグにクラブがありません。まずプロフィールを設定してください。";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "クラブが選択されていません。「クラブバッグ › バッグのクラブ」でクラブを選んでください。";
 "No course" = "コースなし";
 "No courses match \"%@\"." = "「%@」に一致するコースはありません。";
 "No data" = "データなし";
@@ -802,7 +802,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "ウェッジの距離範囲内では、ショットに合うウェッジ、弾道、スイング幅を提案します。";
 "Scoring mode recommendations" = "スコアリングモードの推奨";
 "Scoring range · ≤ %@" = "スコアリング範囲 · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "スコアリングではバッグ内のウェッジは最大 14 本です。ウェッジマトリクスのバッグを減らしてください。";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "スコアリングではバッグ内のウェッジは最大 14 本です。「クラブバッグ › ウェッジバッグ」でいくつか外してください。";
 "Scoring trend" = "スコアの推移";
 "Scrambling" = "スクランブリング";
 "Sea-level pressure" = "海面気圧";
@@ -830,7 +830,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "距離、グリーンの高さ、ピン位置を設定して、クラブとスイングを見つけます。";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "練習 / プロフィールを設定してから、ウェッジの個人 Mid/Stock Full キャリーを入力してください。";
 "Set up a profile to use club defaults." = "クラブの初期値を使うには、プロフィールを設定してください。";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "まず練習でゴルファープロフィールを設定してください。一般的な予測は表示されません。";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "クラブのアドバイスを受けるには、「クラブバッグ › クラブの距離と打ち出し」でクラブを設定してください。";
 "Set up your clubs and wedges" = "クラブとウェッジを設定";
 "Set your profile" = "プロフィールを設定";
 "Set your starting profile" = "初期プロフィールを設定";
@@ -1131,7 +1131,7 @@
 "uphill" = "上り";
 "uploading saved changes and downloading updates" = "保存済みの変更をアップロードし、更新をダウンロードしています";
 "±0.0 (Score not used)" = "±0.0（スコアは使用されません）";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "%@ はウェッジとして認識されません。「ウェッジマトリックス」で PW、AW/48、GW/50、52、SW/54、56、58、LW/60 のいずれかの名前を付けてください。";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "%@ はウェッジとして認識されません。「クラブバッグ › ウェッジバッグ」で PW、AW/48、GW/50、52、SW/54、56、58、LW/60 のいずれかの名前を付けてください。";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@：入力されたキャリーの距離に合わせられませんでした。ウェッジのキャリーと打ち出しの設定を確認してください。";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@：このキャリーの距離は正しくないようです。ウェッジのキャリーと打ち出しの設定を確認してください。";
 "A carry distance couldn't be calculated for this club." = "このクラブのキャリーの距離を計算できませんでした。";
@@ -1141,7 +1141,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "「クラブと打ち出しプロフィール」でこのクラブの打ち出し設定を確認してください。";
 "Elevation couldn't be calculated for this hole." = "このホールの高低を計算できませんでした。";
 "Email sign-in isn't available right now. Please try again later." = "現在、メールでのサインインは利用できません。しばらくしてからもう一度お試しください。";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "「ウェッジマトリックス」で %@ のフルスイングのキャリーを入力してください。";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "「クラブバッグ › ウェッジバッグ」で %@ のフルスイングのキャリーを入力してください。";
 "Google sign-in couldn't be completed. Please try again." = "Google サインインを完了できませんでした。もう一度お試しください。";
 "Keep the app installed until sync has finished." = "同期が完了するまで、アプリを削除しないでください。";
 "Map data isn't available for this course." = "このコースの地図データはありません。";
@@ -1152,7 +1152,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "このコースのティーが見つからないため、開くことができません。別のコースをお試しください。";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "ハンディキャップ履歴に追加できるのは、Handicap Index を設定したうえで、レーティングのあるコースで完了した 9 ホールまたは 18 ホールのラウンドのみです。";
 "Please choose a stronger password." = "より強力なパスワードを選んでください。";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "スコアリングのアドバイスにはウェッジの距離が必要です。「ウェッジマトリックス」でフルスイングのキャリーを入力するか、「練習」でウェッジをキャリブレーションしてください。";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "スコアリングのアドバイスにはウェッジの距離が必要です。「クラブバッグ › ウェッジバッグ」で追加してください。";
 "Shot calculations aren't available right now. Restart the app and try again." = "現在、ショットの計算は利用できません。アプリを再起動して、もう一度お試しください。";
 "Sign-in isn't available right now. Please try again later." = "現在、サインインは利用できません。しばらくしてからもう一度お試しください。";
 "Sign-out couldn't finish. Please try again." = "サインアウトを完了できませんでした。もう一度お試しください。";

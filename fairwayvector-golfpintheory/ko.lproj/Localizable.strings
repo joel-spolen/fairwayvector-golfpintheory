@@ -363,11 +363,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "이메일 주소는 앱에서 변경할 수 없습니다. 도움이 필요하면 지원팀에 문의하세요.";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "이메일 변경 확인 대기 중: %@. 확인하기 전에 지원팀에 문의하세요.";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "실시간 GPS 거리를 보려면 위치 서비스를 켜세요. 불러온 코스 데이터는 오프라인에서도 사용할 수 있습니다.";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "중급 프로필을 사용하기 전에 연습 / 프로필에서 클럽 캐리 보정을 입력하세요.";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "골프백 › 클럽 거리 및 발사에서 하나 이상의 클럽에 캐리 거리를 추가하세요.";
 "Enter a number between −20 and 54." = "−20에서 54 사이의 숫자를 입력하세요.";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "웨지 보정 및 매트릭스에서 개인 Mid/Stock Full 캐리를 입력하거나 연습 웨지를 보정하세요. 기본 범위는 가정하지 않습니다. %@";
 "Enter at least 2 characters to search for a club." = "클럽을 검색하려면 2자 이상 입력하세요.";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "고급 프로필을 사용하기 전에 연습 / 프로필에서 클럽 발사 데이터나 캐리 보정을 입력하세요.";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "골프백 › 클럽 거리 및 발사에서 하나 이상의 클럽에 캐리 또는 발사 데이터를 추가하세요.";
 "Enter launch conditions and course factors to estimate carry and flight." = "발사 조건과 코스 요소를 입력해 캐리와 비행을 예측하세요.";
 "Enter score for this hole" = "이 홀의 스코어 입력";
 "Enter shot conditions to estimate carry distance and trajectory." = "샷 조건을 입력해 캐리 거리와 궤적을 예측하세요.";
@@ -598,7 +598,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "목표 높이 %.1fm에 도달하는 클럽이 없습니다. 시뮬레이션 최고점은 %.1fm입니다. 고저차를 줄이거나 발사 조건을 조정하세요.";
 "No club recommendation is available for this shot." = "이 샷에 대한 클럽 추천이 없습니다.";
 "No clubs in bag" = "백에 클럽 없음";
-"No clubs in your Practice bag. Configure your profile first." = "연습 백에 클럽이 없습니다. 먼저 프로필을 설정하세요.";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "선택된 클럽이 없습니다. 골프백 › 내 백의 클럽에서 클럽을 선택하세요.";
 "No course" = "코스 없음";
 "No courses match \"%@\"." = "“%@”과(와) 일치하는 코스가 없습니다.";
 "No data" = "데이터 없음";
@@ -802,7 +802,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "웨지 거리 안에서는 샷에 맞는 웨지, 탄도, 스윙 크기를 추천합니다.";
 "Scoring mode recommendations" = "스코어링 모드 추천";
 "Scoring range · ≤ %@" = "스코어링 범위 · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "스코어링은 백에 웨지를 최대 14개까지 지원합니다. 웨지 매트릭스 백을 줄이세요.";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "스코어링은 백에 웨지를 최대 14개까지 지원합니다. 골프백 › 웨지 백에서 일부를 제거하세요.";
 "Scoring trend" = "스코어 추세";
 "Scrambling" = "스크램블링";
 "Sea-level pressure" = "해면 기압";
@@ -830,7 +830,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "거리, 그린 높이, 핀 위치를 설정해 클럽과 스윙을 찾으세요.";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "연습 / 프로필을 설정한 다음 웨지의 개인 Mid/Stock Full 캐리를 입력하세요.";
 "Set up a profile to use club defaults." = "클럽 기본값을 사용하려면 프로필을 설정하세요.";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "먼저 연습에서 골퍼 프로필을 설정하세요. 일반 예측은 표시되지 않습니다.";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "클럽 추천을 받으려면 골프백 › 클럽 거리 및 발사에서 클럽을 설정하세요.";
 "Set up your clubs and wedges" = "클럽과 웨지 설정";
 "Set your profile" = "프로필 설정";
 "Set your starting profile" = "시작 프로필 설정";
@@ -1131,7 +1131,7 @@
 "uphill" = "오르막";
 "uploading saved changes and downloading updates" = "저장된 변경 사항 업로드 및 업데이트 다운로드 중";
 "±0.0 (Score not used)" = "±0.0 (스코어 미사용)";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "%@은(는) 웨지로 인식되지 않습니다. 웨지 매트릭스에서 PW, AW/48, GW/50, 52, SW/54, 56, 58 또는 LW/60으로 이름을 지정하세요.";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "%@은(는) 웨지로 인식되지 않습니다. 골프백 › 웨지 백에서 PW, AW/48, GW/50, 52, SW/54, 56, 58 또는 LW/60으로 이름을 지정하세요.";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@: 입력한 캐리 거리에 맞출 수 없습니다. 웨지의 캐리 및 발사 설정을 확인하세요.";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@: 이 캐리 거리가 올바르지 않은 것 같습니다. 웨지의 캐리 및 발사 설정을 확인하세요.";
 "A carry distance couldn't be calculated for this club." = "이 클럽의 캐리 거리를 계산할 수 없습니다.";
@@ -1141,7 +1141,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "클럽 및 발사 프로필에서 이 클럽의 발사 설정을 확인하세요.";
 "Elevation couldn't be calculated for this hole." = "이 홀의 고도를 계산할 수 없습니다.";
 "Email sign-in isn't available right now. Please try again later." = "지금은 이메일 로그인을 사용할 수 없습니다. 나중에 다시 시도하세요.";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "웨지 매트릭스에 %@의 풀스윙 캐리를 입력하세요.";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "골프백 › 웨지 백에서 %@의 풀스윙 캐리를 입력하세요.";
 "Google sign-in couldn't be completed. Please try again." = "Google 로그인을 완료할 수 없습니다. 다시 시도하세요.";
 "Keep the app installed until sync has finished." = "동기화가 끝날 때까지 앱을 삭제하지 마세요.";
 "Map data isn't available for this course." = "이 코스의 지도 데이터를 사용할 수 없습니다.";
@@ -1152,7 +1152,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "이 코스의 티를 찾을 수 없어 열 수 없습니다. 다른 코스를 선택해 보세요.";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "Handicap Index가 설정된 상태에서 레이팅된 코스에서 완료한 9홀 또는 18홀 라운드만 핸디캡 기록에 추가할 수 있습니다.";
 "Please choose a stronger password." = "더 강력한 비밀번호를 선택하세요.";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "스코어링 추천에는 웨지 거리가 필요합니다. 웨지 매트릭스에 풀스윙 캐리를 입력하거나 연습에서 웨지를 보정하세요.";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "스코어링 추천에는 웨지 거리가 필요합니다. 골프백 › 웨지 백에서 추가하세요.";
 "Shot calculations aren't available right now. Restart the app and try again." = "지금은 샷 계산을 사용할 수 없습니다. 앱을 다시 시작한 후 다시 시도하세요.";
 "Sign-in isn't available right now. Please try again later." = "지금은 로그인을 사용할 수 없습니다. 나중에 다시 시도하세요.";
 "Sign-out couldn't finish. Please try again." = "로그아웃을 완료할 수 없습니다. 다시 시도하세요.";

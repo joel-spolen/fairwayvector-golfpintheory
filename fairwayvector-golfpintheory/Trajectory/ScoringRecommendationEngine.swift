@@ -32,7 +32,7 @@ struct ScoringShotPlan: Equatable {
     static func make(profile: TrajectoryPlayerProfile, wedges: [Wedge]) -> Self {
         let matrixBag = wedges.filter(\.isInBag)
         guard matrixBag.count <= 14 else {
-            return Self(shots: [], maxFullCarryM: nil, guidance: L("Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag."))
+            return Self(shots: [], maxFullCarryM: nil, guidance: L("Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag."))
         }
         guard Set(matrixBag.map(\.id)).count == matrixBag.count else {
             return Self(shots: [], maxFullCarryM: nil, guidance: L("Some wedges appear twice. Remove the duplicates in In the bag to get scoring advice."))
@@ -89,12 +89,12 @@ struct ScoringShotPlan: Equatable {
 
         for wedge in matrixBag {
             guard let club = club(named: wedge.name) else {
-                issues.append(L("%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix.", "\(wedge.name)"))
+                issues.append(L("%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag.", "\(wedge.name)"))
                 continue
             }
             let entered = wedge.overrideCarry(for: .stock, swing: .full)
             guard entered != nil || wedge.fullCarryUserProvided else {
-                issues.append(L("Enter your full-swing carry for %@ in Wedge Matrix.", "\(wedge.name)"))
+                issues.append(L("Enter your full-swing carry for %@ in In the bag › Wedge bag.", "\(wedge.name)"))
                 continue
             }
             append(id: wedge.id.uuidString, name: wedge.name, club: club,
@@ -108,10 +108,10 @@ struct ScoringShotPlan: Equatable {
         }
         // Fail closed instead of an unbounded user-created bag or silent truncation.
         if fullCarries.count > 14 {
-            return Self(shots: [], maxFullCarryM: nil, guidance: L("Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag."))
+            return Self(shots: [], maxFullCarryM: nil, guidance: L("Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag."))
         }
         if fullCarries.isEmpty {
-            issues.insert(L("Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice."), at: 0)
+            issues.insert(L("Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag."), at: 0)
         }
         return Self(shots: shots, maxFullCarryM: fullCarries.max(), guidance: issues.joined(separator: " "))
     }

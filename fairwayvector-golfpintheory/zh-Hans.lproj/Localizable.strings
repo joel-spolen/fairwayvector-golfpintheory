@@ -363,11 +363,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "邮箱地址无法在 App 内更改。如需帮助，请联系支持。";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "邮箱更改等待确认：%@。确认前请先联系支持。";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "开启定位以获取实时 GPS 距离。已加载的球场数据可离线使用。";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "在使用中级档案前，请在“练习 / 档案”中输入球杆的飞行距离校准。";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "请在“球包 › 球杆距离与出球”中为至少一支球杆添加飞行距离。";
 "Enter a number between −20 and 54." = "请输入 −20 到 54 之间的数字。";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "请在“挖起杆校准与矩阵”中输入个人 Mid/Stock Full 飞行距离，或校准一支练习挖起杆。不假设任何标准范围。%@";
 "Enter at least 2 characters to search for a club." = "请输入至少2个字符以搜索俱乐部。";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "在使用高级档案前，请在“练习 / 档案”中输入球杆的出球数据或飞行距离校准。";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "请在“球包 › 球杆距离与出球”中为至少一支球杆添加飞行距离或出球数据。";
 "Enter launch conditions and course factors to estimate carry and flight." = "输入出球条件和球场因素，以估算飞行距离和弹道。";
 "Enter score for this hole" = "输入此洞成绩";
 "Enter shot conditions to estimate carry distance and trajectory." = "输入击球条件以估算飞行距离和弹道。";
@@ -598,7 +598,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "没有球杆能达到 %.1f 米的目标高度。模拟最高点为 %.1f 米。请减小高度差或调整出球条件。";
 "No club recommendation is available for this shot." = "此击球没有可用的球杆建议。";
 "No clubs in bag" = "球包中没有球杆";
-"No clubs in your Practice bag. Configure your profile first." = "你的练习球包中没有球杆。请先配置档案。";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "未选择球杆。请在“球包 › 我的球包中的球杆”中选择你的球杆。";
 "No course" = "无球场";
 "No courses match \"%@\"." = "没有与“%@”匹配的球场。";
 "No data" = "无数据";
@@ -802,7 +802,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "在你的挖起杆距离范围内，为这杆建议挖起杆、弹道和挥杆幅度。";
 "Scoring mode recommendations" = "得分模式建议";
 "Scoring range · ≤ %@" = "得分范围 · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "得分功能最多支持球包中的 14 支挖起杆。请减少挖起杆矩阵中的球包。";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "得分功能最多支持球包中的 14 支挖起杆。请在“球包 › 挖起杆球包”中移除一些。";
 "Scoring trend" = "成绩趋势";
 "Scrambling" = "救球率";
 "Sea-level pressure" = "海平面气压";
@@ -830,7 +830,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "设置距离、果岭高度和旗位，以找到球杆和挥杆方式。";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "先设置“练习 / 档案”，然后输入挖起杆的个人 Mid/Stock Full 飞行距离。";
 "Set up a profile to use club defaults." = "设置档案以使用球杆默认值。";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "请先在“练习”中设置你的球员档案；不显示通用预测。";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "请在“球包 › 球杆距离与出球”中设置你的球杆，以获取球杆建议。";
 "Set up your clubs and wedges" = "设置你的球杆和挖起杆";
 "Set your profile" = "设置你的档案";
 "Set your starting profile" = "设置你的初始档案";
@@ -1131,7 +1131,7 @@
 "uphill" = "上坡";
 "uploading saved changes and downloading updates" = "正在上传已保存的更改并下载更新";
 "±0.0 (Score not used)" = "±0.0（未使用成绩）";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "无法将 %@ 识别为挖起杆。请在“挖起杆矩阵”中将其命名为 PW、AW/48、GW/50、52、SW/54、56、58 或 LW/60。";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "无法将 %@ 识别为挖起杆。请在“球包 › 挖起杆球包”中将其命名为 PW, AW/48, GW/50, 52, SW/54, 56, 58 或 LW/60。";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@：无法匹配输入的飞行距离。请检查该挖起杆的飞行距离和出球设置。";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@：这个飞行距离看起来不太对。请检查该挖起杆的飞行距离和出球设置。";
 "A carry distance couldn't be calculated for this club." = "无法计算此球杆的飞行距离。";
@@ -1141,7 +1141,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "请在“球杆与出球档案”中检查此球杆的出球设置。";
 "Elevation couldn't be calculated for this hole." = "无法计算此球洞的海拔。";
 "Email sign-in isn't available right now. Please try again later." = "邮件登录暂时不可用。请稍后再试。";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "请在“挖起杆矩阵”中输入 %@ 的全挥杆飞行距离。";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "请在“球包 › 挖起杆球包”中输入 %@ 的全挥杆飞行距离。";
 "Google sign-in couldn't be completed. Please try again." = "无法完成 Google 登录。请重试。";
 "Keep the app installed until sync has finished." = "同步完成前，请勿卸载 App。";
 "Map data isn't available for this course." = "此球场暂无地图数据。";
@@ -1152,7 +1152,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "未找到此球场的发球台，因此无法打开。请尝试其他球场。";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "只有在已设置差点指数的情况下，在有评级的球场上完成的 9 洞或 18 洞轮次才能加入差点历史。";
 "Please choose a stronger password." = "请选择更强的密码。";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "得分建议需要你的挖起杆距离。请在“挖起杆矩阵”中输入全挥杆飞行距离，或在“练习”中校准挖起杆。";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "得分建议需要你的挖起杆距离。请在“球包 › 挖起杆球包”中添加。";
 "Shot calculations aren't available right now. Restart the app and try again." = "击球计算暂时不可用。请重新启动 App 后重试。";
 "Sign-in isn't available right now. Please try again later." = "登录暂时不可用。请稍后再试。";
 "Sign-out couldn't finish. Please try again." = "无法完成退出登录。请重试。";

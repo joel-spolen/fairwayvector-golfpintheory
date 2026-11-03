@@ -363,11 +363,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "Os endereços de e-mail não podem ser alterados na app. Contacte o suporte se precisar de ajuda.";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "Alteração de e-mail a aguardar confirmação: %@. Contacte o suporte antes de a confirmar.";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "Ative a localização para ver distâncias GPS em direto. Os dados do campo carregados continuam disponíveis offline.";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "Introduza uma calibração do carry do taco em Treino / Perfil antes de usar o perfil intermédio.";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "Adicione uma distância de carry para pelo menos um taco em «Na bolsa › Distâncias dos tacos e lançamento».";
 "Enter a number between −20 and 54." = "Introduza um número entre −20 e 54.";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "Introduza um carry pessoal Mid/Stock Full em Calibração e matriz de wedges, ou calibre um wedge de treino. Não é assumido nenhum intervalo padrão. %@";
 "Enter at least 2 characters to search for a club." = "Introduza pelo menos 2 caracteres para pesquisar um clube.";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "Introduza os dados de lançamento ou a calibração do carry do taco em Treino / Perfil antes de usar o perfil avançado.";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "Adicione dados de carry ou de lançamento para pelo menos um taco em «Na bolsa › Distâncias dos tacos e lançamento».";
 "Enter launch conditions and course factors to estimate carry and flight." = "Introduza as condições de lançamento e os fatores do campo para estimar o carry e o voo.";
 "Enter score for this hole" = "Introduzir pontuação deste buraco";
 "Enter shot conditions to estimate carry distance and trajectory." = "Introduza as condições da pancada para estimar a distância de carry e a trajetória.";
@@ -598,7 +598,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Nenhum taco atinge a altitude do alvo de %.1f m. O ponto mais alto simulado é de %.1f m. Reduza o desnível ou ajuste as condições de lançamento.";
 "No club recommendation is available for this shot." = "Não há nenhuma recomendação de taco para esta pancada.";
 "No clubs in bag" = "Não há tacos no saco";
-"No clubs in your Practice bag. Configure your profile first." = "Não há tacos no seu saco de treino. Configure primeiro o seu perfil.";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "Nenhum taco selecionado. Escolha os seus tacos em «Na bolsa › Tacos no meu saco».";
 "No course" = "Sem campo";
 "No courses match \"%@\"." = "Nenhum campo corresponde a «%@».";
 "No data" = "Sem dados";
@@ -802,7 +802,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Dentro do seu intervalo de wedges, sugere o wedge, a trajetória e o comprimento do swing para a pancada.";
 "Scoring mode recommendations" = "Recomendações do modo scoring";
 "Scoring range · ≤ %@" = "Intervalo de scoring · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "O scoring suporta no máximo 14 wedges no saco. Reduza o saco da Matriz de wedges.";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "O scoring suporta no máximo 14 wedges no saco. Remova alguns em «Na bolsa › Saco de wedges».";
 "Scoring trend" = "Tendência de pontuação";
 "Scrambling" = "Scrambling";
 "Sea-level pressure" = "Pressão ao nível do mar";
@@ -830,7 +830,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "Defina a distância, a altitude do green e a posição da bandeira para encontrar o taco e o swing.";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "Configure Treino / Perfil e depois introduza um carry pessoal Mid/Stock Full do wedge.";
 "Set up a profile to use club defaults." = "Configure um perfil para usar os valores predefinidos dos tacos.";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "Configure primeiro o seu perfil de golfista em Treino; não é mostrada nenhuma previsão genérica.";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "Configure os seus tacos em «Na bolsa › Distâncias dos tacos e lançamento» para obter conselhos sobre tacos.";
 "Set up your clubs and wedges" = "Configure os seus tacos e wedges";
 "Set your profile" = "Configure o seu perfil";
 "Set your starting profile" = "Definir o perfil inicial";
@@ -1130,7 +1130,7 @@
 "unavailable" = "indisponível";
 "uphill" = "a subir";
 "uploading saved changes and downloading updates" = "a enviar alterações guardadas e a transferir atualizações";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "%@ não é reconhecido como wedge. Dê-lhe o nome PW, AW/48, GW/50, 52, SW/54, 56, 58 ou LW/60 na Matriz de wedges.";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "%@ não é reconhecido como wedge. Dê-lhe o nome PW, AW/48, GW/50, 52, SW/54, 56, 58 ou LW/60 em «Na bolsa › Saco de wedges».";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@: não foi possível fazer corresponder a distância de carry introduzida. Verifique as definições de carry e de lançamento do wedge.";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@: esta distância de carry não parece correta. Verifique as definições de carry e de lançamento do wedge.";
 "A carry distance couldn't be calculated for this club." = "Não foi possível calcular uma distância de carry para este taco.";
@@ -1140,7 +1140,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "Verifique as definições de lançamento deste taco em Tacos e perfil de lançamento.";
 "Elevation couldn't be calculated for this hole." = "Não foi possível calcular a altitude deste buraco.";
 "Email sign-in isn't available right now. Please try again later." = "O início de sessão por e-mail não está disponível neste momento. Tente novamente mais tarde.";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "Introduza o seu carry de swing completo de %@ na Matriz de wedges.";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "Introduza o seu carry de swing completo de %@ em «Na bolsa › Saco de wedges».";
 "Google sign-in couldn't be completed. Please try again." = "Não foi possível concluir o início de sessão com a Google. Tente novamente.";
 "Keep the app installed until sync has finished." = "Mantenha a app instalada até a sincronização terminar.";
 "Map data isn't available for this course." = "Os dados do mapa não estão disponíveis para este campo.";
@@ -1151,7 +1151,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "Não foram encontrados tees para este campo, por isso não é possível abri-lo. Experimente outro campo.";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "Só podem ser adicionadas ao histórico de handicap voltas concluídas de 9 ou 18 buracos num campo com rating e com o seu Handicap Index definido.";
 "Please choose a stronger password." = "Escolha uma palavra-passe mais forte.";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "Os conselhos de scoring precisam das suas distâncias de wedge. Introduza um carry de swing completo na Matriz de wedges ou calibre um wedge em Treino.";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "Os conselhos de scoring precisam das suas distâncias de wedge. Adicione-as em «Na bolsa › Saco de wedges».";
 "Shot calculations aren't available right now. Restart the app and try again." = "Os cálculos de pancadas não estão disponíveis neste momento. Reinicie a app e tente novamente.";
 "Sign-in isn't available right now. Please try again later." = "O início de sessão não está disponível neste momento. Tente novamente mais tarde.";
 "Sign-out couldn't finish. Please try again." = "Não foi possível terminar a sessão. Tente novamente.";

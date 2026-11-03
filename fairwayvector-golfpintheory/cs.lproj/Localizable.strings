@@ -363,11 +363,11 @@
 "Email addresses can’t be changed in the app. Contact support if you need help." = "E-mailové adresy nelze v aplikaci změnit. Pokud potřebujete pomoc, kontaktujte podporu.";
 "Email change awaiting confirmation: %@. Contact support before confirming it." = "Změna e-mailu čeká na potvrzení: %@. Před potvrzením kontaktujte podporu.";
 "Enable location for live GPS distances. Loaded course data stays available offline." = "Zapněte polohu pro živé vzdálenosti GPS. Načtená data hřiště zůstávají k dispozici offline.";
-"Enter a club carry calibration in Practice / Profile before using your Medium profile." = "Před použitím středního profilu zadejte v Tréninku / Profilu kalibraci carry hole.";
+"Add a carry distance for at least one club in In the bag › Club distances & launch." = "Přidejte vzdálenost carry alespoň pro jednu hůl v sekci Ve výbavě › Vzdálenosti holí a výlet.";
 "Enter a number between −20 and 54." = "Zadejte číslo od −20 do 54.";
 "Enter a personal Mid/Stock Full carry in Wedge calibration & matrix, or calibrate a Practice wedge. No stock range is assumed. %@" = "Zadejte osobní carry Mid/Stock Full v Kalibraci a matici wedgí, nebo zkalibrujte tréninkový wedge. Žádný standardní rozsah se nepředpokládá. %@";
 "Enter at least 2 characters to search for a club." = "Zadejte alespoň 2 znaky pro vyhledání klubu.";
-"Enter club launch data or carry calibration in Practice / Profile before using your Advanced profile." = "Před použitím pokročilého profilu zadejte v Tréninku / Profilu výletová data hole nebo kalibraci carry.";
+"Add carry or launch data for at least one club in In the bag › Club distances & launch." = "Přidejte carry nebo výletová data alespoň pro jednu hůl v sekci Ve výbavě › Vzdálenosti holí a výlet.";
 "Enter launch conditions and course factors to estimate carry and flight." = "Zadejte výletové podmínky a faktory hřiště pro odhad carry a letu.";
 "Enter score for this hole" = "Zadat skóre této jamky";
 "Enter shot conditions to estimate carry distance and trajectory." = "Zadejte podmínky rány pro odhad vzdálenosti carry a dráhy letu.";
@@ -598,7 +598,7 @@
 "No club reaches the target elevation of %.1f m. The highest simulated peak is %.1f m. Lower the elevation change or adjust the launch conditions." = "Žádná hůl nedosáhne cílové výšky %.1f m. Nejvyšší simulovaný vrchol je %.1f m. Snižte výškový rozdíl nebo upravte výletové podmínky.";
 "No club recommendation is available for this shot." = "Pro tuto ránu není k dispozici žádné doporučení hole.";
 "No clubs in bag" = "V bagu nejsou žádné hole";
-"No clubs in your Practice bag. Configure your profile first." = "Ve vašem tréninkovém bagu nejsou žádné hole. Nejprve nastavte profil.";
+"No clubs selected. Choose your clubs in In the bag › Clubs in my bag." = "Nejsou vybrány žádné hole. Vyberte své hole v sekci Ve výbavě › Hole v mém bagu.";
 "No course" = "Bez hřiště";
 "No courses match \"%@\"." = "Žádné hřiště neodpovídá „%@“.";
 "No data" = "Žádná data";
@@ -802,7 +802,7 @@
 "Inside your wedge range, suggests the wedge, trajectory and swing length for the shot." = "Ve vašem rozsahu wedgí navrhne wedge, trajektorii a délku švihu pro ránu.";
 "Scoring mode recommendations" = "Doporučení scoringového režimu";
 "Scoring range · ≤ %@" = "Scoringový rozsah · ≤ %@";
-"Scoring supports at most 14 in-bag wedges. Reduce the Wedge Matrix bag." = "Scoring podporuje nejvýše 14 wedgí v bagu. Zmenšete bag v Matici wedgí.";
+"Scoring supports at most 14 in-bag wedges. Remove some in In the bag › Wedge bag." = "Scoring podporuje nejvýše 14 wedgí v bagu. Některé odeberte v sekci Ve výbavě › Bag wedgí.";
 "Scoring trend" = "Trend skóre";
 "Scrambling" = "Scrambling";
 "Sea-level pressure" = "Tlak na úrovni moře";
@@ -830,7 +830,7 @@
 "Set the distance, green elevation and pin position to find a club and swing." = "Nastavte vzdálenost, výšku greenu a pozici praporku a najděte hůl a švih.";
 "Set up Practice / Profile, then enter a personal Mid/Stock Full wedge carry." = "Nastavte Trénink / Profil a pak zadejte osobní carry Mid/Stock Full pro wedge.";
 "Set up a profile to use club defaults." = "Nastavte profil a používejte výchozí hodnoty holí.";
-"Set up your Practice golfer profile first; no generic prediction is shown." = "Nejprve nastavte svůj golfový profil v Tréninku; obecná předpověď se nezobrazuje.";
+"Set up your clubs in In the bag › Club distances & launch to get club advice." = "Nastavte své hole v sekci Ve výbavě › Vzdálenosti holí a výlet a získáte doporučení k holím.";
 "Set up your clubs and wedges" = "Nastavte si hole a wedge";
 "Set your profile" = "Nastavte profil";
 "Set your starting profile" = "Nastavte výchozí profil";
@@ -1131,7 +1131,7 @@
 "uphill" = "do kopce";
 "uploading saved changes and downloading updates" = "odesílání uložených změn a stahování aktualizací";
 "±0.0 (Score not used)" = "±0,0 (skóre nepoužito)";
-"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in Wedge Matrix." = "%@ nebyl rozpoznán jako wedge. V sekci Tabulka wedge ho pojmenujte PW, AW/48, GW/50, 52, SW/54, 56, 58 nebo LW/60.";
+"%@ isn't recognized as a wedge. Name it PW, AW/48, GW/50, 52, SW/54, 56, 58 or LW/60 in In the bag › Wedge bag." = "%@ nebyl rozpoznán jako wedge. V sekci Ve výbavě › Bag wedgí ho pojmenujte PW, AW/48, GW/50, 52, SW/54, 56, 58 nebo LW/60.";
 "%@: the entered carry distance couldn't be matched. Check the wedge's carry and launch settings." = "%@: zadané vzdálenosti carry se nepodařilo dosáhnout. Zkontrolujte nastavení carry a výletu tohoto wedge.";
 "%@: this carry distance doesn't look right. Check the wedge's carry and launch settings." = "%@: tato vzdálenost carry nevypadá správně. Zkontrolujte nastavení carry a výletu tohoto wedge.";
 "A carry distance couldn't be calculated for this club." = "Pro tuto hůl se nepodařilo vypočítat vzdálenost carry.";
@@ -1141,7 +1141,7 @@
 "Check this club's launch settings in Clubs & launch profile." = "Zkontrolujte nastavení výletu této hole v sekci Hole a výletový profil.";
 "Elevation couldn't be calculated for this hole." = "Pro tuto jamku se nepodařilo vypočítat výšku.";
 "Email sign-in isn't available right now. Please try again later." = "Přihlášení e-mailem teď není k dispozici. Zkuste to prosím později.";
-"Enter your full-swing carry for %@ in Wedge Matrix." = "V sekci Tabulka wedge zadejte carry plného švihu pro %@.";
+"Enter your full-swing carry for %@ in In the bag › Wedge bag." = "V sekci Ve výbavě › Bag wedgí zadejte carry plného švihu pro %@.";
 "Google sign-in couldn't be completed. Please try again." = "Přihlášení přes Google se nepodařilo dokončit. Zkuste to prosím znovu.";
 "Keep the app installed until sync has finished." = "Dokud synchronizace neskončí, aplikaci neodinstalovávejte.";
 "Map data isn't available for this course." = "Pro toto hřiště nejsou mapová data k dispozici.";
@@ -1152,7 +1152,7 @@
 "No tees were found for this course, so it can't be opened. Try another course." = "Pro toto hřiště nebyla nalezena žádná odpaliště, takže ho nelze otevřít. Zkuste jiné hřiště.";
 "Only completed 9- or 18-hole rounds on a rated course, with your Handicap Index set, can be added to your handicap history." = "Do historie handicapu lze přidat pouze dokončená kola na 9 nebo 18 jamek na hřišti s ratingem a s nastaveným údajem Handicap Index.";
 "Please choose a stronger password." = "Zvolte prosím silnější heslo.";
-"Scoring advice needs your wedge distances. Enter a full-swing carry in Wedge Matrix or calibrate a wedge in Practice." = "Doporučení pro scoring potřebují vaše vzdálenosti wedge. Zadejte carry plného švihu v sekci Tabulka wedge nebo zkalibrujte wedge v Tréninku.";
+"Scoring advice needs your wedge distances. Add them in In the bag › Wedge bag." = "Doporučení pro scoring potřebují vaše vzdálenosti wedge. Přidejte je v sekci Ve výbavě › Bag wedgí.";
 "Shot calculations aren't available right now. Restart the app and try again." = "Výpočty úderů teď nejsou k dispozici. Restartujte aplikaci a zkuste to znovu.";
 "Sign-in isn't available right now. Please try again later." = "Přihlášení teď není k dispozici. Zkuste to prosím později.";
 "Sign-out couldn't finish. Please try again." = "Odhlášení se nepodařilo dokončit. Zkuste to prosím znovu.";
