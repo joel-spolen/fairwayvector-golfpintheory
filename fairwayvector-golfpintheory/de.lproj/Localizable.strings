@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "%@ Putts pro Loch (vorher %@)";
 "≈ %@ more strokes per 18 holes" = "≈ %@ Schläge mehr pro 18 Löcher";
 "≈ %@ fewer strokes per 18 holes" = "≈ %@ Schläge weniger pro 18 Löcher";
+"Shows the details below" = "Zeigt die Details weiter unten";
 "%@ per 18 holes (was %@)" = "%@ pro 18 Löcher (vorher %@)";
 "%@ (was %@)" = "%@ (vorher %@)";
 "All" = "Alle";

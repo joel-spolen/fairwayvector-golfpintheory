@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "홀당 %@퍼트 (이전 %@)";
 "≈ %@ more strokes per 18 holes" = "18홀당 약 %@타 더 많음";
 "≈ %@ fewer strokes per 18 holes" = "18홀당 약 %@타 더 적음";
+"Shows the details below" = "아래 세부 정보를 표시합니다";
 "%@ per 18 holes (was %@)" = "18홀당 %@ (이전 %@)";
 "%@ (was %@)" = "%@ (이전 %@)";
 "All" = "전체";

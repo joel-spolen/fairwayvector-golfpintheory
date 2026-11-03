@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "%@ putta na dołek (wcześniej %@)";
 "≈ %@ more strokes per 18 holes" = "≈ %@ uderzenia więcej na 18 dołków";
 "≈ %@ fewer strokes per 18 holes" = "≈ %@ uderzenia mniej na 18 dołków";
+"Shows the details below" = "Pokazuje szczegóły poniżej";
 "%@ per 18 holes (was %@)" = "%@ na 18 dołków (wcześniej %@)";
 "%@ (was %@)" = "%@ (wcześniej %@)";
 "All" = "Wszystkie";

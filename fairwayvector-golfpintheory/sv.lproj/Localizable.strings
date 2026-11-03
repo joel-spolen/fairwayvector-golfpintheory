@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "%@ puttar per hål (var %@)";
 "≈ %@ more strokes per 18 holes" = "≈ %@ slag fler per 18 hål";
 "≈ %@ fewer strokes per 18 holes" = "≈ %@ slag färre per 18 hål";
+"Shows the details below" = "Visar detaljerna längre ner";
 "%@ per 18 holes (was %@)" = "%@ per 18 hål (var %@)";
 "%@ (was %@)" = "%@ (var %@)";
 "All" = "Alla";

@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "%@ puttu na jamku (dříve %@)";
 "≈ %@ more strokes per 18 holes" = "≈ o %@ úderu více na 18 jamek";
 "≈ %@ fewer strokes per 18 holes" = "≈ o %@ úderu méně na 18 jamek";
+"Shows the details below" = "Zobrazí podrobnosti níže";
 "%@ per 18 holes (was %@)" = "%@ na 18 jamek (dříve %@)";
 "%@ (was %@)" = "%@ (dříve %@)";
 "All" = "Vše";

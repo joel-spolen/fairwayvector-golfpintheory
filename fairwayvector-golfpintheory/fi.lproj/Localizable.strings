@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "%@ puttia reikää kohden (aiemmin %@)";
 "≈ %@ more strokes per 18 holes" = "≈ %@ lyöntiä enemmän 18 reiällä";
 "≈ %@ fewer strokes per 18 holes" = "≈ %@ lyöntiä vähemmän 18 reiällä";
+"Shows the details below" = "Näyttää tiedot alempana";
 "%@ per 18 holes (was %@)" = "%@ 18 reikää kohden (aiemmin %@)";
 "%@ (was %@)" = "%@ (aiemmin %@)";
 "All" = "Kaikki";

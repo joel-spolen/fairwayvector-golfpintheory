@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "1 ホールあたり %@ パット（以前は %@）";
 "≈ %@ more strokes per 18 holes" = "18 ホールあたり約 %@ 打多い";
 "≈ %@ fewer strokes per 18 holes" = "18 ホールあたり約 %@ 打少ない";
+"Shows the details below" = "下の詳細を表示します";
 "%@ per 18 holes (was %@)" = "18 ホールあたり %@（以前は %@）";
 "%@ (was %@)" = "%@（以前は %@）";
 "All" = "すべて";

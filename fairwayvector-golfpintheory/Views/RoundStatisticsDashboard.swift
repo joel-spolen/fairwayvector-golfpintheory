@@ -112,12 +112,26 @@ enum StatisticsRoundRange: Int, CaseIterable, Identifiable {
     }
 }
 
+/// Statistics card that shows the detail behind a recent-form area.
+enum StatisticsSection: Hashable {
+    case holeTypes, scrambling, accuracy
+
+    init(_ area: RecentFormAnalysis.Area) {
+        switch area {
+        case .putting, .penalties: self = .holeTypes
+        case .shortGame: self = .scrambling
+        case .approach, .driving: self = .accuracy
+        }
+    }
+}
+
 struct RoundStatisticsDashboard: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(PlayedRoundStore.self) private var store
     @Query(sort: \GolfRound.date, order: .reverse) private var handicapRounds: [GolfRound]
     @State private var deleting: UUID?
     @State private var error: String?
+    @State private var jumpTarget: StatisticsSection?
     @AppStorage("statistics.roundRange.v1") private var roundRange: StatisticsRoundRange = .last10
 
     private var allRecords: [RoundPerformanceRecord] {
@@ -131,39 +145,46 @@ struct RoundStatisticsDashboard: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    PureLinePageHeader(title: L("Rounds & statistics"),
-                        subtitle: L("See your progress and discover where you can improve."))
-                    if let message = store.errorMessage {
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(message).font(.footnote).foregroundStyle(.red)
-                            Button("Try again") {
-                                if store.draftNeedsRetry {
-                                    do { try store.retryDraft() } catch { self.error = UserFacingError.message(error) }
-                                } else { store.load() }
-                            }
-                        }.pureLineCard()
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        PureLinePageHeader(title: L("Rounds & statistics"),
+                            subtitle: L("See your progress and discover where you can improve."))
+                        if let message = store.errorMessage {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(message).font(.footnote).foregroundStyle(.red)
+                                Button("Try again") {
+                                    if store.draftNeedsRetry {
+                                        do { try store.retryDraft() } catch { self.error = UserFacingError.message(error) }
+                                    } else { store.load() }
+                                }
+                            }.pureLineCard()
+                        }
+                        if allRecords.isEmpty {
+                            ContentUnavailableView("Your story starts here", systemImage: "chart.xyaxis.line",
+                                description: Text("Save your first round to see your averages and trends."))
+                        } else {
+                            recentForm
+                            rangePicker
+                            overview
+                            scoringByPar
+                            holeTypeDetails.id(StatisticsSection.holeTypes)
+                            scrambling.id(StatisticsSection.scrambling)
+                            scoringTrend
+                            handicapTrend
+                            accuracy.id(StatisticsSection.accuracy)
+                            scoringMix
+                            history
+                        }
+                        if let error { Text(error).font(.footnote).foregroundStyle(.red) }
                     }
-                    if allRecords.isEmpty {
-                        ContentUnavailableView("Your story starts here", systemImage: "chart.xyaxis.line",
-                            description: Text("Save your first round to see your averages and trends."))
-                    } else {
-                        recentForm
-                        rangePicker
-                        overview
-                        scoringByPar
-                        holeTypeDetails
-                        scrambling
-                        scoringTrend
-                        handicapTrend
-                        accuracy
-                        scoringMix
-                        history
-                    }
-                    if let error { Text(error).font(.footnote).foregroundStyle(.red) }
+                    .padding(24)
                 }
-                .padding(24)
+                .onChange(of: jumpTarget) { _, target in
+                    guard let target else { return }
+                    withAnimation { scrollProxy.scrollTo(target, anchor: .top) }
+                    jumpTarget = nil
+                }
             }
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
@@ -214,21 +235,31 @@ struct RoundStatisticsDashboard: View {
     }
 
     private func formRow(_ label: String, _ change: RecentFormAnalysis.Change, symbol: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: symbol)
-                .font(.body.weight(.semibold))
-                .foregroundStyle(PureLineStyle.accent)
-                .frame(width: 24)
-            VStack(alignment: .leading, spacing: 3) {
-                Text(label).font(.caption.weight(.semibold)).foregroundStyle(PureLineStyle.muted)
-                Text(change.area.title).font(.headline)
-                Text(change.valueText(comparedWithAverage: false)).font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
-                if let strokes = change.strokesText {
-                    Text(strokes).font(.subheadline.weight(.medium)).monospacedDigit()
+        Button { jumpTarget = StatisticsSection(change.area) } label: {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: symbol)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(PureLineStyle.accent)
+                    .frame(width: 24)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(label).font(.caption.weight(.semibold)).foregroundStyle(PureLineStyle.muted)
+                    Text(change.area.title).font(.headline)
+                    Text(change.valueText(comparedWithAverage: false)).font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
+                    if let strokes = change.strokesText {
+                        Text(strokes).font(.subheadline.weight(.medium)).monospacedDigit()
+                    }
                 }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.down")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(PureLineStyle.muted)
+                    .padding(.top, 4)
             }
+            .contentShape(Rectangle())
         }
+        .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
+        .accessibilityHint(L("Shows the details below"))
     }
 
     private var rangePicker: some View {

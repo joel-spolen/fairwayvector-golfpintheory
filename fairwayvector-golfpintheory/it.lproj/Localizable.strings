@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "%@ putt per buca (prima %@)";
 "≈ %@ more strokes per 18 holes" = "≈ %@ colpi in più su 18 buche";
 "≈ %@ fewer strokes per 18 holes" = "≈ %@ colpi in meno su 18 buche";
+"Shows the details below" = "Mostra i dettagli più in basso";
 "%@ per 18 holes (was %@)" = "%@ su 18 buche (prima %@)";
 "%@ (was %@)" = "%@ (prima %@)";
 "All" = "Tutti";

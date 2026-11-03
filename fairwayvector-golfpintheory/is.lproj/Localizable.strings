@@ -1191,6 +1191,7 @@
 "%@ putts per hole (was %@)" = "%@ pútt á holu (var %@)";
 "≈ %@ more strokes per 18 holes" = "≈ %@ höggum fleiri á 18 holum";
 "≈ %@ fewer strokes per 18 holes" = "≈ %@ höggum færri á 18 holum";
+"Shows the details below" = "Sýnir nánari upplýsingar hér fyrir neðan";
 "%@ per 18 holes (was %@)" = "%@ á 18 holur (var %@)";
 "%@ (was %@)" = "%@ (var %@)";
 "All" = "Allir";
