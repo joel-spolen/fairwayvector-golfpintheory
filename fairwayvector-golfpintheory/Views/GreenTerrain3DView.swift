@@ -115,12 +115,12 @@ struct GreenTerrain3DView: View {
 
     private func flagEntity(at pin: SIMD3<Float>) -> Entity {
         let flag = Entity()
-        let pole = ModelEntity(mesh: .generateCylinder(height: 2.1, radius: 0.03),
+        let pole = ModelEntity(mesh: .generateCylinder(height: 3.2, radius: 0.045),
                                materials: [SimpleMaterial(color: .white, isMetallic: false)])
-        pole.position = SIMD3(0, 1.05, 0)
-        let cloth = ModelEntity(mesh: .generateBox(width: 0.6, height: 0.4, depth: 0.02),
+        pole.position = SIMD3(0, 1.6, 0)
+        let cloth = ModelEntity(mesh: .generateBox(width: 0.9, height: 0.6, depth: 0.03),
                                 materials: [SimpleMaterial(color: UIColor(PureLineStyle.accent), isMetallic: false)])
-        cloth.position = SIMD3(0.3, 1.88, 0)
+        cloth.position = SIMD3(0.45, 2.88, 0)
         flag.addChild(pole)
         flag.addChild(cloth)
         flag.position = pin

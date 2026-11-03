@@ -60,6 +60,8 @@ struct GreenSlopeMap {
     let region: [GeoPoint]
     /// True when the region is a mapped OpenStreetMap outline rather than an estimated oval.
     let usesMappedOutline: Bool
+    /// `region(for:)` when made; a changed value means the hole's outline changed and the map is stale.
+    var basis: [GeoPoint]? = nil
 
     static let cellSize = 1.5
     /// Plane-fit radius; the 1 m grid is too noisy for slopes over a single metre.
@@ -119,7 +121,8 @@ struct GreenSlopeMap {
             y += cellSize
             gridRow += 1
         }
-        return cells.isEmpty ? nil : GreenSlopeMap(cells: cells, region: region, usesMappedOutline: mapped)
+        return cells.isEmpty ? nil : GreenSlopeMap(cells: cells, region: region, usesMappedOutline: mapped,
+                                                    basis: Self.region(for: hole))
     }
 
     /// Finds the green's edge in the 1 m elevation model when no outline is mapped: a green is smooth and

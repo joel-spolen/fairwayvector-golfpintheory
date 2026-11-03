@@ -350,10 +350,10 @@ struct CourseMapView: View {
                     simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
                 )
                 .frame(width: geometry.size.width, height: geometry.size.height)
-                // Recomputed when the green's outline arrives after the oval was drawn.
-                .task(id: showsGreenSlope ? GreenSlopeMap.region(for: hole) : nil) {
-                    guard showsGreenSlope, let terrain = store.terrain,
-                          greenSlopes[hole.number]?.region != GreenSlopeMap.region(for: hole) else { return }
+                // Ready before the switch is used, so showing it is instant; redone when the outline arrives.
+                .task(id: isShowingFlagEditor && courseDisplayOptions.showGreenSlope ? GreenSlopeMap.region(for: hole) : nil) {
+                    guard isShowingFlagEditor, courseDisplayOptions.showGreenSlope, let terrain = store.terrain,
+                          greenSlopes[hole.number]?.basis != GreenSlopeMap.region(for: hole) else { return }
                     if let map = GreenSlopeMap.make(terrain: terrain, hole: hole) {
                         greenSlopes[hole.number] = map
                         greenSlopeUnavailable.remove(hole.number)
