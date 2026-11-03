@@ -95,4 +95,14 @@ struct RecentFormAnalysisTests {
         let steady = (1...3).map { round($0, putts: 36) }
         #expect(RecentFormAnalysis.roundHighlights(round(4, putts: 37), earlier: steady) == [])
     }
+
+    @Test func strokeCostOnlyForPuttingAndPenalties() {
+        let putting = RecentFormAnalysis.Change(area: .putting, recent: 2.2, earlier: 2.0, steps: -2)
+        let penalties = RecentFormAnalysis.Change(area: .penalties, recent: 1.0, earlier: 2.5, steps: 3)
+        let driving = RecentFormAnalysis.Change(area: .driving, recent: 60, earlier: 50, steps: 2)
+        #expect(abs((putting.strokesPer18 ?? 0) - 3.6) < 1e-9)
+        #expect(abs((penalties.strokesPer18 ?? 0) + 1.5) < 1e-9)
+        #expect(driving.strokesPer18 == nil)
+        #expect(driving.strokesText == nil)
+    }
 }

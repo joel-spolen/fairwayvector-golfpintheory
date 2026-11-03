@@ -137,4 +137,19 @@ extension RecentFormAnalysis.Change {
         case (_, true): return L("%@ · your average %@", percent(recent), percent(earlier))
         }
     }
+
+    /// Extra strokes per 18 holes (negative = saved). Only putts and penalties are strokes themselves.
+    var strokesPer18: Double? {
+        switch area {
+        case .putting: (recent - earlier) * 18
+        case .penalties: recent - earlier
+        case .approach, .driving, .shortGame: nil
+        }
+    }
+
+    var strokesText: String? {
+        guard let strokes = strokesPer18 else { return nil }
+        let amount = abs(strokes).formatted(.number.precision(.fractionLength(1)))
+        return strokes > 0 ? L("≈ %@ more strokes per 18 holes", amount) : L("≈ %@ fewer strokes per 18 holes", amount)
+    }
 }

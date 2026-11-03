@@ -1189,6 +1189,8 @@
 "Driving (fairways)" = "Abschlag (Fairways)";
 "Short game (scrambling)" = "Kurzes Spiel (Scrambling)";
 "%@ putts per hole (was %@)" = "%@ Putts pro Loch (vorher %@)";
+"≈ %@ more strokes per 18 holes" = "≈ %@ Schläge mehr pro 18 Löcher";
+"≈ %@ fewer strokes per 18 holes" = "≈ %@ Schläge weniger pro 18 Löcher";
 "%@ per 18 holes (was %@)" = "%@ pro 18 Löcher (vorher %@)";
 "%@ (was %@)" = "%@ (vorher %@)";
 "All" = "Alle";

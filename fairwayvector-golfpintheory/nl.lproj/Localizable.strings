@@ -1189,6 +1189,8 @@
 "Driving (fairways)" = "Afslag (fairways)";
 "Short game (scrambling)" = "Korte spel (scrambling)";
 "%@ putts per hole (was %@)" = "%@ putts per hole (was %@)";
+"≈ %@ more strokes per 18 holes" = "≈ %@ slagen meer per 18 holes";
+"≈ %@ fewer strokes per 18 holes" = "≈ %@ slagen minder per 18 holes";
 "%@ per 18 holes (was %@)" = "%@ per 18 holes (was %@)";
 "%@ (was %@)" = "%@ (was %@)";
 "All" = "Alle";

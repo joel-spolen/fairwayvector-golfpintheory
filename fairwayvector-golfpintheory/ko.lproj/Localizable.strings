@@ -1189,6 +1189,8 @@
 "Driving (fairways)" = "티샷 (페어웨이)";
 "Short game (scrambling)" = "숏게임 (스크램블링)";
 "%@ putts per hole (was %@)" = "홀당 %@퍼트 (이전 %@)";
+"≈ %@ more strokes per 18 holes" = "18홀당 약 %@타 더 많음";
+"≈ %@ fewer strokes per 18 holes" = "18홀당 약 %@타 더 적음";
 "%@ per 18 holes (was %@)" = "18홀당 %@ (이전 %@)";
 "%@ (was %@)" = "%@ (이전 %@)";
 "All" = "전체";

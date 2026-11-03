@@ -1189,6 +1189,8 @@
 "Driving (fairways)" = "Odpaly (fairwaye)";
 "Short game (scrambling)" = "Krátká hra (scrambling)";
 "%@ putts per hole (was %@)" = "%@ puttu na jamku (dříve %@)";
+"≈ %@ more strokes per 18 holes" = "≈ o %@ úderu více na 18 jamek";
+"≈ %@ fewer strokes per 18 holes" = "≈ o %@ úderu méně na 18 jamek";
 "%@ per 18 holes (was %@)" = "%@ na 18 jamek (dříve %@)";
 "%@ (was %@)" = "%@ (dříve %@)";
 "All" = "Vše";

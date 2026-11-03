@@ -223,6 +223,9 @@ struct RoundStatisticsDashboard: View {
                 Text(label).font(.caption.weight(.semibold)).foregroundStyle(PureLineStyle.muted)
                 Text(change.area.title).font(.headline)
                 Text(change.valueText(comparedWithAverage: false)).font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
+                if let strokes = change.strokesText {
+                    Text(strokes).font(.subheadline.weight(.medium)).monospacedDigit()
+                }
             }
         }
         .accessibilityElement(children: .combine)

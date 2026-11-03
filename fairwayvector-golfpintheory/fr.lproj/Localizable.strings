@@ -1189,6 +1189,8 @@
 "Driving (fairways)" = "Mise en jeu (fairways)";
 "Short game (scrambling)" = "Petit jeu (scrambling)";
 "%@ putts per hole (was %@)" = "%@ putts par trou (avant %@)";
+"≈ %@ more strokes per 18 holes" = "≈ %@ coups de plus sur 18 trous";
+"≈ %@ fewer strokes per 18 holes" = "≈ %@ coups de moins sur 18 trous";
 "%@ per 18 holes (was %@)" = "%@ par 18 trous (avant %@)";
 "%@ (was %@)" = "%@ (avant %@)";
 "All" = "Toutes";

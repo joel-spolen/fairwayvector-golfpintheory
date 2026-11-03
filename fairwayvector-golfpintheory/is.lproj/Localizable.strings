@@ -1189,6 +1189,8 @@
 "Driving (fairways)" = "Teighögg (brautir)";
 "Short game (scrambling)" = "Stutta spilið (scrambling)";
 "%@ putts per hole (was %@)" = "%@ pútt á holu (var %@)";
+"≈ %@ more strokes per 18 holes" = "≈ %@ höggum fleiri á 18 holum";
+"≈ %@ fewer strokes per 18 holes" = "≈ %@ höggum færri á 18 holum";
 "%@ per 18 holes (was %@)" = "%@ á 18 holur (var %@)";
 "%@ (was %@)" = "%@ (var %@)";
 "All" = "Allir";

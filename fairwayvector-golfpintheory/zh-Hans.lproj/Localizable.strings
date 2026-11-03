@@ -1189,6 +1189,8 @@
 "Driving (fairways)" = "开球（球道）";
 "Short game (scrambling)" = "短杆（救球率）";
 "%@ putts per hole (was %@)" = "每洞推杆 %@ 次（之前 %@）";
+"≈ %@ more strokes per 18 holes" = "每 18 洞约多 %@ 杆";
+"≈ %@ fewer strokes per 18 holes" = "每 18 洞约少 %@ 杆";
 "%@ per 18 holes (was %@)" = "每 18 洞 %@ 次（之前 %@）";
 "%@ (was %@)" = "%@（之前 %@）";
 "All" = "全部";

@@ -1398,6 +1398,9 @@ struct RoundReviewView: View {
                             Text(change.area.title).font(.subheadline.weight(.semibold))
                             Text(change.valueText(comparedWithAverage: true))
                                 .font(.subheadline).monospacedDigit().foregroundStyle(PureLineStyle.muted)
+                            if let strokes = change.strokesText {
+                                Text(strokes).font(.subheadline.weight(.medium)).monospacedDigit()
+                            }
                         }
                     }
                     .accessibilityElement(children: .combine)
