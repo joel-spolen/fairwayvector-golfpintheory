@@ -163,7 +163,6 @@
 "Build your bag" = "Stell dein Bag zusammen";
 "Build your game" = "Verbessere dein Spiel";
 "Bunker shots" = "Bunkerschläge";
-"Bunkers" = "Bunker";
 "CENTER" = "MITTE";
 "CLUBS · %@ OF %@" = "CLUBS · %@ VON %@";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "AUSGEWÄHLTER PLATZ & ABSCHLAG";
 "SLOPE" = "SLOPE";
 "SW" = "SW";
-"Sand" = "Sand";
-"Sand shots" = "Sandschläge";
+"Bunker" = "Bunker";
 "Save" = "Speichern";
 "Save a handicap round to see your progress here." = "Speichere eine Handicap-Runde, um hier deinen Fortschritt zu sehen.";
 "Save and exit" = "Speichern und beenden";
@@ -1002,7 +1000,7 @@
 "Unknown" = "Unbekannt";
 "Use Default" = "Standard verwenden";
 "Use Handicap Index" = "Handicap-Index verwenden";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Verwende die Profilstufen Einfach, Mittel oder Erweitert, um Schläger-Standardwerte aus Handicap, Carry-Distanzen oder Startdaten abzuleiten.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Wähle Einfach, Mittel oder Erweitert unter „In der Tasche › Schlägerdistanzen & Abflug“, um Schläger-Standardwerte aus deinem Handicap, deinen Carry-Distanzen oder Startdaten abzuleiten.";
 "Use at least 8 characters. The account service may require a stronger password." = "Verwende mindestens 8 Zeichen. Der Kontodienst kann ein stärkeres Passwort verlangen.";
 "Use device GPS" = "Geräte-GPS verwenden";
 "Use driver and 7 iron carry distances." = "Verwende die Carry-Distanzen von Driver und Eisen 7.";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "Wedge-Matrix";
 "Wedge bag" = "Wedge-Bag";
 "Edit wedge distances in Wedge bag." = "Bearbeite Wedge-Distanzen im Wedge-Bag.";
-"Wedge matrix" = "Wedge-Matrix";
 "Wedge tools" = "Wedge-Werkzeuge";
 "Wedges" = "Wedges";
 "What did you play?" = "Was hast du gespielt?";

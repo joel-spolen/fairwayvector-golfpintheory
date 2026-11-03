@@ -163,7 +163,6 @@
 "Build your bag" = "バッグを組む";
 "Build your game" = "ゴルフを上達させる";
 "Bunker shots" = "バンカーショット";
-"Bunkers" = "バンカー";
 "CENTER" = "センター";
 "CLUBS · %@ OF %@" = "クラブ · %2$@ 件中 %1$@ 件";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "選択したコースとティー";
 "SLOPE" = "SLOPE";
 "SW" = "南西";
-"Sand" = "バンカー";
-"Sand shots" = "バンカーショット";
+"Bunker" = "バンカー";
 "Save" = "保存";
 "Save a handicap round to see your progress here." = "ハンディキャップラウンドを保存すると、ここに上達が表示されます。";
 "Save and exit" = "保存して終了";
@@ -1002,7 +1000,7 @@
 "Unknown" = "不明";
 "Use Default" = "初期設定を使用";
 "Use Handicap Index" = "Handicap Index を使用";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "シンプル、ミディアム、アドバンスのプロフィールで、ハンディキャップ、キャリー距離、打ち出しデータからクラブの初期値を設定します。";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "「クラブバッグ › クラブの距離と打ち出し」でシンプル、ミディアム、アドバンスのいずれかを選ぶと、ハンディキャップ、キャリー距離、打ち出しデータに基づいてクラブの初期値を設定します。";
 "Use at least 8 characters. The account service may require a stronger password." = "8文字以上を使用してください。アカウントサービスがより強力なパスワードを求める場合があります。";
 "Use device GPS" = "デバイスの GPS を使用";
 "Use driver and 7 iron carry distances." = "ドライバーと 7 番アイアンのキャリー距離を使用します。";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "ウェッジマトリックス";
 "Wedge bag" = "ウェッジバッグ";
 "Edit wedge distances in Wedge bag." = "ウェッジの距離は「ウェッジバッグ」で編集します。";
-"Wedge matrix" = "ウェッジマトリクス";
 "Wedge tools" = "ウェッジツール";
 "Wedges" = "ウェッジ";
 "What did you play?" = "何をプレーしましたか？";

@@ -164,7 +164,7 @@ struct PureLineHomeView: View {
                         Text("See your game")
                             .font(.title3.weight(.semibold)).tracking(-0.4)
                             .padding(.bottom, 10)
-                        destination(L("Rounds & statistics"), detail: statisticsDetail, symbol: "chart.xyaxis.line", action: openStatistics)
+                        destination(L("Rounds & statistics"), detail: statisticsDetail, symbol: "chart.bar.xaxis", action: openStatistics)
                             .accessibilityIdentifier("home-rounds-statistics-button")
                         Divider().overlay(PureLineStyle.line)
                         destination(L("Handicap"), detail: L("Round history & score projections"), symbol: "chart.line.uptrend.xyaxis", action: onOpenHandicap)

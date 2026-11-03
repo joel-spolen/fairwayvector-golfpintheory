@@ -163,7 +163,6 @@
 "Build your bag" = "Monte o seu saco";
 "Build your game" = "Melhore o seu jogo";
 "Bunker shots" = "Pancadas de bunker";
-"Bunkers" = "Bunkers";
 "CENTER" = "CENTRO";
 "CLUBS · %@ OF %@" = "CLUBES · %@ DE %@";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "CAMPO E TEE SELECIONADOS";
 "SLOPE" = "SLOPE";
 "SW" = "SO";
-"Sand" = "Areia";
-"Sand shots" = "Pancadas de areia";
+"Bunker" = "Bunker";
 "Save" = "Guardar";
 "Save a handicap round to see your progress here." = "Guarde uma volta de handicap para ver aqui o seu progresso.";
 "Save and exit" = "Guardar e sair";
@@ -1002,7 +1000,7 @@
 "Unknown" = "Desconhecido";
 "Use Default" = "Usar predefinição";
 "Use Handicap Index" = "Usar Handicap Index";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Use os níveis de perfil Simples, Médio ou Avançado para obter valores predefinidos dos tacos a partir do handicap, das distâncias de carry ou dos dados de lançamento.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Escolha Simples, Médio ou Avançado em «Na bolsa › Distâncias dos tacos e lançamento» para basear os valores predefinidos dos tacos no seu handicap, nas distâncias de carry ou nos dados de lançamento.";
 "Use at least 8 characters. The account service may require a stronger password." = "Utilize pelo menos 8 caracteres. O serviço de conta poderá exigir uma palavra-passe mais forte.";
 "Use device GPS" = "Usar o GPS do dispositivo";
 "Use driver and 7 iron carry distances." = "Use as distâncias de carry do driver e do ferro 7.";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "Matriz de wedges";
 "Wedge bag" = "Saco de wedges";
 "Edit wedge distances in Wedge bag." = "Edite as distâncias dos wedges em Saco de wedges.";
-"Wedge matrix" = "Matriz de wedges";
 "Wedge tools" = "Ferramentas de wedges";
 "Wedges" = "Wedges";
 "What did you play?" = "O que jogou?";

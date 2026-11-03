@@ -163,7 +163,6 @@
 "Build your bag" = "Composez votre sac";
 "Build your game" = "Faites progresser votre jeu";
 "Bunker shots" = "Coups de bunker";
-"Bunkers" = "Bunkers";
 "CENTER" = "CENTRE";
 "CLUBS · %@ OF %@" = "CLUBS · %@ SUR %@";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "PARCOURS & DÉPART SÉLECTIONNÉS";
 "SLOPE" = "SLOPE";
 "SW" = "SO";
-"Sand" = "Sable";
-"Sand shots" = "Coups de sable";
+"Bunker" = "Bunker";
 "Save" = "Enregistrer";
 "Save a handicap round to see your progress here." = "Enregistrez une partie de handicap pour voir vos progrès ici.";
 "Save and exit" = "Enregistrer et quitter";
@@ -1002,7 +1000,7 @@
 "Unknown" = "Inconnu";
 "Use Default" = "Utiliser la valeur par défaut";
 "Use Handicap Index" = "Utiliser le Handicap Index";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Utilisez les niveaux de profil Simple, Intermédiaire ou Avancé pour définir les valeurs par défaut des clubs à partir du handicap, des distances de carry ou des données de lancement.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Choisissez Simple, Intermédiaire ou Avancé dans « Dans le sac › Distances des clubs & lancement » pour définir les valeurs par défaut des clubs à partir de votre handicap, de vos distances de carry ou de vos données de lancement.";
 "Use at least 8 characters. The account service may require a stronger password." = "Utilisez au moins 8 caractères. Le service de compte peut exiger un mot de passe plus robuste.";
 "Use device GPS" = "Utiliser le GPS de l’appareil";
 "Use driver and 7 iron carry distances." = "Utilisez les distances de carry du driver et du fer 7.";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "Matrice des wedges";
 "Wedge bag" = "Sac de wedges";
 "Edit wedge distances in Wedge bag." = "Modifiez les distances des wedges dans Sac de wedges.";
-"Wedge matrix" = "Matrice des wedges";
 "Wedge tools" = "Outils wedge";
 "Wedges" = "Wedges";
 "What did you play?" = "Qu’avez-vous joué ?";

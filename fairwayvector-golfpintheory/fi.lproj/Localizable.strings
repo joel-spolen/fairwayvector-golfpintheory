@@ -163,7 +163,6 @@
 "Build your bag" = "Kokoa bägisi";
 "Build your game" = "Kehitä peliäsi";
 "Bunker shots" = "Bunkkerilyönnit";
-"Bunkers" = "Bunkkerit";
 "CENTER" = "KESKI";
 "CLUBS · %@ OF %@" = "SEURAT · %@ / %@";
 "COURSE RATING" = "COURSE RATING";
@@ -778,8 +777,7 @@
 "SELECTED COURSE & TEE" = "VALITTU KENTTÄ JA TII";
 "SLOPE" = "SLOPE";
 "SW" = "LO";
-"Sand" = "Hiekka";
-"Sand shots" = "Hiekkalyönnit";
+"Bunker" = "Bunkkeri";
 "Save" = "Tallenna";
 "Save a handicap round to see your progress here." = "Tallenna tasoituskierros nähdäksesi kehityksesi tässä.";
 "Save and exit" = "Tallenna ja poistu";
@@ -1004,7 +1002,7 @@
 "Unknown" = "Tuntematon";
 "Use Default" = "Käytä oletusta";
 "Use Handicap Index" = "Käytä Handicap Indexiä";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Käytä profiilitasoja Yksinkertainen, Keskitaso tai Edistynyt johtaaksesi mailojen oletusarvot tasoituksesta, carry-matkoista tai lähtötiedoista.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Valitse Yksinkertainen, Keskitaso tai Edistynyt kohdassa Bägissä › Mailojen matkat ja lähtö, niin mailojen oletusarvot perustuvat tasoitukseesi, carry-matkoihisi tai lähtötietoihin.";
 "Use at least 8 characters. The account service may require a stronger password." = "Käytä vähintään 8 merkkiä. Tilipalvelu voi vaatia vahvemman salasanan.";
 "Use device GPS" = "Käytä laitteen GPS:ää";
 "Use driver and 7 iron carry distances." = "Käytä draiverin ja 7-raudan carry-matkoja.";
@@ -1045,7 +1043,6 @@
 "Wedge Matrix" = "Wedge-matriisi";
 "Wedge bag" = "Wedge-bägi";
 "Edit wedge distances in Wedge bag." = "Muokkaa wedgejen matkoja kohdassa Wedge-bägi.";
-"Wedge matrix" = "Wedge-matriisi";
 "Wedge tools" = "Wedge-työkalut";
 "Wedges" = "Wedget";
 "What did you play?" = "Mitä pelasit?";

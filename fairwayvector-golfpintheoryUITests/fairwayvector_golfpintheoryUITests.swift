@@ -118,7 +118,7 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         openHomeDestination("Wedge Matrix", in: app)
         XCTAssertTrue(app.staticTexts["Your wedge setup"].waitForExistence(timeout: 5))
         app.buttons["Matrix"].tap()
-        XCTAssertTrue(app.staticTexts["Wedge matrix"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Wedge Matrix"].waitForExistence(timeout: 5))
         returnHome(in: app)
 
         openHomeDestination("In the bag", in: app)

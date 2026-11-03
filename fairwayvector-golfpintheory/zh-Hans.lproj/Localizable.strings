@@ -163,7 +163,6 @@
 "Build your bag" = "组建你的球包";
 "Build your game" = "提升球技";
 "Bunker shots" = "沙坑击球";
-"Bunkers" = "沙坑";
 "CENTER" = "中心";
 "CLUBS · %@ OF %@" = "球会 · %2$@ 个中的 %1$@ 个";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "已选球场与发球台";
 "SLOPE" = "SLOPE";
 "SW" = "西南";
-"Sand" = "沙坑";
-"Sand shots" = "沙坑击球";
+"Bunker" = "沙坑";
 "Save" = "保存";
 "Save a handicap round to see your progress here." = "保存一轮差点成绩，即可在这里查看进步。";
 "Save and exit" = "保存并退出";
@@ -1002,7 +1000,7 @@
 "Unknown" = "未知";
 "Use Default" = "使用默认值";
 "Use Handicap Index" = "使用差点指数";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "使用简单、中级或高级档案，根据差点、飞行距离或出球数据设置球杆默认值。";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "在“球包 › 球杆距离与出球”中选择简单、中级或高级，即可根据你的差点、飞行距离或出球数据设置球杆默认值。";
 "Use at least 8 characters. The account service may require a stronger password." = "请至少使用8个字符。账户服务可能要求更强的密码。";
 "Use device GPS" = "使用设备 GPS";
 "Use driver and 7 iron carry distances." = "使用一号木和 7 号铁的飞行距离。";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "挖起杆矩阵";
 "Wedge bag" = "挖起杆球包";
 "Edit wedge distances in Wedge bag." = "请在“挖起杆球包”中编辑挖起杆距离。";
-"Wedge matrix" = "挖起杆矩阵";
 "Wedge tools" = "挖起杆工具";
 "Wedges" = "挖起杆";
 "What did you play?" = "你打了什么？";

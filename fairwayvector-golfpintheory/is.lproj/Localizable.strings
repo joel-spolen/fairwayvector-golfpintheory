@@ -163,7 +163,6 @@
 "Build your bag" = "Settu saman pokann";
 "Build your game" = "Bættu leikinn þinn";
 "Bunker shots" = "Glompuhögg";
-"Bunkers" = "Glompur";
 "CENTER" = "MIÐJA";
 "CLUBS · %@ OF %@" = "KLÚBBAR · %@ AF %@";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "VALINN VÖLLUR OG TEIGUR";
 "SLOPE" = "SLOPE";
 "SW" = "SV";
-"Sand" = "Sandur";
-"Sand shots" = "Sandhögg";
+"Bunker" = "Glompa";
 "Save" = "Vista";
 "Save a handicap round to see your progress here." = "Vistaðu forgjafarhring til að sjá framfarirnar hér.";
 "Save and exit" = "Vista og hætta";
@@ -1002,7 +1000,7 @@
 "Unknown" = "Óþekkt";
 "Use Default" = "Nota sjálfgefið";
 "Use Handicap Index" = "Nota forgjafarvísi";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Notaðu prófílstigin Einfalt, Miðlungs eða Ítarlegt til að fá sjálfgefin kylfugildi út frá forgjöf, flugvegalengdum eða upphafsgögnum.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Veldu Einfalt, Miðlungs eða Ítarlegt undir Í pokanum › Kylfuvegalengdir og upphaf til að byggja sjálfgefin kylfugildi á forgjöf þinni, flugvegalengdum eða upphafsgögnum.";
 "Use at least 8 characters. The account service may require a stronger password." = "Notaðu að minnsta kosti 8 stafi. Reikningsþjónustan gæti krafist sterkara lykilorðs.";
 "Use device GPS" = "Nota GPS tækis";
 "Use driver and 7 iron carry distances." = "Notaðu flugvegalengdir dræversins og 7-járnsins.";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "Wedge-tafla";
 "Wedge bag" = "Fleygjárnspoki";
 "Edit wedge distances in Wedge bag." = "Breyttu vegalengdum fleygjárna í Fleygjárnspoka.";
-"Wedge matrix" = "Fleygjárnsfylki";
 "Wedge tools" = "Fleygjárnstól";
 "Wedges" = "Fleygjárn";
 "What did you play?" = "Hvað spilaðir þú?";

@@ -163,7 +163,6 @@
 "Build your bag" = "Arma tu bolsa";
 "Build your game" = "Mejora tu juego";
 "Bunker shots" = "Golpes de bunker";
-"Bunkers" = "Bunkers";
 "CENTER" = "CENTRO";
 "CLUBS · %@ OF %@" = "CLUBES · %@ DE %@";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "CAMPO Y SALIDA SELECCIONADOS";
 "SLOPE" = "SLOPE";
 "SW" = "SO";
-"Sand" = "Arena";
-"Sand shots" = "Golpes de arena";
+"Bunker" = "Bunker";
 "Save" = "Guardar";
 "Save a handicap round to see your progress here." = "Guarda una vuelta de hándicap para ver aquí tu progreso.";
 "Save and exit" = "Guardar y salir";
@@ -1002,7 +1000,7 @@
 "Unknown" = "Desconocido";
 "Use Default" = "Usar predeterminado";
 "Use Handicap Index" = "Usar Handicap Index";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Usa los niveles de perfil Simple, Medio o Avanzado para obtener valores predeterminados de los palos a partir del hándicap, las distancias de carry o los datos de salida.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Elige Simple, Medio o Avanzado en En la bolsa › Distancias de palos y salida para basar los valores predeterminados de los palos en tu hándicap, tus distancias de carry o tus datos de salida.";
 "Use at least 8 characters. The account service may require a stronger password." = "Usa al menos 8 caracteres. El servicio de cuenta puede exigir una contraseña más segura.";
 "Use device GPS" = "Usar el GPS del dispositivo";
 "Use driver and 7 iron carry distances." = "Usa las distancias de carry del driver y del hierro 7.";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "Matriz de wedges";
 "Wedge bag" = "Bolsa de wedges";
 "Edit wedge distances in Wedge bag." = "Edita las distancias de los wedges en Bolsa de wedges.";
-"Wedge matrix" = "Matriz de wedges";
 "Wedge tools" = "Herramientas de wedges";
 "Wedges" = "Wedges";
 "What did you play?" = "¿Qué jugaste?";

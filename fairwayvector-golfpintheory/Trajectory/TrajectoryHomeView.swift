@@ -223,7 +223,7 @@ struct HowItWorksView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    explanationRow(icon: "person.crop.circle", title: L("Set your profile"), text: L("Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data."))
+                    explanationRow(icon: "person.crop.circle", title: L("Set your profile"), text: L("Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data."))
                     explanationRow(icon: "slider.horizontal.3", title: L("Enter your shot"), text: L("Choose a club profile or adjust ball speed, launch, spin, wind, and course conditions manually."))
                     explanationRow(icon: "function", title: L("Calculate the flight"), text: L("Golf PinTheory simulates the ball flight and fine-tunes it with real shot data."))
                     explanationRow(icon: "chart.xyaxis.line", title: L("Read the result"), text: L("Review carry, apex, landing data, and the side and top-down flight paths."))

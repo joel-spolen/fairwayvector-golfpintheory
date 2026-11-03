@@ -163,7 +163,6 @@
 "Build your bag" = "Stel je tas samen";
 "Build your game" = "Verbeter je spel";
 "Bunker shots" = "Bunkerslagen";
-"Bunkers" = "Bunkers";
 "CENTER" = "MIDDEN";
 "CLUBS · %@ OF %@" = "CLUBS · %@ VAN %@";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "GEKOZEN BAAN & TEE";
 "SLOPE" = "SLOPE";
 "SW" = "ZW";
-"Sand" = "Zand";
-"Sand shots" = "Zandslagen";
+"Bunker" = "Bunker";
 "Save" = "Opslaan";
 "Save a handicap round to see your progress here." = "Sla een handicapronde op om hier je voortgang te zien.";
 "Save and exit" = "Opslaan en afsluiten";
@@ -1002,7 +1000,7 @@
 "Unknown" = "Onbekend";
 "Use Default" = "Standaard gebruiken";
 "Use Handicap Index" = "Handicap Index gebruiken";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Gebruik de profielniveaus Eenvoudig, Gemiddeld of Geavanceerd om standaardwaarden voor clubs af te leiden van handicap, carryafstanden of lanceergegevens.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Kies Eenvoudig, Gemiddeld of Geavanceerd bij In de tas › Clubafstanden & lancering om standaardwaarden voor clubs te baseren op je handicap, carryafstanden of lanceergegevens.";
 "Use at least 8 characters. The account service may require a stronger password." = "Gebruik minstens 8 tekens. De accountservice kan een sterker wachtwoord vereisen.";
 "Use device GPS" = "GPS van apparaat gebruiken";
 "Use driver and 7 iron carry distances." = "Gebruik de carryafstanden van driver en ijzer 7.";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "Wedge-matrix";
 "Wedge bag" = "Wedgetas";
 "Edit wedge distances in Wedge bag." = "Bewerk wedgeafstanden in de Wedgetas.";
-"Wedge matrix" = "Wedgematrix";
 "Wedge tools" = "Wedgetools";
 "Wedges" = "Wedges";
 "What did you play?" = "Wat heb je gespeeld?";

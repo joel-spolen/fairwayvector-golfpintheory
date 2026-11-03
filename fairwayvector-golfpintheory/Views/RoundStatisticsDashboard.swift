@@ -345,7 +345,7 @@ struct RoundStatisticsDashboard: View {
                     }
                 }
                 detailAverageRow(L("Putts"), samples: samples, value: \.putts)
-                detailAverageRow(L("Sand shots"), samples: samples, value: \.bunkerShots)
+                detailAverageRow(L("Bunker shots"), samples: samples, value: \.bunkerShots)
                 detailAverageRow(L("Penalties"), samples: samples, value: \.penalties)
                 GridRow {
                     Text("Fairways hit")

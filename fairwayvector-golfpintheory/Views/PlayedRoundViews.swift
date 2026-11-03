@@ -773,7 +773,7 @@ struct RoundScorecardView: View {
                                 row(label: L("GIR"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     greenCell(player: player, column: column)
                                 }
-                                row(label: L("Sand"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
+                                row(label: L("Bunker"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
                                     scoreDetail(aggregateDetail(player: player, holes: column.holes, value: \.bunkerShots))
                                 }
                                 row(label: L("Penalties"), columnWidth: columnWidth, rowInsets: rowInsets, height: 25 * rowScale) { column in
@@ -1420,7 +1420,7 @@ struct RoundReviewView: View {
             LabeledContent("Putts", value: t.puttHoles > 0 ? "\(t.putts)" : "—")
             LabeledContent("Fairways", value: t.fairwaysAnswered > 0 ? "\(t.fairwaysHit)" : "—")
             LabeledContent("GIR", value: t.girHoles > 0 ? "\(t.estimatedGIR)" : "—")
-            LabeledContent("Bunkers", value: t.bunkerAnswered > 0 ? "\(t.bunkerShots)" : "—")
+            LabeledContent("Bunker shots", value: t.bunkerAnswered > 0 ? "\(t.bunkerShots)" : "—")
             LabeledContent("Penalties", value: t.penaltyHoles > 0 ? "\(t.penalties)" : "—")
         }
         .listRowBackground(PureLineStyle.canvas)

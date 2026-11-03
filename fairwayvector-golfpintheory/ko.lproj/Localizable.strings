@@ -163,7 +163,6 @@
 "Build your bag" = "백 구성하기";
 "Build your game" = "골프 실력 키우기";
 "Bunker shots" = "벙커 샷";
-"Bunkers" = "벙커";
 "CENTER" = "중앙";
 "CLUBS · %@ OF %@" = "클럽 · %2$@개 중 %1$@개";
 "COURSE RATING" = "COURSE RATING";
@@ -776,8 +775,7 @@
 "SELECTED COURSE & TEE" = "선택한 코스 및 티";
 "SLOPE" = "SLOPE";
 "SW" = "남서";
-"Sand" = "벙커";
-"Sand shots" = "벙커 샷";
+"Bunker" = "벙커";
 "Save" = "저장";
 "Save a handicap round to see your progress here." = "핸디캡 라운드를 저장하면 여기에서 진행 상황을 볼 수 있습니다.";
 "Save and exit" = "저장 후 종료";
@@ -1002,7 +1000,7 @@
 "Unknown" = "알 수 없음";
 "Use Default" = "기본값 사용";
 "Use Handicap Index" = "Handicap Index 사용";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "간단, 중급, 고급 프로필로 핸디캡, 캐리 거리 또는 발사 데이터에서 클럽 기본값을 설정하세요.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "골프백 › 클럽 거리 및 발사에서 간단, 중급 또는 고급을 선택하면 핸디캡, 캐리 거리 또는 발사 데이터를 기반으로 클럽 기본값이 설정됩니다.";
 "Use at least 8 characters. The account service may require a stronger password." = "8자 이상 입력하세요. 계정 서비스에서 더 강력한 비밀번호를 요구할 수 있습니다.";
 "Use device GPS" = "기기 GPS 사용";
 "Use driver and 7 iron carry distances." = "드라이버와 7번 아이언 캐리 거리를 사용합니다.";
@@ -1043,7 +1041,6 @@
 "Wedge Matrix" = "웨지 매트릭스";
 "Wedge bag" = "웨지 백";
 "Edit wedge distances in Wedge bag." = "웨지 거리는 웨지 백에서 편집하세요.";
-"Wedge matrix" = "웨지 매트릭스";
 "Wedge tools" = "웨지 도구";
 "Wedges" = "웨지";
 "What did you play?" = "무엇을 플레이했나요?";

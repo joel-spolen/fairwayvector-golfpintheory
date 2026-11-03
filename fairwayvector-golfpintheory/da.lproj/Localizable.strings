@@ -163,7 +163,6 @@
 "Build your bag" = "Byg din bag";
 "Build your game" = "Udvikl dit spil";
 "Bunker shots" = "Bunkerslag";
-"Bunkers" = "Bunkere";
 "CENTER" = "MIDTE";
 "CLUBS · %@ OF %@" = "KLUBBER · %@ AF %@";
 "COURSE RATING" = "COURSE RATING";
@@ -778,8 +777,7 @@
 "SELECTED COURSE & TEE" = "VALGT BANE & TEESTED";
 "SLOPE" = "SLOPE";
 "SW" = "SV";
-"Sand" = "Sand";
-"Sand shots" = "Sandslag";
+"Bunker" = "Bunker";
 "Save" = "Gem";
 "Save a handicap round to see your progress here." = "Gem en handicaprunde for at se dine fremskridt her.";
 "Save and exit" = "Gem og afslut";
@@ -1004,7 +1002,7 @@
 "Unknown" = "Ukendt";
 "Use Default" = "Brug standard";
 "Use Handicap Index" = "Brug handicapindeks";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Brug profilniveauerne Enkel, Mellem eller Avanceret til at hente køllestandarder fra handicap, carryafstande eller udgangsdata.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Vælg Enkel, Mellem eller Avanceret i I baggen › Køllafstande & udgang for at basere køllestandarder på dit handicap, dine carryafstande eller udgangsdata.";
 "Use at least 8 characters. The account service may require a stronger password." = "Brug mindst 8 tegn. Kontotjenesten kan kræve en stærkere adgangskode.";
 "Use device GPS" = "Brug enhedens GPS";
 "Use driver and 7 iron carry distances." = "Brug carryafstande for driver og 7-jern.";
@@ -1045,7 +1043,6 @@
 "Wedge Matrix" = "Wedge-matrix";
 "Wedge bag" = "Wedgebag";
 "Edit wedge distances in Wedge bag." = "Rediger wedgeafstande i Wedgebag.";
-"Wedge matrix" = "Wedgematrix";
 "Wedge tools" = "Wedgeværktøjer";
 "Wedges" = "Wedger";
 "What did you play?" = "Hvad spillede du?";

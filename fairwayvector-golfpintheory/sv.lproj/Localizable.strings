@@ -163,7 +163,6 @@
 "Build your bag" = "Bygg din bag";
 "Build your game" = "Utveckla ditt spel";
 "Bunker shots" = "Bunkerslag";
-"Bunkers" = "Bunkrar";
 "CENTER" = "MITT";
 "CLUBS · %@ OF %@" = "KLUBBAR · %@ AV %@";
 "COURSE RATING" = "COURSE RATING";
@@ -778,8 +777,7 @@
 "SELECTED COURSE & TEE" = "VALD BANA & TEE";
 "SLOPE" = "SLOPE";
 "SW" = "SV";
-"Sand" = "Sand";
-"Sand shots" = "Sandslag";
+"Bunker" = "Bunker";
 "Save" = "Spara";
 "Save a handicap round to see your progress here." = "Spara en handicaprunda för att se dina framsteg här.";
 "Save and exit" = "Spara och avsluta";
@@ -1004,7 +1002,7 @@
 "Unknown" = "Okänd";
 "Use Default" = "Använd standard";
 "Use Handicap Index" = "Använd handicapindex";
-"Use Simple, Medium, or Advanced profile settings to seed club defaults from handicap, carry distances, or launch data." = "Använd profilnivåerna Enkel, Medel eller Avancerad för att få klubbstandardvärden från handicap, carryavstånd eller utgångsdata.";
+"Choose Simple, Medium or Advanced in In the bag › Club distances & launch to base club defaults on your handicap, carry distances or launch data." = "Välj Enkel, Medel eller Avancerad under I bagen › Klubbavstånd & utgång för att basera klubbstandardvärden på ditt handicap, dina carryavstånd eller utgångsdata.";
 "Use at least 8 characters. The account service may require a stronger password." = "Använd minst 8 tecken. Kontotjänsten kan kräva ett starkare lösenord.";
 "Use device GPS" = "Använd enhetens GPS";
 "Use driver and 7 iron carry distances." = "Använd carryavstånd för driver och järn 7.";
@@ -1045,7 +1043,6 @@
 "Wedge Matrix" = "Wedge-matris";
 "Wedge bag" = "Wedgebag";
 "Edit wedge distances in Wedge bag." = "Redigera wedgeavstånd i Wedgebag.";
-"Wedge matrix" = "Wedgematris";
 "Wedge tools" = "Wedgeverktyg";
 "Wedges" = "Wedgar";
 "What did you play?" = "Vad spelade du?";

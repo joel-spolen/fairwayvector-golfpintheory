@@ -79,7 +79,7 @@ struct WedgeMatrixView: View {
                     NavigationStack {
                         ScrollView {
                             VStack(alignment: .leading, spacing: 18) {
-                                WedgePageHeader(title: L("Wedge matrix"), subtitle: L("Compare carry distances across swing lengths and trajectories."), horizontalInset: 0)
+                                WedgePageHeader(title: L("Wedge Matrix"), subtitle: L("Compare carry distances across swing lengths and trajectories."), horizontalInset: 0)
                                 WedgeTrajectoryPicker(selectedTrajectory: $selectedTrajectory)
                                 WedgeMatrixCard(wedges: bagWedges, trajectory: selectedTrajectory, unit: selectedUnit)
                             }
