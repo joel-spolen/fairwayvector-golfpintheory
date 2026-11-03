@@ -35,9 +35,18 @@ struct PureLineHomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 30) {
                     HStack {
-                        Label("BY FAIRWAYVECTOR", systemImage: "location.north.circle")
-                            .font(.caption2.weight(.semibold))
-                            .tracking(1.8)
+                        HStack(spacing: 8) {
+                            Image("icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                                .accessibilityHidden(true)
+                            Text(verbatim: "Golf PinTheory")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(PureLineStyle.ink)
+                        }
+                        .accessibilityAddTraits(.isHeader)
                         Spacer()
                         Button(action: onOpenSettings) {
                             Image(systemName: "gearshape")
