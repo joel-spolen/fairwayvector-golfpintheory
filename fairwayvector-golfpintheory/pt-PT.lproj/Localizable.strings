@@ -575,7 +575,7 @@
 "Flight path" = "Trajetória de voo";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "Trajetória de voo. Na aterragem, a bola fica %@ à %@ da linha do alvo.";
 "Flight path. Estimated carry is %@ and apex is %@." = "Trajetória de voo. Carry estimado de %@ e ápice de %@.";
-"Move Flag · Hole %lld" = "Mover bandeira · Buraco %lld";
+"Green & pin · Hole %@" = "Green e bandeira · Buraco %@";
 "N" = "N";
 "N/A" = "N/A";
 "N/A · par 3" = "N/A · par 3";
@@ -636,7 +636,7 @@
 "On the number" = "No número";
 "Open trajectory" = "Abrir trajetória";
 "Opens the full weather details" = "Abre todos os detalhes do tempo";
-"Opens an enlarged green where you can tap to place the flag" = "Abre um green ampliado onde pode tocar para colocar a bandeira";
+"Opens the green to move the pin or show its slope" = "Abre o green para mover a bandeira ou mostrar a inclinação";
 "Opens course, tee and hole information" = "Abre as informações do campo, do tee e do buraco";
 "Opens the elevation chart" = "Abre o gráfico de altimetria";
 "Opens the suggested club and flight details" = "Abre o taco sugerido e os detalhes do voo";
@@ -669,7 +669,6 @@
 "Personal calibration" = "Calibração pessoal";
 "Personalized club recommendations and realistic shot trajectories for your game." = "Recomendações de tacos personalizadas e trajetórias realistas para o seu jogo.";
 "Pin" = "Bandeira";
-"Pin position" = "Posição da bandeira";
 "Plan your next round" = "Planeie a sua próxima volta";
 "Plan your shot" = "Planeie a sua pancada";
 "Play this shot" = "Jogar esta pancada";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "O seu jogo mantém-se estável em relação às suas voltas anteriores.";
 "Work on" = "A melhorar";
 "Work on: %@" = "A melhorar: %@";
+"Show green slope" = "Mostrar inclinação do green";
+"Green slope · experimental" = "Inclinação do green · experimental";
+"Green slope (experimental)" = "Inclinação do green (experimental)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Apresentada em «Green e bandeira». Estimada a partir da altimetria do campo e de contornos de greens cartografados que podem estar desatualizados, pelo que pode não ser 100% exata. Não é permitida em competições nem em voltas que contem para o handicap.";
+"Arrows point downhill" = "As setas indicam a descida";
+"No detailed elevation for this green" = "Sem dados de altitude detalhados para este green";
 "Going well" = "Está a correr bem";
 "Putting" = "Putting";
 "Approach (GIR)" = "Aproximação (GIR)";

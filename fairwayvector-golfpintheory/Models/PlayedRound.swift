@@ -61,9 +61,22 @@ struct RoundDisplayOptions: Codable, Equatable {
     var showElevation = true
     var showClubSelection = true
     var scoringMode = false
+    var showGreenSlope = false
 
     static let roundSetupDefault = RoundDisplayOptions()
-    static let courseViewDefault = RoundDisplayOptions(scoringMode: true)
+    static let courseViewDefault = RoundDisplayOptions(scoringMode: true, showGreenSlope: true)
+}
+
+extension RoundDisplayOptions {
+    /// Options added later are missing from older saved rounds and setups.
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        showWind = try values.decodeIfPresent(Bool.self, forKey: .showWind) ?? true
+        showElevation = try values.decodeIfPresent(Bool.self, forKey: .showElevation) ?? true
+        showClubSelection = try values.decodeIfPresent(Bool.self, forKey: .showClubSelection) ?? true
+        scoringMode = try values.decodeIfPresent(Bool.self, forKey: .scoringMode) ?? false
+        showGreenSlope = try values.decodeIfPresent(Bool.self, forKey: .showGreenSlope) ?? false
+    }
 }
 
 struct PlayedRound: Codable, Identifiable {

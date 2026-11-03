@@ -575,7 +575,7 @@
 "Flight path" = "Dráha letu";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "Dráha letu. Při dopadu končí míček %@ %@ od cílové linie.";
 "Flight path. Estimated carry is %@ and apex is %@." = "Dráha letu. Odhadované carry %@, vrchol %@.";
-"Move Flag · Hole %lld" = "Přesunout praporek · Jamka %lld";
+"Green & pin · Hole %@" = "Green a praporek · Jamka %@";
 "N" = "S";
 "N/A" = "N/A";
 "N/A · par 3" = "N/A · par 3";
@@ -636,7 +636,7 @@
 "On the number" = "Na číslo";
 "Open trajectory" = "Otevřít dráhu letu";
 "Opens the full weather details" = "Otevře podrobnosti o počasí";
-"Opens an enlarged green where you can tap to place the flag" = "Otevře zvětšený green, na kterém můžete klepnutím umístit praporek";
+"Opens the green to move the pin or show its slope" = "Otevře green pro přesunutí praporku nebo zobrazení sklonu greenu";
 "Opens course, tee and hole information" = "Otevře informace o hřišti, odpališti a jamce";
 "Opens the elevation chart" = "Otevře graf výškového rozdílu";
 "Opens the suggested club and flight details" = "Otevře navrženou hůl a podrobnosti letu";
@@ -669,7 +669,6 @@
 "Personal calibration" = "Osobní kalibrace";
 "Personalized club recommendations and realistic shot trajectories for your game." = "Osobní doporučení holí a realistické dráhy letu pro vaši hru.";
 "Pin" = "Praporek";
-"Pin position" = "Pozice praporku";
 "Plan your next round" = "Naplánujte další kolo";
 "Plan your shot" = "Naplánujte ránu";
 "Play this shot" = "Zahrajte tuto ránu";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "Ve srovnání s vašimi staršími koly hrajete vyrovnaně.";
 "Work on" = "Na čem zapracovat";
 "Work on: %@" = "Na čem zapracovat: %@";
+"Show green slope" = "Zobrazit sklon greenu";
+"Green slope · experimental" = "Sklon greenu · experimentální";
+"Green slope (experimental)" = "Sklon greenu (experimentální)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Zobrazuje se v „Green a praporek“. Odhaduje se z výškových dat hřiště a zmapovaných obrysů greenů, které mohou být zastaralé, takže nemusí být 100% přesný. Není povolen v soutěžích ani v kolech, která se započítávají do handicapu.";
+"Arrows point downhill" = "Šipky ukazují z kopce";
+"No detailed elevation for this green" = "Pro tento green nejsou podrobná výšková data";
 "Going well" = "Co se daří";
 "Putting" = "Puttování";
 "Approach (GIR)" = "Rány na green (GIR)";

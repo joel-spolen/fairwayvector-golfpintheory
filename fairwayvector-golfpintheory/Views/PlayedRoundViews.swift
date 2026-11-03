@@ -47,6 +47,7 @@ struct RoundSetupView: View {
     @State private var showElevation = RoundDisplayOptions.roundSetupDefault.showElevation
     @State private var showClubSelection = RoundDisplayOptions.roundSetupDefault.showClubSelection
     @State private var scoringMode = RoundDisplayOptions.roundSetupDefault.scoringMode
+    @State private var showGreenSlope = RoundDisplayOptions.roundSetupDefault.showGreenSlope
     @State private var error: String?
     @State private var initialized = false
     @AppStorage("roundSetup.lastUsed.v1") private var lastSetupData = Data()
@@ -68,7 +69,8 @@ struct RoundSetupView: View {
             players: players, game: game, detailMode: .detailed, allowance: 100,
             displayOptions: RoundDisplayOptions(showWind: showWind, showElevation: showElevation,
                                                 showClubSelection: showClubSelection,
-                                                scoringMode: showClubSelection && scoringMode))
+                                                scoringMode: showClubSelection && scoringMode,
+                                                showGreenSlope: showGreenSlope))
     }
 
     private func binding(for playerID: UUID) -> Binding<RoundPlayer> {
@@ -135,6 +137,10 @@ struct RoundSetupView: View {
                     Toggle("Scoring mode recommendations", isOn: $scoringMode)
                         .disabled(!showClubSelection)
                     Text("Inside your wedge range, suggests the wedge, trajectory and swing length for the shot.")
+                        .font(.caption).foregroundStyle(PureLineStyle.muted)
+                    Toggle("Green slope (experimental)", isOn: $showGreenSlope)
+                    // L() returns the text unformatted, so the literal "%" is safe.
+                    Text(L("Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap."))
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
                 .font(.subheadline)
@@ -248,6 +254,7 @@ struct RoundSetupView: View {
         showElevation = memory.displayOptions.showElevation
         showClubSelection = memory.displayOptions.showClubSelection
         scoringMode = memory.displayOptions.scoringMode
+        showGreenSlope = memory.displayOptions.showGreenSlope
         players[0].keepsDetailedScore = memory.ownerKeepsDetailedScore
         if !memory.ownerUsesHandicapIndex { players[0].handicapIndex = nil }
         // Fresh IDs keep each round's players independent of earlier rounds.
@@ -262,7 +269,8 @@ struct RoundSetupView: View {
     private func rememberSetup() {
         let memory = RoundSetupMemory(game: game,
             displayOptions: RoundDisplayOptions(showWind: showWind, showElevation: showElevation,
-                                                showClubSelection: showClubSelection, scoringMode: scoringMode),
+                                                showClubSelection: showClubSelection, scoringMode: scoringMode,
+                                                showGreenSlope: showGreenSlope),
             ownerKeepsDetailedScore: players[0].keepsDetailedScore ?? true,
             ownerUsesHandicapIndex: players[0].handicapIndex != nil,
             guests: players.filter { !$0.isOwner })

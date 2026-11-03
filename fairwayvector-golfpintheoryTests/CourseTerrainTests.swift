@@ -113,6 +113,67 @@ import Testing
                       TerrainSample(distanceMeters: 2, point: point, elevationMeters: 12)]
         #expect(TerrainProfileChart.displayRuns(single).map(\.count) == [1, 1])
     }
+
+    @Test func greenSlopeFindsATiltedPlaneAndItsDownhillDirection() throws {
+        // About 1 m pixels; elevation rises 2 cm per metre toward the east (a 2 % slope falling west).
+        let metresPerDegreeLat = 111_320.0, metresPerDegreeLon = 111_320.0 * cos(57.0 * .pi / 180)
+        let bytes = try Self.packed(width: 60, height: 60,
+            bounds: (12, 12 + 60 / metresPerDegreeLon, 57, 57 + 60 / metresPerDegreeLat)) { x, _ in UInt16(x * 2) }
+        let tile = try CourseTerrainTile(packed: bytes, provenance: provenance)
+        let point = { (east: Double, north: Double) in
+            GeoPoint(lat: 57 + north / metresPerDegreeLat, lon: 12 + east / metresPerDegreeLon)
+        }
+        let hole = Hole(number: 1, par: 4, path: [point(30, 0), point(30, 30)], green: [],
+                        greenFront: point(30, 15), greenBack: point(30, 45))
+        let map = try #require(GreenSlopeMap.make(terrain: CourseTerrain(source: .tiles([tile])), hole: hole))
+        let slopes = map.cells.map(\.slopePercent).sorted()
+        #expect(map.cells.count > 50)
+        #expect(abs(slopes[slopes.count / 2] - 2) < 0.2)
+        #expect(map.cells.allSatisfy { $0.downhill.x < -0.95 })
+
+        let coarse = try CourseTerrainTile(packed: bytes, provenance: TerrainProvenance(dataSource: "gpxz_terrain_30m",
+            resolutionMeters: 1, captureDateMin: nil, captureDateMax: nil, datasetVersion: nil, fetchedAt: .now,
+            interpolation: "bilinear", verticalDatum: "EGM2008", providerSampleIntervalMeters: 1))
+        #expect(GreenSlopeMap.make(terrain: CourseTerrain(source: .tiles([coarse])), hole: hole) == nil)
+
+        let square = { (east: Double, north: Double) in
+            [point(east - 10, north - 10), point(east + 10, north - 10), point(east + 10, north + 10), point(east - 10, north + 10)]
+        }
+        var outlined = hole
+        outlined.greenOutline = try #require(GreenSlopeMap.outline(for: hole, among: [square(5, 5), square(30, 30)]))
+        #expect(outlined.greenOutline == square(30, 30))
+        let mapped = try #require(GreenSlopeMap.make(terrain: CourseTerrain(source: .tiles([tile])), hole: outlined))
+        #expect(mapped.usesMappedOutline && mapped.region == square(30, 30))
+        #expect(!map.usesMappedOutline)
+    }
+
+    @Test func unmappedGreenOutlineIsFoundFromTheElevationModel() throws {
+        // A raised green 24 m wide and 32 m deep; the front/back oval would be 28 m wide.
+        let metresPerDegreeLat = 111_320.0, metresPerDegreeLon = 111_320.0 * cos(57.0 * .pi / 180)
+        let bytes = try Self.packed(width: 100, height: 100,
+            bounds: (12, 12 + 100 / metresPerDegreeLon, 57, 57 + 100 / metresPerDegreeLat)) { x, y in
+            let dx = (Double(x) + 0.5 - 50) / 12, dy = (Double(y) + 0.5 - 50) / 16
+            return dx * dx + dy * dy <= 1 ? 600 + UInt16(x) : 500
+        }
+        let tile = try CourseTerrainTile(packed: bytes, provenance: provenance)
+        let point = { (east: Double, north: Double) in
+            GeoPoint(lat: 57 + north / metresPerDegreeLat, lon: 12 + east / metresPerDegreeLon)
+        }
+        let hole = Hole(number: 1, par: 4, path: [point(50, 0), point(50, 34)], green: [],
+                        greenFront: point(50, 34), greenBack: point(50, 66))
+        let terrain = CourseTerrain(source: .tiles([tile]))
+        let outline = try #require(GreenSlopeMap.detectedOutline(terrain: terrain, hole: hole))
+        let reach = outline.map { GolfGeometry.distance($0, point(50, 50)) }
+        // A sharp-edged plateau reads up to ~3 m small; real greens with gradual edges lose less.
+        #expect((8.5...13).contains(reach[0]))   // east
+        #expect((12.5...17).contains(reach[18])) // north
+        #expect(reach[0] < reach[18] - 2)
+
+        let map = try #require(GreenSlopeMap.make(terrain: terrain, hole: hole))
+        #expect(map.region == outline && !map.usesMappedOutline)
+        #expect(GreenSlopeMap.detectedOutline(terrain: CourseTerrain(source: .tiles([tile])),
+            hole: Hole(number: 2, par: 4, path: [], green: [], greenFront: point(20, 20), greenBack: point(20, 44))) == nil)
+    }
 }
 
 /// All test sessions route here; any dispatch fails offline instead of reaching a server.

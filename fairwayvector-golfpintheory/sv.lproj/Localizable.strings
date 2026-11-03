@@ -577,7 +577,7 @@
 "Flight path" = "Bollbana";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "Bollbana. Vid landning hamnar bollen %@ %@ om mållinjen.";
 "Flight path. Estimated carry is %@ and apex is %@." = "Bollbana. Uppskattad carry är %@ och topphöjden är %@.";
-"Move Flag · Hole %lld" = "Flytta flagga · Hål %lld";
+"Green & pin · Hole %@" = "Green & flagga · Hål %@";
 "N" = "N";
 "N/A" = "Ej tillämpligt";
 "N/A · par 3" = "Ej tillämpligt · par 3";
@@ -638,7 +638,7 @@
 "On the number" = "På siffran";
 "Open trajectory" = "Öppna bollbana";
 "Opens the full weather details" = "Öppnar alla väderdetaljer";
-"Opens an enlarged green where you can tap to place the flag" = "Öppnar en förstorad green där du kan trycka för att placera flaggan";
+"Opens the green to move the pin or show its slope" = "Öppnar greenen för att flytta flaggan eller visa lutningen";
 "Opens course, tee and hole information" = "Öppnar information om bana, tee och hål";
 "Opens the elevation chart" = "Öppnar höjddiagrammet";
 "Opens the suggested club and flight details" = "Öppnar föreslagen klubba och detaljer om bollbanan";
@@ -671,7 +671,6 @@
 "Personal calibration" = "Personlig kalibrering";
 "Personalized club recommendations and realistic shot trajectories for your game." = "Personliga klubbrekommendationer och realistiska bollbanor för ditt spel.";
 "Pin" = "Flagga";
-"Pin position" = "Flaggposition";
 "Plan your next round" = "Planera din nästa runda";
 "Plan your shot" = "Planera ditt slag";
 "Play this shot" = "Spela det här slaget";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "Ditt spel är stabilt jämfört med dina tidigare rundor.";
 "Work on" = "Att jobba på";
 "Work on: %@" = "Att jobba på: %@";
+"Show green slope" = "Visa greenens lutning";
+"Green slope · experimental" = "Greenens lutning · experimentell";
+"Green slope (experimental)" = "Greenens lutning (experimentell)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Visas i ”Green & flagga”. Uppskattas utifrån banans höjddata och kartlagda greenkonturer som kan vara inaktuella, så den är kanske inte 100 % exakt. Inte tillåten i tävlingar eller rundor som räknas för handicap.";
+"Arrows point downhill" = "Pilarna pekar nedför";
+"No detailed elevation for this green" = "Inga detaljerade höjddata för den här greenen";
 "Going well" = "Går bra";
 "Putting" = "Puttning";
 "Approach (GIR)" = "Inspel (GIR)";

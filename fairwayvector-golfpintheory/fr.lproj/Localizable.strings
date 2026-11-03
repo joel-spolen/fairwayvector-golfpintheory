@@ -575,7 +575,7 @@
 "Flight path" = "Trajectoire";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "Trajectoire. À l’atterrissage, la balle finit %@ %@ de la ligne de cible.";
 "Flight path. Estimated carry is %@ and apex is %@." = "Trajectoire. Carry estimé %@, apex %@.";
-"Move Flag · Hole %lld" = "Déplacer le drapeau · Trou %lld";
+"Green & pin · Hole %@" = "Green & drapeau · Trou %@";
 "N" = "N";
 "N/A" = "N/A";
 "N/A · par 3" = "N/A · par 3";
@@ -636,7 +636,7 @@
 "On the number" = "Sur le chiffre";
 "Open trajectory" = "Ouvrir la trajectoire";
 "Opens the full weather details" = "Ouvre tous les détails météo";
-"Opens an enlarged green where you can tap to place the flag" = "Ouvre un green agrandi où vous pouvez toucher pour placer le drapeau";
+"Opens the green to move the pin or show its slope" = "Ouvre le green pour déplacer le drapeau ou afficher sa pente";
 "Opens course, tee and hole information" = "Ouvre les informations du parcours, du départ et du trou";
 "Opens the elevation chart" = "Ouvre le graphique d’altitude";
 "Opens the suggested club and flight details" = "Ouvre le club suggéré et les détails de trajectoire";
@@ -669,7 +669,6 @@
 "Personal calibration" = "Calibrage personnel";
 "Personalized club recommendations and realistic shot trajectories for your game." = "Recommandations de clubs personnalisées et trajectoires réalistes pour votre jeu.";
 "Pin" = "Drapeau";
-"Pin position" = "Position du drapeau";
 "Plan your next round" = "Planifiez votre prochaine partie";
 "Plan your shot" = "Planifiez votre coup";
 "Play this shot" = "Jouer ce coup";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "Votre jeu est stable par rapport à vos parties précédentes.";
 "Work on" = "À travailler";
 "Work on: %@" = "À travailler : %@";
+"Show green slope" = "Afficher la pente du green";
+"Green slope · experimental" = "Pente du green · expérimentale";
+"Green slope (experimental)" = "Pente du green (expérimentale)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Affichée dans « Green & drapeau ». Estimée à partir des données d’altitude du parcours et de contours de green cartographiés qui peuvent être obsolètes : elle peut donc ne pas être exacte à 100 %. Non autorisée en compétition ni pour les parties comptant pour le handicap.";
+"Arrows point downhill" = "Les flèches indiquent la descente";
+"No detailed elevation for this green" = "Pas de données d’altitude détaillées pour ce green";
 "Going well" = "Ça marche bien";
 "Putting" = "Putting";
 "Approach (GIR)" = "Approche (GIR)";

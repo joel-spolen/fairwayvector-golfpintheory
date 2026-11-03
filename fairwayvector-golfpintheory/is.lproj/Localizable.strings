@@ -575,7 +575,7 @@
 "Flight path" = "Flugferill";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "Flugferill. Við lendingu endar boltinn %@ %@ við marklínuna.";
 "Flight path. Estimated carry is %@ and apex is %@." = "Flugferill. Áætlað flug %@ og toppur %@.";
-"Move Flag · Hole %lld" = "Færa fána · Hola %lld";
+"Green & pin · Hole %@" = "Flöt og fáni · Hola %@";
 "N" = "N";
 "N/A" = "Á ekki við";
 "N/A · par 3" = "Á ekki við · par 3";
@@ -636,7 +636,7 @@
 "On the number" = "Á tölunni";
 "Open trajectory" = "Opna feril";
 "Opens the full weather details" = "Opnar allar veðurupplýsingar";
-"Opens an enlarged green where you can tap to place the flag" = "Opnar stækkaða flöt þar sem þú getur ýtt til að setja fánann";
+"Opens the green to move the pin or show its slope" = "Opnar flötina til að færa fánann eða sýna halla hennar";
 "Opens course, tee and hole information" = "Opnar upplýsingar um völl, teig og holu";
 "Opens the elevation chart" = "Opnar hæðargrafið";
 "Opens the suggested club and flight details" = "Opnar tillögu að kylfu og upplýsingar um feril";
@@ -669,7 +669,6 @@
 "Personal calibration" = "Persónuleg kvörðun";
 "Personalized club recommendations and realistic shot trajectories for your game." = "Persónulegar kylfuráðleggingar og raunhæfir boltaferlar fyrir þinn leik.";
 "Pin" = "Fáni";
-"Pin position" = "Fánastaða";
 "Plan your next round" = "Skipuleggðu næsta hring";
 "Plan your shot" = "Skipuleggðu höggið";
 "Play this shot" = "Spilaðu þetta högg";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "Leikurinn þinn er stöðugur miðað við fyrri hringi.";
 "Work on" = "Til að bæta";
 "Work on: %@" = "Til að bæta: %@";
+"Show green slope" = "Sýna halla flatar";
+"Green slope · experimental" = "Halli flatar · á tilraunastigi";
+"Green slope (experimental)" = "Halli flatar (á tilraunastigi)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Birtist í „Flöt og fáni“. Áætlaður út frá hæðargögnum vallarins og kortlögðum útlínum flata sem geta verið úreltar, svo hann er hugsanlega ekki 100% nákvæmur. Ekki leyfður í mótum eða hringjum sem gilda til forgjafar.";
+"Arrows point downhill" = "Örvar vísa niður í móti";
+"No detailed elevation for this green" = "Engin nákvæm hæðargögn fyrir þessa flöt";
 "Going well" = "Gengur vel";
 "Putting" = "Pútt";
 "Approach (GIR)" = "Innáhögg (GIR)";

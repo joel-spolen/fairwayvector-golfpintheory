@@ -575,7 +575,7 @@
 "Flight path" = "弾道";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "弾道。着地時、ボールはターゲットラインの%2$@ %1$@ の位置に止まります。";
 "Flight path. Estimated carry is %@ and apex is %@." = "弾道。推定キャリーは %@、最高点は %@ です。";
-"Move Flag · Hole %lld" = "ピンを移動 · ホール %lld";
+"Green & pin · Hole %@" = "グリーンとピン · ホール %@";
 "N" = "北";
 "N/A" = "該当なし";
 "N/A · par 3" = "該当なし · パー 3";
@@ -636,7 +636,7 @@
 "On the number" = "表示距離どおり";
 "Open trajectory" = "弾道を開く";
 "Opens the full weather details" = "天気の詳細を開きます";
-"Opens an enlarged green where you can tap to place the flag" = "拡大したグリーンを開き、タップしてピンを配置できます";
+"Opens the green to move the pin or show its slope" = "グリーンを開いてピンを移動したり、傾斜を表示したりできます";
 "Opens course, tee and hole information" = "コース、ティー、ホールの情報を開きます";
 "Opens the elevation chart" = "高低差のグラフを開きます";
 "Opens the suggested club and flight details" = "推奨クラブと弾道の詳細を開きます";
@@ -669,7 +669,6 @@
 "Personal calibration" = "個人キャリブレーション";
 "Personalized club recommendations and realistic shot trajectories for your game." = "あなたのゲームに合わせたクラブ推奨とリアルな弾道。";
 "Pin" = "ピン";
-"Pin position" = "ピン位置";
 "Plan your next round" = "次のラウンドを計画";
 "Plan your shot" = "ショットを計画";
 "Play this shot" = "このショットを打つ";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "以前のラウンドと比べて、安定したプレーができています。";
 "Work on" = "課題";
 "Work on: %@" = "課題：%@";
+"Show green slope" = "グリーンの傾斜を表示";
+"Green slope · experimental" = "グリーンの傾斜 · 試験運用";
+"Green slope (experimental)" = "グリーンの傾斜（試験運用）";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "「グリーンとピン」に表示されます。コースの標高データと、古くなっている可能性のあるマップ上のグリーン輪郭から推定しているため、100% 正確とは限りません。競技やハンディキャップ対象のラウンドでは使用できません。";
+"Arrows point downhill" = "矢印は下り方向を示します";
+"No detailed elevation for this green" = "このグリーンには詳細な標高データがありません";
 "Going well" = "好調";
 "Putting" = "パッティング";
 "Approach (GIR)" = "パーオン（GIR）";

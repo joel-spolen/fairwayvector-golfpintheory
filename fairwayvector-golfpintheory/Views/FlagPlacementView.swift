@@ -4,16 +4,25 @@ import SwiftUI
 struct FlagPlacementView: View {
     let hole: Hole
     let initialFlag: GeoPoint
+    var greenSlope: GreenSlopeMap? = nil
+    var slopeUnavailable = false
+    /// Nil hides the slope switch (no course elevation, or elevation is off for this round).
+    var showsSlope: Binding<Bool>? = nil
     let onSave: (GeoPoint) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var flag: GeoPoint
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var isDraggingFlag = false
+    @State private var cameraRevision = 0
 
-    init(hole: Hole, initialFlag: GeoPoint, onSave: @escaping (GeoPoint) -> Void) {
+    init(hole: Hole, initialFlag: GeoPoint, greenSlope: GreenSlopeMap? = nil, slopeUnavailable: Bool = false,
+         showsSlope: Binding<Bool>? = nil, onSave: @escaping (GeoPoint) -> Void) {
         self.hole = hole
         self.initialFlag = initialFlag
+        self.greenSlope = greenSlope
+        self.slopeUnavailable = slopeUnavailable
+        self.showsSlope = showsSlope
         self.onSave = onSave
         _flag = State(initialValue: initialFlag)
     }
@@ -28,6 +37,19 @@ struct FlagPlacementView: View {
                     .foregroundStyle(PureLineStyle.muted)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
+
+                if let showsSlope {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Toggle(L("Show green slope"), isOn: showsSlope)
+                            .font(.subheadline.weight(.medium))
+                            .tint(PureLineStyle.accent)
+                        Text("Experimental · may not match the green exactly")
+                            .font(.caption)
+                            .foregroundStyle(PureLineStyle.muted)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 12)
+                }
 
                 MapReader { proxy in
                     Map(position: $cameraPosition, interactionModes: []) {
@@ -48,6 +70,26 @@ struct FlagPlacementView: View {
                         .annotationTitles(.hidden)
                     }
                     .mapStyle(.imagery(elevation: .flat))
+                    .onMapCameraChange(frequency: .continuous) { _ in cameraRevision &+= 1 }
+                    .overlay {
+                        if let greenSlope, showsSlope?.wrappedValue == true {
+                            Canvas { context, _ in
+                                greenSlope.draw(in: &context) { proxy.convert($0.coordinate, to: .local) }
+                            }
+                            .id(cameraRevision)
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                        }
+                    }
+                    // On top of the map so showing it never resizes the map under the heatmap.
+                    .overlay(alignment: .bottomLeading) {
+                        if showsSlope?.wrappedValue == true {
+                            GreenSlopeLegend(available: !slopeUnavailable,
+                                             mappedOutline: greenSlope?.usesMappedOutline == true)
+                                .padding(10)
+                                .allowsHitTesting(false)
+                        }
+                    }
                     .onTapGesture { screenPoint in
                         moveFlag(to: screenPoint, using: proxy)
                     }
@@ -71,7 +113,7 @@ struct FlagPlacementView: View {
                 .padding(.bottom)
             }
             .background(PureLineStyle.canvas)
-            .navigationTitle("Move Flag · Hole \(hole.number)")
+            .navigationTitle(L("Green & pin · Hole %@", "\(hole.number)"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

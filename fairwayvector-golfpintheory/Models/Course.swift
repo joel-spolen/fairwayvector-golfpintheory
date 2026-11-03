@@ -35,6 +35,8 @@ struct Hole: Codable, Hashable, Identifiable {
     var teeBack: GeoPoint?
     var measuredLengthMeters: Double?
     var usesPointOnlyGeometry = false
+    /// OpenStreetMap green outline for point-only courses; only shapes the slope heatmap.
+    var greenOutline: [GeoPoint] = []
 
     var id: Int { number }
     var tee: GeoPoint? { path.first }
@@ -86,6 +88,7 @@ struct Hole: Codable, Hashable, Identifiable {
     private enum CodingKeys: String, CodingKey {
         case number, par, handicapIndex, path, green, fairways, roughs, tees, pin
         case greenFront, greenBack, teeFront, teeBack, measuredLengthMeters, greenCenterPoint, usesPointOnlyGeometry
+        case greenOutline
     }
 
     init(from decoder: Decoder) throws {
@@ -106,6 +109,7 @@ struct Hole: Codable, Hashable, Identifiable {
         measuredLengthMeters = try values.decodeIfPresent(Double.self, forKey: .measuredLengthMeters)
         greenCenterPoint = try values.decodeIfPresent(GeoPoint.self, forKey: .greenCenterPoint)
         usesPointOnlyGeometry = try values.decodeIfPresent(Bool.self, forKey: .usesPointOnlyGeometry) ?? false
+        greenOutline = try values.decodeIfPresent([GeoPoint].self, forKey: .greenOutline) ?? []
     }
 
     var length: Double {
@@ -208,6 +212,8 @@ struct Course: Codable {
     var name: String
     var holes: [Hole]
     var fetchedAt: Date
+    /// Last successful OpenStreetMap green-outline lookup.
+    var greenOutlinesCheckedAt: Date?
 
     init(osmRelationID: Int? = nil, golfAPICourseID: String? = nil, name: String, holes: [Hole], fetchedAt: Date) {
         self.osmRelationID = osmRelationID

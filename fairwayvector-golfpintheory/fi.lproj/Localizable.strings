@@ -577,7 +577,7 @@
 "Flight path" = "Lentorata";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "Lentorata. Laskeutuessa pallo päätyy %@ kohdelinjan %@ puolelle.";
 "Flight path. Estimated carry is %@ and apex is %@." = "Lentorata. Arvioitu carry %@, lakipiste %@.";
-"Move Flag · Hole %lld" = "Siirrä lippua · Reikä %lld";
+"Green & pin · Hole %@" = "Griini ja lippu · Reikä %@";
 "N" = "P";
 "N/A" = "Ei koske";
 "N/A · par 3" = "Ei koske · par 3";
@@ -638,7 +638,7 @@
 "On the number" = "Lukemassa";
 "Open trajectory" = "Avaa lentorata";
 "Opens the full weather details" = "Avaa kaikki säätiedot";
-"Opens an enlarged green where you can tap to place the flag" = "Avaa suurennetun griinin, jota napauttamalla voit sijoittaa lipun";
+"Opens the green to move the pin or show its slope" = "Avaa griinin lipun siirtämistä tai kaltevuuden näyttämistä varten";
 "Opens course, tee and hole information" = "Avaa kentän, tiiauspaikan ja reiän tiedot";
 "Opens the elevation chart" = "Avaa korkeuskaavion";
 "Opens the suggested club and flight details" = "Avaa ehdotetun mailan ja lennon tiedot";
@@ -671,7 +671,6 @@
 "Personal calibration" = "Henkilökohtainen kalibrointi";
 "Personalized club recommendations and realistic shot trajectories for your game." = "Henkilökohtaiset mailasuositukset ja realistiset lentoradat pelillesi.";
 "Pin" = "Lippu";
-"Pin position" = "Lipun paikka";
 "Plan your next round" = "Suunnittele seuraava kierroksesi";
 "Plan your shot" = "Suunnittele lyöntisi";
 "Play this shot" = "Pelaa tämä lyönti";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "Pelisi on tasaista verrattuna aiempiin kierroksiisi.";
 "Work on" = "Kehitettävää";
 "Work on: %@" = "Kehitettävää: %@";
+"Show green slope" = "Näytä griinin kaltevuus";
+"Green slope · experimental" = "Griinin kaltevuus · kokeellinen";
+"Green slope (experimental)" = "Griinin kaltevuus (kokeellinen)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Näkyy kohdassa ”Griini ja lippu”. Arvioitu kentän korkeustiedoista ja kartoitetuista griinien rajoista, jotka voivat olla vanhentuneita, joten se ei välttämättä ole 100 % tarkka. Ei sallittu kilpailuissa eikä tasoitukseen vaikuttavilla kierroksilla.";
+"Arrows point downhill" = "Nuolet osoittavat alamäkeen";
+"No detailed elevation for this green" = "Tälle griinille ei ole tarkkoja korkeustietoja";
 "Going well" = "Sujuu hyvin";
 "Putting" = "Puttaus";
 "Approach (GIR)" = "Lähestymiset (GIR)";

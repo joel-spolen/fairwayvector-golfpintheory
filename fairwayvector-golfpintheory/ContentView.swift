@@ -34,6 +34,9 @@ struct CourseMapView: View {
     @State private var holeIndex = 0
     @State private var tapPoint: GeoPoint?
     @State private var isShowingFlagEditor = false
+    @State private var showsGreenSlope = false
+    @State private var greenSlopes: [Int: GreenSlopeMap] = [:]
+    @State private var greenSlopeUnavailable: Set<Int> = []
     #if DEBUG
     @State private var simulatedGolfer: GeoPoint?
     @State private var isShowingDevelopmentWedges = false
@@ -105,7 +108,13 @@ struct CourseMapView: View {
         .tint(PureLineStyle.accent)
         .task {
             locationManager.start()
-            if !resumesSnapshot { await store.load() }
+            // A resumed round already has its course, but its elevation still has to be read.
+            if resumesSnapshot {
+                store.preloadGreenOutlines()
+                await store.loadTerrain()
+            } else {
+                await store.load()
+            }
             handleStartRequest()
         }
         .onChange(of: requestStartRound) { handleStartRequest() }
@@ -206,7 +215,11 @@ struct CourseMapView: View {
             if let holes = store.course?.holes, !holes.isEmpty {
                 let hole = holes[min(holeIndex, holes.count - 1)]
                 if let flag = flagPosition(for: hole) {
-                    FlagPlacementView(hole: hole, initialFlag: flag) { movedFlag in
+                    FlagPlacementView(hole: hole, initialFlag: flag,
+                        greenSlope: greenSlopes[hole.number],
+                        slopeUnavailable: greenSlopeUnavailable.contains(hole.number),
+                        showsSlope: courseDisplayOptions.showGreenSlope && store.terrain != nil ? $showsGreenSlope : nil
+                    ) { movedFlag in
                         saveFlagPosition(movedFlag, for: hole)
                         isShowingFlagEditor = false
                     }
@@ -336,6 +349,17 @@ struct CourseMapView: View {
                     simulatedUserLocation: origin?.isSimulated == true ? origin?.point : nil
                 )
                 .frame(width: geometry.size.width, height: geometry.size.height)
+                // Recomputed when the green's outline arrives after the oval was drawn.
+                .task(id: showsGreenSlope ? GreenSlopeMap.region(for: hole) : nil) {
+                    guard showsGreenSlope, let terrain = store.terrain,
+                          greenSlopes[hole.number]?.region != GreenSlopeMap.region(for: hole) else { return }
+                    if let map = GreenSlopeMap.make(terrain: terrain, hole: hole) {
+                        greenSlopes[hole.number] = map
+                        greenSlopeUnavailable.remove(hole.number)
+                    } else {
+                        greenSlopeUnavailable.insert(hole.number)
+                    }
+                }
                 .overlay(alignment: .topTrailing) {
                     roundActionsMenu
                         .padding(.top, 12)
@@ -367,7 +391,7 @@ struct CourseMapView: View {
                                     Image(systemName: "flag")
                                         .font(.body.weight(.medium))
                                         .foregroundStyle(PureLineStyle.accent)
-                                    Text("Pin position")
+                                    Text("Green & pin")
                                         .font(.caption2.weight(.medium))
                                         .multilineTextAlignment(.center)
                                         .foregroundStyle(PureLineStyle.ink)
@@ -379,7 +403,7 @@ struct CourseMapView: View {
                             .buttonStyle(.plain)
                             .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
                             .disabled(hole.greenCenter == nil)
-                            .accessibilityHint("Opens an enlarged green where you can tap to place the flag")
+                            .accessibilityHint("Opens the green to move the pin or show its slope")
                         }
                         .padding(.vertical, 8)
                         .padding(.horizontal, 6)
@@ -406,6 +430,10 @@ struct CourseMapView: View {
                 terrainStore.setTerrain(store.terrain, unavailableMessage: store.terrainMessage)
                 terrainStore.open(terrainRequest(for: hole,
                     origin: distanceOrigin(for: hole), target: nil))
+            }
+            .onChange(of: store.terrain == nil) {
+                terrainStore.setTerrain(store.terrain, unavailableMessage: store.terrainMessage)
+                terrainStore.open(terrainRequest(for: hole, origin: distanceOrigin(for: hole), target: nil))
             }
             .task(id: courseWeatherLocation) {
                 guard let location = courseWeatherLocation else { return }

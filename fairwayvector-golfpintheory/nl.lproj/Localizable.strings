@@ -575,7 +575,7 @@
 "Flight path" = "Vluchtbaan";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "Vluchtbaan. Bij de landing eindigt de bal %@ %@ van de doellijn.";
 "Flight path. Estimated carry is %@ and apex is %@." = "Vluchtbaan. Geschatte carry %@, toppunt %@.";
-"Move Flag · Hole %lld" = "Vlag verplaatsen · Hole %lld";
+"Green & pin · Hole %@" = "Green & vlag · Hole %@";
 "N" = "N";
 "N/A" = "N.v.t.";
 "N/A · par 3" = "N.v.t. · par 3";
@@ -636,7 +636,7 @@
 "On the number" = "Op het getal";
 "Open trajectory" = "Balvlucht openen";
 "Opens the full weather details" = "Opent alle weerdetails";
-"Opens an enlarged green where you can tap to place the flag" = "Opent een vergrote green waarop je kunt tikken om de vlag te plaatsen";
+"Opens the green to move the pin or show its slope" = "Opent de green om de vlag te verplaatsen of de helling te tonen";
 "Opens course, tee and hole information" = "Opent informatie over baan, tee en hole";
 "Opens the elevation chart" = "Opent de hoogtegrafiek";
 "Opens the suggested club and flight details" = "Opent de voorgestelde club en vluchtdetails";
@@ -669,7 +669,6 @@
 "Personal calibration" = "Persoonlijke kalibratie";
 "Personalized club recommendations and realistic shot trajectories for your game." = "Persoonlijke clubadviezen en realistische balvluchten voor jouw spel.";
 "Pin" = "Vlag";
-"Pin position" = "Vlagpositie";
 "Plan your next round" = "Plan je volgende ronde";
 "Plan your shot" = "Plan je slag";
 "Play this shot" = "Speel deze slag";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "Je spel is stabiel vergeleken met je eerdere rondes.";
 "Work on" = "Werkpunt";
 "Work on: %@" = "Werkpunt: %@";
+"Show green slope" = "Helling van de green tonen";
+"Green slope · experimental" = "Helling van de green · experimenteel";
+"Green slope (experimental)" = "Helling van de green (experimenteel)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Wordt getoond bij ‘Green & vlag’. Geschat op basis van hoogtegegevens van de baan en in kaart gebrachte greencontouren die verouderd kunnen zijn, dus mogelijk niet 100% nauwkeurig. Niet toegestaan in wedstrijden of rondes die meetellen voor je handicap.";
+"Arrows point downhill" = "Pijlen wijzen bergaf";
+"No detailed elevation for this green" = "Geen gedetailleerde hoogtegegevens voor deze green";
 "Going well" = "Gaat goed";
 "Putting" = "Putten";
 "Approach (GIR)" = "Approach (GIR)";

@@ -575,7 +575,7 @@
 "Flight path" = "비행 경로";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "비행 경로입니다. 착지 시 공은 목표선 %2$@ %1$@ 지점에 멈춥니다.";
 "Flight path. Estimated carry is %@ and apex is %@." = "비행 경로입니다. 예상 캐리는 %@, 최고점은 %@입니다.";
-"Move Flag · Hole %lld" = "깃대 이동 · %lld번 홀";
+"Green & pin · Hole %@" = "그린 및 핀 · %@번 홀";
 "N" = "북";
 "N/A" = "해당 없음";
 "N/A · par 3" = "해당 없음 · 파 3";
@@ -636,7 +636,7 @@
 "On the number" = "거리 일치";
 "Open trajectory" = "궤적 열기";
 "Opens the full weather details" = "날씨 세부 정보를 엽니다";
-"Opens an enlarged green where you can tap to place the flag" = "확대된 그린을 열어 탭으로 깃대를 배치할 수 있습니다";
+"Opens the green to move the pin or show its slope" = "그린을 열어 핀을 옮기거나 경사를 표시할 수 있습니다";
 "Opens course, tee and hole information" = "코스, 티, 홀 정보를 엽니다";
 "Opens the elevation chart" = "고저차 차트를 엽니다";
 "Opens the suggested club and flight details" = "추천 클럽과 비행 세부 정보를 엽니다";
@@ -669,7 +669,6 @@
 "Personal calibration" = "개인 보정";
 "Personalized club recommendations and realistic shot trajectories for your game." = "내 게임에 맞춘 클럽 추천과 사실적인 샷 궤적.";
 "Pin" = "핀";
-"Pin position" = "핀 위치";
 "Plan your next round" = "다음 라운드 계획";
 "Plan your shot" = "샷 계획";
 "Play this shot" = "이 샷 치기";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "이전 라운드와 비교해 안정적인 경기를 하고 있습니다.";
 "Work on" = "보완할 점";
 "Work on: %@" = "보완할 점: %@";
+"Show green slope" = "그린 경사 표시";
+"Green slope · experimental" = "그린 경사 · 실험 기능";
+"Green slope (experimental)" = "그린 경사 (실험 기능)";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "‘그린 및 핀’에 표시됩니다. 코스 고도 데이터와 최신 상태가 아닐 수 있는 지도상의 그린 윤곽을 바탕으로 추정하므로 100% 정확하지 않을 수 있습니다. 대회나 핸디캡에 반영되는 라운드에서는 사용할 수 없습니다.";
+"Arrows point downhill" = "화살표는 내리막 방향입니다";
+"No detailed elevation for this green" = "이 그린의 상세 고도 데이터가 없습니다";
 "Going well" = "잘되고 있는 점";
 "Putting" = "퍼팅";
 "Approach (GIR)" = "어프로치 샷 (GIR)";

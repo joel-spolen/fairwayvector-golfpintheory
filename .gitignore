@@ -1,6 +1,7 @@
 fairwayvector-golfpintheory/GolfAPI.local.xcconfig
 fairwayvector-golfpintheory/GPXZ.local.xcconfig
 fairwayvector-golfpintheory/Accounts.local.xcconfig
+.env.local
 .DS_Store
 exports/
 

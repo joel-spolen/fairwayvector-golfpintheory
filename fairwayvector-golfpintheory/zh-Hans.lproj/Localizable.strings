@@ -575,7 +575,7 @@
 "Flight path" = "飞行路径";
 "Flight path. At landing, the ball finishes %@ %@ of the target line." = "飞行路径。落地时，球停在目标线%2$@ %1$@ 处。";
 "Flight path. Estimated carry is %@ and apex is %@." = "飞行路径。预计飞行距离 %@，最高点 %@。";
-"Move Flag · Hole %lld" = "移动旗杆 · 第 %lld 洞";
+"Green & pin · Hole %@" = "果岭与旗位 · 第 %@ 洞";
 "N" = "北";
 "N/A" = "不适用";
 "N/A · par 3" = "不适用 · 3 杆洞";
@@ -636,7 +636,7 @@
 "On the number" = "正好数字";
 "Open trajectory" = "打开弹道";
 "Opens the full weather details" = "打开完整天气详情";
-"Opens an enlarged green where you can tap to place the flag" = "打开放大的果岭，轻点即可放置旗杆";
+"Opens the green to move the pin or show its slope" = "打开果岭以移动旗杆或显示坡度";
 "Opens course, tee and hole information" = "打开球场、发球台和球洞信息";
 "Opens the elevation chart" = "打开高度差图表";
 "Opens the suggested club and flight details" = "打开建议球杆和弹道详情";
@@ -669,7 +669,6 @@
 "Personal calibration" = "个人校准";
 "Personalized club recommendations and realistic shot trajectories for your game." = "为你的打法提供个性化球杆建议和真实的击球弹道。";
 "Pin" = "旗杆";
-"Pin position" = "旗位";
 "Plan your next round" = "规划下一轮";
 "Plan your shot" = "规划你的击球";
 "Play this shot" = "打这一杆";
@@ -1179,6 +1178,12 @@
 "Your game is steady compared with your earlier rounds." = "与之前的轮次相比，你的表现很稳定。";
 "Work on" = "待提升";
 "Work on: %@" = "待提升：%@";
+"Show green slope" = "显示果岭坡度";
+"Green slope · experimental" = "果岭坡度 · 实验性";
+"Green slope (experimental)" = "果岭坡度（实验性）";
+"Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "显示在“果岭与旗位”中。根据球场高程数据和可能已过时的果岭轮廓地图估算，因此可能并非 100% 准确。不得在比赛或计入差点的轮次中使用。";
+"Arrows point downhill" = "箭头指向下坡方向";
+"No detailed elevation for this green" = "此果岭没有详细的海拔数据";
 "Going well" = "表现不错";
 "Putting" = "推杆";
 "Approach (GIR)" = "攻果岭（GIR）";

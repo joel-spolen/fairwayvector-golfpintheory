@@ -17,6 +17,7 @@ final class CourseStore {
     private let maxCacheAge: TimeInterval = 24 * 60 * 60
     private var resolvedRelationID: Int?
     private var bundledTerrain: CourseTerrainManifest?
+    private var greenOutlinesRequested = false
 
     init(
         reference: CourseReference,
@@ -42,6 +43,7 @@ final class CourseStore {
                   !(course.map { Date.now.timeIntervalSince($0.fetchedAt) < maxCacheAge } ?? false) {
             await refresh()
         }
+        preloadGreenOutlines()
         await loadTerrain()
     }
 
@@ -69,7 +71,14 @@ final class CourseStore {
                         ? golfAPIClient.loadCourse(id: courseID)
                         : golfAPIClient.refreshCourse(id: courseID))
                 }
-                let built = try GolfAPICourseBuilder.build(reference: reference, payload: payload)
+                var built = try GolfAPICourseBuilder.build(reference: reference, payload: payload)
+                if let previous = course {
+                    for index in built.holes.indices {
+                        built.holes[index].greenOutline = previous.holes
+                            .first { $0.number == built.holes[index].number }?.greenOutline ?? []
+                    }
+                    built.greenOutlinesCheckedAt = previous.greenOutlinesCheckedAt
+                }
                 course = built
                 writeCache(built)
                 return
@@ -131,9 +140,32 @@ final class CourseStore {
         try? data.write(to: url, options: .atomic)
     }
 
+    /// Point-only courses borrow OpenStreetMap green outlines so the slope heatmap follows the real green.
+    /// Runs in the background so a slow map server never delays opening the course.
+    func preloadGreenOutlines() {
+        Task { await loadGreenOutlines() }
+    }
+
+    private func loadGreenOutlines() async {
+        guard !greenOutlinesRequested, golfAPIClient.mode == .live, let current = course,
+              current.greenOutlinesCheckedAt.map({ Date.now.timeIntervalSince($0) > 30 * 24 * 60 * 60 }) ?? true,
+              current.holes.contains(where: { $0.green.count < 3 && $0.greenOutline.isEmpty }) else { return }
+        greenOutlinesRequested = true
+        guard let outlines = try? await client.fetchGreenOutlines(around: current.holes.compactMap(GreenSlopeMap.anchor)),
+              var updated = course else { return }
+        for index in updated.holes.indices where updated.holes[index].green.count < 3 {
+            if let outline = GreenSlopeMap.outline(for: updated.holes[index], among: outlines) {
+                updated.holes[index].greenOutline = outline
+            }
+        }
+        updated.greenOutlinesCheckedAt = .now
+        course = updated
+        writeCache(updated)
+    }
+
     /// Saved elevation first; otherwise the course bundle's manifest and its tiles.
     /// Never blocks the course: failures leave `terrain` nil with a message.
-    private func loadTerrain() async {
+    func loadTerrain() async {
         guard course != nil, terrain == nil else { return }
         if terrainMode == .mock {
             terrain = CourseTerrain(source: .synthetic)
