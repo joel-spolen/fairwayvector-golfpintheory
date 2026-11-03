@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Elige un campo y un tee para ver cómo tu resultado podría cambiar tu índice de hándicap.";
 "Choose a new password" = "Elige una contraseña nueva";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Elige un objetivo válido lejos de la salida; el rango personal debe permitir al menos 0,2 m de distancia simulada.";
-"Choose a wedge" = "Elige un wedge";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Elige el scoring detallado para cada jugador. Las tarjetas detalladas registran putts, posición en la calle, golpes de bunker y penalizaciones.";
 "Choose the club to use for launch conditions." = "Elige el palo que se usará para las condiciones de salida.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Elige los palos que llevas y configura las distancias de tus palos y wedges.";
@@ -229,7 +228,10 @@
 "Club" = "Palo";
 "Club carry distances" = "Distancias de carry de los palos";
 "Club inventory" = "Inventario de palos";
-"Club selector" = "Selector de palo";
+"Find a club" = "Encuentra un palo";
+"Choose club" = "Elige palo";
+"Find a wedge" = "Encuentra un wedge";
+"Find your wedge" = "Encuentra tu wedge";
 "Club trajectories" = "Trayectorias de los palos";
 "Club distances & launch" = "Distancias de palos y salida";
 "Club name" = "Nombre del club";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "Selecciona una región y un país para buscar un club.";
 "Select tee" = "Seleccionar salida";
 "Select your course and tee, or enter an official HCP score without a course." = "Elige tu campo y tee, o introduce un resultado HCP oficial sin campo.";
-"Selector" = "Selector";
 "Send password reset email" = "Enviar correo para restablecer la contraseña";
 "Set a target and conditions to see the best-matching club and flight." = "Define un objetivo y las condiciones para ver el palo y el vuelo que mejor encajan.";
 "Set a target carry distance greater than zero." = "Define una distancia de carry objetivo mayor que cero.";
@@ -896,8 +897,6 @@
 "Stroke play" = "Stroke play";
 "Strokes / hole" = "Golpes / hoyo";
 "Strokes only" = "Solo golpes";
-"Suggest club" = "Sugerir palo";
-"Suggest a club" = "Sugerir un palo";
 "Suggested club" = "Palo sugerido";
 "Surface pressure" = "Presión en superficie";
 "Sync across devices" = "Sincronizar entre dispositivos";

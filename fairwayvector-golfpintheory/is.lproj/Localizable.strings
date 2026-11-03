@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Veldu völl og upphafsteig til að sjá hvernig skorið gæti breytt forgjöfinni.";
 "Choose a new password" = "Veldu nýtt lykilorð";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Veldu gilt mark fjarri teignum; persónulega bilið verður að leyfa að minnsta kosti 0,2 m herma vegalengd.";
-"Choose a wedge" = "Veldu fleygjárn";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Veldu ítarlegt skor fyrir hvern leikmann. Ítarleg skorkort skrá pútt, stöðu á braut, glompuhögg og víti.";
 "Choose the club to use for launch conditions." = "Veldu kylfuna sem nota á fyrir upphafsgildin.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Veldu kylfurnar sem þú berð og stilltu vegalengdir kylfna og fleygjárna.";
@@ -229,7 +228,10 @@
 "Club" = "Kylfa";
 "Club carry distances" = "Flugvegalengdir kylfna";
 "Club inventory" = "Kylfusafn";
-"Club selector" = "Kylfuval";
+"Find a club" = "Finndu kylfu";
+"Choose club" = "Veldu kylfu";
+"Find a wedge" = "Finndu fleygjárn";
+"Find your wedge" = "Finndu fleygjárnið þitt";
 "Club trajectories" = "Ferlar kylfna";
 "Club distances & launch" = "Kylfuvegalengdir og upphaf";
 "Club name" = "Nafn klúbbs";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "Veldu svæði og land til að leita að klúbbi.";
 "Select tee" = "Velja teig";
 "Select your course and tee, or enter an official HCP score without a course." = "Veldu völl og upphafsteig eða skráðu opinbert HCP-skor án vallar.";
-"Selector" = "Val";
 "Send password reset email" = "Senda tölvupóst til að endurstilla lykilorð";
 "Set a target and conditions to see the best-matching club and flight." = "Veldu mark og aðstæður til að sjá hentugustu kylfuna og ferilinn.";
 "Set a target carry distance greater than zero." = "Veldu flugvegalengd að marki sem er meiri en núll.";
@@ -896,8 +897,6 @@
 "Stroke play" = "Höggleikur";
 "Strokes / hole" = "Högg / hola";
 "Strokes only" = "Aðeins högg";
-"Suggest club" = "Stinga upp á kylfu";
-"Suggest a club" = "Stinga upp á kylfu";
 "Suggested club" = "Tillaga að kylfu";
 "Surface pressure" = "Yfirborðsþrýstingur";
 "Sync across devices" = "Samstilla milli tækja";

@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Wybierz pole i tee, aby sprawdzić, jak wynik może wpłynąć na Twój Handicap Index.";
 "Choose a new password" = "Wybierz nowe hasło";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Wybierz prawidłowy cel z dala od tee; zakres osobisty musi pozwalać na co najmniej 0,2 m symulowanej odległości.";
-"Choose a wedge" = "Wybierz wedge";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Wybierz szczegółowy scoring osobno dla każdego gracza. Szczegółowe karty rejestrują putty, pozycję na fairwayu, uderzenia z bunkra i kary.";
 "Choose the club to use for launch conditions." = "Wybierz kij do parametrów wylotu.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Wybierz kije, które nosisz, i ustaw odległości kijów oraz wedge'y.";
@@ -229,7 +228,10 @@
 "Club" = "Kij";
 "Club carry distances" = "Odległości carry kijów";
 "Club inventory" = "Zestaw kijów";
-"Club selector" = "Wybór kija";
+"Find a club" = "Znajdź kij";
+"Choose club" = "Wybierz kij";
+"Find a wedge" = "Znajdź wedge";
+"Find your wedge" = "Znajdź swój wedge";
 "Club trajectories" = "Tory lotu kijów";
 "Club distances & launch" = "Odległości kijów i wylot";
 "Club name" = "Nazwa klubu";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "Wybierz region i kraj, aby wyszukać klub.";
 "Select tee" = "Wybierz tee";
 "Select your course and tee, or enter an official HCP score without a course." = "Wybierz pole i tee lub wpisz oficjalny wynik HCP bez pola.";
-"Selector" = "Wybór";
 "Send password reset email" = "Wyślij e-mail do resetowania hasła";
 "Set a target and conditions to see the best-matching club and flight." = "Ustaw cel i warunki, aby zobaczyć najlepiej pasujący kij i lot.";
 "Set a target carry distance greater than zero." = "Ustaw docelowy carry większy od zera.";
@@ -896,8 +897,6 @@
 "Stroke play" = "Stroke play";
 "Strokes / hole" = "Uderzenia / dołek";
 "Strokes only" = "Tylko uderzenia";
-"Suggest club" = "Zaproponuj kij";
-"Suggest a club" = "Zaproponuj kij";
 "Suggested club" = "Sugerowany kij";
 "Surface pressure" = "Ciśnienie przy powierzchni";
 "Sync across devices" = "Synchronizuj między urządzeniami";

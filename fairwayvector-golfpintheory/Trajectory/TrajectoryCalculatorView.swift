@@ -462,7 +462,7 @@ struct ClubCarouselView: View {
             }
             .padding(.top, 8)
             .background(PureLineStyle.canvas.ignoresSafeArea())
-            .navigationTitle("Club selector")
+            .navigationTitle("Choose club")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.visible, for: .navigationBar)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)

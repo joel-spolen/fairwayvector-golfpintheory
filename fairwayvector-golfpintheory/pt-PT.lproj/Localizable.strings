@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Escolha um campo e um tee para ver como o resultado pode alterar o seu Handicap Index.";
 "Choose a new password" = "Escolha uma nova palavra-passe";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Escolha um alvo válido afastado do tee; o intervalo pessoal tem de permitir pelo menos 0,2 m de distância simulada.";
-"Choose a wedge" = "Escolher um wedge";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Escolha o scoring detalhado para cada jogador. Os cartões detalhados registam putts, posição no fairway, pancadas de bunker e penalidades.";
 "Choose the club to use for launch conditions." = "Escolha o taco a usar nas condições de lançamento.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Escolha os tacos que leva e configure as distâncias dos tacos e wedges.";
@@ -229,7 +228,10 @@
 "Club" = "Taco";
 "Club carry distances" = "Distâncias de carry dos tacos";
 "Club inventory" = "Inventário de tacos";
-"Club selector" = "Seletor de taco";
+"Find a club" = "Encontrar um taco";
+"Choose club" = "Escolher taco";
+"Find a wedge" = "Encontrar um wedge";
+"Find your wedge" = "Encontre o seu wedge";
 "Club trajectories" = "Trajetórias dos tacos";
 "Club distances & launch" = "Distâncias dos tacos e lançamento";
 "Club name" = "Nome do clube";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "Selecione uma região e um país para pesquisar um clube.";
 "Select tee" = "Selecionar tee";
 "Select your course and tee, or enter an official HCP score without a course." = "Escolha o campo e o tee ou introduza um resultado HCP oficial sem campo.";
-"Selector" = "Seletor";
 "Send password reset email" = "Enviar e-mail para repor a palavra-passe";
 "Set a target and conditions to see the best-matching club and flight." = "Defina um alvo e as condições para ver o taco e o voo mais adequados.";
 "Set a target carry distance greater than zero." = "Defina uma distância de carry ao alvo superior a zero.";
@@ -896,8 +897,6 @@
 "Stroke play" = "Stroke play";
 "Strokes / hole" = "Pancadas / buraco";
 "Strokes only" = "Só pancadas";
-"Suggest club" = "Sugerir taco";
-"Suggest a club" = "Sugerir um taco";
 "Suggested club" = "Taco sugerido";
 "Surface pressure" = "Pressão à superfície";
 "Sync across devices" = "Sincronizar entre dispositivos";

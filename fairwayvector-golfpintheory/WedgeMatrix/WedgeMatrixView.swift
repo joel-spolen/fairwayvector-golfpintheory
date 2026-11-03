@@ -8,7 +8,7 @@ struct WedgeMatrixView: View {
         var title: String {
             switch self {
             case .overview: L("Overview")
-            case .selector: L("Selector")
+            case .selector: L("Find a wedge")
             case .matrix: L("Matrix")
             }
         }
@@ -67,7 +67,7 @@ struct WedgeMatrixView: View {
                             targetDistance: $targetDistance,
                             elevationMeters: $selectorElevationMeters,
                             pinFraction: $selectorPinFraction,
-                            pageTitle: L("Choose a wedge"),
+                            pageTitle: L("Find your wedge"),
                             pageSubtitle: L("Set the distance, green elevation and pin position to find a club and swing.")
                         )
                         .background(PureLineStyle.canvas)

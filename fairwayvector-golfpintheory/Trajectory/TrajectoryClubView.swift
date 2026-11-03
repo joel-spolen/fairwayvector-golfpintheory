@@ -230,7 +230,7 @@ struct TrajectoryClubView: View {
                     }
                     .frame(maxWidth: .infinity)
                 } else {
-                    Label("Suggest club", systemImage: "figure.golf")
+                    Label("Find a club", systemImage: "figure.golf")
                         .frame(maxWidth: .infinity)
                 }
             }

@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "选择球场和发球台，查看成绩可能如何影响你的差点指数。";
 "Choose a new password" = "设置新密码";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "请选择远离发球台的有效目标；个人范围必须允许至少 0.2 米的模拟距离。";
-"Choose a wedge" = "选择挖起杆";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "为每位球员单独选择详细计分。详细记分卡会记录推杆、球道位置、沙坑击球和罚杆。";
 "Choose the club to use for launch conditions." = "选择用于出球条件的球杆。";
 "Choose the clubs you carry and set up your club and wedge distances." = "选择你携带的球杆，并设置球杆和挖起杆的距离。";
@@ -229,7 +228,10 @@
 "Club" = "球杆";
 "Club carry distances" = "球杆飞行距离";
 "Club inventory" = "球杆清单";
-"Club selector" = "球杆选择器";
+"Find a club" = "查找球杆";
+"Choose club" = "选择球杆";
+"Find a wedge" = "查找挖起杆";
+"Find your wedge" = "找到你的挖起杆";
 "Club trajectories" = "各球杆弹道";
 "Club distances & launch" = "球杆距离与出球";
 "Club name" = "球会名称";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "请选择地区和国家/地区以搜索俱乐部。";
 "Select tee" = "选择发球台";
 "Select your course and tee, or enter an official HCP score without a course." = "选择球场和发球台，或在不选球场的情况下输入官方HCP成绩。";
-"Selector" = "选择器";
 "Send password reset email" = "发送密码重置邮件";
 "Set a target and conditions to see the best-matching club and flight." = "设置目标和条件，查看最匹配的球杆和弹道。";
 "Set a target carry distance greater than zero." = "请设置大于零的目标飞行距离。";
@@ -896,8 +897,6 @@
 "Stroke play" = "比杆赛";
 "Strokes / hole" = "杆数 / 洞";
 "Strokes only" = "仅杆数";
-"Suggest club" = "建议球杆";
-"Suggest a club" = "建议一支球杆";
 "Suggested club" = "建议球杆";
 "Surface pressure" = "地面气压";
 "Sync across devices" = "在设备间同步";

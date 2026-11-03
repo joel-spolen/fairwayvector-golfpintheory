@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Velg bane og tee for å se hvordan resultatet kan påvirke handicapindeksen din.";
 "Choose a new password" = "Velg et nytt passord";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Velg et gyldig mål bort fra utslagsstedet; det personlige intervallet må tillate minst 0,2 m simulert distanse.";
-"Choose a wedge" = "Velg en wedge";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Velg detaljert scoring for hver spiller. Detaljerte scorekort registrerer putter, fairwayplassering, bunkerslag og straffeslag.";
 "Choose the club to use for launch conditions." = "Velg køllen som skal brukes til utgangsverdiene.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Velg køllene du bærer, og sett opp avstander for køller og wedger.";
@@ -231,7 +230,10 @@
 "Club" = "Kølle";
 "Club carry distances" = "Carryavstander for køller";
 "Club inventory" = "Køllebeholdning";
-"Club selector" = "Køllevelger";
+"Find a club" = "Finn en kølle";
+"Choose club" = "Velg kølle";
+"Find a wedge" = "Finn en wedge";
+"Find your wedge" = "Finn wedgen din";
 "Club trajectories" = "Køllenes ballbaner";
 "Club distances & launch" = "Kølleavstander & utgang";
 "Club name" = "Klubbnavn";
@@ -823,7 +825,6 @@
 "Select a region and country to search for a club." = "Velg en region og et land for å søke etter en klubb.";
 "Select tee" = "Velg utslagssted";
 "Select your course and tee, or enter an official HCP score without a course." = "Velg bane og tee, eller skriv inn en offisiell HCP-score uten bane.";
-"Selector" = "Velger";
 "Send password reset email" = "Send e-post for tilbakestilling av passord";
 "Set a target and conditions to see the best-matching club and flight." = "Angi et mål og forhold for å se best samsvarende kølle og ballbane.";
 "Set a target carry distance greater than zero." = "Angi en carryavstand til målet som er større enn null.";
@@ -898,8 +899,6 @@
 "Stroke play" = "Slagspill";
 "Strokes / hole" = "Slag / hull";
 "Strokes only" = "Bare slag";
-"Suggest club" = "Foreslå kølle";
-"Suggest a club" = "Foreslå en kølle";
 "Suggested club" = "Foreslått kølle";
 "Surface pressure" = "Lufttrykk ved bakken";
 "Sync across devices" = "Synkroniser på tvers av enheter";

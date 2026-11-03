@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Scegli un campo e un tee per vedere come il punteggio potrebbe modificare il tuo Handicap Index.";
 "Choose a new password" = "Scegli una nuova password";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Scegli un obiettivo valido lontano dal tee; l’intervallo personale deve consentire almeno 0,2 m di distanza simulata.";
-"Choose a wedge" = "Scegli un wedge";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Scegli il punteggio dettagliato per ciascun giocatore. Le score card dettagliate registrano putt, posizione sul fairway, colpi dal bunker e penalità.";
 "Choose the club to use for launch conditions." = "Scegli il bastone da usare per le condizioni di lancio.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Scegli i bastoni che porti e imposta le distanze di bastoni e wedge.";
@@ -229,7 +228,10 @@
 "Club" = "Bastone";
 "Club carry distances" = "Distanze di carry dei bastoni";
 "Club inventory" = "Inventario dei bastoni";
-"Club selector" = "Selettore del bastone";
+"Find a club" = "Trova un bastone";
+"Choose club" = "Scegli bastone";
+"Find a wedge" = "Trova un wedge";
+"Find your wedge" = "Trova il tuo wedge";
 "Club trajectories" = "Traiettorie dei bastoni";
 "Club distances & launch" = "Distanze dei bastoni e lancio";
 "Club name" = "Nome del circolo";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "Seleziona una regione e un paese per cercare un circolo.";
 "Select tee" = "Seleziona tee";
 "Select your course and tee, or enter an official HCP score without a course." = "Scegli campo e tee oppure inserisci un punteggio HCP ufficiale senza campo.";
-"Selector" = "Selettore";
 "Send password reset email" = "Invia e-mail per reimpostare la password";
 "Set a target and conditions to see the best-matching club and flight." = "Imposta un obiettivo e le condizioni per vedere il bastone e il volo più adatti.";
 "Set a target carry distance greater than zero." = "Imposta una distanza di carry obiettivo maggiore di zero.";
@@ -896,8 +897,6 @@
 "Stroke play" = "Stroke play";
 "Strokes / hole" = "Colpi / buca";
 "Strokes only" = "Solo colpi";
-"Suggest club" = "Suggerisci bastone";
-"Suggest a club" = "Suggerisci un bastone";
 "Suggested club" = "Bastone suggerito";
 "Surface pressure" = "Pressione al suolo";
 "Sync across devices" = "Sincronizza tra dispositivi";

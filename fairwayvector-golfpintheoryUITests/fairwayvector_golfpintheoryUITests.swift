@@ -141,8 +141,8 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         app.buttons["Done"].tap()
 
         openHomeDestination("Wedge Matrix", in: app)
-        app.buttons["Selector"].tap()
-        XCTAssertTrue(app.staticTexts["Choose a wedge"].waitForExistence(timeout: 5))
+        app.buttons["Find a wedge"].tap()
+        XCTAssertTrue(app.staticTexts["Find your wedge"].waitForExistence(timeout: 5))
         // Slider endpoints exist even when the user has no wedges; the 20–160 yd range shows as 18–146 m.
         XCTAssertTrue(app.staticTexts["18 m"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["146 m"].exists)

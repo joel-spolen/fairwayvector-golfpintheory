@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "코스와 티를 선택해 점수가 핸디캡 인덱스에 미치는 영향을 확인하세요.";
 "Choose a new password" = "새 비밀번호 설정";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "티에서 떨어진 유효한 목표를 선택하세요. 개인 범위는 최소 0.2m의 시뮬레이션 거리를 허용해야 합니다.";
-"Choose a wedge" = "웨지 선택";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "플레이어별로 상세 스코어링을 선택하세요. 상세 스코어카드는 퍼트, 페어웨이 위치, 벙커 샷, 벌타를 기록합니다.";
 "Choose the club to use for launch conditions." = "발사 조건에 사용할 클럽을 선택하세요.";
 "Choose the clubs you carry and set up your club and wedge distances." = "가지고 다니는 클럽을 선택하고 클럽과 웨지 거리를 설정하세요.";
@@ -229,7 +228,10 @@
 "Club" = "클럽";
 "Club carry distances" = "클럽 캐리 거리";
 "Club inventory" = "클럽 보유 목록";
-"Club selector" = "클럽 선택기";
+"Find a club" = "클럽 찾기";
+"Choose club" = "클럽 선택";
+"Find a wedge" = "웨지 찾기";
+"Find your wedge" = "웨지 찾기";
 "Club trajectories" = "클럽별 궤적";
 "Club distances & launch" = "클럽 거리 및 발사";
 "Club name" = "클럽 이름";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "클럽을 검색하려면 지역과 국가를 선택하세요.";
 "Select tee" = "티 선택";
 "Select your course and tee, or enter an official HCP score without a course." = "코스와 티를 선택하거나 코스 없이 공식 HCP 점수를 입력하세요.";
-"Selector" = "선택기";
 "Send password reset email" = "비밀번호 재설정 이메일 보내기";
 "Set a target and conditions to see the best-matching club and flight." = "목표와 조건을 설정하면 가장 잘 맞는 클럽과 비행을 볼 수 있습니다.";
 "Set a target carry distance greater than zero." = "0보다 큰 목표 캐리 거리를 설정하세요.";
@@ -896,8 +897,6 @@
 "Stroke play" = "스트로크 플레이";
 "Strokes / hole" = "타수 / 홀";
 "Strokes only" = "타수만";
-"Suggest club" = "클럽 추천";
-"Suggest a club" = "클럽 추천받기";
 "Suggested club" = "추천 클럽";
 "Surface pressure" = "지표 기압";
 "Sync across devices" = "기기 간 동기화";

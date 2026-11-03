@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Wähle Platz und Abschlag, um zu sehen, wie dein Ergebnis deinen Handicap-Index verändern könnte.";
 "Choose a new password" = "Neues Passwort wählen";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Wähle ein gültiges Ziel abseits des Abschlags; der persönliche Bereich muss mindestens 0,2 m simulierte Distanz zulassen.";
-"Choose a wedge" = "Wedge wählen";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Wähle das detaillierte Scoring für jeden Spieler einzeln. Detaillierte Scorekarten erfassen Putts, Fairwaylage, Bunkerschläge und Strafschläge.";
 "Choose the club to use for launch conditions." = "Wähle den Schläger für die Startbedingungen.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Wähle die Schläger, die du mitführst, und richte deine Schläger- und Wedge-Distanzen ein.";
@@ -229,7 +228,10 @@
 "Club" = "Schläger";
 "Club carry distances" = "Carry-Distanzen der Schläger";
 "Club inventory" = "Schlägerinventar";
-"Club selector" = "Schlägerauswahl";
+"Find a club" = "Finde einen Schläger";
+"Choose club" = "Schläger wählen";
+"Find a wedge" = "Finde ein Wedge";
+"Find your wedge" = "Finde dein Wedge";
 "Club trajectories" = "Flugbahnen der Schläger";
 "Club distances & launch" = "Schlägerdistanzen & Abflug";
 "Club name" = "Clubname";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "Wähle eine Region und ein Land, um einen Club zu suchen.";
 "Select tee" = "Abschlag wählen";
 "Select your course and tee, or enter an official HCP score without a course." = "Wähle Platz und Abschlag oder gib ein offizielles HCP-Ergebnis ohne Platz ein.";
-"Selector" = "Auswahl";
 "Send password reset email" = "E-Mail zum Zurücksetzen des Passworts senden";
 "Set a target and conditions to see the best-matching club and flight." = "Lege ein Ziel und Bedingungen fest, um den passendsten Schläger und die Flugbahn zu sehen.";
 "Set a target carry distance greater than zero." = "Lege eine Ziel-Carry größer als null fest.";
@@ -896,8 +897,6 @@
 "Stroke play" = "Zählspiel";
 "Strokes / hole" = "Schläge / Loch";
 "Strokes only" = "Nur Schläge";
-"Suggest club" = "Schläger vorschlagen";
-"Suggest a club" = "Schläger vorschlagen";
 "Suggested club" = "Vorgeschlagener Schläger";
 "Surface pressure" = "Luftdruck am Boden";
 "Sync across devices" = "Auf Geräten synchronisieren";

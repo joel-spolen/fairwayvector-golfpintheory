@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Kies een baan en tee om te zien hoe je score je handicapindex kan beïnvloeden.";
 "Choose a new password" = "Kies een nieuw wachtwoord";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Kies een geldig doel weg van de tee; het persoonlijke bereik moet minstens 0,2 m gesimuleerde afstand toestaan.";
-"Choose a wedge" = "Kies een wedge";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Kies per speler gedetailleerde scoring. Gedetailleerde scorekaarten houden putts, fairwaypositie, bunkerslagen en strafslagen bij.";
 "Choose the club to use for launch conditions." = "Kies de club voor de lanceeromstandigheden.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Kies de clubs die je meeneemt en stel de afstanden van je clubs en wedges in.";
@@ -229,7 +228,10 @@
 "Club" = "Club";
 "Club carry distances" = "Carryafstanden per club";
 "Club inventory" = "Clubinventaris";
-"Club selector" = "Clubkiezer";
+"Find a club" = "Vind een club";
+"Choose club" = "Kies club";
+"Find a wedge" = "Vind een wedge";
+"Find your wedge" = "Vind je wedge";
 "Club trajectories" = "Vluchten per club";
 "Club distances & launch" = "Clubafstanden & lancering";
 "Club name" = "Clubnaam";
@@ -821,7 +823,6 @@
 "Select a region and country to search for a club." = "Selecteer een regio en land om een club te zoeken.";
 "Select tee" = "Tee kiezen";
 "Select your course and tee, or enter an official HCP score without a course." = "Kies je baan en tee of voer een officiële HCP-score in zonder baan.";
-"Selector" = "Kiezer";
 "Send password reset email" = "E-mail voor wachtwoordherstel verzenden";
 "Set a target and conditions to see the best-matching club and flight." = "Stel een doel en omstandigheden in om de best passende club en vlucht te zien.";
 "Set a target carry distance greater than zero." = "Stel een doelcarry groter dan nul in.";
@@ -896,8 +897,6 @@
 "Stroke play" = "Strokeplay";
 "Strokes / hole" = "Slagen / hole";
 "Strokes only" = "Alleen slagen";
-"Suggest club" = "Club voorstellen";
-"Suggest a club" = "Stel een club voor";
 "Suggested club" = "Voorgestelde club";
 "Surface pressure" = "Luchtdruk aan de grond";
 "Sync across devices" = "Synchroniseren tussen apparaten";

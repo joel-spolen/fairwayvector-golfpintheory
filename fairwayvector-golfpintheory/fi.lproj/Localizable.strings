@@ -202,7 +202,6 @@
 "Choose a course and tee to see how your score could move your Handicap Index." = "Valitse kenttä ja tiipaikka nähdäksesi, miten tuloksesi voi vaikuttaa tasoitusindeksiisi.";
 "Choose a new password" = "Valitse uusi salasana";
 "Choose a valid target away from the tee; the personal range must allow at least 0.2 m of simulated distance." = "Valitse kelvollinen kohde kauempaa tiiauspaikalta; henkilökohtaisen alueen on sallittava vähintään 0,2 m simuloitu matka.";
-"Choose a wedge" = "Valitse wedge";
 "Choose detailed scoring individually for each player. Detailed scorecards track putts, fairway position, bunker shots and penalties." = "Valitse yksityiskohtainen scoring jokaiselle pelaajalle erikseen. Yksityiskohtaiset tuloskortit seuraavat puttien määrää, väyläsijaintia, bunkkerilyöntejä ja rangaistuksia.";
 "Choose the club to use for launch conditions." = "Valitse lähtöarvoissa käytettävä maila.";
 "Choose the clubs you carry and set up your club and wedge distances." = "Valitse mailat, joita kannat, ja määritä mailojen ja wedgejen matkat.";
@@ -231,7 +230,10 @@
 "Club" = "Maila";
 "Club carry distances" = "Mailojen carry-matkat";
 "Club inventory" = "Mailavarasto";
-"Club selector" = "Mailanvalitsin";
+"Find a club" = "Löydä maila";
+"Choose club" = "Valitse maila";
+"Find a wedge" = "Löydä wedge";
+"Find your wedge" = "Löydä wedgesi";
 "Club trajectories" = "Mailojen lentoradat";
 "Club distances & launch" = "Mailojen matkat ja lähtö";
 "Club name" = "Seuran nimi";
@@ -823,7 +825,6 @@
 "Select a region and country to search for a club." = "Valitse alue ja maa seuran hakua varten.";
 "Select tee" = "Valitse tiiauspaikka";
 "Select your course and tee, or enter an official HCP score without a course." = "Valitse kenttä ja tiipaikka tai syötä virallinen HCP-tulos ilman kenttää.";
-"Selector" = "Valitsin";
 "Send password reset email" = "Lähetä salasanan palautusviesti";
 "Set a target and conditions to see the best-matching club and flight." = "Aseta kohde ja olosuhteet nähdäksesi parhaiten sopivan mailan ja lennon.";
 "Set a target carry distance greater than zero." = "Aseta kohteen carry-matka suuremmaksi kuin nolla.";
@@ -898,8 +899,6 @@
 "Stroke play" = "Lyöntipeli";
 "Strokes / hole" = "Lyönnit / reikä";
 "Strokes only" = "Vain lyönnit";
-"Suggest club" = "Ehdota mailaa";
-"Suggest a club" = "Ehdota mailaa";
 "Suggested club" = "Ehdotettu maila";
 "Surface pressure" = "Pintapaine";
 "Sync across devices" = "Synkronoi laitteiden välillä";

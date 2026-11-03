@@ -61,7 +61,7 @@ struct TrajectoryHomeView: View {
             Button {
                 onOpenClub()
             } label: {
-                Label("Suggest a club", systemImage: "figure.golf")
+                Label("Find a club", systemImage: "figure.golf")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .frame(height: 54)
