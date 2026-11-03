@@ -1182,6 +1182,7 @@
 "Save %@ more rounds with detailed scoring to see your recent form." = "Guarda %@ vueltas más con scoring detallado para ver tu forma reciente.";
 "Your game is steady compared with your earlier rounds." = "Tu juego se mantiene estable respecto a tus vueltas anteriores.";
 "Work on" = "A mejorar";
+"Work on: %@" = "A mejorar: %@";
 "Going well" = "Va bien";
 "Putting" = "Putt";
 "Approach (GIR)" = "Golpes a green (GIR)";

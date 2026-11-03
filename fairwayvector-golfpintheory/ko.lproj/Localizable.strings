@@ -1182,6 +1182,7 @@
 "Save %@ more rounds with detailed scoring to see your recent form." = "상세 스코어링으로 라운드를 %@개 더 저장하면 최근 경기력을 볼 수 있습니다.";
 "Your game is steady compared with your earlier rounds." = "이전 라운드와 비교해 안정적인 경기를 하고 있습니다.";
 "Work on" = "보완할 점";
+"Work on: %@" = "보완할 점: %@";
 "Going well" = "잘되고 있는 점";
 "Putting" = "퍼팅";
 "Approach (GIR)" = "어프로치 샷 (GIR)";

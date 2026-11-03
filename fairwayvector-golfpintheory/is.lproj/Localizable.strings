@@ -1182,6 +1182,7 @@
 "Save %@ more rounds with detailed scoring to see your recent form." = "Vistaðu %@ hringi í viðbót með ítarlegu skori til að sjá formið þitt undanfarið.";
 "Your game is steady compared with your earlier rounds." = "Leikurinn þinn er stöðugur miðað við fyrri hringi.";
 "Work on" = "Til að bæta";
+"Work on: %@" = "Til að bæta: %@";
 "Going well" = "Gengur vel";
 "Putting" = "Pútt";
 "Approach (GIR)" = "Innáhögg (GIR)";

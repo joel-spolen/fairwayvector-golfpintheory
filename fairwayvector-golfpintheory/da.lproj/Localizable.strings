@@ -1182,6 +1182,7 @@
 "Save %@ more rounds with detailed scoring to see your recent form." = "Gem %@ runder mere med detaljeret scoring for at se din seneste form.";
 "Your game is steady compared with your earlier rounds." = "Dit spil er stabilt sammenlignet med dine tidligere runder.";
 "Work on" = "Arbejd på";
+"Work on: %@" = "Arbejd på: %@";
 "Going well" = "Går godt";
 "Putting" = "Putting";
 "Approach (GIR)" = "Indspil (GIR)";

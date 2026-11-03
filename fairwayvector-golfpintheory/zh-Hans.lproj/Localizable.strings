@@ -1182,6 +1182,7 @@
 "Save %@ more rounds with detailed scoring to see your recent form." = "再保存 %@ 轮详细计分成绩，即可查看你的近期状态。";
 "Your game is steady compared with your earlier rounds." = "与之前的轮次相比，你的表现很稳定。";
 "Work on" = "待提升";
+"Work on: %@" = "待提升：%@";
 "Going well" = "表现不错";
 "Putting" = "推杆";
 "Approach (GIR)" = "攻果岭（GIR）";

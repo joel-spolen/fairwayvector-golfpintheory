@@ -1182,6 +1182,7 @@
 "Save %@ more rounds with detailed scoring to see your recent form." = "詳細スコアリングでラウンドをあと %@ 回保存すると、最近の調子が表示されます。";
 "Your game is steady compared with your earlier rounds." = "以前のラウンドと比べて、安定したプレーができています。";
 "Work on" = "課題";
+"Work on: %@" = "課題：%@";
 "Going well" = "好調";
 "Putting" = "パッティング";
 "Approach (GIR)" = "パーオン（GIR）";

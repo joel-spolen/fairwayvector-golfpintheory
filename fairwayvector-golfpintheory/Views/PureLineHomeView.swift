@@ -164,7 +164,7 @@ struct PureLineHomeView: View {
                         Text("See your game")
                             .font(.title3.weight(.semibold)).tracking(-0.4)
                             .padding(.bottom, 10)
-                        destination(L("Rounds & statistics"), detail: L("Review your scores and spot the trends"), symbol: "chart.xyaxis.line", action: openStatistics)
+                        destination(L("Rounds & statistics"), detail: statisticsDetail, symbol: "chart.xyaxis.line", action: openStatistics)
                             .accessibilityIdentifier("home-rounds-statistics-button")
                         Divider().overlay(PureLineStyle.line)
                         destination(L("Handicap"), detail: L("Round history & score projections"), symbol: "chart.line.uptrend.xyaxis", action: onOpenHandicap)
@@ -193,6 +193,14 @@ struct PureLineHomeView: View {
     private func openStatistics() {
         statisticsOpened = true
         onOpenStatistics()
+    }
+
+    private var statisticsDetail: String {
+        let records = RoundPerformanceRecord.combined(played: roundStore.saved, handicap: handicapRounds)
+        if case .changes(let workOn?, _) = RecentFormAnalysis.analyze(records) {
+            return L("Work on: %@", workOn.area.title)
+        }
+        return L("Review your scores and spot the trends")
     }
 
     private func getStartedCard(_ steps: (clubs: Bool, round: Bool, statistics: Bool)) -> some View {

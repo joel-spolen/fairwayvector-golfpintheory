@@ -1182,6 +1182,7 @@
 "Save %@ more rounds with detailed scoring to see your recent form." = "Tallenna vielä %@ kierrosta yksityiskohtaisella scoringilla, niin näet viimeaikaisen vireesi.";
 "Your game is steady compared with your earlier rounds." = "Pelisi on tasaista verrattuna aiempiin kierroksiisi.";
 "Work on" = "Kehitettävää";
+"Work on: %@" = "Kehitettävää: %@";
 "Going well" = "Sujuu hyvin";
 "Putting" = "Puttaus";
 "Approach (GIR)" = "Lähestymiset (GIR)";
