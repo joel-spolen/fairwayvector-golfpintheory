@@ -1180,6 +1180,13 @@
 "Work on: %@" = "Til að bæta: %@";
 "Show green slope" = "Sýna halla flatar";
 "Green slope · experimental" = "Halli flatar · á tilraunastigi";
+"View" = "Sýn";
+"Map" = "Kort";
+"Drag to rotate · pinch to zoom · heights ×3" = "Dragðu til að snúa · klíptu til að þysja · hæðir ×3";
+"Reset view" = "Endurstilla sýn";
+"Top view" = "Séð ofan frá";
+"3D green. Heights are exaggerated three times." = "Flöt í þrívídd. Hæðarmunur er ýktur þrefalt.";
+"Experimental · may not match the green exactly" = "Á tilraunastigi · passar hugsanlega ekki nákvæmlega við flötina";
 "Green slope (experimental)" = "Halli flatar (á tilraunastigi)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Birtist í „Flöt og fáni“. Áætlaður út frá hæðargögnum vallarins og kortlögðum útlínum flata sem geta verið úreltar, svo hann er hugsanlega ekki 100% nákvæmur. Ekki leyfður í mótum eða hringjum sem gilda til forgjafar.";
 "Arrows point downhill" = "Örvar vísa niður í móti";

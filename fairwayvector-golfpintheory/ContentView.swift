@@ -218,7 +218,8 @@ struct CourseMapView: View {
                     FlagPlacementView(hole: hole, initialFlag: flag,
                         greenSlope: greenSlopes[hole.number],
                         slopeUnavailable: greenSlopeUnavailable.contains(hole.number),
-                        showsSlope: courseDisplayOptions.showGreenSlope && store.terrain != nil ? $showsGreenSlope : nil
+                        showsSlope: courseDisplayOptions.showGreenSlope && store.terrain != nil ? $showsGreenSlope : nil,
+                        terrain: store.terrain
                     ) { movedFlag in
                         saveFlagPosition(movedFlag, for: hole)
                         isShowingFlagEditor = false

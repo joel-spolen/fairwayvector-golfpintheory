@@ -1180,6 +1180,13 @@
 "Work on: %@" = "A melhorar: %@";
 "Show green slope" = "Mostrar inclinação do green";
 "Green slope · experimental" = "Inclinação do green · experimental";
+"View" = "Vista";
+"Map" = "Mapa";
+"Drag to rotate · pinch to zoom · heights ×3" = "Arraste para rodar · junte os dedos para fazer zoom · alturas ×3";
+"Reset view" = "Repor vista";
+"Top view" = "Vista de cima";
+"3D green. Heights are exaggerated three times." = "Green em 3D. As alturas estão exageradas três vezes.";
+"Experimental · may not match the green exactly" = "Experimental · pode não corresponder exatamente ao green";
 "Green slope (experimental)" = "Inclinação do green (experimental)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Apresentada em «Green e bandeira». Estimada a partir da altimetria do campo e de contornos de greens cartografados que podem estar desatualizados, pelo que pode não ser 100% exata. Não é permitida em competições nem em voltas que contem para o handicap.";
 "Arrows point downhill" = "As setas indicam a descida";

@@ -1180,6 +1180,13 @@
 "Work on: %@" = "Att jobba på: %@";
 "Show green slope" = "Visa greenens lutning";
 "Green slope · experimental" = "Greenens lutning · experimentell";
+"View" = "Vy";
+"Map" = "Karta";
+"Drag to rotate · pinch to zoom · heights ×3" = "Dra för att rotera · nyp för att zooma · höjder ×3";
+"Reset view" = "Återställ vy";
+"Top view" = "Ovanifrån";
+"3D green. Heights are exaggerated three times." = "3D-green. Höjderna är förstärkta tre gånger.";
+"Experimental · may not match the green exactly" = "Experimentell · stämmer kanske inte exakt med greenen";
 "Green slope (experimental)" = "Greenens lutning (experimentell)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Visas i ”Green & flagga”. Uppskattas utifrån banans höjddata och kartlagda greenkonturer som kan vara inaktuella, så den är kanske inte 100 % exakt. Inte tillåten i tävlingar eller rundor som räknas för handicap.";
 "Arrows point downhill" = "Pilarna pekar nedför";

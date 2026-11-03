@@ -147,12 +147,27 @@ final class CourseStore {
     }
 
     private func loadGreenOutlines() async {
-        guard !greenOutlinesRequested, golfAPIClient.mode == .live, let current = course,
-              current.greenOutlinesCheckedAt.map({ Date.now.timeIntervalSince($0) > 30 * 24 * 60 * 60 }) ?? true,
+        guard !greenOutlinesRequested, golfAPIClient.mode == .live, var current = course,
               current.holes.contains(where: { $0.green.count < 3 && $0.greenOutline.isEmpty }) else { return }
         greenOutlinesRequested = true
-        guard let outlines = try? await client.fetchGreenOutlines(around: current.holes.compactMap(GreenSlopeMap.anchor)),
-              var updated = course else { return }
+        // A round keeps the course as it was when it started; the saved course may have outlines since.
+        if let saved = CourseDataStore.readCourse(reference: reference), saved.greenOutlinesCheckedAt != nil {
+            for index in current.holes.indices where current.holes[index].greenOutline.isEmpty {
+                current.holes[index].greenOutline = saved.holes
+                    .first { $0.number == current.holes[index].number }?.greenOutline ?? []
+            }
+            current.greenOutlinesCheckedAt = saved.greenOutlinesCheckedAt
+            course = current
+        }
+        guard current.greenOutlinesCheckedAt.map({ Date.now.timeIntervalSince($0) > 30 * 24 * 60 * 60 }) ?? true
+        else { return }
+        // The public map servers often turn away a burst of requests; try again a little later.
+        var outlines: [[GeoPoint]]?
+        for attempt in 0..<3 where outlines == nil {
+            if attempt > 0 { try? await Task.sleep(for: .seconds(20 * attempt)) }
+            outlines = try? await client.fetchGreenOutlines(around: current.holes.compactMap(GreenSlopeMap.anchor))
+        }
+        guard let outlines, var updated = course else { return }
         for index in updated.holes.indices where updated.holes[index].green.count < 3 {
             if let outline = GreenSlopeMap.outline(for: updated.holes[index], among: outlines) {
                 updated.holes[index].greenOutline = outline

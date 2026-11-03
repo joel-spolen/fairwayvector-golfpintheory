@@ -1180,6 +1180,13 @@
 "Work on: %@" = "Kehitettävää: %@";
 "Show green slope" = "Näytä griinin kaltevuus";
 "Green slope · experimental" = "Griinin kaltevuus · kokeellinen";
+"View" = "Näkymä";
+"Map" = "Kartta";
+"Drag to rotate · pinch to zoom · heights ×3" = "Kierrä vetämällä · zoomaa nipistämällä · korkeudet ×3";
+"Reset view" = "Palauta näkymä";
+"Top view" = "Ylänäkymä";
+"3D green. Heights are exaggerated three times." = "3D-griini. Korkeuserot on liioiteltu kolminkertaisiksi.";
+"Experimental · may not match the green exactly" = "Kokeellinen · ei välttämättä vastaa griiniä tarkasti";
 "Green slope (experimental)" = "Griinin kaltevuus (kokeellinen)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Näkyy kohdassa ”Griini ja lippu”. Arvioitu kentän korkeustiedoista ja kartoitetuista griinien rajoista, jotka voivat olla vanhentuneita, joten se ei välttämättä ole 100 % tarkka. Ei sallittu kilpailuissa eikä tasoitukseen vaikuttavilla kierroksilla.";
 "Arrows point downhill" = "Nuolet osoittavat alamäkeen";

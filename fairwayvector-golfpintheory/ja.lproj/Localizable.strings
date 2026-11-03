@@ -1180,6 +1180,13 @@
 "Work on: %@" = "課題：%@";
 "Show green slope" = "グリーンの傾斜を表示";
 "Green slope · experimental" = "グリーンの傾斜 · 試験運用";
+"View" = "表示";
+"Map" = "地図";
+"Drag to rotate · pinch to zoom · heights ×3" = "ドラッグで回転 · ピンチでズーム · 高さ ×3";
+"Reset view" = "視点をリセット";
+"Top view" = "真上から見る";
+"3D green. Heights are exaggerated three times." = "3D グリーン。高さは3倍に強調されています。";
+"Experimental · may not match the green exactly" = "試験運用 · 実際のグリーンと完全には一致しない場合があります";
 "Green slope (experimental)" = "グリーンの傾斜（試験運用）";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "「グリーンとピン」に表示されます。コースの標高データと、古くなっている可能性のあるマップ上のグリーン輪郭から推定しているため、100% 正確とは限りません。競技やハンディキャップ対象のラウンドでは使用できません。";
 "Arrows point downhill" = "矢印は下り方向を示します";

@@ -1180,6 +1180,13 @@
 "Work on: %@" = "보완할 점: %@";
 "Show green slope" = "그린 경사 표시";
 "Green slope · experimental" = "그린 경사 · 실험 기능";
+"View" = "보기";
+"Map" = "지도";
+"Drag to rotate · pinch to zoom · heights ×3" = "드래그하여 회전 · 핀치하여 확대/축소 · 높이 ×3";
+"Reset view" = "보기 초기화";
+"Top view" = "위에서 보기";
+"3D green. Heights are exaggerated three times." = "3D 그린. 높이가 3배로 과장되어 표시됩니다.";
+"Experimental · may not match the green exactly" = "실험 기능 · 실제 그린과 정확히 일치하지 않을 수 있음";
 "Green slope (experimental)" = "그린 경사 (실험 기능)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "‘그린 및 핀’에 표시됩니다. 코스 고도 데이터와 최신 상태가 아닐 수 있는 지도상의 그린 윤곽을 바탕으로 추정하므로 100% 정확하지 않을 수 있습니다. 대회나 핸디캡에 반영되는 라운드에서는 사용할 수 없습니다.";
 "Arrows point downhill" = "화살표는 내리막 방향입니다";

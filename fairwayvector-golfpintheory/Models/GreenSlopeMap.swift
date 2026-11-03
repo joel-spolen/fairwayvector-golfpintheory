@@ -305,7 +305,7 @@ struct GreenSlopeMap {
         return SIMD2((cxz * cyy - cyz * cxy) / det, (cyz * cxx - cxz * cxy) / det)
     }
 
-    private static func unproject(_ v: SIMD2<Double>, origin: GeoPoint) -> GeoPoint {
+    static func unproject(_ v: SIMD2<Double>, origin: GeoPoint) -> GeoPoint {
         GeoPoint(lat: origin.lat + v.y / TerrainGeometry.radius * 180 / .pi,
                  lon: origin.lon + v.x / (TerrainGeometry.radius * cos(origin.lat * .pi / 180)) * 180 / .pi)
     }

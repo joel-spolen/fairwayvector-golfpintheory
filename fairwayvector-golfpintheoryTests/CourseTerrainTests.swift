@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+import simd
 @testable import fairwayvector_golfpintheory
 
 @MainActor struct CourseTerrainTests {
@@ -173,6 +174,35 @@ import Testing
         #expect(map.region == outline && !map.usesMappedOutline)
         #expect(GreenSlopeMap.detectedOutline(terrain: CourseTerrain(source: .tiles([tile])),
             hole: Hole(number: 2, par: 4, path: [], green: [], greenFront: point(20, 20), greenBack: point(20, 44))) == nil)
+    }
+
+    @Test func greenTerrainModelRaisesATiltedGreenThreeTimesAndPlacesTheFlagOnIt() throws {
+        // 2 cm per metre rising east, as in the slope test.
+        let metresPerDegreeLat = 111_320.0, metresPerDegreeLon = 111_320.0 * cos(57.0 * .pi / 180)
+        let bytes = try Self.packed(width: 60, height: 60,
+            bounds: (12, 12 + 60 / metresPerDegreeLon, 57, 57 + 60 / metresPerDegreeLat)) { x, _ in UInt16(x * 2) }
+        let tile = try CourseTerrainTile(packed: bytes, provenance: provenance)
+        let point = { (east: Double, north: Double) in
+            GeoPoint(lat: 57 + north / metresPerDegreeLat, lon: 12 + east / metresPerDegreeLon)
+        }
+        let hole = Hole(number: 1, par: 4, path: [point(30, 0), point(30, 20)], green: [],
+                        greenFront: point(30, 20), greenBack: point(30, 40))
+        let model = try #require(GreenTerrainModel.make(terrain: CourseTerrain(source: .tiles([tile])), hole: hole))
+        let positions = model.positions
+        #expect(positions.count == model.columns * model.rows)
+        #expect(model.indices.count == (model.columns - 1) * (model.rows - 1) * 6)
+        #expect(model.textureCoordinates.count == positions.count)
+
+        // Across the middle row, height grows 3 × 2 cm per metre eastward.
+        let row = model.rows / 2
+        let west = positions[row * model.columns + 2], east = positions[row * model.columns + model.columns - 3]
+        #expect(abs((east.y - west.y) / (east.x - west.x) - 0.06) < 0.005)
+        #expect(model.normals.allSatisfy { $0.y > 0.99 && $0.x < 0 })
+
+        let pin = try #require(model.surfacePoint(point(32, 30)))
+        let nearest = positions.min { simd_distance(SIMD2($0.x, $0.z), SIMD2(pin.x, pin.z)) < simd_distance(SIMD2($1.x, $1.z), SIMD2(pin.x, pin.z)) }!
+        #expect(abs(pin.y - nearest.y) < 0.05)
+        #expect(!model.contours().isEmpty)
     }
 }
 

@@ -1180,6 +1180,13 @@
 "Work on: %@" = "Arbejd på: %@";
 "Show green slope" = "Vis greenens hældning";
 "Green slope · experimental" = "Greenens hældning · eksperimentel";
+"View" = "Visning";
+"Map" = "Kort";
+"Drag to rotate · pinch to zoom · heights ×3" = "Træk for at dreje · knib for at zoome · højder ×3";
+"Reset view" = "Nulstil visning";
+"Top view" = "Set ovenfra";
+"3D green. Heights are exaggerated three times." = "3D-green. Højderne er overdrevet tre gange.";
+"Experimental · may not match the green exactly" = "Eksperimentel · passer muligvis ikke præcist til greenen";
 "Green slope (experimental)" = "Greenens hældning (eksperimentel)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Vises i “Green & flag”. Beregnet ud fra banens højdedata og kortlagte greenomrids, der kan være forældede, så den er muligvis ikke 100 % nøjagtig. Ikke tilladt i turneringer eller runder, der tæller med i handicap.";
 "Arrows point downhill" = "Pilene peger nedad";

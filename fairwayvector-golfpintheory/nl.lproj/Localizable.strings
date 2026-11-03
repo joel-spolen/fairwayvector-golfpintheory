@@ -1180,6 +1180,13 @@
 "Work on: %@" = "Werkpunt: %@";
 "Show green slope" = "Helling van de green tonen";
 "Green slope · experimental" = "Helling van de green · experimenteel";
+"View" = "Weergave";
+"Map" = "Kaart";
+"Drag to rotate · pinch to zoom · heights ×3" = "Sleep om te draaien · knijp om te zoomen · hoogtes ×3";
+"Reset view" = "Weergave herstellen";
+"Top view" = "Bovenaanzicht";
+"3D green. Heights are exaggerated three times." = "3D-green. Hoogtes worden drie keer overdreven weergegeven.";
+"Experimental · may not match the green exactly" = "Experimenteel · komt mogelijk niet exact overeen met de green";
 "Green slope (experimental)" = "Helling van de green (experimenteel)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Wordt getoond bij ‘Green & vlag’. Geschat op basis van hoogtegegevens van de baan en in kaart gebrachte greencontouren die verouderd kunnen zijn, dus mogelijk niet 100% nauwkeurig. Niet toegestaan in wedstrijden of rondes die meetellen voor je handicap.";
 "Arrows point downhill" = "Pijlen wijzen bergaf";

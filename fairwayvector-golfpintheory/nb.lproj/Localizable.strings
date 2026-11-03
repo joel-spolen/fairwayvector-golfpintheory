@@ -1180,6 +1180,13 @@
 "Work on: %@" = "Jobb med: %@";
 "Show green slope" = "Vis greenens helning";
 "Green slope · experimental" = "Greenens helning · eksperimentell";
+"View" = "Visning";
+"Map" = "Kart";
+"Drag to rotate · pinch to zoom · heights ×3" = "Dra for å rotere · knip for å zoome · høyder ×3";
+"Reset view" = "Tilbakestill visning";
+"Top view" = "Sett ovenfra";
+"3D green. Heights are exaggerated three times." = "3D-green. Høydene er forsterket tre ganger.";
+"Experimental · may not match the green exactly" = "Eksperimentell · samsvarer kanskje ikke nøyaktig med greenen";
 "Green slope (experimental)" = "Greenens helning (eksperimentell)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Vises i «Green & flagg». Anslås ut fra banens høydedata og kartlagte greenomriss som kan være utdaterte, så den er kanskje ikke 100 % nøyaktig. Ikke tillatt i konkurranser eller runder som teller for handicap.";
 "Arrows point downhill" = "Pilene peker nedover";

@@ -1180,6 +1180,13 @@
 "Work on: %@" = "待提升：%@";
 "Show green slope" = "显示果岭坡度";
 "Green slope · experimental" = "果岭坡度 · 实验性";
+"View" = "视图";
+"Map" = "地图";
+"Drag to rotate · pinch to zoom · heights ×3" = "拖动旋转 · 双指缩放 · 高度 ×3";
+"Reset view" = "重置视图";
+"Top view" = "俯视图";
+"3D green. Heights are exaggerated three times." = "3D 果岭。高度已放大三倍。";
+"Experimental · may not match the green exactly" = "实验性 · 可能与实际果岭不完全一致";
 "Green slope (experimental)" = "果岭坡度（实验性）";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "显示在“果岭与旗位”中。根据球场高程数据和可能已过时的果岭轮廓地图估算，因此可能并非 100% 准确。不得在比赛或计入差点的轮次中使用。";
 "Arrows point downhill" = "箭头指向下坡方向";

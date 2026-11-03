@@ -1180,6 +1180,13 @@
 "Work on: %@" = "Na čem zapracovat: %@";
 "Show green slope" = "Zobrazit sklon greenu";
 "Green slope · experimental" = "Sklon greenu · experimentální";
+"View" = "Zobrazení";
+"Map" = "Mapa";
+"Drag to rotate · pinch to zoom · heights ×3" = "Tažením otočíte · sevřením přiblížíte · výšky ×3";
+"Reset view" = "Obnovit pohled";
+"Top view" = "Pohled shora";
+"3D green. Heights are exaggerated three times." = "3D green. Výšky jsou trojnásobně zvýrazněné.";
+"Experimental · may not match the green exactly" = "Experimentální · nemusí přesně odpovídat greenu";
 "Green slope (experimental)" = "Sklon greenu (experimentální)";
 "Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap." = "Zobrazuje se v „Green a praporek“. Odhaduje se z výškových dat hřiště a zmapovaných obrysů greenů, které mohou být zastaralé, takže nemusí být 100% přesný. Není povolen v soutěžích ani v kolech, která se započítávají do handicapu.";
 "Arrows point downhill" = "Šipky ukazují z kopce";
