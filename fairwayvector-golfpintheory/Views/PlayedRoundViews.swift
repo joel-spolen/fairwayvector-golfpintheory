@@ -50,6 +50,7 @@ struct RoundSetupView: View {
     @State private var showGreenSlope = RoundDisplayOptions.roundSetupDefault.showGreenSlope
     @State private var error: String?
     @State private var initialized = false
+    @State private var showingPaywall = false
     @AppStorage("roundSetup.lastUsed.v1") private var lastSetupData = Data()
 
     init(selectedCourseReference: CourseReference, course: Course, dismissOnCompletion: Bool = true,
@@ -130,7 +131,11 @@ struct RoundSetupView: View {
                 }
                 .pureLineCard()
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Course view").font(.headline)
+                    HStack(spacing: 8) {
+                        Text("Course view").font(.headline)
+                        if !ProStore.shared.isPro { ProBadge() }
+                    }
+                    if ProStore.shared.isPro {
                     Toggle("Wind", isOn: $showWind)
                     Toggle("Elevation", isOn: $showElevation)
                     Toggle("Club selection", isOn: $showClubSelection)
@@ -142,6 +147,12 @@ struct RoundSetupView: View {
                     // L() returns the text unformatted, so the literal "%" is safe.
                     Text(L("Shown in Green & pin. Estimated from course elevation data and mapped green outlines that can be out of date, so it may not be 100% accurate. Not allowed in competitions or rounds that count for handicap."))
                         .font(.caption).foregroundStyle(PureLineStyle.muted)
+                    } else {
+                        Text("Wind, elevation, club advice and green slope are part of Golf PinTheory Pro. GPS distances and scoring are free.")
+                            .font(.caption).foregroundStyle(PureLineStyle.muted)
+                        Button(L("Unlock Pro")) { showingPaywall = true }
+                            .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 44))
+                    }
                 }
                 .font(.subheadline)
                 .tint(PureLineStyle.accent)
@@ -226,6 +237,7 @@ struct RoundSetupView: View {
             .scrollDismissesKeyboard(.interactively)
             .background(PureLineStyle.canvas)
             .foregroundStyle(PureLineStyle.ink)
+            .sheet(isPresented: $showingPaywall) { ProPaywallView() }
             .navigationTitle("Round setup")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(PureLineStyle.canvas, for: .navigationBar)

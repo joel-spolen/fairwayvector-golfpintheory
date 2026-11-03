@@ -32,6 +32,7 @@
 		1C673896306A3B6200309840 /* fairwayvector-golfpintheory.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fairwayvector-golfpintheory.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C6738A5306A3B6400309840 /* fairwayvector-golfpintheoryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "fairwayvector-golfpintheoryTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C6738AF306A3B6400309840 /* fairwayvector-golfpintheoryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "fairwayvector-golfpintheoryUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1CB810D1309A77610093529A /* PinTheoryPro.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = PinTheoryPro.storekit; sourceTree = "<group>"; };
 		D4B1C0A2306A3B6400309840 /* fairwayvector-golfpintheory/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "fairwayvector-golfpintheory/ContentView.swift"; sourceTree = SOURCE_ROOT; };
 		D4B1C0C2306A3B6400309840 /* fairwayvector-golfpintheory/GolfAPI.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "fairwayvector-golfpintheory/GolfAPI.xcconfig"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -105,6 +106,7 @@
 		1C67388D306A3B6200309840 = {
 			isa = PBXGroup;
 			children = (
+				1CB810D1309A77610093529A /* PinTheoryPro.storekit */,
 				1C673898306A3B6200309840 /* fairwayvector-golfpintheory */,
 				D4B1C0A2306A3B6400309840 /* fairwayvector-golfpintheory/ContentView.swift */,
 				D4B1C0C2306A3B6400309840 /* fairwayvector-golfpintheory/GolfAPI.xcconfig */,

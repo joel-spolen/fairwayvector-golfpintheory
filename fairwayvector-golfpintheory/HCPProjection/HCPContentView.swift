@@ -130,7 +130,11 @@ struct HCPProjectionRootView: View {
                 case .home:
                     HomeView(courseCatalog: courseCatalog, rounds: rounds, profile: profiles.first, clubs: clubs, courses: courses, tees: tees, onAddRound: { selectedTab = .round }, onPredict: { selectedTab = .predict }, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle, onHome: onHome)
                 case .predict:
-                    TargetCalculatorView(courseCatalog: courseCatalog, clubs: clubs, courses: courses, tees: tees, rounds: rounds, profile: profiles.first, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle, onHome: onHome)
+                    if ProStore.shared.isPro {
+                        TargetCalculatorView(courseCatalog: courseCatalog, clubs: clubs, courses: courses, tees: tees, rounds: rounds, profile: profiles.first, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle, onHome: onHome)
+                    } else {
+                        ProLockedView(title: selectedTab.pageTitle)
+                    }
                 case .round:
                     NewRoundView(courseCatalog: courseCatalog, clubs: clubs, courses: courses, tees: tees, rounds: rounds, profile: profiles.first, pageTitle: selectedTab.pageTitle, pageSubtitle: selectedTab.pageSubtitle, onHome: onHome)
                 }

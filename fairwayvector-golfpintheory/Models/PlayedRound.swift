@@ -65,6 +65,12 @@ struct RoundDisplayOptions: Codable, Equatable {
 
     static let roundSetupDefault = RoundDisplayOptions()
     static let courseViewDefault = RoundDisplayOptions(scoringMode: true, showGreenSlope: true)
+
+    /// Free players get distances only; wind, elevation, club advice and green slope need Pro.
+    func limited(isPro: Bool) -> RoundDisplayOptions {
+        isPro ? self : RoundDisplayOptions(showWind: false, showElevation: false, showClubSelection: false,
+                                           scoringMode: false, showGreenSlope: false)
+    }
 }
 
 extension RoundDisplayOptions {

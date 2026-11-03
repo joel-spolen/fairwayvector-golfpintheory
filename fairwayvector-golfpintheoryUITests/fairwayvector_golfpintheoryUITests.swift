@@ -113,6 +113,21 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
 
 
     @MainActor
+    func testFreeVersionLocksTrajectoryButKeepsStartRound() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-free"]
+        app.launch()
+        XCTAssertTrue(app.buttons["global-settings-button"].waitForExistence(timeout: 12))
+        openHomeDestination("Trajectory", in: app)
+        XCTAssertTrue(app.buttons["Unlock Pro"].waitForExistence(timeout: 5))
+        returnHome(in: app)
+
+        openHomeDestination("Start round", in: app)
+        XCTAssertTrue(app.staticTexts["Start a round"].waitForExistence(timeout: 5))
+        returnHome(in: app)
+    }
+
+    @MainActor
     func testWedgeToolsAndWedgeBagUseHomeRoutes() {
         let app = launchAtHome()
         openHomeDestination("Wedge Matrix", in: app)

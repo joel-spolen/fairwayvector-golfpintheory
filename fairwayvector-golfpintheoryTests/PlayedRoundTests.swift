@@ -39,6 +39,14 @@ struct PlayedRoundTests {
             .appendingPathComponent("rounds.json")
     }
 
+    @Test func freePlayersGetDistancesOnlyAndProKeepsTheirChoices() {
+        let chosen = RoundDisplayOptions(showWind: true, showElevation: false, showClubSelection: true,
+                                         scoringMode: true, showGreenSlope: true)
+        #expect(chosen.limited(isPro: true) == chosen)
+        let free = chosen.limited(isPro: false)
+        #expect(!free.showWind && !free.showElevation && !free.showClubSelection && !free.scoringMode && !free.showGreenSlope)
+    }
+
     @Test func explicitlySavedPartialRoundSurvivesReloadWithoutHCP() throws {
         let url = temporaryURL()
         defer { try? FileManager.default.removeItem(at: url.deletingLastPathComponent()) }

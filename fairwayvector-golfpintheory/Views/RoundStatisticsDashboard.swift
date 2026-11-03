@@ -132,6 +132,7 @@ struct RoundStatisticsDashboard: View {
     @State private var deleting: UUID?
     @State private var error: String?
     @State private var jumpTarget: StatisticsSection?
+    @State private var showingPaywall = false
     @AppStorage("statistics.roundRange.v1") private var roundRange: StatisticsRoundRange = .last10
 
     private var allRecords: [RoundPerformanceRecord] {
@@ -163,7 +164,7 @@ struct RoundStatisticsDashboard: View {
                         if allRecords.isEmpty {
                             ContentUnavailableView("Your story starts here", systemImage: "chart.xyaxis.line",
                                 description: Text("Save your first round to see your averages and trends."))
-                        } else {
+                        } else if ProStore.shared.isPro {
                             recentForm
                             rangePicker
                             overview
@@ -174,6 +175,13 @@ struct RoundStatisticsDashboard: View {
                             handicapTrend
                             accuracy.id(StatisticsSection.accuracy)
                             scoringMix
+                            history
+                        } else {
+                            rangePicker
+                            overview
+                            scoringByPar
+                            scoringTrend
+                            proStatisticsTeaser
                             history
                         }
                         if let error { Text(error).font(.footnote).foregroundStyle(.red) }
@@ -211,6 +219,22 @@ struct RoundStatisticsDashboard: View {
         }
         .tint(PureLineStyle.accent)
         .preferredColorScheme(.light)
+    }
+
+    private var proStatisticsTeaser: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Text("More insights").font(.headline)
+                ProBadge()
+            }
+            Text("Your recent form and what to work on, hole types, scrambling, accuracy and handicap trend.")
+                .font(.subheadline).foregroundStyle(PureLineStyle.muted)
+            Button(L("Unlock Pro")) { showingPaywall = true }
+                .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 44))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .pureLineCard()
+        .sheet(isPresented: $showingPaywall) { ProPaywallView() }
     }
 
     private var recentForm: some View {

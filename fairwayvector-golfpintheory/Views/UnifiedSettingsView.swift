@@ -1,3 +1,4 @@
+import StoreKit
 import SwiftData
 import SwiftUI
 
@@ -15,6 +16,8 @@ struct UnifiedSettingsView: View {
     @EnvironmentObject private var trajectoryModel: TrajectoryCalculatorViewModel
     @State private var aboutSheet: AboutSheet?
     @State private var showingSyncFailure = false
+    @State private var showingPaywall = false
+    @State private var showingManageSubscription = false
 
     private enum AboutSheet: String, Identifiable {
         case company
@@ -36,6 +39,28 @@ struct UnifiedSettingsView: View {
                         Label(AppLanguage.localized("Account"), systemImage: "person.crop.circle")
                     }
                     .accessibilityIdentifier("settings-account-button")
+                }
+                .listRowBackground(PureLineStyle.surface)
+
+                Section(String("Golf PinTheory Pro")) {
+                    if ProStore.shared.isPro {
+                        Label(AppLanguage.localized("Pro is active"), systemImage: "checkmark.seal.fill")
+                            .foregroundStyle(PureLineStyle.accent)
+                        Button(AppLanguage.localized("Manage subscription")) { showingManageSubscription = true }
+                    } else {
+                        Button {
+                            showingPaywall = true
+                        } label: {
+                            HStack {
+                                Text(AppLanguage.localized("Unlock Pro"))
+                                Spacer()
+                                ProBadge()
+                            }
+                        }
+                        Button(AppLanguage.localized("Restore purchases")) {
+                            Task { await ProStore.shared.restore() }
+                        }
+                    }
                 }
                 .listRowBackground(PureLineStyle.surface)
 
@@ -125,8 +150,16 @@ struct UnifiedSettingsView: View {
                                 modelContext: modelContext)
                         }
                     ))
-                    .disabled(accountSession.isSyncingSavedData)
+                    .disabled(accountSession.isSyncingSavedData || !ProStore.shared.isPro)
                     .accessibilityIdentifier("account-cloud-sync")
+                    if !ProStore.shared.isPro {
+                        HStack(spacing: 8) {
+                            ProBadge()
+                            Text(AppLanguage.localized("Sync across your devices"))
+                                .font(.footnote)
+                                .foregroundStyle(PureLineStyle.muted)
+                        }
+                    }
                 }
                 .listRowBackground(PureLineStyle.surface)
 
@@ -158,6 +191,8 @@ struct UnifiedSettingsView: View {
             }
         }
         .tint(PureLineStyle.accent)
+        .sheet(isPresented: $showingPaywall) { ProPaywallView() }
+        .manageSubscriptionsSheet(isPresented: $showingManageSubscription)
         .alert("Cloud sync could not finish", isPresented: Binding(
             get: { showingSyncFailure && accountSession.savedDataSyncFailure != nil },
             set: { showingSyncFailure = $0 }

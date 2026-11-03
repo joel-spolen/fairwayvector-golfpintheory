@@ -12,11 +12,19 @@ struct PracticeView: View {
 
     var body: some View {
         Group {
-            switch destination {
-            case .trajectory:
-                TrajectoryRootView(viewModel: trajectoryModel, onHome: onHome)
-            case .wedge:
-                WedgeMatrixView(onHome: onHome)
+            if !ProStore.shared.isPro {
+                VStack(spacing: 0) {
+                    PureLineHomeButton(onHome: onHome)
+                    ProLockedView(title: destination == .trajectory ? L("Trajectory") : L("Wedge Matrix"))
+                }
+                .background(PureLineStyle.canvas)
+            } else {
+                switch destination {
+                case .trajectory:
+                    TrajectoryRootView(viewModel: trajectoryModel, onHome: onHome)
+                case .wedge:
+                    WedgeMatrixView(onHome: onHome)
+                }
             }
         }
         .tint(PureLineStyle.accent)

@@ -163,9 +163,9 @@ struct PureLineHomeView: View {
                             .padding(.bottom, 10)
                         destination(L("In the bag"), detail: L("Set up your clubs and wedges"), symbol: "bag", action: onOpenBag)
                         Divider().overlay(PureLineStyle.line)
-                        destination(L("Wedge Matrix"), detail: L("Your distances. Every swing."), symbol: "target", action: onOpenWedge)
+                        destination(L("Wedge Matrix"), detail: L("Your distances. Every swing."), symbol: "target", isPro: true, action: onOpenWedge)
                         Divider().overlay(PureLineStyle.line)
-                        destination(L("Trajectory"), detail: L("Club choice and ball flight from your own numbers"), symbol: "chart.xyaxis.line", action: onOpenTrajectory)
+                        destination(L("Trajectory"), detail: L("Club choice and ball flight from your own numbers"), symbol: "chart.xyaxis.line", isPro: true, action: onOpenTrajectory)
                     }
                     .foregroundStyle(PureLineStyle.ink)
 
@@ -265,7 +265,8 @@ struct PureLineHomeView: View {
         .accessibilityValue(done ? L("Done") : L("Not done"))
     }
 
-    private func destination(_ title: String, detail: String, symbol: String, action: @escaping () -> Void) -> some View {
+    private func destination(_ title: String, detail: String, symbol: String, isPro: Bool = false,
+                             action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 16) {
                 Image(systemName: symbol)
@@ -277,6 +278,7 @@ struct PureLineHomeView: View {
                     Text(detail).font(.caption).foregroundStyle(PureLineStyle.muted)
                 }
                 Spacer(minLength: 8)
+                if isPro && !ProStore.shared.isPro { ProBadge() }
                 Image(systemName: "arrow.up.right")
                     .font(.caption).foregroundStyle(PureLineStyle.muted)
             }

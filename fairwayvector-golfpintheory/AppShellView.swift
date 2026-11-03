@@ -264,7 +264,7 @@ struct ContentView: View {
 
     @MainActor
     private func syncSavedDataIfEnabled() async {
-        guard accountSession.hasOptedIntoSavedDataSync else {
+        guard accountSession.hasOptedIntoSavedDataSync, ProStore.shared.isPro else {
             syncLogger.debug("Startup sync skipped: disabled in Settings")
             return
         }
@@ -277,7 +277,7 @@ struct ContentView: View {
 
     @MainActor
     private func scheduleAutomaticSync() {
-        guard accountSession.hasOptedIntoSavedDataSync else { return }
+        guard accountSession.hasOptedIntoSavedDataSync, ProStore.shared.isPro else { return }
         syncLogger.info("Saved syncable data changed; scheduling sync")
         automaticSyncTask?.cancel()
         automaticSyncTask = Task { @MainActor in

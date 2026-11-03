@@ -37,6 +37,7 @@ struct CourseMapView: View {
     @State private var showsGreenSlope = false
     @State private var greenSlopes: [Int: GreenSlopeMap] = [:]
     @State private var greenSlopeUnavailable: Set<Int> = []
+    @State private var showingPaywall = false
     #if DEBUG
     @State private var simulatedGolfer: GeoPoint?
     @State private var isShowingDevelopmentWedges = false
@@ -65,7 +66,7 @@ struct CourseMapView: View {
         return round
     }
     private var courseDisplayOptions: RoundDisplayOptions {
-        activeRound?.displayOptions ?? .courseViewDefault
+        (activeRound?.displayOptions ?? .courseViewDefault).limited(isPro: ProStore.shared.isPro)
     }
     private var isShowingScoreEntry: Bool { activeRound != nil && roundPageIndex.isMultiple(of: 2) == false }
 
@@ -230,6 +231,7 @@ struct CourseMapView: View {
             }
         }
         .sheet(isPresented: $isShowingCourseInfo) { courseInformation }
+        .sheet(isPresented: $showingPaywall) { ProPaywallView() }
         #if DEBUG
         .sheet(isPresented: $isShowingDevelopmentWedges) {
             NavigationStack {
@@ -343,7 +345,9 @@ struct CourseMapView: View {
                             origin: origin?.point,
                             usesGPS: origin?.usesGPS == true,
                             tapPoint: $tapPoint,
-                            onDoubleTapGreen: { point in saveFlagPosition(point, for: hole) },
+                            onDoubleTapGreen: { point in
+                                if ProStore.shared.isPro { saveFlagPosition(point, for: hole) } else { showingPaywall = true }
+                            },
                             onHeadingChange: { mapHeading = $0 },
                             terrainInspection: terrainInspection,
                             onTargetInteractionBegan: { terrainStore.beginTargetInteraction() },
@@ -390,9 +394,28 @@ struct CourseMapView: View {
                                     model: trajectoryModel, compact: true,
                                     allowsScoringMode: courseDisplayOptions.scoringMode)
                             }
+                            if !ProStore.shared.isPro {
+                                Button { showingPaywall = true } label: {
+                                    VStack(spacing: 3) {
+                                        Image(systemName: "scope")
+                                            .font(.body.weight(.medium))
+                                            .foregroundStyle(PureLineStyle.accent)
+                                        Text("Club advice")
+                                            .font(.caption2.weight(.medium))
+                                            .foregroundStyle(PureLineStyle.ink)
+                                        ProBadge()
+                                    }
+                                    .padding(6)
+                                    .frame(maxWidth: .infinity, minHeight: 56)
+                                    .contentShape(RoundedRectangle(cornerRadius: 14))
+                                }
+                                .buttonStyle(.plain)
+                                .background(PureLineStyle.canvas.opacity(0.97), in: RoundedRectangle(cornerRadius: 14))
+                                .accessibilityHint("Club advice, wind and elevation need Golf PinTheory Pro")
+                            }
 
                             Button {
-                                isShowingFlagEditor = true
+                                if ProStore.shared.isPro { isShowingFlagEditor = true } else { showingPaywall = true }
                             } label: {
                                 VStack(spacing: 3) {
                                     Image(systemName: "flag")
@@ -402,6 +425,7 @@ struct CourseMapView: View {
                                         .font(.caption2.weight(.medium))
                                         .multilineTextAlignment(.center)
                                         .foregroundStyle(PureLineStyle.ink)
+                                    if !ProStore.shared.isPro { ProBadge() }
                                 }
                                 .padding(6)
                                 .frame(maxWidth: .infinity, minHeight: 56)
