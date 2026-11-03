@@ -136,6 +136,18 @@ import simd
             resolutionMeters: 1, captureDateMin: nil, captureDateMax: nil, datasetVersion: nil, fetchedAt: .now,
             interpolation: "bilinear", verticalDatum: "EGM2008", providerSampleIntervalMeters: 1))
         #expect(GreenSlopeMap.make(terrain: CourseTerrain(source: .tiles([coarse])), hole: hole) == nil)
+        let detailed = { (source: String) in
+            GreenSlopeMap.hasDetailedSource(TerrainProvenance(dataSource: source, resolutionMeters: 1, captureDateMin: nil,
+                captureDateMax: nil, datasetVersion: nil, fetchedAt: .now, interpolation: "bilinear",
+                verticalDatum: "EGM2008", providerSampleIntervalMeters: 1))
+        }
+        for source in ["us_3dep_1m", "netherlands_50cm_dtm", "denmark_160cm_dtm", "germany_baden_wurttemberg_1m-dtm",
+                       "england_2022_1m_dtm, scotland_2m", "lantmateriet_markhojdmodell"] {
+            #expect(detailed(source), "\(source)")
+        }
+        for source in ["spain_5m_dtm", "us_3dep_10m", "us_3dep_1m, gpxz_terrain_30m", "etopo1", "GPXZ", "emod_2024_bathymetry"] {
+            #expect(!detailed(source), "\(source)")
+        }
 
         let square = { (east: Double, north: Double) in
             [point(east - 10, north - 10), point(east + 10, north - 10), point(east + 10, north + 10), point(east - 10, north + 10)]

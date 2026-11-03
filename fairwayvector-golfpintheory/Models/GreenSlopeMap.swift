@@ -67,11 +67,20 @@ struct GreenSlopeMap {
     /// Plane-fit radius; the 1 m grid is too noisy for slopes over a single metre.
     static let fitRadius = 2.5
 
-    /// The server reports 1 m grid spacing for every tile, even when GPXZ samples ~30 m data,
-    /// so detail is judged by source: only Lantmäteriet's 1 m model is fine enough for a green.
+    /// Tiles are always gridded at 1 m, so detail is judged by the source datasets: every one must be ≤ 2 m.
     static func hasDetailedSource(_ provenance: TerrainProvenance) -> Bool {
-        let source = provenance.dataSource.lowercased()
-        return source.contains("lantmateriet") || provenance.dataSource == DevelopmentAPIConfiguration.syntheticSource
+        if provenance.dataSource == DevelopmentAPIConfiguration.syntheticSource { return true }
+        let sources = provenance.dataSource.lowercased().split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        return !sources.isEmpty && sources.allSatisfy { source in
+            source.contains("lantmateriet") || (sourceResolution(source).map { $0 <= 2 } ?? false)
+        }
+    }
+
+    /// GPXZ source ids carry their resolution, e.g. `netherlands_50cm_dtm`, `us_3dep_1m`, `srtm_30m`.
+    static func sourceResolution(_ source: String) -> Double? {
+        guard let match = source.firstMatch(of: #/(?:^|_)(\d+(?:\.\d+)?)(cm|m)(?:$|[_-])/#),
+              let value = Double(match.1) else { return nil }
+        return match.2 == "cm" ? value / 100 : value
     }
 
     static func make(terrain: CourseTerrain, hole: Hole) -> GreenSlopeMap? {
