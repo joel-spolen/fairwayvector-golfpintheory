@@ -10,7 +10,7 @@ struct PinTheoryAccountRootView: View {
     var body: some View {
         Group {
             #if DEBUG
-            if PinTheoryAccountSession.isUITesting {
+            if PinTheoryAccountSession.bypassesSignIn {
                 if let data = session.accountData {
                     ContentView(accountData: data).id(data.id)
                 } else {

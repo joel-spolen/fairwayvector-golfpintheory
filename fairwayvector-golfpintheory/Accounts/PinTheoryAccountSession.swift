@@ -85,6 +85,7 @@ final class PinTheoryAccountSession: ObservableObject {
         started = true
         #if DEBUG
         if Self.isUITesting { openUITestAccount(); return }
+        if Self.skipsSignIn { openLocalTestAccount(); return }
         #endif
         restore()
     }
@@ -92,6 +93,21 @@ final class PinTheoryAccountSession: ObservableObject {
     #if DEBUG
     /// `-ui-testing` launch argument (debug builds only): a fresh local account, no sign-in, no sync.
     static let isUITesting = ProcessInfo.processInfo.arguments.contains("-ui-testing")
+    /// `GOLFPINTHEORY_SKIP_SIGN_IN = YES` build setting (debug builds only): a persistent local account, no sign-in, no sync.
+    static let skipsSignIn = Bundle.main.object(forInfoDictionaryKey: "GOLFPINTHEORY_SKIP_SIGN_IN") as? String == "YES"
+    static var bypassesSignIn: Bool { isUITesting || skipsSignIn }
+
+    private func openLocalTestAccount() {
+        let userID = UUID(uuidString: "00000000-0000-4000-8000-0000000000b1")!
+        do {
+            let data = try PinTheoryAccountData(projectHost: "local-test.local", userID: userID)
+            data.defaults.set(false, forKey: Self.syncOptInKey)
+            AccountCourseStorage.configure(accountDirectory: data.directory)
+            accountData = data
+        } catch {
+            message = L("Your saved data couldn't be opened. Nothing has been deleted. Try again or sign out.")
+        }
+    }
 
     private func openUITestAccount() {
         let userID = UUID(uuidString: "00000000-0000-4000-8000-0000000000a1")!
@@ -811,7 +827,7 @@ final class PinTheoryAccountSession: ObservableObject {
 
     private func apply(_ state: PinTheoryAuthState) {
         #if DEBUG
-        if Self.isUITesting { return }
+        if Self.bypassesSignIn { return }
         #endif
         switch state {
         case .authenticated(let identity), .offlineCachedIdentity(let identity):

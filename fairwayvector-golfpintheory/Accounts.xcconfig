@@ -3,5 +3,7 @@
 // Never put service-role keys, provider secrets, or session tokens here.
 PINTHEORY_SUPABASE_URL =
 PINTHEORY_SUPABASE_PUBLISHABLE_KEY =
+// Debug builds only: YES opens a local test account without sign-in and uses demo course data.
+GOLFPINTHEORY_SKIP_SIGN_IN = NO
 #include? "Accounts.local.xcconfig"
 GOLFPINTHEORY_ACCOUNT_DELETION_ENABLED = YES

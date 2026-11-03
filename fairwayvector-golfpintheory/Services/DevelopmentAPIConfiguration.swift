@@ -13,7 +13,13 @@ nonisolated struct DevelopmentAPIConfiguration: Sendable {
     let golfAPI: Mode
     let gpxz: Mode
     static var current: Self {
-        Self(golfAPI: Mode(setting: Bundle.main.object(forInfoDictionaryKey: "GOLF_API_MODE") as? String),
+        #if DEBUG
+        // Without sign-in there is no token for the live data service.
+        if Bundle.main.object(forInfoDictionaryKey: "GOLFPINTHEORY_SKIP_SIGN_IN") as? String == "YES" {
+            return Self(golfAPI: .mock, gpxz: .mock)
+        }
+        #endif
+        return Self(golfAPI: Mode(setting: Bundle.main.object(forInfoDictionaryKey: "GOLF_API_MODE") as? String),
              gpxz: Mode(setting: Bundle.main.object(forInfoDictionaryKey: "GPXZ_API_MODE") as? String))
     }
     static let syntheticSource = "Synthetic development terrain"
