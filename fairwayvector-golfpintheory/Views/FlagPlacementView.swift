@@ -18,6 +18,7 @@ struct FlagPlacementView: View {
     @State private var flagPoint: CGPoint?
     @State private var mapSize: CGSize = .zero
     @State private var heatmapImage: CGImage?
+    @State private var heatmapKey: [CGFloat]?
     @Environment(\.displayScale) private var displayScale
     @State private var showsGreen3D = false
     @State private var green3D: (model: GreenTerrainModel, texture: CGImage)?
@@ -90,6 +91,8 @@ struct FlagPlacementView: View {
                 .padding(.bottom)
             }
             .background(PureLineStyle.canvas)
+            // Dragging down to tilt the 3D green must not close the sheet.
+            .interactiveDismissDisabled(showsGreen3D)
             .onDisappear { showsSlope?.wrappedValue = showsHeatmap }
             .task(id: showsGreen3D) {
                 guard showsGreen3D, green3D == nil, !green3DUnavailable, let terrain else { return }
@@ -212,7 +215,12 @@ struct FlagPlacementView: View {
 
     private func refreshOverlays(using proxy: MapProxy) {
         flagPoint = proxy.convert(flag.coordinate, to: .local)
-        guard let greenSlope, showsSlope != nil, mapSize.width > 0, mapSize.height > 0 else { return }
+        guard let greenSlope, showsSlope != nil, mapSize.width > 0, mapSize.height > 0,
+              let corner = greenSlope.region.first.flatMap({ proxy.convert($0.coordinate, to: .local) }) else { return }
+        // The settle-refreshes usually find the map unchanged; the blurred render is the costly part.
+        let key = [corner.x, corner.y, mapSize.width, mapSize.height, CGFloat(greenSlope.cells.count)]
+        guard key != heatmapKey else { return }
+        heatmapKey = key
         let renderer = ImageRenderer(content: Canvas { context, _ in
             greenSlope.draw(in: &context) { proxy.convert($0.coordinate, to: .local) }
         }
