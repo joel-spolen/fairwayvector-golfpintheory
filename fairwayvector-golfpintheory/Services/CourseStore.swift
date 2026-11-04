@@ -141,8 +141,8 @@ final class CourseStore {
     }
 
     /// Point-only courses borrow OpenStreetMap green outlines so the slope heatmap follows the real green.
-    /// The data service fetches and caches them per course; the app never calls the public map servers.
-    /// Runs in the background so a slow map server never delays opening the course.
+    /// They come from the data service's own catalog; the app never calls the public map servers.
+    /// Runs in the background so it never delays opening the course.
     func preloadGreenOutlines() {
         Task { await loadGreenOutlines() }
     }
@@ -163,18 +163,23 @@ final class CourseStore {
         }
         // Saved with the course once received and never fetched again, so the heatmap works offline.
         guard current.greenOutlinesCheckedAt == nil else { return }
-        // The first course download starts the fetch on the server; poll while it talks to the map servers.
-        var outlines: [[GeoPoint]]?
-        for attempt in 0..<10 where outlines == nil {
-            if attempt > 0 { try? await Task.sleep(for: .seconds(15)) }
-            outlines = try? await golfAPIClient.loadGreenOutlines(id: courseID)
+        var result: (greens: [[GeoPoint]], covered: Bool)?
+        for attempt in 0..<3 where result == nil {
+            if attempt > 0 { try? await Task.sleep(for: .seconds(10)) }
+            result = try? await golfAPIClient.loadGreenOutlines(id: courseID)
         }
-        guard let outlines, var updated = course else { return }
+        // Outside the imported countries: ask again on a later visit instead of saving "no greens".
+        guard let result, result.covered, var updated = course else { return }
+        let outlines = result.greens
+        var matched = 0
         for index in updated.holes.indices where updated.holes[index].green.count < 3 {
             if let outline = GreenSlopeMap.outline(for: updated.holes[index], among: outlines) {
                 updated.holes[index].greenOutline = outline
+                matched += 1
             }
         }
+        // Region boxes overlap neighbouring countries, so only a real match is saved for good.
+        guard matched > 0 else { return }
         updated.greenOutlinesCheckedAt = .now
         course = updated
         writeCache(updated)

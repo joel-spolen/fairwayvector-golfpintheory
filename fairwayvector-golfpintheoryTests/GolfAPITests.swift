@@ -213,10 +213,12 @@ struct GolfAPITests {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         var requested: URL?
-        let body = Data(#"{"greens":[[{"lat":57.62,"lon":12.0},{"lat":57.62,"lon":12.0002},{"lat":57.6202,"lon":12.0002},{"lat":57.62,"lon":12.0}]]}"#.utf8)
+        let body = Data(#"{"covered":true,"greens":[[{"lat":57.62,"lon":12.0},{"lat":57.62,"lon":12.0002},{"lat":57.6202,"lon":12.0002},{"lat":57.62,"lon":12.0}]]}"#.utf8)
         let client = makeClient(directory: directory) { request in requested = request.url; return (200, body) }
         defer { GolfAPIStubProtocol.handler = nil }
-        let greens = try await client.loadGreenOutlines(id: "course-123")
+        let result = try await client.loadGreenOutlines(id: "course-123")
+        let greens = result.greens
+        #expect(result.covered)
         #expect(greens.count == 1 && greens[0].count == 4)
         #expect(greens[0][1] == GeoPoint(lat: 57.62, lon: 12.0002))
         #expect(requested?.absoluteString == "https://edge.example.test/functions/v1/golf-data/api/v1/golf/courses/course-123/greens")
