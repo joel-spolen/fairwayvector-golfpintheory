@@ -7,6 +7,28 @@ import Testing
 /// Source only: no Keychain access, browser, live sign-in or test execution.
 @MainActor
 struct AccountAuthTests {
+    @Test func reinstallForgetsTheSavedSignInButAnUpdateNeverDoes() throws {
+        let suite = "reinstall-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let missing = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        var forgotten = 0
+        PinTheoryAccountSession.forgetSessionAfterReinstall(defaults: defaults, accountsDirectory: missing) { forgotten += 1 }
+        PinTheoryAccountSession.forgetSessionAfterReinstall(defaults: defaults, accountsDirectory: missing) { forgotten += 1 }
+        #expect(forgotten == 1)
+
+        for update in [{ (d: UserDefaults) in d.set(true, forKey: "map.hasSeenSplash"); return missing },
+                       { (_: UserDefaults) in FileManager.default.temporaryDirectory }] {
+            let suite = "update-\(UUID().uuidString)"
+            let defaults = try #require(UserDefaults(suiteName: suite))
+            defer { defaults.removePersistentDomain(forName: suite) }
+            let directory = update(defaults)
+            PinTheoryAccountSession.forgetSessionAfterReinstall(defaults: defaults, accountsDirectory: directory) { forgotten += 1 }
+            #expect(defaults.bool(forKey: PinTheoryAccountSession.installCheckedKey))
+        }
+        #expect(forgotten == 1)
+    }
+
     private func configuration() throws -> PinTheoryAuthConfiguration {
         try PinTheoryAuthConfiguration(projectURL: URL(string: "https://staging.example.test/")!,
                                        publishableKey: "sb_publishable_fixture_only")

@@ -64,6 +64,9 @@ final class PinTheoryAccountSession: ObservableObject {
                 return
             }
             projectHost = configuration.projectURL.host
+            Self.forgetSessionAfterReinstall {
+                PinTheoryKeychainAuthStorage(configuration: configuration).removeAll()
+            }
             let service = PinTheoryAuthService(configuration: configuration)
             auth = service
             if let providerConfiguration = try? service.accountSyncConfiguration() {
@@ -88,6 +91,20 @@ final class PinTheoryAccountSession: ObservableObject {
         if Self.skipsSignIn { openLocalTestAccount(); return }
         #endif
         restore()
+    }
+
+    static let installCheckedKey = "install.keychainChecked.v1"
+
+    /// iOS keeps Keychain items when an app is deleted, so a reinstall would sign the previous user
+    /// straight back in. Settings and files survive updates but not deletion, so an update never forgets.
+    static func forgetSessionAfterReinstall(defaults: UserDefaults = .standard,
+        accountsDirectory: URL = URL.applicationSupportDirectory.appendingPathComponent("PinTheoryAccounts", isDirectory: true),
+        forget: () -> Void) {
+        guard !defaults.bool(forKey: installCheckedKey) else { return }
+        defaults.set(true, forKey: installCheckedKey)
+        let isUpdate = defaults.object(forKey: "map.hasSeenSplash") != nil
+            || FileManager.default.fileExists(atPath: accountsDirectory.path)
+        if !isUpdate { forget() }
     }
 
     #if DEBUG

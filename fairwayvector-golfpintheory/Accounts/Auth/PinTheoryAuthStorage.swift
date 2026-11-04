@@ -51,6 +51,12 @@ nonisolated final class PinTheoryKeychainAuthStorage: AuthLocalStorage {
             throw PinTheoryAuthError.secureStorageUnavailable
         }
     }
+
+    /// Every item this app stored for the project (session, verifier, recovery markers).
+    func removeAll() {
+        SecItemDelete([kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service,
+                       kSecAttrSynchronizable as String: false] as CFDictionary)
+    }
 }
 
 /// One lease per SDK client. The lock covers the underlying operation as well
