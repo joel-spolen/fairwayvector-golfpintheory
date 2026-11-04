@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PinTheoryAccountRootView: View {
     @ObservedObject var session: PinTheoryAccountSession
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("map.hasSeenSplash", store: .standard) private var hasSeenSplash = false
     @AppStorage(AppLanguage.preferenceKey, store: .standard)
     private var languagePreference = AppLanguage.followSystemValue
@@ -40,6 +41,10 @@ struct PinTheoryAccountRootView: View {
         .environment(\.locale, AppLanguage.locale(preference: languagePreference))
         .id(languagePreference)
         .onAppear { session.start() }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else { return }
+            Task { await ProStore.shared.refresh() }
+        }
         .onOpenURL { url in Task { await session.handle(url) } }
     }
 

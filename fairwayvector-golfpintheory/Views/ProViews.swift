@@ -54,7 +54,7 @@ struct ProPaywallView: View {
         .subscriptionStorePolicyDestination(url: URL(string: "https://golfpintheory.com/privacy-policy/")!, for: .privacyPolicy)
         .tint(PureLineStyle.accent)
         .onInAppPurchaseCompletion { _, result in
-            await ProStore.shared.refresh()
+            await ProStore.shared.completePurchase(result)
             if case .success(.success) = result { dismiss() }
         }
         .preferredColorScheme(.light)
