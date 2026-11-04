@@ -141,13 +141,15 @@ final class CourseStore {
     }
 
     /// Point-only courses borrow OpenStreetMap green outlines so the slope heatmap follows the real green.
+    /// The data service fetches and caches them per course; the app never calls the public map servers.
     /// Runs in the background so a slow map server never delays opening the course.
     func preloadGreenOutlines() {
         Task { await loadGreenOutlines() }
     }
 
     private func loadGreenOutlines() async {
-        guard !greenOutlinesRequested, golfAPIClient.mode == .live, var current = course,
+        guard !greenOutlinesRequested, golfAPIClient.mode == .live, let courseID = reference.golfAPICourseID,
+              var current = course,
               current.holes.contains(where: { $0.green.count < 3 && $0.greenOutline.isEmpty }) else { return }
         greenOutlinesRequested = true
         // A round keeps the course as it was when it started; the saved course may have outlines since.
@@ -161,11 +163,11 @@ final class CourseStore {
         }
         guard current.greenOutlinesCheckedAt.map({ Date.now.timeIntervalSince($0) > 30 * 24 * 60 * 60 }) ?? true
         else { return }
-        // The public map servers often turn away a burst of requests; try again a little later.
+        // Another player's request may already be fetching this course's outlines.
         var outlines: [[GeoPoint]]?
         for attempt in 0..<3 where outlines == nil {
             if attempt > 0 { try? await Task.sleep(for: .seconds(20 * attempt)) }
-            outlines = try? await client.fetchGreenOutlines(around: current.holes.compactMap(GreenSlopeMap.anchor))
+            outlines = try? await golfAPIClient.loadGreenOutlines(id: courseID)
         }
         guard let outlines, var updated = course else { return }
         for index in updated.holes.indices where updated.holes[index].green.count < 3 {

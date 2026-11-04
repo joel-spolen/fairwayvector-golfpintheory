@@ -49,8 +49,8 @@ enum OverpassError: LocalizedError {
 
 struct OverpassClient {
     private static let defaultEndpoints = [
-        URL(string: "https://overpass.openstreetmap.fr/api/interpreter")!,
         URL(string: "https://overpass-api.de/api/interpreter")!,
+        URL(string: "https://overpass.kumi.systems/api/interpreter")!,
     ]
 
     let session: URLSession
@@ -121,18 +121,6 @@ struct OverpassClient {
         [out:json][timeout:20];(way["golf"="hole"](\(bbox));way["golf"="green"](\(bbox));way["golf"="fairway"](\(bbox));way["golf"="rough"](\(bbox));way["golf"="tee"](\(bbox));node["golf"="pin"](\(bbox)););out geom;
         """
         return try await perform(query: fallbackQuery, timeout: 28, requiresElements: true)
-    }
-
-    /// Mapped green outlines within the box around `points`.
-    func fetchGreenOutlines(around points: [GeoPoint]) async throws -> [[GeoPoint]] {
-        guard let minLat = points.map(\.lat).min(), let maxLat = points.map(\.lat).max(),
-              let minLon = points.map(\.lon).min(), let maxLon = points.map(\.lon).max() else { return [] }
-        let bbox = OverpassBounds(minlat: minLat, minlon: minLon, maxlat: maxLat, maxlon: maxLon).padded(by: 0.001)
-        let elements = try await perform(query: "[out:json][timeout:20];way[\"golf\"=\"green\"](\(bbox));out geom;", timeout: 26)
-        return elements.compactMap { element in
-            guard let geometry = element.geometry, geometry.count >= 4 else { return nil }
-            return geometry
-        }
     }
 
     private func perform(query: String, timeout: TimeInterval, requiresElements: Bool = false) async throws -> [OverpassElement] {

@@ -209,6 +209,19 @@ struct GolfAPITests {
         #expect(detail.tees.first?.lengthsMeters[0] == 380 * 0.9144)
     }
 
+    @Test func greenOutlinesComeFromTheDataServiceNotTheMapServers() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        var requested: URL?
+        let body = Data(#"{"greens":[[{"lat":57.62,"lon":12.0},{"lat":57.62,"lon":12.0002},{"lat":57.6202,"lon":12.0002},{"lat":57.62,"lon":12.0}]]}"#.utf8)
+        let client = makeClient(directory: directory) { request in requested = request.url; return (200, body) }
+        defer { GolfAPIStubProtocol.handler = nil }
+        let greens = try await client.loadGreenOutlines(id: "course-123")
+        #expect(greens.count == 1 && greens[0].count == 4)
+        #expect(greens[0][1] == GeoPoint(lat: 57.62, lon: 12.0002))
+        #expect(requested?.absoluteString == "https://edge.example.test/functions/v1/golf-data/api/v1/golf/courses/course-123/greens")
+    }
+
     @Test func unnamedCourseDetailsUseDisplayFallbackAndRemainCached() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -703,11 +716,13 @@ struct GolfAPITests {
                 "bytes": tile.count, "width": 10, "height": 10, "resolutionMeters": 1, "sources": ["fixture_1m"],
                 "bounds": ["left": 13.07, "right": 13.12, "bottom": 63.39, "top": 63.44]]]]
         ])
+        var courseRequests = 0
         let client = makeClient(directory: directory) { request in
+            if request.url?.path.hasSuffix("/greens") != true { courseRequests += 1 }
             switch request.url?.path {
-            case "/functions/v1/golf-data/api/v1/golf/courses/course-123/bundle": (200, bundle)
-            case "/functions/v1/golf-data/api/v1/golf/terrain/\(tileID)": (200, tile)
-            default: (404, Data())
+            case "/functions/v1/golf-data/api/v1/golf/courses/course-123/bundle": return (200, bundle)
+            case "/functions/v1/golf-data/api/v1/golf/terrain/\(tileID)": return (200, tile)
+            default: return (404, Data())
             }
         }
         defer { GolfAPIStubProtocol.handler = nil }
@@ -723,13 +738,13 @@ struct GolfAPITests {
         await store.load()
         #expect(store.course?.holes.count == 2 && store.errorMessage == nil)
         #expect(store.terrain != nil && store.terrainMessage == nil && !store.isLoadingTerrain)
-        #expect(GolfAPIStubProtocol.requestCount == 2)
+        #expect(courseRequests == 2)
 
         let reopened = CourseStore(reference: reference, golfAPIClient: client, terrainMode: .live)
         await reopened.load()
         let tee = try #require(reopened.course?.holes.first?.tee)
         #expect(reopened.terrain?.sample(at: tee)?.elevation.isFinite == true)
-        #expect(GolfAPIStubProtocol.requestCount == 2)
+        #expect(courseRequests == 2)
     }
 
     @Test func downloadReportsLocalStorageFailure() async throws {

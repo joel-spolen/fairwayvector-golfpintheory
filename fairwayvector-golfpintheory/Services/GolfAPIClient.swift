@@ -204,6 +204,14 @@ struct GolfAPIClient {
         return (GolfAPICoursePayload(detail: detail, coordinates: coordinates), terrain)
     }
 
+    /// Live only: OpenStreetMap green outlines around the course, fetched and cached by the data service.
+    func loadGreenOutlines(id: String) async throws -> [[GeoPoint]] {
+        struct Greens: Decodable { let greens: [[GeoPoint]] }
+        // A first request waits up to ~2 minutes while the server asks the busy public map servers.
+        let data = try await get("/golf/courses/\(id)/greens", timeout: 140)
+        return try JSONDecoder().decode(Greens.self, from: data).greens
+    }
+
     func downloadTerrainTile(id: String, source: String? = nil) async throws -> Data {
         guard id.range(of: #"^[a-f0-9]{64}$"#, options: .regularExpression) != nil else {
             throw GolfAPIError.invalidResponse("Invalid course elevation tile.")
