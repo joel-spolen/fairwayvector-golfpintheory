@@ -128,12 +128,14 @@ struct PureLinePrimaryButtonStyle: ButtonStyle {
     @Environment(\.isEnabled) private var isEnabled
     var fillsWidth = true
     var minimumHeight: CGFloat = 54
+    var horizontalPadding: CGFloat = 0
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
             .foregroundStyle(isEnabled ? Color.white : PureLineStyle.ink)
             .tint(isEnabled ? Color.white : PureLineStyle.ink)
+            .padding(.horizontal, horizontalPadding)
             .frame(maxWidth: fillsWidth ? .infinity : nil, minHeight: minimumHeight)
             .background(
                 isEnabled

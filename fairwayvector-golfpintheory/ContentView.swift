@@ -480,8 +480,7 @@ struct CourseMapView: View {
                 Text(store.errorMessage ?? "")
             } actions: {
                 Button("Try again") { Task { await store.refresh() } }
-                    .padding(.horizontal, 18)
-                    .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 44))
+                    .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 44, horizontalPadding: 18))
             }
         }
     }

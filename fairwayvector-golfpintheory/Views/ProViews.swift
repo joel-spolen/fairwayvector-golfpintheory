@@ -80,7 +80,7 @@ struct ProLockedView: View {
             Text("This is part of Golf PinTheory Pro.")
         } actions: {
             Button(L("Unlock Pro")) { showingPaywall = true }
-                .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 44))
+                .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 48, horizontalPadding: 28))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(PureLineStyle.canvas)

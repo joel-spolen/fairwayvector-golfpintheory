@@ -230,7 +230,7 @@ struct RoundStatisticsDashboard: View {
             Text("Your recent form and what to work on, hole types, scrambling, accuracy and handicap trend.")
                 .font(.subheadline).foregroundStyle(PureLineStyle.muted)
             Button(L("Unlock Pro")) { showingPaywall = true }
-                .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 44))
+                .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 48, horizontalPadding: 28))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .pureLineCard()

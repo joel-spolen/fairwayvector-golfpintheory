@@ -151,7 +151,7 @@ struct RoundSetupView: View {
                         Text("Wind, elevation, club advice and green slope are part of Golf PinTheory Pro. GPS distances and scoring are free.")
                             .font(.caption).foregroundStyle(PureLineStyle.muted)
                         Button(L("Unlock Pro")) { showingPaywall = true }
-                            .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 44))
+                            .buttonStyle(PureLinePrimaryButtonStyle(fillsWidth: false, minimumHeight: 48, horizontalPadding: 28))
                     }
                 }
                 .font(.subheadline)
