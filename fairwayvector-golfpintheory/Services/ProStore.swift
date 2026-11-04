@@ -37,9 +37,32 @@ final class ProStore {
                   transaction.revocationDate == nil else { continue }
             active = true
         }
+        if !active {
+            active = await hasActiveSubscriptionStatus()
+        }
         let now = Date.now
         verifiedPurchaseExpirations = verifiedPurchaseExpirations.filter { $0.value > now }
         isPro = active || !verifiedPurchaseExpirations.isEmpty
+    }
+
+    private func hasActiveSubscriptionStatus() async -> Bool {
+        do {
+            let products = try await Product.products(for: Self.productIDs)
+            let groupIDs = Set(products.compactMap { $0.subscription?.subscriptionGroupID })
+            for groupID in groupIDs {
+                for status in try await Product.SubscriptionInfo.status(for: groupID) {
+                    guard status.state == .subscribed || status.state == .inGracePeriod,
+                          case .verified(let transaction) = status.transaction,
+                          Self.productIDs.contains(transaction.productID),
+                          transaction.revocationDate == nil,
+                          transaction.expirationDate.map({ $0 > .now }) ?? true else { continue }
+                    return true
+                }
+            }
+        } catch {
+            return false
+        }
+        return false
     }
 
     func completePurchase(_ result: Result<Product.PurchaseResult, Error>) async {
