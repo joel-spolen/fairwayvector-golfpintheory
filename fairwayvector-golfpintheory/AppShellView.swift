@@ -109,6 +109,7 @@ private struct SyncableLocalDataMonitor: View {
 struct ContentView: View {
     private let syncLogger = Logger(subsystem: "com.fairwayvector.app.pintheory", category: "CloudSync")
     let accountData: PinTheoryAccountData
+    @Environment(\.modelContext) private var modelContext
     @EnvironmentObject private var accountSession: PinTheoryAccountSession
 
     private enum Destination: String, Identifiable {
@@ -227,6 +228,9 @@ struct ContentView: View {
             trajectoryModel.unitPreferences.globalDefault = unit == .meters ? .metric : .imperial
         }
         .task { await syncSavedDataIfEnabled() }
+        .onChange(of: ProStore.shared.isPro, initial: true) { _, isPro in
+            handleProStatusChanged(isPro)
+        }
         .onChange(of: roundStore.savedRevision) { _, _ in
             scheduleAutomaticSync()
         }
@@ -273,6 +277,16 @@ struct ContentView: View {
         let profile = (try? context.fetch(FetchDescriptor<PlayerProfile>()))?.first
         await accountSession.enableAndSyncSavedData(roundStore: roundStore, profile: profile,
             trajectoryProfileStore: trajectoryModel.playerProfileStore, modelContext: context)
+    }
+
+    @MainActor
+    private func handleProStatusChanged(_ isPro: Bool) {
+        guard isPro else { return }
+        let descriptor = FetchDescriptor<PlayerProfile>()
+        let profile = (try? modelContext.fetch(descriptor))?.first
+        accountSession.enableSavedDataSyncForFirstProActivation(roundStore: roundStore,
+            profile: profile, trajectoryProfileStore: trajectoryModel.playerProfileStore,
+            modelContext: modelContext)
     }
 
     @MainActor

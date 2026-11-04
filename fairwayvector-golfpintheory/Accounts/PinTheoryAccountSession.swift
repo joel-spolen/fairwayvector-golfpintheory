@@ -33,13 +33,22 @@ final class PinTheoryAccountSession: ObservableObject {
 
     var hasOptedIntoSavedDataSync: Bool {
         guard let defaults = accountData?.defaults else { return false }
-        return defaults.object(forKey: Self.syncOptInKey) as? Bool ?? true
+        return Self.savedDataSyncEnabled(isPro: ProStore.shared.isPro,
+            storedValue: defaults.object(forKey: Self.syncOptInKey) as? Bool)
+    }
+
+    static func savedDataSyncEnabled(isPro: Bool, storedValue: Bool?) -> Bool {
+        isPro && (storedValue ?? false)
     }
 
     func setSavedDataSyncEnabled(_ enabled: Bool, roundStore: PlayedRoundStore,
                                  profile: PlayerProfile?, trajectoryProfileStore: PlayerProfileStore,
                                  modelContext: ModelContext) {
         guard let defaults = accountData?.defaults else { return }
+        guard !enabled || ProStore.shared.isPro else {
+            defaults.set(false, forKey: Self.syncOptInKey)
+            return
+        }
         defaults.set(enabled, forKey: Self.syncOptInKey)
         guard enabled else {
             syncLogger.info("Sync preference disabled")
@@ -54,6 +63,16 @@ final class PinTheoryAccountSession: ObservableObject {
         defaults.set(true, forKey: Self.restoreDeletedRecordsKey)
         Task { await enableAndSyncSavedData(roundStore: roundStore, profile: profile,
             trajectoryProfileStore: trajectoryProfileStore, modelContext: modelContext) }
+    }
+
+    func enableSavedDataSyncForFirstProActivation(roundStore: PlayedRoundStore,
+                                                  profile: PlayerProfile?,
+                                                  trajectoryProfileStore: PlayerProfileStore,
+                                                  modelContext: ModelContext) {
+        guard ProStore.shared.isPro, let defaults = accountData?.defaults,
+              defaults.object(forKey: Self.syncOptInKey) == nil else { return }
+        setSavedDataSyncEnabled(true, roundStore: roundStore, profile: profile,
+            trajectoryProfileStore: trajectoryProfileStore, modelContext: modelContext)
     }
 
     init() {
@@ -276,8 +295,7 @@ final class PinTheoryAccountSession: ObservableObject {
         return updated
     }
 
-    /// Account-scoped sync for approved saved data. Enabled by default unless the
-    /// user turns it off in Settings. Active drafts, preferences, catalogs and geometry stay local.
+    /// Account-scoped Pro sync for approved saved data. Active drafts, preferences, catalogs and geometry stay local.
     func enableAndSyncSavedData(roundStore: PlayedRoundStore, profile: PlayerProfile?,
                                 trajectoryProfileStore: PlayerProfileStore,
                                 modelContext: ModelContext) async {

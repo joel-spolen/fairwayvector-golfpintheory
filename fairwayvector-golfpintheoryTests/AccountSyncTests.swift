@@ -5,6 +5,14 @@ import Testing
 /// Offline regression SOURCE ONLY. Not executed as part of phase-one implementation.
 @MainActor
 struct AccountSyncTests {
+    @Test func cloudSyncIsOffForFreeAndOnlyUsesExplicitProPreference() {
+        #expect(!PinTheoryAccountSession.savedDataSyncEnabled(isPro: false, storedValue: nil))
+        #expect(!PinTheoryAccountSession.savedDataSyncEnabled(isPro: false, storedValue: true))
+        #expect(!PinTheoryAccountSession.savedDataSyncEnabled(isPro: true, storedValue: nil))
+        #expect(PinTheoryAccountSession.savedDataSyncEnabled(isPro: true, storedValue: true))
+        #expect(!PinTheoryAccountSession.savedDataSyncEnabled(isPro: true, storedValue: false))
+    }
+
     private func root() -> URL {
         FileManager.default.temporaryDirectory.appendingPathComponent("account-sync-\(UUID().uuidString)", isDirectory: true)
     }

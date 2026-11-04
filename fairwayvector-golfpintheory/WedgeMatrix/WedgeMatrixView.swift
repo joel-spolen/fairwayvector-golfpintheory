@@ -542,7 +542,7 @@ private struct WedgeClubDistancesCard: View {
                                 Text(swing.title)
                                     .font(.caption)
                                     .foregroundStyle(PureLineStyle.muted)
-                                WedgeDoneAccessoryNumberField(
+                                WedgeNumberField(
                                     placeholder: "\(unit.format(wedge.carry(for: trajectory, swing: swing)))",
                                     text: draftBinding(for: trajectory, swing: swing),
                                     textAlignment: .center
@@ -601,7 +601,7 @@ private struct WedgeClubDistancesCard: View {
     }
 }
 
-private struct WedgeDoneAccessoryNumberField: UIViewRepresentable {
+private struct WedgeNumberField: UIViewRepresentable {
     let placeholder: String
     @Binding var text: String
     var textAlignment: NSTextAlignment = .right
@@ -614,14 +614,6 @@ private struct WedgeDoneAccessoryNumberField: UIViewRepresentable {
         textField.borderStyle = .none
         textField.backgroundColor = .clear
         textField.delegate = context.coordinator
-
-        let toolbar = UIToolbar()
-        toolbar.sizeToFit()
-        toolbar.items = [
-            UIBarButtonItem(systemItem: .flexibleSpace),
-            UIBarButtonItem(title: L("Done"), style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
-        ]
-        textField.inputAccessoryView = toolbar
         return textField
     }
 

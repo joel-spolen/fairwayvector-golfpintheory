@@ -528,7 +528,7 @@ private struct ProfileOptionalNumberRow: View {
                     }
                 }
                 Spacer()
-                DoneAccessoryNumberField(
+                ProfileNumberField(
                     placeholder: unit ?? "",
                     text: $draftText,
                     onEditingChanged: { editing in
@@ -588,7 +588,7 @@ private struct ProfileOptionalNumberRow: View {
     }
 }
 
-private struct DoneAccessoryNumberField: UIViewRepresentable {
+private struct ProfileNumberField: UIViewRepresentable {
     let placeholder: String
     @Binding var text: String
     let onEditingChanged: (Bool) -> Void
@@ -602,7 +602,6 @@ private struct DoneAccessoryNumberField: UIViewRepresentable {
         textField.backgroundColor = UIColor(PureLineStyle.canvas)
         textField.textColor = UIColor(PureLineStyle.ink)
         textField.delegate = context.coordinator
-        textField.inputAccessoryView = context.coordinator.toolbar(for: textField)
         return textField
     }
 
@@ -624,16 +623,6 @@ private struct DoneAccessoryNumberField: UIViewRepresentable {
         init(text: Binding<String>, onEditingChanged: @escaping (Bool) -> Void) {
             _text = text
             self.onEditingChanged = onEditingChanged
-        }
-
-        func toolbar(for textField: UITextField) -> UIToolbar {
-            let toolbar = UIToolbar()
-            toolbar.sizeToFit()
-            toolbar.items = [
-                UIBarButtonItem(systemItem: .flexibleSpace),
-                UIBarButtonItem(title: L("Done"), style: .prominent, target: textField, action: #selector(UITextField.resignFirstResponder))
-            ]
-            return toolbar
         }
 
         func textFieldDidBeginEditing(_ textField: UITextField) {
