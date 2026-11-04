@@ -40,7 +40,7 @@ private struct BagEditorSheet: View {
                         .navigationTitle("Clubs in my bag")
                 case .clubProfile:
                     TrajectoryProfileSettingsView(profileStore: draftProfileStore,
-                        unitPreferences: unitPreferences)
+                        unitPreferences: unitPreferences, storedWedges: $draftWedgeSetup)
                         .navigationTitle("Club distances & launch")
                 case .wedges:
                     WedgeBagSetupView(profileStore: draftProfileStore, storedWedges: $draftWedgeSetup)
@@ -92,6 +92,7 @@ struct InTheBagView: View {
     var onHome: () -> Void = {}
     var onSave: () -> Void = {}
     @State private var activeEditor: Editor?
+    @State private var showingPaywall = false
 
     var body: some View {
         NavigationStack {
@@ -158,11 +159,13 @@ struct InTheBagView: View {
                 unitPreferences: trajectoryModel.unitPreferences,
                 onSave: onSave)
         }
+        .sheet(isPresented: $showingPaywall) { ProPaywallView() }
     }
 
     private func setupRow(title: String, detail: String, symbol: String, editor: Editor) -> some View {
-        Button {
-            activeEditor = editor
+        let locked = editor == .wedges && !ProStore.shared.isPro
+        return Button {
+            if locked { showingPaywall = true } else { activeEditor = editor }
         } label: {
             HStack(spacing: 14) {
                 Image(systemName: symbol)
@@ -170,9 +173,12 @@ struct InTheBagView: View {
                     .foregroundStyle(PureLineStyle.accent)
                     .frame(width: 28)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(title)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(PureLineStyle.ink)
+                    HStack(spacing: 8) {
+                        Text(title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(PureLineStyle.ink)
+                        if locked { ProBadge() }
+                    }
                     Text(detail)
                         .font(.caption)
                         .foregroundStyle(PureLineStyle.muted)

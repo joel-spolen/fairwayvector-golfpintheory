@@ -5,6 +5,7 @@ struct TrajectoryProfileSettingsView: View {
     @ObservedObject var profileStore: PlayerProfileStore
     @ObservedObject var unitPreferences: UnitPreferences
     var settingsViewModel: TrajectoryCalculatorViewModel?
+    var storedWedges: Binding<String>? = nil
     @State private var unitRefreshID = UUID()
 
     var body: some View {
@@ -24,6 +25,9 @@ struct TrajectoryProfileSettingsView: View {
             .listRowBackground(PureLineStyle.surface)
 
             activeDetailSettings
+            if let storedWedges {
+                WedgeCarrySection(profileStore: profileStore, unitPreferences: unitPreferences, storedWedges: storedWedges)
+            }
         }
         .id(unitRefreshID)
         .scrollContentBackground(.hidden)
@@ -168,6 +172,62 @@ private struct MediumProfileView: View {
     }
 }
 
+/// Full-swing wedge carry, stored as the wedge's stock full shot so Wedge Matrix and club advice share it.
+private struct WedgeCarrySection: View {
+    @ObservedObject var profileStore: PlayerProfileStore
+    let unitPreferences: UnitPreferences
+    @Binding var storedWedges: String
+
+    var body: some View {
+        Section {
+            let wedges = bagWedges
+            if wedges.isEmpty {
+                Text("No wedges in bag").foregroundStyle(PureLineStyle.muted)
+            }
+            ForEach(wedges, id: \.club) { item in
+                ProfileDistanceRow(
+                    title: item.club.label,
+                    value: item.carryM,
+                    unitPreferences: unitPreferences,
+                    fallbackMeters: ClubProfileDefaults.effectiveProfile(for: item.club, playerProfile: profileStore.profile,
+                                                                         wedges: []).carryDistanceM.value,
+                    onDraftChange: { update($0, for: item.club) },
+                    onChange: { update($0, for: item.club) }
+                )
+            }
+        } header: {
+            Text("Wedge full-swing carry")
+        } footer: {
+            Text("Your stock full swing. Used for club advice and as the base for your wedge distances.")
+        }
+        .listRowBackground(PureLineStyle.surface)
+    }
+
+    private var bagWedges: [(club: TrajectoryGolfClub, carryM: Double?)] {
+        Wedge.catalog(from: storedWedges, availableClubs: profileStore.profile.availableClubs)
+            .filter(\.isInBag)
+            .compactMap { wedge in
+                guard let club = TrajectoryGolfClub.wedge(named: wedge.name) else { return nil }
+                let yards = wedge.overrideCarry(for: .stock, swing: .full) ?? (wedge.fullCarryUserProvided ? wedge.fullCarry : nil)
+                return (club, yards.map(Units.metersFromYards))
+            }
+    }
+
+    private func update(_ meters: Double?, for club: TrajectoryGolfClub) {
+        var wedges = Wedge.catalog(from: storedWedges, availableClubs: profileStore.profile.availableClubs)
+        guard let index = wedges.firstIndex(where: { TrajectoryGolfClub.wedge(named: $0.name) == club }) else { return }
+        if let meters, meters > 0 {
+            wedges[index].setCarry(Units.yardsFromMeters(meters), for: .stock, swing: .full)
+        } else {
+            wedges[index].clearCarry(for: .stock, swing: .full)
+            wedges[index].fullCarryUserProvided = false
+        }
+        guard let data = try? JSONEncoder().encode(wedges), let encoded = String(data: data, encoding: .utf8) else { return }
+        storedWedges = encoded
+        profileStore.storedWedgeSetup = encoded
+    }
+}
+
 private struct ExpertProfileView: View {
     @ObservedObject var profileStore: PlayerProfileStore
     let unitPreferences: UnitPreferences
@@ -304,7 +364,7 @@ struct BagClubsView: View {
             } header: {
                 Text("Wedges")
             } footer: {
-                Text("Edit wedge distances in Wedge bag.")
+                Text("Set wedge full-swing distances in Club distances & launch.")
             }
         }
         .scrollContentBackground(.hidden)

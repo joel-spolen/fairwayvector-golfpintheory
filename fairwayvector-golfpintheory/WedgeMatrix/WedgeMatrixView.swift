@@ -316,7 +316,7 @@ private struct WedgeTrajectoryPicker: View {
     }
 }
 
-private struct WedgeMatrixCard: View {
+struct WedgeMatrixCard: View {
     var wedges: [Wedge]
     var trajectory: WedgeTrajectory
     var unit: WedgeDistanceUnit

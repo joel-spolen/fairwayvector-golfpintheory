@@ -61,6 +61,57 @@ struct ProPaywallView: View {
     }
 }
 
+/// Locked Pro tool: what it does, an example of its output and a way to unlock it.
+struct ProToolPreview<Example: View>: View {
+    let title: String
+    let summary: String
+    let features: [(symbol: String, text: String)]
+    @ViewBuilder let example: Example
+    @State private var showingPaywall = false
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
+                        Text(title).font(.largeTitle.weight(.semibold)).tracking(-0.6)
+                        ProBadge()
+                    }
+                    Text(summary).font(.subheadline).foregroundStyle(PureLineStyle.muted)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Example")
+                        .font(.caption.weight(.semibold)).foregroundStyle(PureLineStyle.muted)
+                    example.allowsHitTesting(false)
+                }
+                VStack(alignment: .leading, spacing: 16) {
+                    ForEach(features, id: \.text) { feature in
+                        Label {
+                            Text(feature.text).foregroundStyle(PureLineStyle.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } icon: {
+                            Image(systemName: feature.symbol).foregroundStyle(PureLineStyle.accent)
+                                .frame(width: 26)
+                        }
+                        .font(.subheadline)
+                    }
+                }
+            }
+            .foregroundStyle(PureLineStyle.ink)
+            .padding(18)
+        }
+        .background(PureLineStyle.canvas)
+        .safeAreaInset(edge: .bottom) {
+            Button(L("Unlock Pro")) { showingPaywall = true }
+                .buttonStyle(PureLinePrimaryButtonStyle())
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
+                .background(PureLineStyle.canvas)
+        }
+        .sheet(isPresented: $showingPaywall) { ProPaywallView() }
+    }
+}
+
 /// Shown instead of a Pro screen for free users, with a way to unlock it.
 struct ProLockedView: View {
     let title: String

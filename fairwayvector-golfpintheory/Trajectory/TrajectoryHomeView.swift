@@ -159,7 +159,7 @@ struct TrajectoryHomeView: View {
     }
 }
 
-private struct LiveFlightPreview: View {
+struct LiveFlightPreview: View {
     let trajectory: GolfTrajectory?
 
     var body: some View {

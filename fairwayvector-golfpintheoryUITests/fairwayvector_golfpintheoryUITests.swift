@@ -121,6 +121,25 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         openHomeDestination("Trajectory", in: app)
         XCTAssertTrue(app.buttons["Unlock Pro"].waitForExistence(timeout: 5))
         returnHome(in: app)
+        openHomeDestination("Wedge Matrix", in: app)
+        XCTAssertTrue(app.buttons["Unlock Pro"].waitForExistence(timeout: 5))
+        returnHome(in: app)
+
+        openHomeDestination("In the bag", in: app)
+        let clubProfile = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Club distances & launch")).firstMatch
+        scrollTo(clubProfile, in: app)
+        clubProfile.tap()
+        let wedgeCarry = app.staticTexts.matching(NSPredicate(format: "label ==[c] %@", "Wedge full-swing carry")).firstMatch
+        scrollTo(wedgeCarry, in: app)
+        XCTAssertTrue(wedgeCarry.exists)
+        app.buttons["Cancel"].tap()
+        let wedgeBag = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Wedge bag")).firstMatch
+        scrollTo(wedgeBag, in: app)
+        wedgeBag.tap()
+        // Free users get the paywall instead of the wedge bag editor.
+        XCTAssertFalse(app.staticTexts["Your wedge bag"].waitForExistence(timeout: 3))
+        app.swipeDown(velocity: .fast)
+        returnHome(in: app)
 
         openHomeDestination("Start round", in: app)
         XCTAssertTrue(app.staticTexts["Start a round"].waitForExistence(timeout: 5))
