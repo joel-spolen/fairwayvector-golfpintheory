@@ -161,12 +161,12 @@ final class CourseStore {
             current.greenOutlinesCheckedAt = saved.greenOutlinesCheckedAt
             course = current
         }
-        guard current.greenOutlinesCheckedAt.map({ Date.now.timeIntervalSince($0) > 30 * 24 * 60 * 60 }) ?? true
-        else { return }
-        // Another player's request may already be fetching this course's outlines.
+        // Saved with the course once received and never fetched again, so the heatmap works offline.
+        guard current.greenOutlinesCheckedAt == nil else { return }
+        // The first course download starts the fetch on the server; poll while it talks to the map servers.
         var outlines: [[GeoPoint]]?
-        for attempt in 0..<3 where outlines == nil {
-            if attempt > 0 { try? await Task.sleep(for: .seconds(20 * attempt)) }
+        for attempt in 0..<10 where outlines == nil {
+            if attempt > 0 { try? await Task.sleep(for: .seconds(15)) }
             outlines = try? await golfAPIClient.loadGreenOutlines(id: courseID)
         }
         guard let outlines, var updated = course else { return }
