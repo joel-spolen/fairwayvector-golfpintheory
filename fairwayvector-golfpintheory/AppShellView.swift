@@ -135,6 +135,7 @@ struct ContentView: View {
     @State private var requestStartRound = false
     @State private var automaticSyncTask: Task<Void, Never>?
     @State private var showingHandicapSetup = false
+    @State private var showcaseInstallAttempted = false
     private static let handicapSetupPromptedKey = "onboarding.handicapRangePrompted.v1"
 
     init(accountData: PinTheoryAccountData) {
@@ -227,7 +228,10 @@ struct ContentView: View {
             wedgeDistanceUnit = unit == .meters ? WedgeDistanceUnit.meters.rawValue : WedgeDistanceUnit.yards.rawValue
             trajectoryModel.unitPreferences.globalDefault = unit == .meters ? .metric : .imperial
         }
-        .task { await syncSavedDataIfEnabled() }
+        .task {
+            await installShowcaseDataIfRequested()
+            await syncSavedDataIfEnabled()
+        }
         .onChange(of: ProStore.shared.isPro, initial: true) { _, isPro in
             handleProStatusChanged(isPro)
         }
@@ -277,6 +281,22 @@ struct ContentView: View {
         let profile = (try? context.fetch(FetchDescriptor<PlayerProfile>()))?.first
         await accountSession.enableAndSyncSavedData(roundStore: roundStore, profile: profile,
             trajectoryProfileStore: trajectoryModel.playerProfileStore, modelContext: context)
+    }
+
+    @MainActor
+    private func installShowcaseDataIfRequested() async {
+        #if DEBUG
+        guard !showcaseInstallAttempted,
+              ProcessInfo.processInfo.arguments.contains(ShowcaseDataInstaller.launchArgument) else { return }
+        showcaseInstallAttempted = true
+        do {
+            try ShowcaseDataInstaller.install(accountData: accountData, roundStore: roundStore,
+                profileStore: trajectoryModel.playerProfileStore, context: modelContext)
+            syncLogger.notice("Showcase data installed")
+        } catch {
+            syncLogger.error("Showcase data install failed: \(String(describing: error), privacy: .public)")
+        }
+        #endif
     }
 
     @MainActor

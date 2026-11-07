@@ -139,6 +139,18 @@ final class PlayedRoundStore {
         draftNeedsRetry = false; errorMessage = nil
     }
 
+    func addShowcaseRounds(_ rounds: [PlayedRound]) throws {
+        guard active == nil, rounds.allSatisfy(Self.validStructure) else { throw RoundStorageError.invalidArchive }
+        let existingIDs = Set(saved.map(\.id))
+        let additions = rounds.filter { !existingIDs.contains($0.id) }
+        guard !additions.isEmpty else { return }
+        let updated = (saved + additions).sorted { $0.date > $1.date }
+        try persist(saved: updated, draft: nil)
+        saved = updated
+        savedRevision &+= 1
+        errorMessage = nil
+    }
+
     func discardDraft() throws {
         try persist(saved: saved, draft: nil)
         active = nil
