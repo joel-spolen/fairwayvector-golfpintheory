@@ -209,7 +209,7 @@ private struct WedgeCarrySection: View {
             .compactMap { wedge in
                 guard let club = TrajectoryGolfClub.wedge(named: wedge.name) else { return nil }
                 let yards = wedge.overrideCarry(for: .stock, swing: .full) ?? (wedge.fullCarryUserProvided ? wedge.fullCarry : nil)
-                return (club, yards.map(Units.metersFromYards))
+                return (club, yards.map { Units.metersFromYards($0) })
             }
     }
 

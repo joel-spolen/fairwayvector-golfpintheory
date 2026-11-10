@@ -140,7 +140,7 @@ final class PlayedRoundStore {
     }
 
     func addShowcaseRounds(_ rounds: [PlayedRound]) throws {
-        guard active == nil, rounds.allSatisfy(Self.validStructure) else { throw RoundStorageError.invalidArchive }
+        guard active == nil, rounds.allSatisfy({ Self.validStructure($0) }) else { throw RoundStorageError.invalidArchive }
         let existingIDs = Set(saved.map(\.id))
         let additions = rounds.filter { !existingIDs.contains($0.id) }
         guard !additions.isEmpty else { return }
