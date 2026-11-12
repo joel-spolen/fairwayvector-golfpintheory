@@ -14,8 +14,6 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -27,22 +25,24 @@
 			</array>
 		</dict>
 	</array>
-	<key>GOLF_API_MODE</key>
-	<string>$(GOLF_API_MODE)</string>
-	<key>GPXZ_API_MODE</key>
-	<string>$(GPXZ_API_MODE)</string>
-	<key>PINTHEORY_SUPABASE_URL</key>
-	<string>$(PINTHEORY_SUPABASE_URL)</string>
-	<key>PINTHEORY_SUPABASE_PUBLISHABLE_KEY</key>
-	<string>$(PINTHEORY_SUPABASE_PUBLISHABLE_KEY)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>GOLFPINTHEORY_ACCOUNT_DELETION_ENABLED</key>
 	<string>$(GOLFPINTHEORY_ACCOUNT_DELETION_ENABLED)</string>
 	<key>GOLFPINTHEORY_SKIP_SIGN_IN</key>
 	<string>$(GOLFPINTHEORY_SKIP_SIGN_IN)</string>
+	<key>GOLF_API_MODE</key>
+	<string>$(GOLF_API_MODE)</string>
+	<key>GPXZ_API_MODE</key>
+	<string>$(GPXZ_API_MODE)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Golf PinTheory uses your location to show where you are on the course and how far it is to the green.</string>
+	<key>PINTHEORY_SUPABASE_PUBLISHABLE_KEY</key>
+	<string>$(PINTHEORY_SUPABASE_PUBLISHABLE_KEY)</string>
+	<key>PINTHEORY_SUPABASE_URL</key>
+	<string>$(PINTHEORY_SUPABASE_URL)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
