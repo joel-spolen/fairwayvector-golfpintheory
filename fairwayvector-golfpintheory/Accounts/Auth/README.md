@@ -78,7 +78,7 @@ builds, tests, app launches, network calls or secret reads were performed.
 ## Historical email/Google integration notes (superseded where above differs)
 
 Source-only, using the installed **Auth** product from supabase-swift **2.55.4**.
-The app-wide `PinTheoryAccountSession` now constructs the service and gates Home through the email/Google UI. Cloud golf-record sync, account deletion and public-release compliance remain incomplete. Apple methods are unexposed.
+The app-wide `PinTheoryAccountSession` constructs the service and gates Home through the email, Google and native Apple sign-in UI. Cloud golf-record sync, account deletion and public-release compliance remain incomplete.
 
 ## Service contract (historical phase-one details below)
 
@@ -89,8 +89,9 @@ Current integration supplies URL-scheme registration/routing, browser presentati
   `nil` (disabled); malformed nonblank configuration throws a sanitized error.
   Only an HTTPS root URL and `sb_publishable_…` key are supported. No legacy JWT
   API keys or secrets. The ordinary redirect is always `golfpintheory://auth/callback`.
-- No configuration, plist, URL scheme, entitlement, provider console or project
-  changes are supplied. Configure those separately before any live use.
+- The `golfpintheory` callback scheme and Sign in with Apple entitlement are
+  configured in the app target. Configure the matching Apple Developer App ID
+  and Supabase Apple provider before live use.
 - Create one main-actor service per project, explicitly call `restore()`, and
   bind only the token-free state/identity. Offline state permits previously
   confirmed, account-isolated **local cache** access, not cloud authorization.
@@ -100,7 +101,8 @@ Current integration supplies URL-scheme registration/routing, browser presentati
   are rejected before consuming a newer nonce or changing its busy/error state.
   A random raw nonce stays private; the request uses its
   SHA256 hash and official ID-token exchange receives the raw nonce. Names are
-  not persisted or copied into a profile. Capability/provider setup remains due.
+  not persisted or copied into a profile. Apple Developer and Supabase provider
+  configuration and live-account verification remain due.
 - Google uses official SDK browser OAuth with PKCE. The UI must supply and retain
   an `ASWebAuthenticationSession` through `signInWithGoogle(launchFlow:)`, including
   its presentation anchor and cancellation. The returned destination is checked

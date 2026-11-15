@@ -210,6 +210,11 @@
 				TargetAttributes = {
 					1C673895306A3B6200309840 = {
 						CreatedOnToolsVersion = 26.6;
+						SystemCapabilities = {
+							com.apple.SignInWithApple = {
+								enabled = 1;
+							};
+						};
 					};
 					1C6738A4306A3B6400309840 = {
 						CreatedOnToolsVersion = 26.6;
@@ -453,6 +458,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = "fairwayvector-golfpintheory/PinTheory.entitlements";
 				DEVELOPMENT_TEAM = 8UMUT934N3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -485,6 +491,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = "fairwayvector-golfpintheory/PinTheory.entitlements";
 				DEVELOPMENT_TEAM = 8UMUT934N3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;

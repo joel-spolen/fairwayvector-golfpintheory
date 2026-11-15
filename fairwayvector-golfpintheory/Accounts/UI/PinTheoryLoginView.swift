@@ -5,9 +5,6 @@ import AuthenticationServices
 /// callbacks return directly to the service through the actual-window broker.
 @MainActor
 struct PinTheoryLoginView: View {
-    // Hidden until Sign in with Apple is configured; the service code remains for re-enabling.
-    private static let showsAppleSignIn = false
-
     @ObservedObject private var auth: PinTheoryAuthService
     @StateObject private var browser: PinTheoryWebAuthenticationBroker
     @State private var email = ""
@@ -19,6 +16,7 @@ struct PinTheoryLoginView: View {
     @State private var notice: String?
     @State private var localError: String?
     @State private var operation: Task<Void, Never>?
+    @State private var appleRequestID: UInt64?
     @State private var generation: UInt64 = 0
     @FocusState private var focusedField: Field?
 
@@ -61,8 +59,9 @@ struct PinTheoryLoginView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
+        ScrollViewReader { scrollProxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
                 VStack(alignment: .leading, spacing: 12) {
                     Image("icon")
                         .resizable()
@@ -77,6 +76,15 @@ struct PinTheoryLoginView: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Text("Sign in to continue").font(.headline).padding(.top, 8)
                 }
+                .id("account-login-top")
+
+                SignInWithAppleButton(.signIn, onRequest: prepareAppleSignIn, onCompletion: completeAppleSignIn)
+                    .signInWithAppleButtonStyle(.black)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .disabled(unavailable)
+                    .accessibilityIdentifier("account-apple-sign-in")
 
                 Button { start(.google) } label: {
                     HStack(spacing: 12) {
@@ -105,16 +113,6 @@ struct PinTheoryLoginView: View {
                 .opacity(unavailable || !browser.hasPresentationAnchor ? 0.5 : 1)
                 .disabled(unavailable || !browser.hasPresentationAnchor)
                 .accessibilityIdentifier("account-google-sign-in")
-
-                if Self.showsAppleSignIn {
-                    SignInWithAppleButton(.signIn, onRequest: { _ in }, onCompletion: { _ in })
-                        .signInWithAppleButtonStyle(.black)
-                        .frame(height: 44)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .disabled(true)
-                        .accessibilityLabel("Sign in with Apple, coming soon")
-                        .accessibilityIdentifier("account-apple-sign-in-placeholder")
-                }
 
                 HStack(spacing: 12) {
                     Rectangle().fill(PureLineStyle.line).frame(height: 1)
@@ -161,25 +159,32 @@ struct PinTheoryLoginView: View {
                     .accessibilityIdentifier("account-privacy")
                 Text("Golf PinTheory by FairwayVector").font(.caption).foregroundStyle(PureLineStyle.muted)
             }
-            .frame(maxWidth: 440, alignment: .leading)
-            .padding(24)
-            .frame(maxWidth: .infinity)
-        }
-        .scrollDismissesKeyboard(.interactively)
-        .background(PureLineStyle.canvas.ignoresSafeArea())
-        .foregroundStyle(PureLineStyle.ink)
-        .tint(PureLineStyle.accent)
-        .preferredColorScheme(.light)
-        .background { PinTheoryAuthenticationWindowReader(broker: browser).frame(width: 0, height: 0) }
-        .onAppear { showServiceError() }
-        .onDisappear {
-            if auth.state == .passwordRecovery { detachOperation() }
-            else { cancelOperation() }
-        }
-        .onChange(of: auth.state) { _, state in
-            // Recovery is published BEFORE its SDK callback exchange finishes.
-            if state == .passwordRecovery { detachOperation() }
-            else if state != .signedOut { cancelOperation() }
+                    .frame(maxWidth: 440, alignment: .leading)
+                    .padding(24)
+                    .frame(maxWidth: .infinity)
+                }
+                .scrollDismissesKeyboard(.interactively)
+                .background(PureLineStyle.canvas.ignoresSafeArea())
+                .foregroundStyle(PureLineStyle.ink)
+                .tint(PureLineStyle.accent)
+                .preferredColorScheme(.light)
+                .background { PinTheoryAuthenticationWindowReader(broker: browser).frame(width: 0, height: 0) }
+                .onAppear {
+                    scrollProxy.scrollTo("account-login-top", anchor: .top)
+                    showServiceError()
+                }
+                .onDisappear {
+                    if auth.state == .passwordRecovery { detachOperation() }
+                    else { cancelOperation() }
+                }
+                .onChange(of: auth.state) { _, state in
+                    if state == .signedOut {
+                        scrollProxy.scrollTo("account-login-top", anchor: .top)
+                    }
+                    // Recovery is published BEFORE its SDK callback exchange finishes.
+                    if state == .passwordRecovery { detachOperation() }
+                    else if state != .signedOut { cancelOperation() }
+                }
         }
     }
 
@@ -322,6 +327,43 @@ struct PinTheoryLoginView: View {
     private func showServiceError() {
         guard auth.state == .signedOut, let error = auth.lastError, error != .cancelled else { return }
         localError = error.localizedDescription
+    }
+
+    private func prepareAppleSignIn(_ request: ASAuthorizationAppleIDRequest) {
+        guard !unavailable else { return }
+        focusedField = nil
+        localError = nil
+        notice = nil
+        clearPasswords()
+        do {
+            appleRequestID = try auth.prepareAppleRequest(request)
+        } catch {
+            localError = (error as? PinTheoryAuthError)?.localizedDescription
+                ?? L("Sign-in could not be completed. Please try again.")
+        }
+    }
+
+    private func completeAppleSignIn(_ result: Result<ASAuthorization, Error>) {
+        guard let requestID = appleRequestID else { return }
+        appleRequestID = nil
+        generation &+= 1
+        let ticket = generation
+        operation = Task { @MainActor in
+            defer { if generation == ticket { operation = nil } }
+            do {
+                try Task.checkCancellation()
+                try await auth.completeAppleSignIn(result, requestID: requestID)
+                guard generation == ticket, !Task.isCancelled else { return }
+                clearPasswords()
+            } catch {
+                guard generation == ticket, !Task.isCancelled,
+                      error as? PinTheoryAuthError != .cancelled,
+                      !(error is CancellationError) else { return }
+                clearPasswords()
+                localError = (error as? PinTheoryAuthError)?.localizedDescription
+                    ?? L("Sign-in could not be completed. Please try again.")
+            }
+        }
     }
 
     private func submit() {

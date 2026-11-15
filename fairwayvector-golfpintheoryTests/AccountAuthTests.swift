@@ -97,6 +97,26 @@ struct AccountAuthTests {
         }
     }
 
+    @Test func nativeAppleRequestUsesNonceAndCancellationReleasesAuthOperation() async throws {
+        let service = PinTheoryAuthService(configuration: try configuration(), storage: AuthMemoryStorage(),
+            fetch: { _ in throw URLError(.notConnectedToInternet) })
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        let requestID = try service.prepareAppleRequest(request)
+
+        #expect(request.state == String(requestID))
+        #expect(request.requestedScopes == [.email, .fullName])
+        #expect(request.nonce?.count == 64)
+        #expect(service.isBusy)
+
+        do {
+            try await service.completeAppleSignIn(.failure(ASAuthorizationError(.canceled)), requestID: requestID)
+            Issue.record("Apple cancellation should not sign in")
+        } catch {
+            #expect(error as? PinTheoryAuthError == .cancelled)
+        }
+        #expect(!service.isBusy)
+    }
+
     @Test func revokedLeaseCannotWriteReadOrDeleteNewSession() throws {
         let storage = AuthMemoryStorage()
         let old = PinTheoryAuthStorageLease(storage: storage)

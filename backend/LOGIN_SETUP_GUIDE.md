@@ -4,7 +4,7 @@ Updated: 2026-10-21. Dashboard labels can change; use the linked official guides
 
 ## Current email + password configuration (supersedes magic-link instructions below)
 
-The app now has **Sign in**, **Create account**, **Forgot password**, and Google browser login. Apple is deferred. URL-scheme routing is integrated; actual account flows have compiled but have not been tested against the live service. Older sections below describe the original passwordless plan and must not be followed for the current email UI.
+The app now has **Sign in**, **Create account**, **Forgot password**, Google browser login, and native **Sign in with Apple**. URL-scheme routing is integrated; actual account flows have compiled but have not been tested against the live service. Older sections below describe the original passwordless plan and must not be followed for the current email UI.
 
 1. In Authentication → Sign In / Providers → Email, keep **Email enabled**, **new user signups enabled** for your test cohort and **Confirm email enabled**. Password login uses the same Email provider; no new client key is required. Set a suitable server-side password policy (recommended minimum eight characters, stronger as appropriate). The app recommends eight for new passwords; Supabase is authoritative.
 2. In Authentication → URL Configuration → Redirect URLs, allowlist BOTH exact values: `golfpintheory://auth/callback` and `golfpintheory://auth/reset-password`. If using a mobile Site URL, set it to `golfpintheory://auth/callback`; an existing HTTPS fallback can remain. Remove the old custom-scheme redirect; this prelaunch app does not support it. Google's HTTPS provider callback remains unchanged.
@@ -24,7 +24,7 @@ Passwords are entered only in the app's secure fields and sent over HTTPS to Sup
 1. Open [your Supabase project](https://supabase.com/dashboard/project/hdeiikpgtralsfnwbxft).
 2. Decide whether this is the development/staging project. Recommended: use it for staging and create a separate production project before release.
 3. Check the selected region and billing settings. Enable multifactor authentication on your operator accounts; keep recovery codes in your password manager.
-4. In Xcode, check the app target's Signing & Capabilities → Bundle Identifier. The implementation plan uses `com.fairwayvector.app.pintheory`; confirm the actual identifier before registering Apple/Google clients. If this replaces an existing App Store app, retain that app's registered bundle identity rather than changing it casually.
+4. In Xcode, check the app target's Signing & Capabilities → Bundle Identifier. The current app target uses `com.fairwayvector.app.golfpintheory`; confirm the identifier before registering Apple/Google clients. If this replaces an existing App Store app, retain that app's registered bundle identity rather than changing it casually.
 5. Select the Apple Developer team that owns the app. An Apple Developer Program membership is needed for native Sign in with Apple capabilities.
 
 The supplied project URL and publishable key are already in the ignored local app configuration. Do not repeat the key in documentation. Provider secrets, SMTP passwords, database passwords, Apple signing keys and Supabase administrative keys belong only in trusted dashboards/secret storage, never chat or the mobile app.
@@ -97,24 +97,24 @@ The foundation currently opens Google in a browser authentication session. Start
 
 Later native Google setup requires an iOS OAuth client with the final bundle ID and an Android client with its final package name and signing certificate fingerprints. Do not guess the Android identifier now. Those additions are not required for the current browser-based foundation.
 
-## 6. Resume native Sign in with Apple for iOS (currently paused)
+## 6. Configure native Sign in with Apple for iOS
 
-Apple login is implemented in source but the UI and signing capability are paused while the developer membership migration is pending. Wait until Apple restores membership benefits before doing these steps.
+The iOS UI, nonce-protected identity-token exchange, Xcode capability, and entitlement are enabled in the current app source. Apple Developer and Supabase provider configuration are still required before live sign-in can work.
 
 1. Open [Apple Developer → Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list).
 2. Under **Identifiers → App IDs**, find or register the confirmed app bundle ID.
 3. Enable **Sign in with Apple**, configure it as the primary App ID where appropriate, and save. Do not create a second identity if the existing app already has one.
 4. Open Supabase → Authentication → Providers → Apple.
 5. Enable Apple and add the actual bundle ID to its accepted **Client IDs**.
-6. Save. Native-only identity-token sign-in does not require the browser OAuth Services ID/client secret in the next section.
+6. Save. Native identity-token sign-in does not require the browser OAuth Services ID/client secret described in the next section. Verify Apple login with a staging account before release.
 
-The app target now includes the Sign in with Apple capability and entitlement for `com.fairwayvector.app.pintheory`. Xcode automatic signing should refresh the provisioning profile. Verify the same App ID is enabled in Apple Developer and the same bundle ID is in Supabase's Apple provider. Dashboard configuration alone does not configure the Apple Developer capability or provisioning profile.
+The app target includes the Sign in with Apple capability and entitlement for `com.fairwayvector.app.golfpintheory`. Xcode automatic signing should refresh the provisioning profile. Verify that exact App ID is enabled in Apple Developer and that the same bundle ID is listed in Supabase's Apple provider. Dashboard configuration alone does not configure the Apple Developer capability or provisioning profile.
 
 ## 7. Add Apple browser login for Android (can wait until Android work)
 
 This lets an Apple-first user access the same service from Android using Apple's browser flow. Grouping it with the native App ID helps preserve the intended Apple identity; verify the resulting identity in staging rather than assuming emails match.
 
-1. In Apple Developer → Identifiers, create a **Services ID**. A proposed identifier is `com.fairwayvector.app.pintheory.auth`; confirm availability and ownership before using it.
+1. In Apple Developer → Identifiers, create a **Services ID** only if implementing Apple browser login. A possible identifier is `com.fairwayvector.app.golfpintheory.auth`; confirm availability and ownership before using it.
 2. Enable Sign in with Apple for that Services ID and select the native app's **Primary App ID**.
 3. Configure Domains and Subdomains with `hdeiikpgtralsfnwbxft.supabase.co` (no scheme/path).
 4. Configure Return URLs with `https://hdeiikpgtralsfnwbxft.supabase.co/auth/v1/callback`.
