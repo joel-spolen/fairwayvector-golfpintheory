@@ -222,7 +222,7 @@ struct CourseTeeSelectionCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            CourseSelectionHeading(title: AppLanguage.localized("TEE SET"))
+            CourseSelectionHeading(title: AppLanguage.localized("CHOOSE A TEE"))
             if model.purpose == .handicap {
                 HStack {
                     Text(AppLanguage.localized("Rating category"))
@@ -256,20 +256,62 @@ struct CourseTeeSelectionCard: View {
                 }
                 .accessibilityIdentifier("golf-rating-category-picker")
             }
-            Picker(AppLanguage.localized("Tee"), selection: Binding(
-                get: { model.selectedTeeID ?? "" },
-                set: { model.selectedTeeID = $0.isEmpty ? nil : $0 }
-            )) {
-                Text(AppLanguage.localized("Select tee")).tag("")
+            Menu {
                 ForEach(model.selectableTees) { tee in
-                    Text("\(tee.teeName) · CR \(tee.rating(for: model.selectedSex).map { String(format: "%.1f", $0) } ?? "–") · Slope \(tee.slope(for: model.selectedSex).map(String.init) ?? "–")")
-                        .tag(tee.teeID)
+                    Button {
+                        model.selectedTeeID = tee.teeID
+                    } label: {
+                        if model.selectedTeeID == tee.teeID {
+                            Label(teeMenuTitle(tee), systemImage: "checkmark")
+                        } else {
+                            Text(teeMenuTitle(tee))
+                        }
+                    }
+                    .accessibilityIdentifier("course-tee-option-\(tee.teeID)")
                 }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "flag.fill")
+                        .font(.title3.weight(.semibold))
+                        .foregroundStyle(PureLineStyle.accent)
+                        .frame(width: 42, height: 42)
+                        .background(PureLineStyle.accent.opacity(0.10), in: RoundedRectangle(cornerRadius: 12))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Selected tee")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(PureLineStyle.muted)
+                        Text(model.selectedTee?.teeName ?? L("Select tee"))
+                            .font(.headline.weight(.semibold))
+                            .foregroundStyle(PureLineStyle.ink)
+                        if let tee = model.selectedTee {
+                            Text("CR \(tee.rating(for: model.selectedSex).map { String(format: "%.1f", $0) } ?? "–") · Slope \(tee.slope(for: model.selectedSex).map(String.init) ?? "–") · Tap to change")
+                                .font(.caption)
+                                .foregroundStyle(PureLineStyle.muted)
+                        } else {
+                            Text("Tap to choose your tee")
+                                .font(.caption)
+                                .foregroundStyle(PureLineStyle.muted)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    Image(systemName: "chevron.down")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(PureLineStyle.accent)
+                }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 14))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14)
+                        .strokeBorder(PureLineStyle.accent.opacity(0.28), lineWidth: 1)
+                }
+                .contentShape(RoundedRectangle(cornerRadius: 14))
             }
-            .pickerStyle(.navigationLink)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(PureLineStyle.surface, in: RoundedRectangle(cornerRadius: 12))
+            .buttonStyle(.plain)
+            .accessibilityLabel("Selected tee")
+            .accessibilityValue(model.selectedTee?.teeName ?? L("No tee selected"))
+            .accessibilityHint("Opens the tee list. Choose another tee to update this course.")
+            .accessibilityIdentifier("golf-tee-picker")
 
             Text(model.purpose == .handicap
                   ? "\(detail.numHoles) holes"
@@ -282,6 +324,10 @@ struct CourseTeeSelectionCard: View {
             }
         }
         .pureLineCard()
+    }
+
+    private func teeMenuTitle(_ tee: GolfAPITee) -> String {
+        "\(tee.teeName) · CR \(tee.rating(for: model.selectedSex).map { String(format: "%.1f", $0) } ?? "–") · Slope \(tee.slope(for: model.selectedSex).map(String.init) ?? "–")"
     }
 }
 

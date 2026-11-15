@@ -18,6 +18,7 @@ struct PinTheoryLoginView: View {
     @State private var operation: Task<Void, Never>?
     @State private var appleRequestID: UInt64?
     @State private var generation: UInt64 = 0
+    @State private var loginScrollRevision = UUID()
     @FocusState private var focusedField: Field?
 
     private enum Field: Hashable { case email, password, confirmation }
@@ -163,6 +164,7 @@ struct PinTheoryLoginView: View {
                     .padding(24)
                     .frame(maxWidth: .infinity)
                 }
+                .id(loginScrollRevision)
                 .scrollDismissesKeyboard(.interactively)
                 .background(PureLineStyle.canvas.ignoresSafeArea())
                 .foregroundStyle(PureLineStyle.ink)
@@ -179,6 +181,7 @@ struct PinTheoryLoginView: View {
                 }
                 .onChange(of: auth.state) { _, state in
                     if state == .signedOut {
+                        loginScrollRevision = UUID()
                         scrollProxy.scrollTo("account-login-top", anchor: .top)
                     }
                     // Recovery is published BEFORE its SDK callback exchange finishes.
