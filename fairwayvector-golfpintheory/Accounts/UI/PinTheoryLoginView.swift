@@ -172,7 +172,7 @@ struct PinTheoryLoginView: View {
                 .preferredColorScheme(.light)
                 .background { PinTheoryAuthenticationWindowReader(broker: browser).frame(width: 0, height: 0) }
                 .onAppear {
-                    scrollProxy.scrollTo("account-login-top", anchor: .top)
+                    resetLoginScroll(using: scrollProxy)
                     showServiceError()
                 }
                 .onDisappear {
@@ -188,6 +188,13 @@ struct PinTheoryLoginView: View {
                     if state == .passwordRecovery { detachOperation() }
                     else if state != .signedOut { cancelOperation() }
                 }
+        }
+    }
+
+    private func resetLoginScroll(using proxy: ScrollViewProxy) {
+        Task { @MainActor in
+            await Task.yield()
+            proxy.scrollTo("account-login-top", anchor: .top)
         }
     }
 

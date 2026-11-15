@@ -70,6 +70,7 @@ private struct PinTheoryAuthenticatedGate: View {
             case .signedOut:
                 if let deletionNotice = session.accountDeletionNotice {
                     PinTheoryLoginView(auth: auth, browser: session.browser, notice: deletionNotice)
+                        .id("post-deletion-\(deletionNotice)")
                 } else if auth.lastError == .secureStorageUnavailable || session.message != nil {
                     ContentUnavailableView {
                         Label("Secure account storage unavailable", systemImage: "lock.shield")

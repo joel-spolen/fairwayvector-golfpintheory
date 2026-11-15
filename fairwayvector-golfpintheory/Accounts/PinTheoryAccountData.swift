@@ -129,6 +129,7 @@ final class PinTheoryAccountData: Identifiable {
             RecentProviderCourseStore.key: Data(),
             "map.development.recentCourseReference.v1": Data(),
             "hcp.provider.recentCourseReference.v1": Data(),
+            "onboarding.handicapRangePrompted.v1": false,
         ]
         let existing = scoped.persistentDomain(forName: defaultsSuiteName) ?? [:]
         for (key, value) in emptyContent where existing[key] == nil {

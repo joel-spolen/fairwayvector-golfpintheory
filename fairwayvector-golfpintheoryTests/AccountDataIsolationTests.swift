@@ -32,6 +32,7 @@ struct AccountDataIsolationTests {
 
         let profile = PlayerProfileStore(userDefaults: a.defaults)
         profile.update { $0.isSetupComplete = true; $0.exactHandicap = 7.2 }
+        a.defaults.set(true, forKey: "onboarding.handicapRangePrompted.v1")
         a.defaults.set("A flags", forKey: "customFlagPositions")
         a.defaults.set(Data("A recent".utf8), forKey: "map.recentCourseReference")
         let context = ModelContext(a.modelContainer)
@@ -43,6 +44,7 @@ struct AccountDataIsolationTests {
             #expect(!PlayerProfileStore(userDefaults: account.defaults).profile.isSetupComplete)
             #expect(account.defaults.string(forKey: "customFlagPositions") == "")
             #expect(account.defaults.data(forKey: "map.recentCourseReference") == Data())
+            #expect(!account.defaults.bool(forKey: "onboarding.handicapRangePrompted.v1"))
             #expect(try ModelContext(account.modelContainer).fetchCount(FetchDescriptor<PlayerProfile>()) == 0)
             #expect(PlayedRoundStore(url: account.roundsURL).saved.isEmpty)
         }
@@ -51,6 +53,7 @@ struct AccountDataIsolationTests {
         #expect(reopened.id == a.id)
         #expect(reopened.directory == a.directory)
         #expect(PlayerProfileStore(userDefaults: reopened.defaults).profile.exactHandicap == 7.2)
+        #expect(reopened.defaults.bool(forKey: "onboarding.handicapRangePrompted.v1"))
         #expect(reopened.defaults.string(forKey: "customFlagPositions") == "A flags")
         #expect(try ModelContext(reopened.modelContainer).fetch(FetchDescriptor<PlayerProfile>()).first?.name == "Account A")
     }

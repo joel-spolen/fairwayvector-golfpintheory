@@ -188,7 +188,6 @@ struct ContentView: View {
             if showingHandicapSetup {
                 TrajectoryProfileSetupWizardView(profileStore: trajectoryModel.playerProfileStore,
                     unitPreferences: trajectoryModel.unitPreferences) {
-                    accountData.defaults.set(true, forKey: Self.handicapSetupPromptedKey)
                     showingHandicapSetup = false
                     if !trajectoryModel.playerProfileStore.needsSetup { scheduleAutomaticSync() }
                 }
@@ -196,8 +195,7 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            showingHandicapSetup = trajectoryModel.playerProfileStore.needsSetup
-                && !accountData.defaults.bool(forKey: Self.handicapSetupPromptedKey)
+            presentInitialHandicapSetupIfNeeded()
         }
         .fullScreenCover(item: $destination, onDismiss: { requestStartRound = false }) { screen in
             feature(screen)
@@ -241,6 +239,12 @@ struct ContentView: View {
         // Unlike an environment override, this also controls presented screens.
         .preferredColorScheme(.light)
         .defaultAppStorage(accountData.defaults)
+    }
+
+    private func presentInitialHandicapSetupIfNeeded() {
+        guard !accountData.defaults.bool(forKey: Self.handicapSetupPromptedKey) else { return }
+        accountData.defaults.set(true, forKey: Self.handicapSetupPromptedKey)
+        showingHandicapSetup = trajectoryModel.playerProfileStore.needsSetup
     }
 
     @ViewBuilder private func feature(_ screen: Destination) -> some View {
