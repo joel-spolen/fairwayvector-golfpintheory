@@ -26,37 +26,9 @@ struct HoleMapView: View {
         MapReader { proxy in
             Map(position: $position, bounds: cameraBounds,
                 interactionModes: isDraggingTarget ? [] : isZoomedIn ? [.pan, .zoom] : [.zoom]) {
-                if usesGPS && simulatedUserLocation == nil {
-                    UserAnnotation()
-                }
-
-                #if DEBUG
-                if let simulatedUserLocation {
-                    Annotation("Simulated golfer", coordinate: simulatedUserLocation.coordinate) {
-                        Label("DEV YOU", systemImage: "figure.golf")
-                            .font(.caption2.bold())
-                            .padding(6)
-                            .foregroundStyle(.white)
-                            .background(PureLineStyle.accent, in: Capsule())
-                    }
-                    .annotationTitles(.hidden)
-                }
-                #endif
-
-                if let tee = hole.tee {
-                    Annotation("Tee", coordinate: tee.coordinate, anchor: .bottom) {
-                        VStack(spacing: 3) {
-                            Text("TEE")
-                                .font(.caption2.bold())
-                                .foregroundStyle(PureLineStyle.ink)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 4)
-                                .background(PureLineStyle.canvas, in: Capsule())
-                            Image(systemName: "mappin.and.ellipse")
-                                .font(.title2.weight(.semibold))
-                                .foregroundStyle(PureLineStyle.accent)
-                                .shadow(color: .black.opacity(0.3), radius: 2)
-                        }
+                if let point = simulatedUserLocation ?? origin ?? hole.tee {
+                    Annotation("", coordinate: point.coordinate) {
+                        CourseLocationDot(isGPS: usesGPS && simulatedUserLocation == nil)
                     }
                     .annotationTitles(.hidden)
                 }
@@ -349,4 +321,27 @@ struct HoleMapView: View {
         position = .camera(initialCamera)
     }
 
+}
+
+/// Identical location markers for GPS and tee-based distances; only their color differs.
+struct CourseLocationDot: View {
+    let isGPS: Bool
+
+    private var color: Color { isGPS ? .blue : .gray }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(color.opacity(0.18))
+                .frame(width: 36, height: 36)
+            Circle()
+                .fill(color)
+                .frame(width: 16, height: 16)
+                .overlay { Circle().strokeBorder(.white, lineWidth: 3) }
+                .shadow(color: .black.opacity(0.20), radius: 2, y: 1)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(isGPS ? L("From your GPS position") : L("From the tee"))
+        .accessibilityIdentifier("course-location-dot")
+    }
 }

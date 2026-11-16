@@ -118,6 +118,13 @@ struct DistanceOriginTests {
         let nearPath = CLLocation(latitude: tee.lat + 100 / 111_195.0, longitude: tee.lon)
         let origin = try #require(DistanceOrigin.resolve(location: nearPath, hole: hole))
         #expect(origin.usesGPS)
+        #expect(origin.point == GeoPoint(nearPath.coordinate))
+    }
+
+    @Test func fallsBackToTeeWithoutGPSFix() throws {
+        let origin = try #require(DistanceOrigin.resolve(location: nil, hole: hole))
+        #expect(!origin.usesGPS)
+        #expect(origin.point == tee)
     }
 
     @Test func fallsBackToTeeWhenFixIsOffHole() throws {
