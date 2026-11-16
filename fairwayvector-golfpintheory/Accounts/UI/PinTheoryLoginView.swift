@@ -7,6 +7,8 @@ import AuthenticationServices
 struct PinTheoryLoginView: View {
     @ObservedObject private var auth: PinTheoryAuthService
     @StateObject private var browser: PinTheoryWebAuthenticationBroker
+    private let accountNotice: String?
+    @Environment(\.scenePhase) private var scenePhase
     @State private var email = ""
     @State private var password = ""
     @State private var confirmation = ""
@@ -18,7 +20,6 @@ struct PinTheoryLoginView: View {
     @State private var operation: Task<Void, Never>?
     @State private var appleRequestID: UInt64?
     @State private var generation: UInt64 = 0
-    @State private var loginScrollRevision = UUID()
     @FocusState private var focusedField: Field?
 
     private enum Field: Hashable { case email, password, confirmation }
@@ -29,6 +30,7 @@ struct PinTheoryLoginView: View {
     /// After recovery, root can pass a transient password-updated notice here.
     init(auth: PinTheoryAuthService, browser: PinTheoryWebAuthenticationBroker, notice: String? = nil) {
         self.auth = auth
+        accountNotice = notice
         _browser = StateObject(wrappedValue: browser)
         _notice = State(initialValue: notice)
     }
@@ -79,12 +81,10 @@ struct PinTheoryLoginView: View {
                 }
                 .id("account-login-top")
 
-                SignInWithAppleButton(.signIn, onRequest: prepareAppleSignIn, onCompletion: completeAppleSignIn)
-                    .signInWithAppleButtonStyle(.black)
+                PinTheoryAppleSignInButton(isEnabled: !unavailable,
+                    onRequest: prepareAppleSignIn, onCompletion: completeAppleSignIn)
                     .frame(maxWidth: .infinity)
                     .frame(height: 48)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .disabled(unavailable)
                     .accessibilityIdentifier("account-apple-sign-in")
 
                 Button { start(.google) } label: {
@@ -164,7 +164,6 @@ struct PinTheoryLoginView: View {
                     .padding(24)
                     .frame(maxWidth: .infinity)
                 }
-                .id(loginScrollRevision)
                 .scrollDismissesKeyboard(.interactively)
                 .background(PureLineStyle.canvas.ignoresSafeArea())
                 .foregroundStyle(PureLineStyle.ink)
@@ -175,14 +174,22 @@ struct PinTheoryLoginView: View {
                     resetLoginScroll(using: scrollProxy)
                     showServiceError()
                 }
+                .onChange(of: accountNotice) { _, value in
+                    notice = value
+                    resetLoginScroll(using: scrollProxy)
+                }
+                .onChange(of: scenePhase) { _, phase in
+                    guard phase == .active, auth.state == .signedOut,
+                          !auth.isBusy, operation == nil, appleRequestID == nil else { return }
+                    resetLoginScroll(using: scrollProxy)
+                }
                 .onDisappear {
                     if auth.state == .passwordRecovery { detachOperation() }
                     else { cancelOperation() }
                 }
                 .onChange(of: auth.state) { _, state in
                     if state == .signedOut {
-                        loginScrollRevision = UUID()
-                        scrollProxy.scrollTo("account-login-top", anchor: .top)
+                        resetLoginScroll(using: scrollProxy)
                     }
                     // Recovery is published BEFORE its SDK callback exchange finishes.
                     if state == .passwordRecovery { detachOperation() }
@@ -192,6 +199,7 @@ struct PinTheoryLoginView: View {
     }
 
     private func resetLoginScroll(using proxy: ScrollViewProxy) {
+        focusedField = nil
         Task { @MainActor in
             await Task.yield()
             proxy.scrollTo("account-login-top", anchor: .top)
@@ -339,8 +347,8 @@ struct PinTheoryLoginView: View {
         localError = error.localizedDescription
     }
 
-    private func prepareAppleSignIn(_ request: ASAuthorizationAppleIDRequest) {
-        guard !unavailable else { return }
+    private func prepareAppleSignIn(_ request: ASAuthorizationAppleIDRequest) throws {
+        guard !unavailable else { throw PinTheoryAuthError.operationInProgress }
         focusedField = nil
         localError = nil
         notice = nil
@@ -350,6 +358,7 @@ struct PinTheoryLoginView: View {
         } catch {
             localError = (error as? PinTheoryAuthError)?.localizedDescription
                 ?? L("Sign-in could not be completed. Please try again.")
+            throw error
         }
     }
 

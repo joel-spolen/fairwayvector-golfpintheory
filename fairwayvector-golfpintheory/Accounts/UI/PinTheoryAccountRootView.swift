@@ -68,10 +68,7 @@ private struct PinTheoryAuthenticatedGate: View {
         Group {
             switch auth.state {
             case .signedOut:
-                if let deletionNotice = session.accountDeletionNotice {
-                    PinTheoryLoginView(auth: auth, browser: session.browser, notice: deletionNotice)
-                        .id("post-deletion-\(deletionNotice)")
-                } else if auth.lastError == .secureStorageUnavailable || session.message != nil {
+                if auth.lastError == .secureStorageUnavailable || session.message != nil {
                     ContentUnavailableView {
                         Label("Secure account storage unavailable", systemImage: "lock.shield")
                     } description: {
@@ -81,7 +78,8 @@ private struct PinTheoryAuthenticatedGate: View {
                         Button("Clear sign-in and retry", role: .destructive) { confirmingReset = true }
                     }
                 } else if session.started {
-                    PinTheoryLoginView(auth: auth, browser: session.browser)
+                    PinTheoryLoginView(auth: auth, browser: session.browser,
+                        notice: session.accountDeletionNotice)
                 } else { ProgressView("Restoring your account…") }
             case .restoring:
                 ProgressView("Restoring your account…")

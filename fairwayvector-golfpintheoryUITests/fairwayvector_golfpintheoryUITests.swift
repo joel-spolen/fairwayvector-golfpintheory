@@ -13,6 +13,28 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
     }
 
     @MainActor
+    func testAppleLoginOptionIsVisibleBeforeAndAfterForeground() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        let apple = app.buttons["account-apple-sign-in"]
+        XCTAssertTrue(apple.waitForExistence(timeout: 20), app.debugDescription)
+        XCTAssertTrue(apple.isHittable)
+        let initial = XCTAttachment(screenshot: app.screenshot())
+        initial.name = "Login with Apple option"
+        initial.lifetime = .keepAlways
+        add(initial)
+        XCUIDevice.shared.press(.home)
+        app.activate()
+        XCTAssertTrue(apple.waitForExistence(timeout: 10))
+        XCTAssertTrue(apple.isHittable)
+        let resumed = XCTAttachment(screenshot: app.screenshot())
+        resumed.name = "Login after foreground"
+        resumed.lifetime = .keepAlways
+        add(resumed)
+    }
+
+    @MainActor
     private func launchAtHome(seedRound: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-ui-testing"] + (seedRound ? ["-ui-testing-seed-round"] : [])
