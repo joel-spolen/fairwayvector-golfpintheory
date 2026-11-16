@@ -187,7 +187,7 @@ struct ContentView: View {
         .overlay {
             if showingHandicapSetup {
                 TrajectoryProfileSetupWizardView(profileStore: trajectoryModel.playerProfileStore,
-                    unitPreferences: trajectoryModel.unitPreferences) {
+                    unitPreferences: trajectoryModel.unitPreferences, allowsCancellation: false) {
                     showingHandicapSetup = false
                     if !trajectoryModel.playerProfileStore.needsSetup { scheduleAutomaticSync() }
                 }

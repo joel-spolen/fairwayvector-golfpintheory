@@ -3,12 +3,15 @@ import SwiftUI
 struct TrajectoryProfileSetupWizardView: View {
     @ObservedObject var profileStore: PlayerProfileStore
     let unitPreferences: UnitPreferences
+    let allowsCancellation: Bool
     let onClose: () -> Void
     @State private var selectedBand: HandicapBand
 
-    init(profileStore: PlayerProfileStore, unitPreferences: UnitPreferences, onClose: @escaping () -> Void) {
+    init(profileStore: PlayerProfileStore, unitPreferences: UnitPreferences,
+         allowsCancellation: Bool = true, onClose: @escaping () -> Void) {
         self.profileStore = profileStore
         self.unitPreferences = unitPreferences
+        self.allowsCancellation = allowsCancellation
         self.onClose = onClose
         let profile = profileStore.profile
         _selectedBand = State(initialValue: profile.handicapBand)
@@ -55,8 +58,10 @@ struct TrajectoryProfileSetupWizardView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", action: onClose)
+                if allowsCancellation {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel", action: onClose)
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") { finishSetup() }
