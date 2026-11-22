@@ -6,7 +6,7 @@ import StoreKit
 @MainActor @Observable
 final class ProStore {
     static let shared = ProStore()
-    static let productIDs = ["pintheory.pro.yearly", "pintheory.pro.monthly"]
+    static let productIDs = ["02", "01"]
 
     private(set) var isPro = false
     private var updates: Task<Void, Never>?

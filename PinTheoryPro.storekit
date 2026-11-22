@@ -41,7 +41,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "pintheory.pro.yearly",
+          "productID" : "02",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Pro yearly",
           "subscriptionGroupID" : "21600000",
@@ -65,7 +65,7 @@
               "locale" : "en_US"
             }
           ],
-          "productID" : "pintheory.pro.monthly",
+          "productID" : "01",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Pro monthly",
           "subscriptionGroupID" : "21600000",
