@@ -63,6 +63,11 @@ final class CourseWeatherStore {
     }
 
     func load(for location: GeoPoint, forceRefresh: Bool = false) async {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        // Map UI regression tests must not fetch weather or read an old live cache.
+        if arguments.contains("-ui-testing"), arguments.contains("-ui-testing-local-map") { return }
+        #endif
         let locationKey = Self.locationKey(location)
         if loadedLocationKey == locationKey, !forceRefresh, weather != nil { return }
 

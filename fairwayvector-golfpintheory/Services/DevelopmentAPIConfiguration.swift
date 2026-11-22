@@ -14,6 +14,10 @@ nonisolated struct DevelopmentAPIConfiguration: Sendable {
     let gpxz: Mode
     static var current: Self {
         #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-ui-testing"), arguments.contains("-ui-testing-local-map") {
+            return Self(golfAPI: .mock, gpxz: .mock)
+        }
         // Without sign-in there is no token for the live data service.
         if Bundle.main.object(forInfoDictionaryKey: "GOLFPINTHEORY_SKIP_SIGN_IN") as? String == "YES" {
             return Self(golfAPI: .mock, gpxz: .mock)

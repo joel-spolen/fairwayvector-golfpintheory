@@ -152,8 +152,17 @@ final class PinTheoryAccountSession: ObservableObject {
             let data = try PinTheoryAccountData(projectHost: "ui-test.local", userID: userID)
             data.defaults.set(false, forKey: Self.syncOptInKey)
             data.defaults.set(true, forKey: "onboarding.handicapRangePrompted.v1")
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-local-map") {
+                let reference = DevelopmentGolfAPIFixtures.reference()
+                data.defaults.set(RecentProviderCourseStore.recording(reference, in: Data()),
+                                  forKey: RecentProviderCourseStore.key)
+            }
             if ProcessInfo.processInfo.arguments.contains("-ui-testing-seed-round") {
                 try Self.seedUITestRound(at: data.roundsURL)
+            }
+            if ProcessInfo.processInfo.arguments.contains("-ui-testing-local-map"),
+               ProcessInfo.processInfo.arguments.contains("-ui-testing-hills-active-round") {
+                try Self.seedUITestHillsActiveRound(at: data.roundsURL)
             }
             AccountCourseStorage.configure(accountDirectory: data.directory)
             accountData = data
@@ -178,6 +187,32 @@ final class PinTheoryAccountSession: ObservableObject {
         let store = PlayedRoundStore(url: url)
         try store.start(round)
         try store.saveActive()
+    }
+
+    /// Resume the actual bundled 62/Men geometry, not the synthetic demo course.
+    private static func seedUITestHillsActiveRound(at url: URL) throws {
+        var reference = CourseReference(osmRelationID: 0, name: "Hills Golf & Sports Club")
+        reference.osmRelationID = nil
+        reference.golfAPICourseID = BundledSavedCourseStore.hillsCourseID
+        reference.golfAPITeeID = "185072"
+        reference.courseName = "Hills"
+        reference.city = "Mölndal"
+        reference.region = "Västra Götaland"
+        reference.location = GeoPoint(lat: 57.6213953, lon: 12.0125269)
+        reference.holeCount = 18
+        reference.totalPar = 71
+        reference.teeName = "62"
+        reference.teeSex = "male"
+        reference.courseRating = 74.7
+        reference.slopeRating = 140
+        guard let course = BundledSavedCourseStore().course(reference: reference) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        let owner = RoundPlayer(name: "You", isOwner: true, handicapIndex: 18)
+        let round = PlayedRound(reference: reference, course: course,
+            holes: course.holes.map { PlayedHole(number: $0.number, par: $0.par, strokeIndex: $0.handicapIndex) },
+            players: [owner], game: .strokePlay, detailMode: .strokesOnly)
+        try PlayedRoundStore(url: url).start(round)
     }
     #endif
 

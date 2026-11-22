@@ -21,6 +21,9 @@ struct HoleMapView: View {
     @State private var targetDragOffset = CGSize.zero
     @GestureState private var targetGestureActive = false
     @State private var isZoomedIn = false
+    @State private var targetScreenPoint: CGPoint?
+    @State private var originScreenPoint: CGPoint?
+    @State private var flagScreenPoint: CGPoint?
 
     var body: some View {
         MapReader { proxy in
@@ -85,6 +88,7 @@ struct HoleMapView: View {
             .onMapCameraChange(frequency: .continuous) { context in
                 onHeadingChange(context.camera.heading)
                 cameraRevision &+= 1
+                refreshTargetProjection(using: proxy)
                 isZoomedIn = context.camera.distance < initialCameraDistance * 0.98
                 if !isZoomedIn,
                    GolfGeometry.distance(GeoPoint(context.camera.centerCoordinate), initialCameraCenter) > 5 {
@@ -104,6 +108,8 @@ struct HoleMapView: View {
                             guard !isDraggingTarget, let coordinate = proxy.convert(tap.location, from: .local) else { return }
                             let point = GeoPoint(coordinate)
                             onTargetInteractionBegan()
+                            targetScreenPoint = tap.location
+                            refreshTargetEndpoints(using: proxy)
                             tapPoint = point
                             onTargetCommitted(point)
                         }
@@ -136,14 +142,13 @@ struct HoleMapView: View {
                 // Screen-space paths update with the drag, without MapKit replacing
                 // geographic overlays (and animating their endpoints) on every move.
                 Canvas { context, _ in
-                    guard let tapPoint,
-                          let target = proxy.convert(tapPoint.coordinate, to: .local) else { return }
+                    guard let target = targetScreenPoint else { return }
                     var path = Path()
-                    if let origin, let start = proxy.convert(origin.coordinate, to: .local) {
+                    if let start = originScreenPoint {
                         path.move(to: start)
                         path.addLine(to: target)
                     }
-                    if let flag, let end = proxy.convert(flag.coordinate, to: .local) {
+                    if let end = flagScreenPoint {
                         path.move(to: target)
                         path.addLine(to: end)
                     }
@@ -155,7 +160,7 @@ struct HoleMapView: View {
                 .accessibilityHidden(true)
             }
             .overlay {
-                if let tapPoint, let target = proxy.convert(tapPoint.coordinate, to: .local) {
+                if tapPoint != nil, let target = targetScreenPoint {
                     ZStack {
                         Circle()
                             .fill(PureLineStyle.accent.opacity(0.18))
@@ -184,6 +189,7 @@ struct HoleMapView: View {
                                 let location = CGPoint(x: value.location.x + targetDragOffset.width,
                                                        y: value.location.y + targetDragOffset.height)
                                 if let coordinate = proxy.convert(location, from: .local) {
+                                    targetScreenPoint = location
                                     self.tapPoint = GeoPoint(coordinate)
                                 }
                             }
@@ -191,6 +197,7 @@ struct HoleMapView: View {
                                 let location = CGPoint(x: value.location.x + targetDragOffset.width,
                                                        y: value.location.y + targetDragOffset.height)
                                 if let coordinate = proxy.convert(location, from: .local) {
+                                    targetScreenPoint = location
                                     self.tapPoint = GeoPoint(coordinate)
                                 }
                                 isDraggingTarget = false
@@ -203,6 +210,12 @@ struct HoleMapView: View {
                 }
             }
             .coordinateSpace(name: "holeMap")
+            .onChange(of: tapPoint) { _, point in
+                if point == nil { targetScreenPoint = nil }
+                else { refreshTargetProjection(using: proxy) }
+            }
+            .onChange(of: origin) { refreshTargetEndpoints(using: proxy) }
+            .onChange(of: flag) { refreshTargetEndpoints(using: proxy) }
         }
         .onAppear(perform: frameHole)
         .onChange(of: hole.number) { frameHole() }
@@ -212,6 +225,22 @@ struct HoleMapView: View {
                 isDraggingTarget = false
                 onTargetInteractionCancelled()
             }
+        }
+    }
+
+    private func refreshTargetEndpoints(using proxy: MapProxy) {
+        originScreenPoint = origin.flatMap { proxy.convert($0.coordinate, to: .local) }
+        flagScreenPoint = flag.flatMap { proxy.convert($0.coordinate, to: .local) }
+    }
+
+    private func refreshTargetProjection(using proxy: MapProxy) {
+        refreshTargetEndpoints(using: proxy)
+        guard let tapPoint else {
+            targetScreenPoint = nil
+            return
+        }
+        if let point = proxy.convert(tapPoint.coordinate, to: .local) {
+            targetScreenPoint = point
         }
     }
 

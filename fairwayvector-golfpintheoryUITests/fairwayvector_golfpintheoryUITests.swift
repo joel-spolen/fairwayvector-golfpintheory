@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import UIKit
 
 final class fairwayvector_golfpintheoryUITests: XCTestCase {
     override func setUpWithError() throws {
@@ -131,6 +132,259 @@ final class fairwayvector_golfpintheoryUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Start a round"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Choose your course and tee."].exists)
         returnHome(in: app)
+    }
+
+    @MainActor
+    func testSyntheticMapTargetInExploreAndRoundHoleTwo() throws {
+        // App course, terrain and weather requests are mocked. MapKit may load
+        // normal imagery for the synthetic fixture's location.
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-local-map", "-ui-testing-free",
+                               "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        XCTAssertTrue(app.buttons["global-settings-button"].waitForExistence(timeout: 20), app.debugDescription)
+
+        openHomeDestination("Explore a course", in: app)
+        openSyntheticRecentCourse(in: app)
+        assertHole(1, in: app)
+        app.buttons["Next hole"].tap()
+        assertHole(2, in: app)
+        assertTargetCanBePlacedAndMoved(in: app, context: "Explore hole 2")
+
+        app.buttons["course-round-actions-menu"].tap()
+        app.buttons["Home"].tap()
+        XCTAssertTrue(app.buttons["global-settings-button"].waitForExistence(timeout: 10))
+        openHomeDestination("Start round", in: app)
+        openSyntheticRecentCourse(in: app)
+        let start = app.buttons["start-scored-round"]
+        XCTAssertTrue(start.waitForExistence(timeout: 15), app.debugDescription)
+        scrollTo(start, in: app)
+        start.tap()
+        assertHole(1, in: app)
+        app.buttons["Enter score for this hole"].tap()
+        let next = app.buttons["score-next-page"]
+        XCTAssertTrue(next.waitForExistence(timeout: 10), app.debugDescription)
+        next.tap()
+        assertHole(2, in: app)
+        assertTargetCanBePlacedAndMoved(in: app, context: "Round hole 2")
+    }
+
+    @MainActor
+    func testBundledHillsActiveRoundTargetRenderingAcrossHoles() throws {
+        // A fresh account, bundled 62/Men snapshot, mock course/terrain and no weather.
+        // MapKit may fetch public imagery. No live course, terrain, auth or weather calls.
+        continueAfterFailure = true
+        let app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-local-map", "-ui-testing-hills-active-round",
+                               "-ui-testing-free", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        let resume = app.buttons["home-resume-round"]
+        XCTAssertTrue(resume.waitForExistence(timeout: 20), app.debugDescription)
+        guard resume.exists else { return }
+        resume.tap()
+
+        for hole in 1...3 {
+            assertHole(hole, in: app)
+            captureAndAssertHillsTarget(in: app, hole: hole)
+            if hole < 3 {
+                let score = app.buttons["Enter score for this hole"]
+                XCTAssertTrue(score.waitForExistence(timeout: 10), app.debugDescription)
+                guard score.exists else { return }
+                score.tap()
+                let next = app.buttons["score-next-page"]
+                XCTAssertTrue(next.waitForExistence(timeout: 10), app.debugDescription)
+                guard next.exists else { return }
+                next.tap()
+            }
+        }
+    }
+
+    @MainActor
+    private func captureAndAssertHillsTarget(in app: XCUIApplication, hole: Int) {
+        let marker = app.descendants(matching: .any).matching(identifier: "Target").firstMatch
+        let distance = app.descendants(matching: .any).matching(
+            NSPredicate(format: "label BEGINSWITH %@", "TARGET: ")).firstMatch
+        XCTAssertFalse(marker.exists, "Hole \(hole): stale target")
+        let before = app.screenshot()
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.72, dy: 0.46)).tap()
+        let hasDistance = distance.waitForExistence(timeout: 10)
+        // Capture as soon as target state appears, even if its accessibility element is missing.
+        let after = app.screenshot()
+        let attachment = XCTAttachment(screenshot: after)
+        attachment.name = "Hills round hole \(hole) immediately after target"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        let exists = marker.exists
+        XCTAssertTrue(exists, "Hole \(hole): no target element; screenshot retained")
+        let center = CGPoint(x: app.frame.width * 0.72, y: app.frame.height * 0.46)
+        if exists {
+            let frame = marker.frame
+            XCTAssertTrue(marker.isHittable, "Hole \(hole): target is not interactive")
+            XCTAssertTrue(app.frame.contains(frame), "Hole \(hole): target frame outside screen: \(frame)")
+            XCTAssertLessThan(hypot(frame.midX - app.frame.minX - center.x, frame.midY - app.frame.minY - center.y), 15,
+                              "Hole \(hole): target frame not at tapped point: \(frame)")
+        }
+        XCTAssertTrue(hasDistance, "Hole \(hole): target distance missing")
+        if hasDistance {
+            XCTAssertNotNil(distance.label.rangeOfCharacter(from: .decimalDigits), "Hole \(hole): \(distance.label)")
+            XCTAssertFalse(distance.label.contains("unavailable"), "Hole \(hole): \(distance.label)")
+        }
+        guard let oldPixels = ScreenshotPixels(before), let newPixels = ScreenshotPixels(after) else {
+            XCTFail("Hole \(hole): could not decode screenshots")
+            return
+        }
+        let ring = newPixels.changedAccentRing(from: oldPixels, center: center, screen: app.frame.size)
+        let glyph = newPixels.changedAccentGlyph(from: oldPixels, center: center, screen: app.frame.size)
+        let line = newPixels.longestChangedAccentRay(from: oldPixels, center: center, screen: app.frame.size)
+        XCTAssertEqual(oldPixels.changedAccentRing(from: oldPixels, center: center, screen: app.frame.size), 0)
+        XCTAssertEqual(oldPixels.changedAccentGlyph(from: oldPixels, center: center, screen: app.frame.size), 0)
+        XCTAssertEqual(oldPixels.longestChangedAccentRay(from: oldPixels, center: center, screen: app.frame.size), 0)
+        print("Hills hole \(hole): frame=\(exists ? String(describing: marker.frame) : "absent"), distance=\(hasDistance ? distance.label : "absent"), changed ring pixels=\(ring), glyph pixels=\(glyph), contiguous line samples=\(line)/24")
+        XCTAssertGreaterThan(ring, 30, "Hole \(hole): target ring not visibly rendered in screenshot")
+        XCTAssertGreaterThan(glyph, 15, "Hole \(hole): target arrow not visibly rendered in screenshot")
+        XCTAssertGreaterThanOrEqual(line, 12, "Hole \(hole): target route line not visibly rendered in screenshot")
+        guard exists, marker.isHittable, hasDistance else { return }
+        let initialDistance = distance.label
+        let initialFrame = marker.frame
+        let markerCenter = marker.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        markerCenter.press(forDuration: 0.2, thenDragTo: markerCenter.withOffset(CGVector(dx: 30, dy: -45)))
+        let moved = expectation(for: NSPredicate { _, _ in
+            distance.exists && distance.label != initialDistance
+        }, evaluatedWith: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [moved], timeout: 10), .completed,
+                       "Hole \(hole): target distance did not change after drag")
+        XCTAssertTrue(marker.isHittable, "Hole \(hole): target disappeared after drag")
+        XCTAssertGreaterThan(hypot(marker.frame.midX - initialFrame.midX, marker.frame.midY - initialFrame.midY), 10,
+                             "Hole \(hole): target did not move on screen")
+    }
+
+    /// Samples actual screenshot pixels, not the accessibility tree. A newly drawn
+    /// teal ring and a contiguous teal ray beyond its halo must both be present.
+    private struct ScreenshotPixels {
+        let width: Int
+        let height: Int
+        let pixels: [UInt8]
+
+        init?(_ screenshot: XCUIScreenshot) {
+            guard let image = screenshot.image.cgImage else { return nil }
+            let width = image.width, height = image.height
+            var bytes = [UInt8](repeating: 0, count: width * height * 4)
+            let success = bytes.withUnsafeMutableBytes { buffer -> Bool in
+                guard let context = CGContext(data: buffer.baseAddress, width: width, height: height,
+                    bitsPerComponent: 8, bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.byteOrder32Big.rawValue) else { return false }
+                context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+                return true
+            }
+            guard success else { return nil }
+            self.width = width
+            self.height = height
+            pixels = bytes
+        }
+
+        private func changedAccent(from old: ScreenshotPixels, x: CGFloat, y: CGFloat, screen: CGSize) -> Bool {
+            let px = Int(x * CGFloat(width) / screen.width), py = Int(y * CGFloat(height) / screen.height)
+            guard width == old.width, height == old.height, px >= 0, py >= 0, px < width, py < height else { return false }
+            let i = (py * width + px) * 4
+            let r = Int(pixels[i]), g = Int(pixels[i + 1]), b = Int(pixels[i + 2])
+            let change = abs(r - Int(old.pixels[i])) + abs(g - Int(old.pixels[i + 1])) + abs(b - Int(old.pixels[i + 2]))
+            return r < 70 && (60...155).contains(g) && (55...150).contains(b) && abs(g - b) < 35 && change > 40
+        }
+
+        func changedAccentRing(from old: ScreenshotPixels, center: CGPoint, screen: CGSize) -> Int {
+            var count = 0
+            for y in -24...24 {
+                for x in -24...24 where (19 * 19...24 * 24).contains(x * x + y * y) {
+                    if changedAccent(from: old, x: center.x + CGFloat(x), y: center.y + CGFloat(y), screen: screen) { count += 1 }
+                }
+            }
+            return count
+        }
+
+        func changedAccentGlyph(from old: ScreenshotPixels, center: CGPoint, screen: CGSize) -> Int {
+            var count = 0
+            for y in -12...12 {
+                for x in -12...12 where x * x + y * y <= 12 * 12 {
+                    if changedAccent(from: old, x: center.x + CGFloat(x), y: center.y + CGFloat(y), screen: screen) { count += 1 }
+                }
+            }
+            return count
+        }
+
+        func longestChangedAccentRay(from old: ScreenshotPixels, center: CGPoint, screen: CGSize) -> Int {
+            var best = 0
+            for angle in stride(from: 0, to: 360, by: 3) {
+                let radians = CGFloat(angle) * .pi / 180
+                var hits = 0
+                for step in 0..<24 {
+                    let radius = CGFloat(52 + step * 2)
+                    let x = center.x + radius * cos(radians), y = center.y + radius * sin(radians)
+                    let inMap = x > screen.width * 0.36 && y > screen.height * 0.20 && y < screen.height * 0.68
+                    if inMap && (-2...2).contains(where: { offset in
+                        changedAccent(from: old, x: x + CGFloat(offset), y: y, screen: screen)
+                    }) {
+                        hits += 1
+                        best = max(best, hits)
+                    } else { hits = 0 }
+                }
+            }
+            return best
+        }
+    }
+
+    @MainActor
+    private func openSyntheticRecentCourse(in app: XCUIApplication) {
+        let course = app.buttons["recent-course-button-mock-hills-v1"]
+        XCTAssertTrue(course.waitForExistence(timeout: 10), app.debugDescription)
+        scrollTo(course, in: app)
+        course.tap()
+    }
+
+    @MainActor
+    private func assertHole(_ number: Int, in app: XCUIApplication) {
+        let header = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Hole \(number) ·")).firstMatch
+        XCTAssertTrue(header.waitForExistence(timeout: 20), app.debugDescription)
+        XCTAssertTrue(header.isHittable)
+    }
+
+    @MainActor
+    private func assertTargetCanBePlacedAndMoved(in app: XCUIApplication, context: String) {
+        let marker = app.descendants(matching: .any).matching(identifier: "Target").firstMatch
+        let distance = app.descendants(matching: .any).matching(
+            NSPredicate(format: "label BEGINSWITH %@", "TARGET: ")).firstMatch
+        XCTAssertFalse(marker.exists, "\(context): target should initially be absent")
+        XCTAssertFalse(distance.exists, "\(context): target distance should initially be absent")
+
+        // Away from the leading sidebar, top menu and bottom hole controls.
+        let point = app.coordinate(withNormalizedOffset: CGVector(dx: 0.72, dy: 0.46))
+        point.tap()
+        XCTAssertTrue(marker.waitForExistence(timeout: 10), "\(context): \(app.debugDescription)")
+        XCTAssertTrue(marker.isHittable, "\(context): marker must be on screen and interactive")
+        XCTAssertTrue(distance.waitForExistence(timeout: 10), app.debugDescription)
+        let initialDistance = distance.label
+        XCTAssertFalse(initialDistance.contains("unavailable"), initialDistance)
+        XCTAssertNotNil(initialDistance.rangeOfCharacter(from: .decimalDigits), initialDistance)
+        let initialFrame = marker.frame
+        XCTAssertTrue(app.frame.intersects(initialFrame), "\(context): marker is off screen: \(initialFrame)")
+        let initialScreenshot = XCTAttachment(screenshot: app.screenshot())
+        initialScreenshot.name = "\(context) after tap"
+        initialScreenshot.lifetime = .keepAlways
+        add(initialScreenshot)
+
+        let markerCenter = marker.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        markerCenter.press(forDuration: 0.2, thenDragTo: markerCenter.withOffset(CGVector(dx: 45, dy: -65)))
+        let moved = expectation(for: NSPredicate { _, _ in
+            distance.exists && distance.label != initialDistance
+        }, evaluatedWith: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [moved], timeout: 10), .completed,
+                       "\(context): target distance did not change after drag: \(app.debugDescription)")
+        XCTAssertTrue(marker.isHittable, "\(context): target disappeared after drag")
+        XCTAssertGreaterThan(hypot(marker.frame.midX - initialFrame.midX, marker.frame.midY - initialFrame.midY), 15,
+                             "\(context): marker did not move on screen")
+        let screenshot = XCTAttachment(screenshot: app.screenshot())
+        screenshot.name = context
+        screenshot.lifetime = .keepAlways
+        add(screenshot)
     }
 
 
