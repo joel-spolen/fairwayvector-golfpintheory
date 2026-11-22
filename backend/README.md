@@ -1,11 +1,12 @@
 # Golf PinTheory Supabase — phase-one backend foundation
 
-**Not deployed. Not database-tested. Not fully shipped auth or offline sync.**
-This backend foundation has corresponding Swift sync wire/journal foundation and
-regression source; that is not production domain integration. The wire review fix
-changes only the Swift wire/tests and backend migration/docs. No Xcode, website,
-provider configuration, secrets, or production resources were changed. No commands,
-network requests, builds, or test execution were performed for that fix.
+**Cloud sync status (2026-11-22): operational in the configured environment, per
+operator confirmation.** The app and backend sync implementation are in use. This
+repository is a source and runbook checkout, not the live deployment ledger; its
+historical validation notes do not establish which SQL regressions or full release
+acceptance checks have passed. Keep those results in the operator's deployment
+record. Account deletion, provider revocation, backup/retention and broader release
+compliance have separate status and are not implied by sync working.
 
 ## Contents
 

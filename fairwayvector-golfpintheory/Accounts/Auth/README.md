@@ -77,8 +77,12 @@ builds, tests, app launches, network calls or secret reads were performed.
 
 ## Historical email/Google integration notes (superseded where above differs)
 
-Source-only, using the installed **Auth** product from supabase-swift **2.55.4**.
-The app-wide `PinTheoryAccountSession` constructs the service and gates Home through the email, Google and native Apple sign-in UI. Cloud golf-record sync, account deletion and public-release compliance remain incomplete.
+Historical source-only integration notes, using the installed **Auth** product
+from supabase-swift **2.55.4**. They predate the current app-wide account and sync
+integration. Cloud sync is operational in the configured environment per
+operator confirmation (2026-11-22); this Auth reference does not document its live
+deployment or validate account deletion/public-release compliance. See the app
+README and sync contract for current sync behavior and protocol details.
 
 ## Service contract (historical phase-one details below)
 
@@ -131,8 +135,9 @@ Current integration supplies URL-scheme registration/routing, browser presentati
   browser/Apple sheet or cancel every underlying HTTP request.
 - Logout is **local-only**: clears the session, verifier and confirmation marker;
   no server token revocation or provider logout is implemented. Already-issued
-  access tokens can remain server-valid until expiry/revocation. Pending sync/data
-  discard policy and account cache cleanup belong to later integration.
+  access tokens can remain server-valid until expiry/revocation. The app account
+  integration retains account-scoped local golf records on sign-out; sync queue
+  handling is documented with that integration, not in this Auth-service reference.
 - Keychain failures fail closed and are reported. A failed logout locks this
   service in-process; retry when storage is available. Durable deletion cannot
   be promised after a Keychain failure. Keychain data can survive uninstall;
@@ -148,8 +153,10 @@ Current integration supplies URL-scheme registration/routing, browser presentati
   matching marker/session. Other non-storage failures conservatively clear local auth.
 - Confirmation is a local historical trust marker, not proof of a currently valid
   server session and not a security boundary on a compromised device.
-- No UI, startup/settings/account isolation, account deletion, provider linking,
-  native Google SDK, backend provisioning or complete sync integration is included.
+- This historical Auth-service reference does not specify the current UI,
+  startup/settings/account-isolation behavior, cloud-sync lifecycle, account
+  deletion, provider linking, native Google SDK or backend deployment. Consult the
+  current app/backend documentation for those areas.
 - SDK logger is disabled; errors never contain underlying URLs, tokens, keys or
   server messages. Callers must also avoid logging configuration or returned tokens.
 

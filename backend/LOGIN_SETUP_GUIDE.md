@@ -15,7 +15,7 @@ The app now has **Sign in**, **Create account**, **Forgot password**, Google bro
 7. After rebuilding, create a test account, confirm the email, then sign in with email/password. Returning logins do not send email. Existing magic-link/Google-only identities may not have a password: use **Forgot password** for the same email rather than creating duplicates. Apple private-relay emails and provider linking still need deliberate handling.
 8. Test Forgot password on the requesting device, open the reset link, enter/confirm a new password, then sign in again. Recovery sessions never expose Home. Restarting during recovery must keep the recovery gate; successful updates clear local credentials and require normal sign-in.
 
-Passwords are entered only in the app's secure fields and sent over HTTPS to Supabase; they are not stored by the app. Do not paste passwords, confirmation/reset URLs, codes, SMTP secrets or tokens into chat. Account deletion and cloud golf-record sync are still unfinished and remain release gates.
+Passwords are entered only in the app's secure fields and sent over HTTPS to Supabase; they are not stored by the app. Do not paste passwords, confirmation/reset URLs, codes, SMTP secrets or tokens into chat. Cloud golf-record sync is operational in the configured environment per operator confirmation (2026-11-22). Account deletion, provider revocation and any separately listed release checks must be verified independently; sync working does not establish those statuses.
 
 **Historical provider setup follows.** No dashboard changes or deployments have been made by writing this guide. Start with development/staging, not real customer data.
 
@@ -149,7 +149,7 @@ Send status only, for example:
 - Google web OAuth provider configured; test users added.
 - Apple native provider configured.
 - Apple browser configuration done or deferred.
-- Sync migration not deployed, or exact staging deployment outcome.
+- Cloud sync is operational in the configured environment per operator confirmation; for another environment, record the exact migration/capability version and staging outcome.
 
 Client IDs, bundle IDs and public URLs are not administrative secrets. Do not send client secrets, private keys, SMTP passwords, database credentials, session tokens or live email links/codes. Redact them from screenshots.
 
@@ -158,7 +158,7 @@ Client IDs, bundle IDs and public URLs are not administrative secrets. Do not se
 This remains implementation work, not a dashboard checklist you can complete:
 
 - Login UI, callback routing, native Apple capability, account-scoped storage and bootstrap gate.
-- Actual saved-content sync, offline queue application, conflict-resolution UI and safe logout handling.
+- Continue validating saved-content sync, offline queue/retry behavior, conflict handling and safe logout on supported devices; the conflict-resolution UI remains limited.
 - Server-side account deletion/provider revocation and retention/purge handling.
 - Updated in-app/public privacy policy, App Store data disclosures, support/reviewer access and backup/monitoring setup.
 
@@ -166,16 +166,16 @@ Once integrated, test each provider with an authorized staging account, cancella
 
 ## Troubleshooting
 
-| Symptom                                           | First check                                                                                                 |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Google `redirect_uri_mismatch`                    | Google's redirect URI must be the HTTPS Supabase callback, exactly.                                         |
-| Google denies a tester                            | External Testing audience and Test users list.                                                              |
-| Email says address not authorized                 | Built-in Supabase sender restrictions; configure custom SMTP.                                               |
-| Link opens a website/localhost instead of the app | Exact Supabase mobile allowlist, template destination, app callback routing and installed build.            |
-| Link opens app but sign-in fails                  | Same-device PKCE, expired/used link, correct project and registered scheme; do not share the link to debug. |
-| Apple browser login fails after native works      | Services ID first in Client IDs, correct Return URL, current client-secret JWT.                             |
-| App still has no login screen                     | Expected today: service setup does not enable unfinished app integration.                                   |
-| Login works but records do not appear elsewhere   | Authentication is not sync; repository/sync integration and staging migration must also be ready.           |
+| Symptom                                           | First check                                                                                                                                                              |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Google `redirect_uri_mismatch`                    | Google's redirect URI must be the HTTPS Supabase callback, exactly.                                                                                                      |
+| Google denies a tester                            | External Testing audience and Test users list.                                                                                                                           |
+| Email says address not authorized                 | Built-in Supabase sender restrictions; configure custom SMTP.                                                                                                            |
+| Link opens a website/localhost instead of the app | Exact Supabase mobile allowlist, template destination, app callback routing and installed build.                                                                         |
+| Link opens app but sign-in fails                  | Same-device PKCE, expired/used link, correct project and registered scheme; do not share the link to debug.                                                              |
+| Apple browser login fails after native works      | Services ID first in Client IDs, correct Return URL, current client-secret JWT.                                                                                          |
+| App still has no login screen                     | Expected today: service setup does not enable unfinished app integration.                                                                                                |
+| Login works but records do not appear elsewhere   | Check Pro eligibility, the Settings sync toggle, same account/sign-in method, network access and server capability version; retain a sanitized sync error for diagnosis. |
 
 ## Official references
 

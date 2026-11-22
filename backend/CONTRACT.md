@@ -1,8 +1,10 @@
 # Golf PinTheory sync wire contract v1 — staging validation source
 
-Status: client DTOs and a forward-only domain-validation migration are implemented
-in source; **the migration is not deployed or database-tested**. Do not enable sync
-for valuable data until the documented disposable-staging sequence passes.
+Status (2026-11-22): client DTOs and the forward-only domain-validation migration
+are implemented in source. The operator confirms cloud sync is deployed and
+operational in the configured environment. This repository does not contain the
+live migration ledger or detailed acceptance evidence; do not infer that every
+SQL regression or release check listed below has been run from source alone.
 
 ## Transport and identity
 
